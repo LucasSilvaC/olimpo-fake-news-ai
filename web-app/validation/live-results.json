@@ -1,0 +1,93 @@
+{
+  "testedAt": "2026-09-08T21:43:29.741Z",
+  "base": "http://127.0.0.1:3000",
+  "ui": {
+    "status": 200,
+    "title": true,
+    "input": true,
+    "button": true,
+    "script": true
+  },
+  "results": [
+    {
+      "name": "NASA SSR / JSON-LD",
+      "url": "https://www.nasa.gov/missions/webb/nasa-documentary-cosmic-dawn-reveals-untold-story-of-james-webb-space-telescope/",
+      "status": 200,
+      "elapsedMs": 1728,
+      "method": "local",
+      "fallback": false,
+      "contentLength": 4796,
+      "title": "NASA+ Documentary “Cosmic Dawn” Reveals Untold Story of James Webb Space Telescope - NASA",
+      "authors": [
+        "Jamie Adkins"
+      ],
+      "publishedAt": "2025-06-11T16:16:25-04:00",
+      "publisher": "NASA",
+      "image": true
+    },
+    {
+      "name": "JPL SSR / JSON-LD",
+      "url": "https://www.jpl.nasa.gov/news/nasa-webbs-autopsy-of-planet-swallowed-by-star-yields-surprise/",
+      "status": 200,
+      "elapsedMs": 2816,
+      "method": "local",
+      "fallback": false,
+      "contentLength": 6379,
+      "title": "NASA Webb’s Autopsy of Planet Swallowed by Star Yields Surprise | NASA Jet Propulsion Laboratory (JPL)",
+      "authors": [
+        "Jet Propulsion Laboratory"
+      ],
+      "publishedAt": null,
+      "publisher": null,
+      "image": false
+    },
+    {
+      "name": "AP / tentativa de fallback",
+      "url": "https://apnews.com/article/ece7b93649870ee23d498618e5d20309",
+      "status": 200,
+      "elapsedMs": 928,
+      "method": "local",
+      "fallback": false,
+      "contentLength": 988,
+      "title": "Newborn stars dazzle in NASA's Webb Space Telescope image of the Lobster Nebula",
+      "authors": [
+        "Marcia Dunn"
+      ],
+      "publishedAt": "2025-09-05T15:41:24Z",
+      "publisher": "AP News",
+      "image": true
+    },
+    {
+      "name": "URL inválida",
+      "url": "abc",
+      "status": 400,
+      "elapsedMs": 12,
+      "image": false,
+      "error": "INVALID_URL"
+    },
+    {
+      "name": "Localhost",
+      "url": "http://localhost:3000",
+      "status": 400,
+      "elapsedMs": 7,
+      "image": false,
+      "error": "UNSAFE_URL"
+    },
+    {
+      "name": "IP privado",
+      "url": "http://192.168.0.1",
+      "status": 400,
+      "elapsedMs": 9,
+      "image": false,
+      "error": "UNSAFE_URL"
+    },
+    {
+      "name": "Não-artigo",
+      "url": "https://example.com/",
+      "status": 422,
+      "elapsedMs": 525,
+      "image": false,
+      "error": "EXTRACTION_FAILED"
+    }
+  ]
+}

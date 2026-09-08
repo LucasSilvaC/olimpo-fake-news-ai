@@ -1,0 +1,18 @@
+{
+  "testedAt": "2026-09-08T21:41:25.424Z",
+  "url": "https://www.nasa.gov/missions/webb/nasa-documentary-cosmic-dawn-reveals-untold-story-of-james-webb-space-telescope/",
+  "scope": "HTML local simulado insuficiente; DNS e Jina Reader reais, sem chave obrigatória",
+  "directReader": {
+    "title": "NASA+ Documentary “Cosmic Dawn” Reveals Untold Story of James Webb Space Telescope - NASA",
+    "contentLength": 6222
+  },
+  "pipeline": {
+    "method": "jina",
+    "fallback": true,
+    "contentLength": 6222,
+    "title": "Metadado local preservado",
+    "authors": [
+      "Autor de teste"
+    ]
+  }
+}
