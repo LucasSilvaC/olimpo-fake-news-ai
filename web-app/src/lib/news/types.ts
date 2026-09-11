@@ -16,4 +16,6 @@ export interface INewsArticle {
   usedFallback: boolean;
 }
 
-export type ArticleFields = Partial<Omit<INewsArticle, "url" | "extractionMethod" | "usedFallback">>;
+export type ArticleFields = Partial<
+  Omit<INewsArticle, "url" | "extractionMethod" | "usedFallback">
+>;
