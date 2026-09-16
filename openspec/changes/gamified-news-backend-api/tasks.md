@@ -15,12 +15,12 @@ Regra: Aguardar confirmação do usuário após concluir cada grupo inteiro de t
 
 ## 2. Feature Auth - Registration, Login & Session (TDD)
 
-- [ ] 2.1 Criar estrutura da feature em `src/app/api/auth/` com `entities/`, `usecase/`, `repositories/`, `actions/` e `tests/`
-- [ ] 2.2 Escrever testes unitários em `auth/tests/user-entity.test.ts` e `auth/tests/jwt-cookie.test.ts` para hash de senha, validação de email e geração/verificação de JWT
-- [ ] 2.3 Implementar entidades e helpers em `auth/entities/` e `auth/repositories/drizzle-user.repository.ts`
-- [ ] 2.4 Escrever testes e implementar `register.usecase.ts`, `login.usecase.ts` e `logout.usecase.ts`
-- [ ] 2.5 Implementar Server Actions em `auth/actions/` (`register.action.ts`, `login.action.ts`, `logout.action.ts`) com Zod e cookies httpOnly
-- [ ] 2.6 Implementar helper de sessão `get-session.usecase.ts` para resolver usuário autenticado a partir do cookie
+- [x] 2.1 Criar estrutura da feature em `src/app/api/auth/` com `entities/`, `usecase/`, `repositories/`, `actions/` e `tests/`
+- [x] 2.2 Escrever testes unitários em `auth/tests/user-entity.test.ts` e `auth/tests/jwt-cookie.test.ts` para hash de senha, validação de email e geração/verificação de JWT
+- [x] 2.3 Implementar entidades e helpers em `auth/entities/` e `auth/repositories/drizzle-user.repository.ts`
+- [x] 2.4 Escrever testes e implementar `register.usecase.ts`, `login.usecase.ts` e `logout.usecase.ts`
+- [x] 2.5 Implementar Server Actions em `auth/actions/` (`register.action.ts`, `login.action.ts`, `logout.action.ts`) com Zod e cookies httpOnly
+- [x] 2.6 Implementar helper de sessão `get-session.usecase.ts` para resolver usuário autenticado a partir do cookie
 
 *Sugestão de commit:* `feat(auth): implement user registration, login with jwt cookies and session resolution with tdd`
 
@@ -70,6 +70,4 @@ Regra: Aguardar confirmação do usuário após concluir cada grupo inteiro de t
 - [ ] 7.1 Criar estrutura da feature em `src/app/api/global-challenges/` com `entities/`, `usecase/`, `repositories/`, `actions/` e `tests/`
 - [ ] 7.2 Implementar casos de uso, repositórios Drizzle e Server Actions para desafios globais de treino com testes unitários
 - [ ] 7.3 Executar toda a suíte de testes unitários do projeto (`pnpm test:unit`) garantindo cobertura de todas as features
-- [ ] 7.4 Executar validações completas de lint e typecheck (`pnpm typecheck && pnpm lint`)
-
-*Sugestão de commit:* `test(all): add global challenges feature and verify full backend test suite`
+- [ ] 7.4 Executar validações completas de lint e typecheck (`pnpm typecheck && pnpm lint`)\n\n*Sugestão de commit:* `test(all): add global challenges feature and verify full backend test suite`
