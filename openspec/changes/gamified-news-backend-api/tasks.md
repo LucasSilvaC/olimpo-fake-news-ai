@@ -6,10 +6,10 @@ Regra: Aguardar confirmação do usuário após concluir cada grupo inteiro de t
 
 ## 1. Shared Infrastructure & Database Setup
 
-- [ ] 1.1 Instalar dependências `ioredis`, `@types/ioredis`, `bcryptjs`, `@types/bcryptjs` e `jose` em `web-app` e validar compilação com `pnpm typecheck`
-- [ ] 1.2 Configurar clients compartilhados em `src/app/server/shared`: Drizzle DB client (`shared/database/client.ts`) e Redis singleton (`shared/redis/client.ts`) com leitura de variáveis de ambiente
-- [ ] 1.3 Definir Drizzle schemas e enums (`users`, `rooms`, `room_members`, `room_playlist_items`, `news_articles`, `news_analyses`, `news_votes`, `global_challenges`, `global_challenge_answers`) em `src/app/server/shared/database/schemas` e exportar no index
-- [ ] 1.4 Gerar migrações Drizzle com `pnpm db:generate` e validar os scripts SQL gerados
+- [x] 1.1 Instalar dependências `ioredis`, `@types/ioredis`, `bcryptjs`, `@types/bcryptjs` e `jose` em `web-app` e validar compilação com `pnpm typecheck`
+- [x] 1.2 Configurar clients compartilhados em `src/app/server/shared`: Drizzle DB client (`shared/database/client.ts`) e Redis singleton (`shared/redis/client.ts`) com leitura de variáveis de ambiente
+- [x] 1.3 Definir Drizzle schemas e enums (`users`, `rooms`, `room_members`, `room_playlist_items`, `news_articles`, `news_analyses`, `news_votes`, `global_challenges`, `global_challenge_answers`) em `src/app/server/shared/database/schemas` e exportar no index
+- [x] 1.4 Gerar migrações Drizzle com `pnpm db:generate` e validar os scripts SQL gerados
 
 *Sugestão de commit:* `feat(db): setup shared drizzle schemas, migrations and redis client`
 
