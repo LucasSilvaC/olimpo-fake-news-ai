@@ -1,4 +1,5 @@
 import { pgTable, text, integer, timestamp, boolean, uniqueIndex } from "drizzle-orm/pg-core";
+
 import { voteOptionTypeEnum } from "./enums";
 import { globalChallenges } from "./global-challenges";
 import { users } from "./users";

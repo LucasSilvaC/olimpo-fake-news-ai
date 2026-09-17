@@ -1,6 +1,7 @@
 import { pgTable, text, integer, timestamp, uniqueIndex } from "drizzle-orm/pg-core";
-import { rooms } from "./rooms";
+
 import { newsArticles } from "./news-articles";
+import { rooms } from "./rooms";
 
 export const roomPlaylistItems = pgTable(
   "room_playlist_items",
@@ -15,9 +16,7 @@ export const roomPlaylistItems = pgTable(
     roundOrder: integer("round_order").notNull(),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
-  (table) => [
-    uniqueIndex("room_playlist_items_room_order_idx").on(table.roomId, table.roundOrder),
-  ],
+  (table) => [uniqueIndex("room_playlist_items_room_order_idx").on(table.roomId, table.roundOrder)],
 );
 
 export type RoomPlaylistItem = typeof roomPlaylistItems.$inferSelect;

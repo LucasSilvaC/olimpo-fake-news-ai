@@ -1,4 +1,5 @@
 import { pgTable, text, timestamp, numeric, jsonb } from "drizzle-orm/pg-core";
+
 import { mlTargetTypeEnum } from "./enums";
 import { newsArticles } from "./news-articles";
 
