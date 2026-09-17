@@ -1,7 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { GetSessionUseCase } from "../usecase/get-session.usecase";
+
 import { signSessionToken } from "../entities/jwt.helper";
 import { IUserRepository } from "../repositories/user.repository.interface";
+import { GetSessionUseCase } from "../usecase/get-session.usecase";
+
 import { User } from "@/server/shared/database/schemas";
 
 describe("GetSessionUseCase", () => {
@@ -55,9 +57,7 @@ describe("GetSessionUseCase", () => {
   });
 
   it("should reject when token is invalid or corrupted", async () => {
-    await expect(getSessionUseCase.execute("invalid.token.here")).rejects.toThrow(
-      /unauthorized/i,
-    );
+    await expect(getSessionUseCase.execute("invalid.token.here")).rejects.toThrow(/unauthorized/i);
   });
 
   it("should reject if the user record no longer exists in database", async () => {

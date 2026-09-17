@@ -26,10 +26,10 @@ Regra: Aguardar confirmação do usuário após concluir cada grupo inteiro de t
 
 ## 3. Feature AI Feedback (TDD)
 
-- [ ] 3.1 Criar estrutura da feature em `src/app/api/ai-feedback/` com `entities/`, `usecase/`, `repositories/` e `tests/`
-- [ ] 3.2 Escrever testes unitários em `tests/mock-ai-analysis-service.test.ts` para geração de classificações e argumentos analíticos
-- [ ] 3.3 Implementar `MockAIAnalysisService` e contrato de interface `IAIAnalysisService` garantindo aprovação dos testes
-- [ ] 3.4 Implementar `usecase/get-article-analysis.usecase.ts` para orquestrar análise da notícia da rodada
+- [x] 3.1 Criar estrutura da feature em `src/app/api/ai-feedback/` com `entities/`, `usecase/`, `repositories/` e `tests/`
+- [x] 3.2 Escrever testes unitários em `tests/mock-ai-analysis-service.test.ts` para geração de classificações e argumentos analíticos
+- [x] 3.3 Implementar `MockAIAnalysisService` e contrato de interface `IAIAnalysisService` garantindo aprovação dos testes
+- [x] 3.4 Implementar `usecase/get-article-analysis.usecase.ts` para orquestrar análise da notícia da rodada
 
 *Sugestão de commit:* `feat(ai-feedback): implement mock ai analysis service and usecase with unit tests`
 

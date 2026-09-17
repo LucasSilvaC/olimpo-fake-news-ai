@@ -2,6 +2,7 @@
 
 import { cookies } from "next/headers";
 import { z } from "zod";
+
 import { AUTH_COOKIE_NAME, getAuthCookieOptions } from "../entities/jwt.helper";
 import { UserDTO } from "../entities/user.entity";
 import { RegisterUseCase } from "../usecase/register.usecase";
@@ -15,8 +16,7 @@ const registerSchema = z.object({
 export type RegisterActionInput = z.infer<typeof registerSchema>;
 
 export type RegisterActionResult =
-  | { success: true; user: UserDTO }
-  | { success: false; error: string };
+  { success: true; user: UserDTO } | { success: false; error: string };
 
 export async function registerAction(
   input: FormData | RegisterActionInput,

@@ -1,6 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { RegisterUseCase } from "../usecase/register.usecase";
+
 import { IUserRepository } from "../repositories/user.repository.interface";
+import { RegisterUseCase } from "../usecase/register.usecase";
+
 import { User } from "@/server/shared/database/schemas";
 
 describe("RegisterUseCase", () => {
@@ -60,9 +62,7 @@ describe("RegisterUseCase", () => {
   it("should reject registration when email already exists", async () => {
     await registerUseCase.execute(validProps);
 
-    await expect(registerUseCase.execute(validProps)).rejects.toThrow(
-      /already exists|conflict/i,
-    );
+    await expect(registerUseCase.execute(validProps)).rejects.toThrow(/already exists|conflict/i);
   });
 
   it("should reject registration with invalid email", async () => {

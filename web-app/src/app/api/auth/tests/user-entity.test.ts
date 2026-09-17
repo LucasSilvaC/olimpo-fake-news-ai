@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+
 import { UserEntity } from "../entities/user.entity";
 
 describe("UserEntity", () => {

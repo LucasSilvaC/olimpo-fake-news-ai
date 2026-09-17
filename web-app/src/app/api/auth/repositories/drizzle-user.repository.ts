@@ -1,7 +1,9 @@
 import { eq, sql } from "drizzle-orm";
+
+import { IUserRepository } from "./user.repository.interface";
+
 import { databaseClient } from "@/server/shared/database/client";
 import { users, User, NewUser } from "@/server/shared/database/schemas";
-import { IUserRepository } from "./user.repository.interface";
 
 export class DrizzleUserRepository implements IUserRepository {
   constructor(private readonly db = databaseClient) {}
@@ -18,11 +20,7 @@ export class DrizzleUserRepository implements IUserRepository {
   }
 
   async findById(id: string): Promise<User | null> {
-    const [result] = await this.db
-      .select()
-      .from(users)
-      .where(eq(users.id, id))
-      .limit(1);
+    const [result] = await this.db.select().from(users).where(eq(users.id, id)).limit(1);
 
     return result ?? null;
   }

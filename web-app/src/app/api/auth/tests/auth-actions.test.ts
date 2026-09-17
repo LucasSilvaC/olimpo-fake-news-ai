@@ -1,9 +1,12 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { registerAction } from "../actions/register.action";
+
 import { loginAction } from "../actions/login.action";
 import { logoutAction } from "../actions/logout.action";
+import { registerAction } from "../actions/register.action";
 import { AUTH_COOKIE_NAME } from "../entities/jwt.helper";
 import { UserEntity } from "../entities/user.entity";
+
+import { User, NewUser } from "@/server/shared/database/schemas";
 
 // Mock next/headers cookies
 const mockCookieStore = {
@@ -17,7 +20,7 @@ vi.mock("next/headers", () => ({
 }));
 
 // Mock drizzle-user.repository
-const inMemoryUsers = new Map<string, any>();
+const inMemoryUsers = new Map<string, User>();
 
 vi.mock("../repositories/drizzle-user.repository", () => ({
   drizzleUserRepository: {
@@ -28,8 +31,13 @@ vi.mock("../repositories/drizzle-user.repository", () => ({
       return null;
     }),
     findById: vi.fn(async (id: string) => inMemoryUsers.get(id) ?? null),
-    create: vi.fn(async (data: any) => {
-      const user = { ...data, xp: data.xp ?? 0, createdAt: new Date(), updatedAt: new Date() };
+    create: vi.fn(async (data: NewUser) => {
+      const user: User = {
+        ...data,
+        xp: data.xp ?? 0,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
       inMemoryUsers.set(user.id, user);
       return user;
     }),
