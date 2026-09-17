@@ -62,9 +62,7 @@ describe("RegisterUseCase", () => {
   it("should reject registration when email already exists", async () => {
     await registerUseCase.execute(validProps);
 
-    await expect(registerUseCase.execute(validProps)).rejects.toThrow(
-      /already exists|conflict/i,
-    );
+    await expect(registerUseCase.execute(validProps)).rejects.toThrow(/already exists|conflict/i);
   });
 
   it("should reject registration with invalid email", async () => {

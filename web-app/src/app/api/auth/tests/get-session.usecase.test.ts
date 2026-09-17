@@ -57,9 +57,7 @@ describe("GetSessionUseCase", () => {
   });
 
   it("should reject when token is invalid or corrupted", async () => {
-    await expect(getSessionUseCase.execute("invalid.token.here")).rejects.toThrow(
-      /unauthorized/i,
-    );
+    await expect(getSessionUseCase.execute("invalid.token.here")).rejects.toThrow(/unauthorized/i);
   });
 
   it("should reject if the user record no longer exists in database", async () => {

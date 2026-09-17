@@ -20,11 +20,7 @@ export class DrizzleUserRepository implements IUserRepository {
   }
 
   async findById(id: string): Promise<User | null> {
-    const [result] = await this.db
-      .select()
-      .from(users)
-      .where(eq(users.id, id))
-      .limit(1);
+    const [result] = await this.db.select().from(users).where(eq(users.id, id)).limit(1);
 
     return result ?? null;
   }

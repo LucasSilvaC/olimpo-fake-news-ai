@@ -5,9 +5,7 @@ import { cookies } from "next/headers";
 import { AUTH_COOKIE_NAME } from "../entities/jwt.helper";
 import { LogoutUseCase } from "../usecase/logout.usecase";
 
-export type LogoutActionResult =
-  | { success: true }
-  | { success: false; error: string };
+export type LogoutActionResult = { success: true } | { success: false; error: string };
 
 export async function logoutAction(): Promise<LogoutActionResult> {
   try {

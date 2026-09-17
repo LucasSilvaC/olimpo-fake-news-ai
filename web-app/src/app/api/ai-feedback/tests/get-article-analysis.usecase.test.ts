@@ -1,6 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
 
-
 import { IAIAnalysisService } from "../repositories/ai-analysis-service.interface";
 import { INewsAnalysisRepository } from "../repositories/news-analysis.repository.interface";
 import { INewsArticleRepository } from "../repositories/news-article.repository.interface";
@@ -112,7 +111,8 @@ describe("GetArticleAnalysisUseCase", () => {
   });
 
   it("forces re-generation when forceRefresh is true even if cached", async () => {
-    const { analysisRepo, articleRepo, aiService, analysisDb, articleDb } = createMockRepositories();
+    const { analysisRepo, articleRepo, aiService, analysisDb, articleDb } =
+      createMockRepositories();
 
     analysisDb.set("article-3", {
       id: "old-analysis",

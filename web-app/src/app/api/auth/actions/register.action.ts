@@ -16,8 +16,7 @@ const registerSchema = z.object({
 export type RegisterActionInput = z.infer<typeof registerSchema>;
 
 export type RegisterActionResult =
-  | { success: true; user: UserDTO }
-  | { success: false; error: string };
+  { success: true; user: UserDTO } | { success: false; error: string };
 
 export async function registerAction(
   input: FormData | RegisterActionInput,

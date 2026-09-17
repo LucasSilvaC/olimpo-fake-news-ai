@@ -66,7 +66,8 @@ describe("MockAIAnalysisService", () => {
     it("detects institutional and scientific indicators as 'reliable'", async () => {
       const result = await service.analyze({
         title: "Estudo publicado na universidade demonstra eficácia de novo tratamento",
-        content: "Pesquisa científica realizada com dados oficiais e metodologia revisada por pares.",
+        content:
+          "Pesquisa científica realizada com dados oficiais e metodologia revisada por pares.",
       });
 
       expect(result.classification).toBe("reliable");

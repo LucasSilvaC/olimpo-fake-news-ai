@@ -15,12 +15,9 @@ const loginSchema = z.object({
 export type LoginActionInput = z.infer<typeof loginSchema>;
 
 export type LoginActionResult =
-  | { success: true; user: UserDTO }
-  | { success: false; error: string };
+  { success: true; user: UserDTO } | { success: false; error: string };
 
-export async function loginAction(
-  input: FormData | LoginActionInput,
-): Promise<LoginActionResult> {
+export async function loginAction(input: FormData | LoginActionInput): Promise<LoginActionResult> {
   try {
     const rawData =
       input instanceof FormData

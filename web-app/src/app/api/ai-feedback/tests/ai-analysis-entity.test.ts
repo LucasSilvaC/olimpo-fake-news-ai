@@ -4,7 +4,6 @@ import { AIAnalysisEntity } from "../entities/ai-analysis.entity";
 
 import { MLTargetType } from "@/server/shared/database/schemas/enums";
 
-
 describe("AIAnalysisEntity", () => {
   describe("Validation helpers", () => {
     it("validates classification values correctly", () => {

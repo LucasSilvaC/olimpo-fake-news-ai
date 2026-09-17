@@ -1,6 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-
 import { loginAction } from "../actions/login.action";
 import { logoutAction } from "../actions/logout.action";
 import { registerAction } from "../actions/register.action";
