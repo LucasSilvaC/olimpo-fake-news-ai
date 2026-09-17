@@ -1,6 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { RegisterUseCase } from "../usecase/register.usecase";
+
 import { IUserRepository } from "../repositories/user.repository.interface";
+import { RegisterUseCase } from "../usecase/register.usecase";
+
 import { User } from "@/server/shared/database/schemas";
 
 describe("RegisterUseCase", () => {

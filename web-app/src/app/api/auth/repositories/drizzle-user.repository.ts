@@ -1,7 +1,9 @@
 import { eq, sql } from "drizzle-orm";
+
+import { IUserRepository } from "./user.repository.interface";
+
 import { databaseClient } from "@/server/shared/database/client";
 import { users, User, NewUser } from "@/server/shared/database/schemas";
-import { IUserRepository } from "./user.repository.interface";
 
 export class DrizzleUserRepository implements IUserRepository {
   constructor(private readonly db = databaseClient) {}

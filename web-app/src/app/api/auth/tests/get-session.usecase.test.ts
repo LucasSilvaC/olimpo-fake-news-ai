@@ -1,7 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { GetSessionUseCase } from "../usecase/get-session.usecase";
+
 import { signSessionToken } from "../entities/jwt.helper";
 import { IUserRepository } from "../repositories/user.repository.interface";
+import { GetSessionUseCase } from "../usecase/get-session.usecase";
+
 import { User } from "@/server/shared/database/schemas";
 
 describe("GetSessionUseCase", () => {

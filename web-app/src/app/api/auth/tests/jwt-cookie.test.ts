@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+
 import {
   AUTH_COOKIE_NAME,
   getAuthCookieOptions,
