@@ -227,6 +227,20 @@ pnpm typecheck
 pnpm test:e2e
 ```
 
+### Revisar uma PR com o Acrux
+
+Com `gh` autenticado e o `codex` disponível no PATH, execute:
+
+```powershell
+pnpm review:pr
+```
+
+O script mostra a PR aberta mais recentemente, pergunta qual PR deve ser revisada,
+executa a skill `code-review` do Acrux em um worktree temporário e pede confirmação
+antes de criar ou atualizar o comentário da revisão. Use `--no-post` para somente
+ver o resultado ou `--yes` para confirmar a publicação automaticamente. Se o Acrux
+não estiver em `~/.acrux` nem em `../Acrux-Agent`, defina `ACRUX_ROOT`.
+
 ---
 
 ## 🤖 8. Guia para IAs e Futuros Desenvolvedores (Roadmap de Implementação)
