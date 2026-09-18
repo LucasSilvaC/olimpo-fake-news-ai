@@ -172,6 +172,28 @@ describe("DrizzleRoomRepository", () => {
       const count = await repository.countMembers("room-1");
       expect(count).toBe(3);
     });
+
+    it("should update member score and return updated member", async () => {
+      const updatedMember = { ...sampleMember, score: 100 };
+      const returningMock = vi.fn().mockResolvedValue([updatedMember]);
+      const whereMock = vi.fn().mockReturnValue({ returning: returningMock });
+      const setMock = vi.fn().mockReturnValue({ where: whereMock });
+      mockDb.update.mockReturnValue({ set: setMock });
+
+      const result = await repository.updateMemberScore("room-1", "user-1", 100);
+      expect(result).toEqual(updatedMember);
+    });
+
+    it("should throw error when updating score of nonexistent member", async () => {
+      const returningMock = vi.fn().mockResolvedValue([]);
+      const whereMock = vi.fn().mockReturnValue({ returning: returningMock });
+      const setMock = vi.fn().mockReturnValue({ where: whereMock });
+      mockDb.update.mockReturnValue({ set: setMock });
+
+      await expect(repository.updateMemberScore("room-1", "non-existent", 50)).rejects.toThrow(
+        'Member with userId "non-existent" in room "room-1" not found',
+      );
+    });
   });
 
   describe("playlist operations", () => {

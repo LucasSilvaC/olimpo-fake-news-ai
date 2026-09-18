@@ -56,6 +56,7 @@ describe("CreateRoomUseCase", () => {
       }),
       listMembers: vi.fn(async (roomId) => membersStore.filter((m) => m.roomId === roomId)),
       countMembers: vi.fn(async (roomId) => membersStore.filter((m) => m.roomId === roomId).length),
+      updateMemberScore: vi.fn(),
       addPlaylistItems: vi.fn(),
       getPlaylistItems: vi.fn(),
     };

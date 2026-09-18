@@ -67,6 +67,7 @@ describe("JoinRoomUseCase", () => {
       }),
       listMembers: vi.fn(),
       countMembers: vi.fn(),
+      updateMemberScore: vi.fn(),
       addPlaylistItems: vi.fn(),
       getPlaylistItems: vi.fn(),
     };

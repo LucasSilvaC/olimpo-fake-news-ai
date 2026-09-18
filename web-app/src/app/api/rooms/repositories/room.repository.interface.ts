@@ -23,6 +23,7 @@ export interface IRoomRepository {
   findMember(roomId: string, userId: string): Promise<RoomMember | null>;
   listMembers(roomId: string): Promise<RoomMember[]>;
   countMembers(roomId: string): Promise<number>;
+  updateMemberScore(roomId: string, userId: string, scoreDelta: number): Promise<RoomMember>;
   addPlaylistItems(items: NewRoomPlaylistItem[]): Promise<RoomPlaylistItem[]>;
   getPlaylistItems(roomId: string): Promise<RoomPlaylistItem[]>;
 }
