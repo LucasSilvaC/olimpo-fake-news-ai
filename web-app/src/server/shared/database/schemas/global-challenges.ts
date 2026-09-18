@@ -1,4 +1,5 @@
 import { pgTable, text, integer, timestamp, boolean } from "drizzle-orm/pg-core";
+
 import { newsArticles } from "./news-articles";
 
 export const globalChallenges = pgTable("global_challenges", {
