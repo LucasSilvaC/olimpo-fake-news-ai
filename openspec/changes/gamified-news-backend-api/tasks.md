@@ -46,12 +46,12 @@ Regra: Aguardar confirmação do usuário após concluir cada grupo inteiro de t
 
 ## 5. Feature News Voting & Round Flow (TDD)
 
-- [ ] 5.1 Criar estrutura da feature em `src/app/api/news-voting/` com `entities/`, `usecase/`, `repositories/`, `actions/` e `tests/`
-- [ ] 5.2 Escrever testes unitários em `news-voting/tests/` para validação de votos nas 3 opções ('reliable', 'uncertain', 'unreliable') e cálculo de pontuação
-- [ ] 5.3 Implementar entidades e repositórios (`news-voting/repositories/`) para persistência de votos no Postgres e contagem atômica de votos no Redis
-- [ ] 5.4 Escrever testes e implementar `submit-vote.usecase.ts`: registrar voto, verificar se todos os membros votaram, pontuar rodada e disparar feedback de IA
-- [ ] 5.5 Escrever testes e implementar `advance-round.usecase.ts` e `finish-match.usecase.ts` com consolidação de XP dos usuários
-- [ ] 5.6 Implementar Server Actions em `news-voting/actions/` (`submit-vote.action.ts`, `advance-round.action.ts`) protegidas pela sessão com schemas Zod e testes unitários
+- [x] 5.1 Criar estrutura da feature em `src/app/api/news-voting/` com `entities/`, `usecase/`, `repositories/`, `actions/` e `tests/`
+- [x] 5.2 Escrever testes unitários em `news-voting/tests/` para validação de votos nas 3 opções ('reliable', 'uncertain', 'unreliable') e cálculo de pontuação
+- [x] 5.3 Implementar entidades e repositórios (`news-voting/repositories/`) para persistência de votos no Postgres e contagem atômica de votos no Redis
+- [x] 5.4 Escrever testes e implementar `submit-vote.usecase.ts`: registrar voto, verificar se todos os membros votaram, pontuar rodada e disparar feedback de IA
+- [x] 5.5 Escrever testes e implementar `advance-round.usecase.ts` e `finish-match.usecase.ts` com consolidação de XP dos usuários
+- [x] 5.6 Implementar Server Actions em `news-voting/actions/` (`submit-vote.action.ts`, `advance-round.action.ts`) protegidas pela sessão com schemas Zod e testes unitários
 
 *Sugestão de commit:* `feat(news-voting): implement 3-tier voting, round evaluation and server actions with tdd`
 

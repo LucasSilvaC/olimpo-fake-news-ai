@@ -1,4 +1,4 @@
-import { asc, count, eq } from "drizzle-orm";
+import { and, asc, count, eq, sql } from "drizzle-orm";
 
 import { IRoomRepository } from "./room.repository.interface";
 
@@ -118,6 +118,22 @@ export class DrizzleRoomRepository implements IRoomRepository {
       .where(eq(roomMembers.roomId, roomId));
 
     return result ? Number(result.value) : 0;
+  }
+
+  async updateMemberScore(roomId: string, userId: string, scoreDelta: number): Promise<RoomMember> {
+    const [updated] = await this.db
+      .update(roomMembers)
+      .set({
+        score: sql`${roomMembers.score} + ${scoreDelta}`,
+      })
+      .where(and(eq(roomMembers.roomId, roomId), eq(roomMembers.userId, userId)))
+      .returning();
+
+    if (!updated) {
+      throw new Error(`Member with userId "${userId}" in room "${roomId}" not found`);
+    }
+
+    return updated;
   }
 
   async addPlaylistItems(items: NewRoomPlaylistItem[]): Promise<RoomPlaylistItem[]> {

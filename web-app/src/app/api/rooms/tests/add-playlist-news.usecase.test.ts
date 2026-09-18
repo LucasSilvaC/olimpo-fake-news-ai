@@ -64,6 +64,7 @@ describe("AddPlaylistNewsUseCase", () => {
       findMember: vi.fn(),
       listMembers: vi.fn(),
       countMembers: vi.fn(),
+      updateMemberScore: vi.fn(),
       addPlaylistItems: vi.fn(async (items: NewRoomPlaylistItem[]) => {
         const createdItems = items.map((it) => ({
           id: it.id,

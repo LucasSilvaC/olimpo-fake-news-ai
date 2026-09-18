@@ -57,6 +57,7 @@ describe("StartGameUseCase", () => {
       findMember: vi.fn(),
       listMembers: vi.fn(),
       countMembers: vi.fn(async () => 2),
+      updateMemberScore: vi.fn(),
       addPlaylistItems: vi.fn(),
       getPlaylistItems: vi.fn(async () => samplePlaylistItems),
     };
