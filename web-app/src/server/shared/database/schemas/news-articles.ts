@@ -1,4 +1,5 @@
 import { pgTable, text, timestamp } from "drizzle-orm/pg-core";
+
 import { mlTargetTypeEnum } from "./enums";
 
 export const newsArticles = pgTable("news_articles", {
