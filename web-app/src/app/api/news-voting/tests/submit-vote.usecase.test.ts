@@ -5,6 +5,7 @@ import { SubmitVoteUseCase } from "../usecase/submit-vote.usecase";
 
 import { INewsArticleRepository } from "@/app/api/ai-feedback/repositories/news-article.repository.interface";
 import { GetArticleAnalysisUseCase } from "@/app/api/ai-feedback/usecase/get-article-analysis.usecase";
+import { IEventPublisher } from "@/app/api/realtime-events";
 import { IRoomRepository, IRedisRoomRepository } from "@/app/api/rooms/repositories";
 import { NewsArticle, Room, RoomMember, RoomPlaylistItem } from "@/server/shared/database/schemas";
 
@@ -15,6 +16,7 @@ describe("SubmitVoteUseCase", () => {
   let redisRoomRepository: IRedisRoomRepository;
   let newsArticleRepository: INewsArticleRepository;
   let getArticleAnalysisUseCase: GetArticleAnalysisUseCase;
+  let mockEventPublisher: IEventPublisher;
   let useCase: SubmitVoteUseCase;
 
   const sampleRoom: Room = {
@@ -128,6 +130,10 @@ describe("SubmitVoteUseCase", () => {
       execute: vi.fn().mockResolvedValue(sampleAnalysis),
     } as unknown as GetArticleAnalysisUseCase;
 
+    mockEventPublisher = {
+      publish: vi.fn(async () => 1),
+    };
+
     useCase = new SubmitVoteUseCase(
       newsVoteRepository,
       redisVoteRepository,
@@ -135,6 +141,7 @@ describe("SubmitVoteUseCase", () => {
       redisRoomRepository,
       newsArticleRepository,
       getArticleAnalysisUseCase,
+      mockEventPublisher,
     );
   });
 
@@ -301,5 +308,18 @@ describe("SubmitVoteUseCase", () => {
       articleId: "art-1",
     });
     expect(redisRoomRepository.getLeaderboard).toHaveBeenCalledWith("room-1");
+    expect(mockEventPublisher.publish).toHaveBeenCalledWith(
+      "123 456",
+      expect.objectContaining({
+        type: "ROUND_COMPLETED",
+        roomId: "room-1",
+        pin: "123 456",
+        payload: {
+          round: 1,
+          leaderboard: [{ userId: "user-1", score: 100 }],
+          analysis: sampleAnalysis,
+        },
+      }),
+    );
   });
 });

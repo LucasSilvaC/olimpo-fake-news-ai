@@ -4,6 +4,11 @@ import { redisRoomRepository } from "../repositories/redis-room.repository";
 import { IRedisRoomRepository } from "../repositories/redis-room.repository.interface";
 import { IRoomRepository } from "../repositories/room.repository.interface";
 
+import {
+  IEventPublisher,
+  redisEventPublisher as defaultRedisEventPublisher,
+} from "@/app/api/realtime-events";
+
 export interface StartGameInput {
   roomId: string;
   hostId: string;
@@ -17,6 +22,7 @@ export class StartGameUseCase {
   constructor(
     private readonly roomRepository: IRoomRepository = drizzleRoomRepository,
     private readonly redisRoomRepo: IRedisRoomRepository = redisRoomRepository,
+    private readonly eventPublisher: IEventPublisher = defaultRedisEventPublisher,
   ) {}
 
   async execute(input: StartGameInput): Promise<StartGameResult> {
@@ -54,6 +60,17 @@ export class StartGameUseCase {
     );
 
     await this.redisRoomRepo.updateRoomStatus(room.pin, "in_progress");
+
+    await this.eventPublisher.publish(room.pin, {
+      type: "ROUND_STARTED",
+      roomId: room.id,
+      pin: room.pin,
+      payload: {
+        currentRound: startedEntity.currentRound,
+        totalRounds: startedEntity.totalRounds,
+      },
+      timestamp: new Date().toISOString(),
+    });
 
     return {
       room: startedEntity.toDTO(),

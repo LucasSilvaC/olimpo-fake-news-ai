@@ -4,11 +4,13 @@ import { IRedisRoomRepository } from "../repositories/redis-room.repository.inte
 import { IRoomRepository } from "../repositories/room.repository.interface";
 import { JoinRoomUseCase } from "../usecase/join-room.usecase";
 
+import { IEventPublisher } from "@/app/api/realtime-events";
 import { Room, RoomMember } from "@/server/shared/database/schemas";
 
 describe("JoinRoomUseCase", () => {
   let mockRoomRepo: IRoomRepository;
   let mockRedisRoomRepo: IRedisRoomRepository;
+  let mockEventPublisher: IEventPublisher;
   let useCase: JoinRoomUseCase;
 
   const sampleWaitingRoom: Room = {
@@ -88,7 +90,11 @@ describe("JoinRoomUseCase", () => {
       getLeaderboard: vi.fn(),
     };
 
-    useCase = new JoinRoomUseCase(mockRoomRepo, mockRedisRoomRepo);
+    mockEventPublisher = {
+      publish: vi.fn(async () => 1),
+    };
+
+    useCase = new JoinRoomUseCase(mockRoomRepo, mockRedisRoomRepo, mockEventPublisher);
   });
 
   it("should join room with valid PIN when status is 'waiting'", async () => {
@@ -111,6 +117,20 @@ describe("JoinRoomUseCase", () => {
       "user-part-1",
       0,
     );
+    expect(mockEventPublisher.publish).toHaveBeenCalledWith(
+      "123 456",
+      expect.objectContaining({
+        type: "MEMBER_JOINED",
+        roomId: "room-1",
+        pin: "123 456",
+        payload: {
+          member: expect.objectContaining({
+            userId: "user-part-1",
+            role: "participant",
+          }),
+        },
+      }),
+    );
   });
 
   it("should return existing membership without duplicate insertion if already in room", async () => {
@@ -131,6 +151,7 @@ describe("JoinRoomUseCase", () => {
     expect(result.alreadyJoined).toBe(true);
     expect(result.member.id).toBe("mem-exist");
     expect(mockRoomRepo.addMember).not.toHaveBeenCalled();
+    expect(mockEventPublisher.publish).not.toHaveBeenCalled();
   });
 
   it("should reject joining an active room (in_progress)", async () => {

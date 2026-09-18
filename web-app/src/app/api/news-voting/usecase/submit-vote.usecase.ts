@@ -14,6 +14,10 @@ import {
 import { drizzleNewsArticleRepository as defaultNewsArticleRepository } from "@/app/api/ai-feedback/repositories/drizzle-news-article.repository";
 import { INewsArticleRepository } from "@/app/api/ai-feedback/repositories/news-article.repository.interface";
 import {
+  IEventPublisher,
+  redisEventPublisher as defaultRedisEventPublisher,
+} from "@/app/api/realtime-events";
+import {
   drizzleRoomRepository as defaultRoomRepository,
   IRoomRepository,
   redisRoomRepository as defaultRedisRoomRepository,
@@ -43,6 +47,7 @@ export class SubmitVoteUseCase {
     private readonly redisRoomRepository: IRedisRoomRepository = defaultRedisRoomRepository,
     private readonly newsArticleRepository: INewsArticleRepository = defaultNewsArticleRepository,
     private readonly getArticleAnalysisUseCase: GetArticleAnalysisUseCase = defaultGetArticleAnalysisUseCase,
+    private readonly eventPublisher: IEventPublisher = defaultRedisEventPublisher,
   ) {}
 
   async execute(input: SubmitVoteInput): Promise<SubmitVoteOutput> {
@@ -142,6 +147,18 @@ export class SubmitVoteUseCase {
         articleId: currentItem.articleId,
       });
       const leaderboard = await this.redisRoomRepository.getLeaderboard(input.roomId);
+
+      await this.eventPublisher.publish(room.pin, {
+        type: "ROUND_COMPLETED",
+        roomId: room.id,
+        pin: room.pin,
+        payload: {
+          round: room.currentRound,
+          leaderboard,
+          analysis,
+        },
+        timestamp: new Date().toISOString(),
+      });
 
       return {
         vote: evaluatedVote.toDTO(),

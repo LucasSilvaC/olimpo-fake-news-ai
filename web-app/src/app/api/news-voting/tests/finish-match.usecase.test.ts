@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { FinishMatchUseCase } from "../usecase/finish-match.usecase";
 
 import { IUserRepository } from "@/app/api/auth/repositories/user.repository.interface";
+import { IEventPublisher } from "@/app/api/realtime-events";
 import { IRoomRepository, IRedisRoomRepository } from "@/app/api/rooms/repositories";
 import { Room, RoomMember } from "@/server/shared/database/schemas";
 
@@ -10,6 +11,7 @@ describe("FinishMatchUseCase", () => {
   let roomRepository: IRoomRepository;
   let redisRoomRepository: IRedisRoomRepository;
   let userRepository: IUserRepository;
+  let mockEventPublisher: IEventPublisher;
   let useCase: FinishMatchUseCase;
 
   const sampleRoom: Room = {
@@ -94,7 +96,16 @@ describe("FinishMatchUseCase", () => {
       updateXp: vi.fn().mockResolvedValue({} as never),
     };
 
-    useCase = new FinishMatchUseCase(roomRepository, redisRoomRepository, userRepository);
+    mockEventPublisher = {
+      publish: vi.fn(async () => 1),
+    };
+
+    useCase = new FinishMatchUseCase(
+      roomRepository,
+      redisRoomRepository,
+      userRepository,
+      mockEventPublisher,
+    );
   });
 
   it("should mark room as finished in DB and Redis and consolidate XP for participants with score > 0", async () => {
@@ -113,6 +124,21 @@ describe("FinishMatchUseCase", () => {
     expect(userRepository.updateXp).toHaveBeenCalledWith("user-1", 200);
     expect(userRepository.updateXp).toHaveBeenCalledWith("user-2", 125);
     expect(userRepository.updateXp).not.toHaveBeenCalledWith("user-3", expect.anything());
+    expect(mockEventPublisher.publish).toHaveBeenCalledWith(
+      "123 456",
+      expect.objectContaining({
+        type: "MATCH_FINISHED",
+        roomId: "room-1",
+        pin: "123 456",
+        payload: {
+          leaderboard: expect.arrayContaining([
+            { userId: "user-1", score: 200 },
+            { userId: "user-2", score: 125 },
+            { userId: "user-3", score: 0 },
+          ]),
+        },
+      }),
+    );
   });
 
   it("should reject if room is not found", async () => {

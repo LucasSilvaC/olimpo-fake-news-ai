@@ -1,5 +1,9 @@
 import { drizzleUserRepository as defaultUserRepository } from "@/app/api/auth/repositories/drizzle-user.repository";
 import { IUserRepository } from "@/app/api/auth/repositories/user.repository.interface";
+import {
+  IEventPublisher,
+  redisEventPublisher as defaultRedisEventPublisher,
+} from "@/app/api/realtime-events";
 import { drizzleRoomRepository as defaultRoomRepository } from "@/app/api/rooms/repositories/drizzle-room.repository";
 import { redisRoomRepository as defaultRedisRoomRepository } from "@/app/api/rooms/repositories/redis-room.repository";
 import { IRedisRoomRepository } from "@/app/api/rooms/repositories/redis-room.repository.interface";
@@ -24,6 +28,7 @@ export class FinishMatchUseCase {
     private readonly roomRepository: IRoomRepository = defaultRoomRepository,
     private readonly redisRoomRepository: IRedisRoomRepository = defaultRedisRoomRepository,
     private readonly userRepository: IUserRepository = defaultUserRepository,
+    private readonly eventPublisher: IEventPublisher = defaultRedisEventPublisher,
   ) {}
 
   async execute(input: FinishMatchInput): Promise<FinishMatchOutput> {
@@ -54,6 +59,16 @@ export class FinishMatchUseCase {
     }
 
     const leaderboard = await this.redisRoomRepository.getLeaderboard(input.roomId);
+
+    await this.eventPublisher.publish(room.pin, {
+      type: "MATCH_FINISHED",
+      roomId: room.id,
+      pin: room.pin,
+      payload: {
+        leaderboard,
+      },
+      timestamp: new Date().toISOString(),
+    });
 
     return {
       roomId: input.roomId,

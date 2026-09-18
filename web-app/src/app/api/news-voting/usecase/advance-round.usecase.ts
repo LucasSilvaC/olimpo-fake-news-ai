@@ -3,6 +3,10 @@ import {
   FinishMatchUseCase,
 } from "./finish-match.usecase";
 
+import {
+  IEventPublisher,
+  redisEventPublisher as defaultRedisEventPublisher,
+} from "@/app/api/realtime-events";
 import { drizzleRoomRepository as defaultRoomRepository } from "@/app/api/rooms/repositories/drizzle-room.repository";
 import { LeaderboardEntry } from "@/app/api/rooms/repositories/redis-room.repository.interface";
 import { IRoomRepository } from "@/app/api/rooms/repositories/room.repository.interface";
@@ -26,6 +30,7 @@ export class AdvanceRoundUseCase {
   constructor(
     private readonly roomRepository: IRoomRepository = defaultRoomRepository,
     private readonly finishMatchUseCase: FinishMatchUseCase = defaultFinishMatchUseCase,
+    private readonly eventPublisher: IEventPublisher = defaultRedisEventPublisher,
   ) {}
 
   async execute(input: AdvanceRoundInput): Promise<AdvanceRoundOutput> {
@@ -65,6 +70,17 @@ export class AdvanceRoundUseCase {
       nextRound,
       room.totalRounds,
     );
+
+    await this.eventPublisher.publish(room.pin, {
+      type: "ROUND_STARTED",
+      roomId: room.id,
+      pin: room.pin,
+      payload: {
+        currentRound: nextRound,
+        totalRounds: room.totalRounds,
+      },
+      timestamp: new Date().toISOString(),
+    });
 
     return {
       roomId: input.roomId,
