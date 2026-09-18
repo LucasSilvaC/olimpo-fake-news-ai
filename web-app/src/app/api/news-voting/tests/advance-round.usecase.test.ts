@@ -4,6 +4,7 @@ import { AdvanceRoundUseCase } from "../usecase/advance-round.usecase";
 import { FinishMatchUseCase } from "../usecase/finish-match.usecase";
 
 import { IUserRepository } from "@/app/api/auth/repositories/user.repository.interface";
+import { IEventPublisher } from "@/app/api/realtime-events";
 import { IRoomRepository, IRedisRoomRepository } from "@/app/api/rooms/repositories";
 import { Room, RoomMember } from "@/server/shared/database/schemas";
 
@@ -12,6 +13,7 @@ describe("AdvanceRoundUseCase", () => {
   let redisRoomRepository: IRedisRoomRepository;
   let userRepository: IUserRepository;
   let finishMatchUseCase: FinishMatchUseCase;
+  let mockEventPublisher: IEventPublisher;
   let useCase: AdvanceRoundUseCase;
 
   const sampleRoom: Room = {
@@ -89,13 +91,18 @@ describe("AdvanceRoundUseCase", () => {
       updateXp: vi.fn().mockResolvedValue({} as never),
     };
 
+    mockEventPublisher = {
+      publish: vi.fn(async () => 1),
+    };
+
     finishMatchUseCase = new FinishMatchUseCase(
       roomRepository,
       redisRoomRepository,
       userRepository,
+      mockEventPublisher,
     );
 
-    useCase = new AdvanceRoundUseCase(roomRepository, finishMatchUseCase);
+    useCase = new AdvanceRoundUseCase(roomRepository, finishMatchUseCase, mockEventPublisher);
   });
 
   it("should advance to next round when currentRound < totalRounds", async () => {
@@ -110,6 +117,18 @@ describe("AdvanceRoundUseCase", () => {
     expect(result.status).toBe("in_progress");
 
     expect(roomRepository.updateStatus).toHaveBeenCalledWith("room-1", "in_progress", 2, 3);
+    expect(mockEventPublisher.publish).toHaveBeenCalledWith(
+      "123 456",
+      expect.objectContaining({
+        type: "ROUND_STARTED",
+        roomId: "room-1",
+        pin: "123 456",
+        payload: {
+          currentRound: 2,
+          totalRounds: 3,
+        },
+      }),
+    );
   });
 
   it("should conclude match when advancing past the final round (currentRound === totalRounds)", async () => {

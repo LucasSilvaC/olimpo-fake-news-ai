@@ -4,6 +4,11 @@ import { redisRoomRepository } from "../repositories/redis-room.repository";
 import { IRedisRoomRepository } from "../repositories/redis-room.repository.interface";
 import { IRoomRepository } from "../repositories/room.repository.interface";
 
+import {
+  IEventPublisher,
+  redisEventPublisher as defaultRedisEventPublisher,
+} from "@/app/api/realtime-events";
+
 export interface JoinRoomInput {
   userId: string;
   pin: string;
@@ -19,6 +24,7 @@ export class JoinRoomUseCase {
   constructor(
     private readonly roomRepository: IRoomRepository = drizzleRoomRepository,
     private readonly redisRoomRepo: IRedisRoomRepository = redisRoomRepository,
+    private readonly eventPublisher: IEventPublisher = defaultRedisEventPublisher,
   ) {}
 
   async execute(input: JoinRoomInput): Promise<JoinRoomResult> {
@@ -65,6 +71,17 @@ export class JoinRoomUseCase {
     // Update Redis
     await this.redisRoomRepo.incrementParticipantCount(roomEntity.id);
     await this.redisRoomRepo.addMemberToLeaderboard(roomEntity.id, input.userId, 0);
+
+    // Publish MEMBER_JOINED real-time event
+    await this.eventPublisher.publish(roomEntity.pin, {
+      type: "MEMBER_JOINED",
+      roomId: roomEntity.id,
+      pin: roomEntity.pin,
+      payload: {
+        member: memberEntity.toDTO(),
+      },
+      timestamp: new Date().toISOString(),
+    });
 
     return {
       room: roomEntity.toDTO(),

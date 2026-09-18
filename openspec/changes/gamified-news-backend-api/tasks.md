@@ -57,11 +57,11 @@ Regra: Aguardar confirmação do usuário após concluir cada grupo inteiro de t
 
 ## 6. Feature Real-Time Events (SSE & Redis Pub/Sub)
 
-- [ ] 6.1 Criar estrutura da feature em `src/app/api/realtime-events/` com `usecase/`, `repositories/` e `tests/`
-- [ ] 6.2 Implementar publicador de eventos `realtime-events/repositories/redis-event.publisher.ts` para publicar eventos nos canais `room:<pin>`
-- [ ] 6.3 Integrar o publisher nos usecases de `rooms` e `news-voting` para emitir `MEMBER_JOINED`, `ROUND_STARTED`, `ROUND_COMPLETED` e `MATCH_FINISHED`
-- [ ] 6.4 Implementar a Route Handler SSE em `src/app/api/rooms/[pin]/events/route.ts` consumindo Redis Pub/Sub com suporte a disconnect limpo (`request.signal`)
-- [ ] 6.5 Escrever testes unitários para a rota SSE e para o publisher de eventos
+- [x] 6.1 Criar estrutura da feature em `src/app/api/realtime-events/` com `usecase/`, `repositories/` e `tests/`
+- [x] 6.2 Implementar publicador de eventos `realtime-events/repositories/redis-event.publisher.ts` para publicar eventos nos canais `room:<pin>`
+- [x] 6.3 Integrar o publisher nos usecases de `rooms` e `news-voting` para emitir `MEMBER_JOINED`, `ROUND_STARTED`, `ROUND_COMPLETED` e `MATCH_FINISHED`
+- [x] 6.4 Implementar a Route Handler SSE em `src/app/api/rooms/[pin]/events/route.ts` consumindo Redis Pub/Sub com suporte a disconnect limpo (`request.signal`)
+- [x] 6.5 Escrever testes unitários para a rota SSE e para o publisher de eventos
 
 *Sugestão de commit:* `feat(realtime): implement sse streaming route handler and redis pubsub publisher`
 

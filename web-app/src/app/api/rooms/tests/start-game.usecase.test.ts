@@ -4,11 +4,13 @@ import { IRedisRoomRepository } from "../repositories/redis-room.repository.inte
 import { IRoomRepository } from "../repositories/room.repository.interface";
 import { StartGameUseCase } from "../usecase/start-game.usecase";
 
+import { IEventPublisher } from "@/app/api/realtime-events";
 import { Room, RoomPlaylistItem } from "@/server/shared/database/schemas";
 
 describe("StartGameUseCase", () => {
   let mockRoomRepo: IRoomRepository;
   let mockRedisRoomRepo: IRedisRoomRepository;
+  let mockEventPublisher: IEventPublisher;
   let useCase: StartGameUseCase;
 
   const sampleWaitingRoom: Room = {
@@ -74,7 +76,11 @@ describe("StartGameUseCase", () => {
       getLeaderboard: vi.fn(),
     };
 
-    useCase = new StartGameUseCase(mockRoomRepo, mockRedisRoomRepo);
+    mockEventPublisher = {
+      publish: vi.fn(async () => 1),
+    };
+
+    useCase = new StartGameUseCase(mockRoomRepo, mockRedisRoomRepo, mockEventPublisher);
   });
 
   it("should start game when called by host with members and playlist items", async () => {
@@ -90,6 +96,18 @@ describe("StartGameUseCase", () => {
 
     expect(mockRoomRepo.updateStatus).toHaveBeenCalledWith("room-1", "in_progress", 1, 2);
     expect(mockRedisRoomRepo.updateRoomStatus).toHaveBeenCalledWith("123 456", "in_progress");
+    expect(mockEventPublisher.publish).toHaveBeenCalledWith(
+      "123 456",
+      expect.objectContaining({
+        type: "ROUND_STARTED",
+        roomId: "room-1",
+        pin: "123 456",
+        payload: {
+          currentRound: 1,
+          totalRounds: 2,
+        },
+      }),
+    );
   });
 
   it("should reject start game by non-host", async () => {
