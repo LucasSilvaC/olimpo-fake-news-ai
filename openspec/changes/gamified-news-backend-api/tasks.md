@@ -35,12 +35,12 @@ Regra: Aguardar confirmação do usuário após concluir cada grupo inteiro de t
 
 ## 4. Feature Rooms & Playlists (TDD)
 
-- [ ] 4.1 Criar estrutura da feature em `src/app/api/rooms/` com `entities/`, `usecase/`, `repositories/`, `actions/` e `tests/`
-- [ ] 4.2 Escrever testes unitários em `rooms/tests/entities.test.ts` para entidades de Domínio (`Room`, `RoomPin`, `RoomMember`, `PlaylistItem`)
-- [ ] 4.3 Implementar entidades e Value Objects em `rooms/entities/`
-- [ ] 4.4 Escrever testes e implementar `rooms/repositories/drizzle-room.repository.ts` e `rooms/repositories/redis-room.repository.ts` (lookup de PIN, cache de status e contagem de participantes)
-- [ ] 4.5 Escrever testes e implementar casos de uso em `rooms/usecase/`: `create-room.usecase.ts`, `join-room.usecase.ts`, `add-playlist-news.usecase.ts` (com integração a `extract-news`) e `start-game.usecase.ts`
-- [ ] 4.6 Implementar Server Actions da sala em `rooms/actions/` (`create-room.action.ts`, `join-room.action.ts`, `add-playlist-news.action.ts`, `start-game.action.ts`) protegidas pela sessão com schemas Zod e testes unitários
+- [x] 4.1 Criar estrutura da feature em `src/app/api/rooms/` com `entities/`, `usecase/`, `repositories/`, `actions/` e `tests/`
+- [x] 4.2 Escrever testes unitários em `rooms/tests/entities.test.ts` para entidades de Domínio (`Room`, `RoomPin`, `RoomMember`, `PlaylistItem`)
+- [x] 4.3 Implementar entidades e Value Objects em `rooms/entities/`
+- [x] 4.4 Escrever testes e implementar `rooms/repositories/drizzle-room.repository.ts` e `rooms/repositories/redis-room.repository.ts` (lookup de PIN, cache de status e contagem de participantes)
+- [x] 4.5 Escrever testes e implementar casos de uso em `rooms/usecase/`: `create-room.usecase.ts`, `join-room.usecase.ts`, `add-playlist-news.usecase.ts` (com integração a `extract-news`) e `start-game.usecase.ts`
+- [x] 4.6 Implementar Server Actions da sala em `rooms/actions/` (`create-room.action.ts`, `join-room.action.ts`, `add-playlist-news.action.ts`, `start-game.action.ts`) protegidas pela sessão com schemas Zod e testes unitários
 
 *Sugestão de commit:* `feat(rooms): implement room lifecycle, playlist management and server actions with tdd`
 
