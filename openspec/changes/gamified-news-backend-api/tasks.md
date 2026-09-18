@@ -67,7 +67,7 @@ Regra: Aguardar confirmação do usuário após concluir cada grupo inteiro de t
 
 ## 7. Feature Global Challenges & Full Verification
 
-- [ ] 7.1 Criar estrutura da feature em `src/app/api/global-challenges/` com `entities/`, `usecase/`, `repositories/`, `actions/` e `tests/`
-- [ ] 7.2 Implementar casos de uso, repositórios Drizzle e Server Actions para desafios globais de treino com testes unitários
-- [ ] 7.3 Executar toda a suíte de testes unitários do projeto (`pnpm test:unit`) garantindo cobertura de todas as features
-- [ ] 7.4 Executar validações completas de lint e typecheck (`pnpm typecheck && pnpm lint`)\n\n*Sugestão de commit:* `test(all): add global challenges feature and verify full backend test suite`
+- [x] 7.1 Criar estrutura da feature em `src/app/api/global-challenges/` com `entities/`, `usecase/`, `repositories/`, `actions/` e `tests/`
+- [x] 7.2 Implementar casos de uso, repositórios Drizzle e Server Actions para desafios globais de treino com testes unitários
+- [x] 7.3 Executar toda a suíte de testes unitários do projeto (`pnpm test:unit`) garantindo cobertura de todas as features
+- [x] 7.4 Executar validações completas de lint e typecheck (`pnpm typecheck && pnpm lint`)\n\n*Sugestão de commit:* `test(all): add global challenges feature and verify full backend test suite`
