@@ -170,7 +170,13 @@ async function selectPullRequest(options, latest) {
 async function getPullRequest(number) {
   const json = await readCommand(
     "gh",
-    ["pr", "view", number, "--json", "number,title,url,baseRefName,baseRefOid,headRefName,headRefOid"],
+    [
+      "pr",
+      "view",
+      number,
+      "--json",
+      "number,title,url,baseRefName,baseRefOid,headRefName,headRefOid",
+    ],
     repositoryRoot,
   );
   return JSON.parse(json);
@@ -182,7 +188,9 @@ function parseInlineReview(review) {
   if (findingsStart < 0) return { inline: [], unlocated: [], openQuestions: text };
   const afterFindings = text.slice(findingsStart);
   const nextSection = afterFindings.search(/^##?\s+(?!Findings\b)/im);
-  const findingsText = (nextSection < 0 ? afterFindings : afterFindings.slice(0, nextSection)).trim();
+  const findingsText = (
+    nextSection < 0 ? afterFindings : afterFindings.slice(0, nextSection)
+  ).trim();
   const remainder = nextSection < 0 ? "" : afterFindings.slice(nextSection).trim();
   const starts = [...findingsText.matchAll(/^(?:(?:###?\s+)|(?:[-*]\s+))(?=\*?\*?\[P\d\])/gim)].map(
     (match) => match.index,
@@ -190,14 +198,19 @@ function parseInlineReview(review) {
   const blocks = starts.length
     ? starts.map((start, index) => findingsText.slice(start, starts[index + 1]).trim())
     : [findingsText.replace(/^##?\s+Findings\s*/i, "").trim()];
-  const locationPattern = /(?:^|[\s`(])((?:\/?[A-Za-z]:[\\/]|\/?\.\.?[\\/])?[A-Za-z0-9_@.-]+(?:[\\/][A-Za-z0-9_@.-]+)*\.[A-Za-z0-9_-]+):(\d+)/g;
+  const locationPattern =
+    /(?:^|[\s`(])((?:\/?[A-Za-z]:[\\/]|\/?\.\.?[\\/])?[A-Za-z0-9_@.-]+(?:[\\/][A-Za-z0-9_@.-]+)*\.[A-Za-z0-9_-]+):(\d+)/g;
   const inline = [];
   const unlocated = [];
   for (const block of blocks) {
     const locations = [...block.matchAll(locationPattern)];
     const location = locations[0];
     if (location) {
-      inline.push({ path: normalizeReviewPath(location[1]), line: Number(location[2]), body: `${reviewMarker}\n${block}` });
+      inline.push({
+        path: normalizeReviewPath(location[1]),
+        line: Number(location[2]),
+        body: `${reviewMarker}\n${block}`,
+      });
     } else if (!/^##?\s+Findings\s*$/i.test(block)) {
       unlocated.push(block);
     }
@@ -212,7 +225,12 @@ function normalizeReviewPath(value) {
     candidate = path.relative(repositoryRoot, path.resolve(candidate)).replaceAll("\\", "/");
   }
   candidate = candidate.replace(/^\.\//, "");
-  if (!candidate || candidate === ".." || candidate.startsWith("../") || /^[A-Za-z]:/.test(candidate)) {
+  if (
+    !candidate ||
+    candidate === ".." ||
+    candidate.startsWith("../") ||
+    /^[A-Za-z]:/.test(candidate)
+  ) {
     return value.replaceAll("\\", "/");
   }
   return candidate;
@@ -343,9 +361,10 @@ async function buildComment(pullRequest, review, parsed) {
   const unlocated = parsed.unlocated.length
     ? `\n\n## Findings sem referência exata\n\n${parsed.unlocated.join("\n\n")}`
     : "";
-  const remainder = parsed.remainder && !/^##?\s+Findings\b/i.test(parsed.remainder)
-    ? `\n\n${parsed.remainder}`
-    : "";
+  const remainder =
+    parsed.remainder && !/^##?\s+Findings\b/i.test(parsed.remainder)
+      ? `\n\n${parsed.remainder}`
+      : "";
   return `${reviewMarker}\n## Acrux Code Review — PR #${pullRequest.number}\n\nOs findings com arquivo e linha foram publicados como comentários inline nesta revisão.${unlocated}${remainder}\n\n_Revisão gerada em ${generatedAt}._`;
 }
 
@@ -361,8 +380,12 @@ async function publishComment(pullRequest, body, repositoryName, temporaryDirect
   for (const finding of parsed.inline) {
     const changedPath = changedPathForFinding(changedLines, finding.path);
     const lines = changedPath ? changedLines.get(changedPath) : undefined;
-    if (changedPath && lines?.has(finding.line)) validInline.push({ ...finding, path: changedPath });
-    else parsed.unlocated.push(`${finding.body.replace(`${reviewMarker}\n`, "")}\n\n(A linha indicada não está no diff atual; comentário mantido no resumo.)`);
+    if (changedPath && lines?.has(finding.line))
+      validInline.push({ ...finding, path: changedPath });
+    else
+      parsed.unlocated.push(
+        `${finding.body.replace(`${reviewMarker}\n`, "")}\n\n(A linha indicada não está no diff atual; comentário mantido no resumo.)`,
+      );
   }
   const summary = await buildComment(pullRequest, body, parsed);
   const payloadPath = path.join(temporaryDirectory, "acrux-review-payload.json");
@@ -378,32 +401,67 @@ async function publishComment(pullRequest, body, repositoryName, temporaryDirect
   );
   const comments = JSON.parse(commentsJson).flat();
   for (const comment of comments.filter((item) => item.body?.includes(reviewMarker))) {
-    await runCommand("gh", ["api", "--method", "DELETE", `repos/${repositoryName}/issues/comments/${comment.id}`], repositoryRoot);
+    await runCommand(
+      "gh",
+      ["api", "--method", "DELETE", `repos/${repositoryName}/issues/comments/${comment.id}`],
+      repositoryRoot,
+    );
   }
   const reviewsJson = await readCommand(
     "gh",
     ["api", `repos/${repositoryName}/pulls/${pullRequest.number}/reviews`, "--paginate", "--slurp"],
     repositoryRoot,
   );
-  const existingReviews = JSON.parse(reviewsJson).flat().filter((item) => item.body?.includes(reviewMarker));
-  const submitted = existingReviews.filter((review) => String(review.state).toUpperCase() !== "PENDING");
+  const existingReviews = JSON.parse(reviewsJson)
+    .flat()
+    .filter((item) => item.body?.includes(reviewMarker));
+  const submitted = existingReviews.filter(
+    (review) => String(review.state).toUpperCase() !== "PENDING",
+  );
   if (submitted.length && !options.allowDuplicate) {
-    console.log("Já existe uma revisão Acrux submetida; o GitHub não permite excluí-la. Nenhuma duplicata foi publicada.");
+    console.log(
+      "Já existe uma revisão Acrux submetida; o GitHub não permite excluí-la. Nenhuma duplicata foi publicada.",
+    );
     return;
   }
-  for (const existing of existingReviews.filter((review) => String(review.state).toUpperCase() === "PENDING")) {
-    await runCommand("gh", ["api", "--method", "DELETE", `repos/${repositoryName}/pulls/${pullRequest.number}/reviews/${existing.id}`], repositoryRoot);
+  for (const existing of existingReviews.filter(
+    (review) => String(review.state).toUpperCase() === "PENDING",
+  )) {
+    await runCommand(
+      "gh",
+      [
+        "api",
+        "--method",
+        "DELETE",
+        `repos/${repositoryName}/pulls/${pullRequest.number}/reviews/${existing.id}`,
+      ],
+      repositoryRoot,
+    );
   }
   const payload = {
     body: summary,
     commit_id: pullRequest.headRefOid,
     event: "COMMENT",
-    comments: validInline.map(({ path: filePath, line, body: commentBody }) => ({ path: filePath, line, side: "RIGHT", body: commentBody })),
+    comments: validInline.map(({ path: filePath, line, body: commentBody }) => ({
+      path: filePath,
+      line,
+      side: "RIGHT",
+      body: commentBody,
+    })),
   };
   await writeFile(payloadPath, JSON.stringify(payload), "utf8");
   const created = await readCommand(
     "gh",
-    ["api", "--method", "POST", `repos/${repositoryName}/pulls/${pullRequest.number}/reviews`, "--input", payloadPath, "--jq", ".html_url"],
+    [
+      "api",
+      "--method",
+      "POST",
+      `repos/${repositoryName}/pulls/${pullRequest.number}/reviews`,
+      "--input",
+      payloadPath,
+      "--jq",
+      ".html_url",
+    ],
     repositoryRoot,
   );
   console.log(`Revisão Acrux publicada com ${validInline.length} comentário(s) inline: ${created}`);
