@@ -1,0 +1,194 @@
+From 0924d10e8aab2e4b8a6f94214410436cb1a7b8f2 Mon Sep 17 00:00:00 2001
+From: LucasBareli <lucasnareli@gmail.com>
+Date: Mon, 21 Sep 2026 18:46:15 -0300
+Subject: [PATCH] feat(dvc): creating data version control
+ 
+---
+ web-app/.dvc/.gitignore                 |  3 +++
+ web-app/.github/workflows/ci.yml        | 21 ++++++++++++++++++-
+ web-app/README.md                       |  4 ++++
+ web-app/dvc.lock                        | 26 ++++++++++++++++++++++++
+ web-app/dvc.yaml                        | 10 +++++++++
+ web-app/package.json                    |  5 ++++-
+ web-app/scripts/validate-validation.mjs | 27 +++++++++++++++++++++++++
+ web-app/validation/.gitignore           |  1 +
+ 8 files changed, 95 insertions(+), 2 deletions(-)
+ create mode 100644 web-app/.dvc/.gitignore
+ create mode 100644 web-app/dvc.lock
+ create mode 100644 web-app/dvc.yaml
+ create mode 100644 web-app/scripts/validate-validation.mjs
+ create mode 100644 web-app/validation/.gitignore
+ 
+diff --git a/web-app/.dvc/.gitignore b/web-app/.dvc/.gitignore
+new file mode 100644
+index 0000000..528f30c
+--- /dev/null
++++ b/web-app/.dvc/.gitignore
+@@ -0,0 +1,3 @@
++/config.local
++/tmp
++/cache
+diff --git a/web-app/.github/workflows/ci.yml b/web-app/.github/workflows/ci.yml
+index 7b02bde..1c122a8 100644
+--- a/web-app/.github/workflows/ci.yml
++++ b/web-app/.github/workflows/ci.yml
+@@ -3,7 +3,7 @@ name: CI
+ on:
+   pull_request:
+   push:
+-    branches: [main]
++    branches: [dev, main]
+ 
+ jobs:
+   verify:
+@@ -28,3 +28,22 @@ jobs:
+       - run: pnpm build
+       - run: pnpm exec playwright install --with-deps chromium
+       - run: pnpm test:e2e
++
++  dvc:
++    if: github.event_name == 'push' && (github.ref_name == 'dev' || github.ref_name == 'main')
++    runs-on: ubuntu-latest
++    environment: ${{ github.ref_name == 'main' && 'production' || 'development' }}
++    defaults:
++      run:
++        working-directory: web-app
++    steps:
++      - uses: actions/checkout@v6
++
++      - name: Install DVC
++        run: python -m pip install --upgrade dvc
++
++      - name: Reproduce data pipeline
++        run: python -m dvc repro
++
++      - name: Verify DVC state
++        run: python -m dvc status
+diff --git a/web-app/README.md b/web-app/README.md
+index 48c6ea3..d482852 100644
+--- a/web-app/README.md
++++ b/web-app/README.md
+@@ -59,6 +59,10 @@ Os testes s├úo executados em Node, com DOM do jsdom e mocks somente nas fronteir
+ 
+ Resultados e limita├º├╡es: [relat├│rio de valida├º├úo](validation/REPORT.md), [resultados HTTP](validation/live-results.json), [fallback real](validation/fallback-results.json).
+ 
++## DVC
++
++O DVC controla o pipeline de valida├º├úo dos arquivos JSON em `validation/`. O comando `dvc repro` valida esses arquivos e gera um manifesto com seus hashes; o `dvc.lock` registra as vers├╡es usadas. Ap├│s merges em `dev` ou `main`, o GitHub Actions executa `dvc repro` e `dvc status` para verificar a reprodutibilidade. O FakeCorpus BR continua sendo importado e versionado no Google Drive pelo Colab; ele ainda n├úo faz parte do pipeline DVC deste reposit├│rio.
++
+ ## Refer├¬ncias
+ 
+ - [Especifica├º├úo e plano fornecidos](../news-parser-astra-spec/implementation-plan.md)
+diff --git a/web-app/dvc.lock b/web-app/dvc.lock
+new file mode 100644
+index 0000000..0ae1b11
+--- /dev/null
++++ b/web-app/dvc.lock
+@@ -0,0 +1,26 @@
++schema: '2.0'
++stages:
++  validate-artifacts:
++    cmd: node scripts/validate-validation.mjs
++    deps:
++    - path: scripts/validate-validation.mjs
++      hash: md5
++      md5: 103868da8c3ccfe2b7585d9fbbdf3c4e
++      size: 767
++    - path: validation/fallback-results.json
++      hash: md5
++      md5: 70e13a25e71390549142dd138732566e
++      size: 609
++    - path: validation/json-ld-source.json
++      hash: md5
++      md5: e2fa0069f81ecd1cd0172ee3ac6e4f75
++      size: 348
++    - path: validation/live-results.json
++      hash: md5
++      md5: b964877263121915f60612986e1d0372
++      size: 2497
++    outs:
++    - path: validation/manifest.json
++      hash: md5
++      md5: c874b8a1973073391e8617c87fafdfcd
++      size: 480
+diff --git a/web-app/dvc.yaml b/web-app/dvc.yaml
+new file mode 100644
+index 0000000..693a93b
+--- /dev/null
++++ b/web-app/dvc.yaml
+@@ -0,0 +1,10 @@
++stages:
++  validate-artifacts:
++    cmd: node scripts/validate-validation.mjs
++    deps:
++      - scripts/validate-validation.mjs
++      - validation/fallback-results.json
++      - validation/json-ld-source.json
++      - validation/live-results.json
++    outs:
++      - validation/manifest.json
+diff --git a/web-app/package.json b/web-app/package.json
+index 6b75f45..a852614 100644
+--- a/web-app/package.json
++++ b/web-app/package.json
+@@ -28,6 +28,9 @@
+     "db:push": "drizzle-kit push",
+     "db:studio": "drizzle-kit studio",
+     "db:seed": "tsx src/server/infrastructure/database/drizzle/seed.ts",
++    "data:validate": "node scripts/validate-validation.mjs",
++    "dvc:repro": "dvc repro",
++    "dvc:status": "dvc status",
+     "check": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm build",
+     "validate": "pnpm lint && pnpm typecheck && pnpm test && pnpm build",
+     "validate:changed": "pnpm validate",
+@@ -94,4 +97,4 @@
+     ],
+     "*.{css,json,md,yml,yaml}": "prettier --write"
+   }
+-}
++}
+\ No newline at end of file
+diff --git a/web-app/scripts/validate-validation.mjs b/web-app/scripts/validate-validation.mjs
+new file mode 100644
+index 0000000..e3ce21f
+--- /dev/null
++++ b/web-app/scripts/validate-validation.mjs
+@@ -0,0 +1,27 @@
++import { createHash } from "node:crypto";
++import { readFile, writeFile } from "node:fs/promises";
++import { join } from "node:path";
++
++const validationDirectory = "validation";
++const sourceFiles = ["fallback-results.json", "json-ld-source.json", "live-results.json"];
++
++const manifest = {
++  files: [],
++};
++
++for (const fileName of sourceFiles) {
++  const content = await readFile(join(validationDirectory, fileName));
++  JSON.parse(content);
++  manifest.files.push({
++    name: fileName,
++    sha256: createHash("sha256").update(content).digest("hex"),
++    bytes: content.byteLength,
++  });
++}
++
++await writeFile(
++  join(validationDirectory, "manifest.json"),
++  `${JSON.stringify(manifest, null, 2)}\n`,
++);
++
++console.log(`Validated ${manifest.files.length} validation artifacts.`);
+diff --git a/web-app/validation/.gitignore b/web-app/validation/.gitignore
+new file mode 100644
+index 0000000..9c4ce35
+--- /dev/null
++++ b/web-app/validation/.gitignore
+@@ -0,0 +1 @@
++/manifest.json
+--
+2.51.0.windows.1
+ 
+ 
