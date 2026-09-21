@@ -1,0 +1,10 @@
+stages:
+  validate-artifacts:
+    cmd: node scripts/validate-validation.mjs
+    deps:
+      - scripts/validate-validation.mjs
+      - validation/fallback-results.json
+      - validation/json-ld-source.json
+      - validation/live-results.json
+    outs:
+      - validation/manifest.json
