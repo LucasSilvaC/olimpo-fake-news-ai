@@ -59,6 +59,10 @@ Os testes são executados em Node, com DOM do jsdom e mocks somente nas fronteir
 
 Resultados e limitações: [relatório de validação](validation/REPORT.md), [resultados HTTP](validation/live-results.json), [fallback real](validation/fallback-results.json).
 
+## DVC
+
+O DVC controla o pipeline de validação dos arquivos JSON em `validation/`. O comando `dvc repro` valida esses arquivos e gera um manifesto com seus hashes; o `dvc.lock` registra as versões usadas. Após merges em `dev` ou `main`, o GitHub Actions executa `dvc repro` e `dvc status` para verificar a reprodutibilidade. O FakeCorpus BR continua sendo importado e versionado no Google Drive pelo Colab; ele ainda não faz parte do pipeline DVC deste repositório.
+
 ## Referências
 
 - [Especificação e plano fornecidos](../news-parser-astra-spec/implementation-plan.md)

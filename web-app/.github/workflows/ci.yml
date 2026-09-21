@@ -3,7 +3,7 @@ name: CI
 on:
   pull_request:
   push:
-    branches: [main]
+    branches: [dev, main]
 
 jobs:
   verify:
@@ -28,3 +28,22 @@ jobs:
       - run: pnpm build
       - run: pnpm exec playwright install --with-deps chromium
       - run: pnpm test:e2e
+
+  dvc:
+    if: github.event_name == 'push' && (github.ref_name == 'dev' || github.ref_name == 'main')
+    runs-on: ubuntu-latest
+    environment: ${{ github.ref_name == 'main' && 'production' || 'development' }}
+    defaults:
+      run:
+        working-directory: web-app
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install DVC
+        run: python -m pip install --upgrade dvc
+
+      - name: Reproduce data pipeline
+        run: python -m dvc repro
+
+      - name: Verify DVC state
+        run: python -m dvc status
