@@ -1,0 +1,26 @@
+schema: '2.0'
+stages:
+  validate-artifacts:
+    cmd: node scripts/validate-validation.mjs
+    deps:
+    - path: scripts/validate-validation.mjs
+      hash: md5
+      md5: 103868da8c3ccfe2b7585d9fbbdf3c4e
+      size: 767
+    - path: validation/fallback-results.json
+      hash: md5
+      md5: 70e13a25e71390549142dd138732566e
+      size: 609
+    - path: validation/json-ld-source.json
+      hash: md5
+      md5: e2fa0069f81ecd1cd0172ee3ac6e4f75
+      size: 348
+    - path: validation/live-results.json
+      hash: md5
+      md5: b964877263121915f60612986e1d0372
+      size: 2497
+    outs:
+    - path: validation/manifest.json
+      hash: md5
+      md5: c874b8a1973073391e8617c87fafdfcd
+      size: 480
