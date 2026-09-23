@@ -13,10 +13,15 @@ from sklearn.metrics import (
 
 
 def derivePairGroupId(newsId):
+    if newsId is None or pd.isna(newsId):
+        raise ValueError("id must not be missing")
     value = str(newsId).strip()
     if not value:
         raise ValueError("id must not be empty")
-    return re.sub(r"[tf]$", "", value, flags=re.IGNORECASE)
+    groupId = re.sub(r"[tf]$", "", value, flags=re.IGNORECASE)
+    if not groupId:
+        raise ValueError("id must contain a pair identifier before its suffix")
+    return groupId
 
 
 def splitPairedCorpus(newsFrame, randomState=42):
@@ -26,6 +31,8 @@ def splitPairedCorpus(newsFrame, randomState=42):
         raise ValueError(f"missing required columns: {sorted(missing)}")
     if newsFrame["id"].duplicated().any():
         raise ValueError("id values must be unique")
+    if newsFrame["id"].isna().any():
+        raise ValueError("id values must not be missing")
     if not set(newsFrame["label"]).issubset({0, 1}):
         raise ValueError("label values must follow the 0=True, 1=Fake contract")
     frame = newsFrame.copy()
