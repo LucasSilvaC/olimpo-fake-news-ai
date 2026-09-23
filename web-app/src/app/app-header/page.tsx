@@ -44,7 +44,7 @@ export function AppHeader() {
             asChild
           >
             {/* Flex e gap-2 garantem o ícone e texto alinhados lado a lado */}
-            <Link href="/homepage" className="flex items-center gap-2">
+            <Link href="/" className="flex items-center gap-2">
               <ScanEye className="h-5 w-5" />
               <span>Verificador</span>
             </Link>
