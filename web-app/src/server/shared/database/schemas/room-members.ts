@@ -1,4 +1,5 @@
 import { pgTable, text, integer, timestamp, uniqueIndex } from "drizzle-orm/pg-core";
+
 import { roleTypeEnum } from "./enums";
 import { rooms } from "./rooms";
 import { users } from "./users";
@@ -17,9 +18,7 @@ export const roomMembers = pgTable(
     score: integer("score").notNull().default(0),
     joinedAt: timestamp("joined_at", { withTimezone: true }).notNull().defaultNow(),
   },
-  (table) => [
-    uniqueIndex("room_members_room_user_idx").on(table.roomId, table.userId),
-  ],
+  (table) => [uniqueIndex("room_members_room_user_idx").on(table.roomId, table.userId)],
 );
 
 export type RoomMember = typeof roomMembers.$inferSelect;

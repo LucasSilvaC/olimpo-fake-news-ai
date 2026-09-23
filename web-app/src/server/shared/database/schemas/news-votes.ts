@@ -1,7 +1,8 @@
 import { pgTable, text, integer, timestamp, boolean, uniqueIndex } from "drizzle-orm/pg-core";
+
 import { voteOptionTypeEnum } from "./enums";
-import { rooms } from "./rooms";
 import { roomPlaylistItems } from "./room-playlist-items";
+import { rooms } from "./rooms";
 import { users } from "./users";
 
 export const newsVotes = pgTable(

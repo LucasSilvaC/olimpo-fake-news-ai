@@ -1,0 +1,61 @@
+name: Automated Code Review
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: code-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    working-directory: web-app
+
+jobs:
+  review:
+    name: Review (ESLint, typecheck, unit tests)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      NODE_ENV: test
+      NEXT_PUBLIC_APP_URL: http://127.0.0.1:3000
+    steps:
+      - name: Check out pull request
+        uses: actions/checkout@v6
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.10.0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: web-app/.nvmrc
+          cache: pnpm
+          cache-dependency-path: web-app/pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Comment ESLint findings on the pull request
+        if: github.event.pull_request.head.repo.full_name == github.repository
+        uses: reviewdog/action-eslint@2fee6dd72a5419ff4113f694e2068d2a03bb35dd # v1.33.2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          reporter: github-pr-review
+          filter_mode: added
+          fail_level: none
+          workdir: web-app
+          eslint_flags: "."
+
+      - name: Run typecheck
+        run: pnpm typecheck
+
+      - name: Run unit tests
+        run: pnpm test:unit
