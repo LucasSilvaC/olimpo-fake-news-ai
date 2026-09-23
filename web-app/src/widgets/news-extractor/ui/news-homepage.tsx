@@ -3,9 +3,8 @@
 import React, { useState } from 'react';
 import { ArticlePreview } from "@/entities/news-article";
 import { ExtractNewsForm, useExtractNewsViewModel } from "@/features/extract-news";
-// Imports ajustados conforme o components.json
-import { Button } from "@/components/atoms/button";
-import { Alert, AlertDescription, AlertTitle } from "@/components/atoms/alert";
+import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Loader2, AlertTriangle, CheckCircle } from "lucide-react";
 
 interface MockResult {
@@ -41,7 +40,8 @@ export function NewsEvaluatorPage(): React.ReactElement {
       const cleanWord = word.replace(/[.,!?"]/g, '').toLowerCase();
       const isTrigger = triggers.includes(cleanWord);
       return isTrigger ? (
-        <strong key={index} className="bg-red-200 text-red-900 font-bold px-1 rounded mx-0.5">
+        // Classes dark: adicionadas para inverter a cor no modo noturno
+        <strong key={index} className="bg-red-200 text-red-900 dark:bg-red-900/50 dark:text-red-200 font-bold px-1 rounded mx-0.5">
           {word}
         </strong>
       ) : (
@@ -51,11 +51,9 @@ export function NewsEvaluatorPage(): React.ReactElement {
   };
 
   return (
-    <div className="space-y-8 max-w-4xl mx-auto">
+    // Adicionado pt-24 (padding-top) para empurrar o conteúdo para baixo do header flutuante e px-4 para margem no celular
+    <div className="pt-24 px-4 space-y-8 max-w-4xl mx-auto">
       <header className="space-y-2">
-        <span className="text-xs font-bold tracking-widest text-[#c98e26] uppercase dark:text-[#e5ad42]">
-          OLIMPO · FATO OU FAKE?
-        </span>
         <h1 className="text-foreground text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
           Detector de fakenews
         </h1>
@@ -90,8 +88,9 @@ export function NewsEvaluatorPage(): React.ReactElement {
             </Button>
           ) : (
             <div className="space-y-6 animate-in fade-in zoom-in duration-300">
-              <Alert variant={evaluationResult.isFake ? "destructive" : "default"} className={!evaluationResult.isFake ? "border-green-500 text-green-700 bg-green-50" : ""}>
-                {evaluationResult.isFake ? <AlertTriangle className="h-5 w-5" /> : <CheckCircle className="h-5 w-5 text-green-600" />}
+              {/* Classes dark: adicionadas no alerta de sucesso */}
+              <Alert variant={evaluationResult.isFake ? "destructive" : "default"} className={!evaluationResult.isFake ? "border-green-500 text-green-700 bg-green-50 dark:bg-green-950/30 dark:text-green-400 dark:border-green-800" : ""}>
+                {evaluationResult.isFake ? <AlertTriangle className="h-5 w-5" /> : <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400" />}
                 <AlertTitle className="text-lg font-bold">
                   {evaluationResult.isFake ? "Alerta de Desinformação!" : "Parece Confiável!"}
                 </AlertTitle>
@@ -100,8 +99,9 @@ export function NewsEvaluatorPage(): React.ReactElement {
                 </AlertDescription>
               </Alert>
 
-              <div className="bg-slate-50 dark:bg-slate-900 p-6 rounded-md border text-lg leading-relaxed">
-                <h3 className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-3">
+              {/* Trocado bg-slate-50 por bg-muted para usar as variáveis nativas do tema */}
+              <div className="bg-muted p-6 rounded-md border text-lg leading-relaxed">
+                <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">
                   Texto Analisado (Simulação de Padrões Destacados)
                 </h3>
                 <p className="text-foreground">

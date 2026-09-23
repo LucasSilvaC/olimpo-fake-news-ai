@@ -1,11 +1,10 @@
 "use client";
 
 import type { FormEvent } from "react";
-
-import { Alert } from "@/components/atoms/alert";
-import { Button } from "@/components/atoms/button";
-import { Input } from "@/components/atoms/input";
-import { Label } from "@/components/atoms/label";
+import { Alert } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 export interface IExtractNewsFormProps {
   url: string;
