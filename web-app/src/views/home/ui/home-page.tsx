@@ -1,9 +1,9 @@
-import { NewsExtractor } from "@/widgets/news-extractor";
+import { NewsEvaluatorPage } from "@/widgets/news-extractor/ui/news-homepage";
 
 export function HomePage(): React.ReactElement {
   return (
     <main className="mx-auto my-10 max-w-4xl space-y-6 px-4 sm:px-6">
-      <NewsExtractor />
+      <NewsEvaluatorPage/>
     </main>
   );
 }
