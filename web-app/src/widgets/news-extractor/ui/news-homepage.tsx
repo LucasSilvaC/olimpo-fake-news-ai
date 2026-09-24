@@ -51,8 +51,7 @@ export function NewsEvaluatorPage(): React.ReactElement {
   };
 
   return (
-    // Adicionado pt-24 (padding-top) para empurrar o conteúdo para baixo do header flutuante e px-4 para margem no celular
-    <div className="pt-24 px-4 space-y-8 max-w-4xl mx-auto">
+    <div className="px-4 space-y-8 max-w-4xl mx-auto">
       <header className="space-y-2">
         <h1 className="text-foreground text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
           Detector de fakenews

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 import { ThemeProvider } from "@/components/ui/theme-provider";
-import { AppHeader } from "./app-header/page";
+import { AppHeader } from "./app-header2/page";
 
 import "./globals.css";
 import { Inter } from "next/font/google";

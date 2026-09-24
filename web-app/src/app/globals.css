@@ -5,6 +5,7 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
+  /* Cores Base Shadcn */
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
   --primary: oklch(0.205 0 0);
@@ -38,9 +39,18 @@
   --sidebar-ring: oklch(0.708 0 0);
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
+
+  /* Paleta Principal da Aplicação (Modo Claro) 
+     Convertido para OKLCH */
+  --brand-gold: oklch(0.687 0.165 74.5);
+  --brand-green: oklch(0.648 0.198 139.5); 
+  --brand-purple: oklch(0.485 0.245 285.3);
+  --brand-cyan: oklch(0.575 0.125 235.1); 
+  --brand-red: oklch(0.536 0.224 28.5);
 }
 
 .dark {
+  /* Cores Base Shadcn */
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.205 0 0);
@@ -73,6 +83,14 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+
+  /* Paleta Principal da Aplicação (Modo Escuro)
+     Convertido para OKLCH */
+  --brand-gold: oklch(0.765 0.171 75.8);
+  --brand-green: oklch(0.782 0.254 139.5);
+  --brand-purple: oklch(0.645 0.235 286.1);
+  --brand-cyan: oklch(0.795 0.142 235.5);
+  --brand-red: oklch(0.635 0.235 28.2);
 }
 
 @theme inline {
@@ -117,6 +135,13 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+
+  /* Variáveis Tailwind para a Paleta Principal */
+  --color-brand-gold: var(--brand-gold);
+  --color-brand-green: var(--brand-green);
+  --color-brand-purple: var(--brand-purple);
+  --color-brand-cyan: var(--brand-cyan);
+  --color-brand-red: var(--brand-red);
 }
 
 @layer base {
