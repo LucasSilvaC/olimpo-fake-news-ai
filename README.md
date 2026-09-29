@@ -77,7 +77,7 @@ A aplicação web foi construída sobre uma base técnica moderna e escalável:
 
 ```powershell
 # 1. Navegar até o diretório da aplicação
-Set-Location -LiteralPath 'C:\Users\CUL7CA\Desktop\ElDorado\app\web-app'
+Set-Location -LiteralPath 'C:\app\web-app'
 
 # 2. Instalar as dependências
 pnpm install
