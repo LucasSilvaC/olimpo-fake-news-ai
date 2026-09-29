@@ -64,7 +64,7 @@ Com limiar 0,5, a matriz de confusão (linhas: rótulo real; colunas: previsão)
 | Real | 343 | 377 |
 | Fake | 5 | 715 |
 
-O recall Fake alto vem junto de **377 notícias reais sinalizadas como Fake**. Além disso, a simulação monta U apenas com notícias reais selecionadas pelos rótulos originais; um cenário PU de produção pode conter positivos e negativos em U. Consulte a [documentação PU](docs/modelos/pu-learning.md) e o [notebook](05_PU_Learning.ipynb) para o protocolo completo.
+O recall Fake alto vem junto de **377 notícias reais sinalizadas como Fake**. Além disso, a simulação monta U apenas com notícias reais selecionadas pelos rótulos originais; um cenário PU de produção pode conter positivos e negativos em U. Consulte a [documentação PU](docs/modelos/pu-learning.md) e o [notebook](history/aprendizado-semi-supervisionado/pu-learning.ipynb) para o protocolo completo.
 
 ## K-means — detecção de novidade no split canônico
 

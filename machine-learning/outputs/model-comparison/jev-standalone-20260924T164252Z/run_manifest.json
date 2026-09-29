@@ -4,7 +4,7 @@
   "reason": "Unverified gate: confirmed promotional budget, confirmation that free credits cover frozen sample, zero paid-spend limit, automatic refills disabled, team/account verification reference and time; no API request was made.",
   "created_utc": "2026-09-24T16:59:34.285635+00:00",
   "finished_utc": "2026-09-24T16:59:36.103729+00:00",
-  "notebook": "machine-learning/unsupervised-learning/anomaly-detection-jev-standalone.ipynb",
+  "notebook": "machine-learning/unsupervised-learning/history/deteccao-de-anomalias/jev-standalone.ipynb",
   "environment": {
     "python": "3.14.4",
     "pandas": "3.0.6",
