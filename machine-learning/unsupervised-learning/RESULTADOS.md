@@ -3,15 +3,16 @@
 
 ## Comparativo principal — mesmo split canônico
 
-| Modelo | Macro-F1 | Balanced accuracy | Precisão Fake | Recall Fake | F1 Fake | FPR True | Acurácia | ROC-AUC | AP |
-|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| K-means novidade (`k=8`) | 0,4352 | 0,5382 | 0,7619 | 0,1111 | 0,1939 | 0,0347 | 0,5382 | 0,8471 | 0,7751 |
-| Isolation Forest (`n_estimators=300`) | 0,9729 | 0,9729 | 0,9620 | 0,9847 | 0,9732 | 0,0389 | 0,9729 | 0,9786 | 0,9750 |
-| LOF (`n_neighbors=10`) | 0,9479 | 0,9479 | 0,9601 | 0,9347 | 0,9472 | 0,0389 | 0,9479 | 0,9766 | 0,9659 |
-| One-Class SVM (`nu=0,10`) | 0,4685 | 0,5563 | 0,8000 | 0,1500 | 0,2526 | 0,0375 | 0,5563 | 0,8738 | 0,8266 |
-| DBSCAN novidade (`min_samples=5`, `eps=0,5734`) | 0,9667 | 0,9667 | 0,9504 | 0,9847 | 0,9673 | 0,0514 | 0,9667 | 0,9598 | 0,9186 |
+| Modelo | Macro-F1 | Balanced accuracy | Precisão Fake | Recall Fake | F1 Fake | FPR True | Acurácia | ROC-AUC | AP | Descoberta temática no treino canônico |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---|
+| K-means novidade (`k=8`) | 0,4352 | 0,5382 | 0,7619 | 0,1111 | 0,1939 | 0,0347 | 0,5382 | 0,8471 | 0,7751 | — |
+| Isolation Forest (`n_estimators=300`) | 0,9729 | 0,9729 | 0,9620 | 0,9847 | 0,9732 | 0,0389 | 0,9729 | 0,9786 | 0,9750 | — |
+| LOF (`n_neighbors=10`) | 0,9479 | 0,9479 | 0,9601 | 0,9347 | 0,9472 | 0,0389 | 0,9479 | 0,9766 | 0,9659 | — |
+| One-Class SVM (`nu=0,10`) | 0,4685 | 0,5563 | 0,8000 | 0,1500 | 0,2526 | 0,0375 | 0,5563 | 0,8738 | 0,8266 | — |
+| DBSCAN novidade (`min_samples=5`, `eps=0,5734`) | 0,9667 | 0,9667 | 0,9504 | 0,9847 | 0,9673 | 0,0514 | 0,9667 | 0,9598 | 0,9186 | 39 clusters; ruído 76,57%; silhouette 0,0342; ARI 0,0353; NMI 0,0592 |
+| HDBSCAN (`min_cluster_size=20`, `min_samples=10`) | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | 2 clusters; ruído 71,06%; silhouette 0,0398; ARI 0,0628; NMI 0,0629 |
 
-Fonte: resultados K-means em [`kmeans-canonical-20260924T003936Z`](../outputs/model-comparison/kmeans-canonical-20260924T003936Z/metrics.csv) e DBSCAN em [`dbscan-20260924T141332Z`](../outputs/model-comparison/dbscan-20260924T141332Z/metrics.csv). DBSCAN, K-means, Isolation Forest, LOF e One-Class SVM foram reexecutados na partição canônica recuperada, com 720 True e 720 Fake no teste; todos usam q95 de True-validation para a decisão. A descoberta temática está em quadro separado e não é classificação. DBSCAN teve macro-F1/balanced accuracy maiores que LOF e ROC-AUC/AP menores que Isolation Forest e LOF; marcou 53,1% do teste como ruído e atribuiu somente 46,9%. Esses resultados não demonstram melhora geral sobre um baseline. Resultados históricos com IDs incompatíveis não entram neste ranking.
+As métricas Fake/True são do teste canônico e usam q95 de True-validation para a decisão. A coluna de descoberta é calculada no treino canônico sem usar rótulos na seleção; inclui ruído, silhouette cosseno nos itens atribuídos, ARI e NMI externos. Assim, os valores exploratórios de DBSCAN/HDBSCAN não são métricas de classificação nem devem ser comparados diretamente às colunas Fake/True. DBSCAN marcou 53,1% do teste de novidade como ruído e atribuiu somente 46,9%. Os resultados não demonstram melhora geral sobre um baseline. Resultados históricos com IDs incompatíveis não entram neste quadro.
 
 Este relatório preserva os resultados históricos registrados nos notebooks e acrescenta as execuções canônicas de K-means e DBSCAN. O quadro histórico e os quadros novos usam splits diferentes; somente métodos reexecutados nos mesmos IDs podem ser comparados diretamente. O manifesto/outputs históricos de K-means referenciados no plano não estavam no workspace. O split foi recuperado da lógica salva no notebook, as contagens publicadas coincidiram e a impressão digital do K-means temático no treino (tamanhos, ARI e NMI) reproduziu os valores publicados. O manifesto DBSCAN guarda todos os IDs e grupos, mas não foi possível fazer comparação byte a byte com o manifesto histórico ausente.
 
@@ -24,7 +25,7 @@ Este relatório preserva os resultados históricos registrados nos notebooks e a
 | One-Class SVM | Aprende uma fronteira RBF ao redor do padrão das notícias True. | Atual; resultado q95 disponível como controle no notebook LOF. |
 | PU Learning | Usa Fake conhecidos como positivos e seleciona negativos confiáveis de U para treinar uma Random Forest. | Resultado histórico em split diferente; também reexecutado na partição canônica para comparação adicional. |
 | DBSCAN | Agrupa por densidade; na trilha de novidade atribui registros novos a core points e mantém ruído separado do alerta q95. | Executado no split canônico e holdout temporal; descoberta temática exploratória reportada separadamente. |
-| HDBSCAN | Forma grupos por densidade em níveis e comporta densidades variadas. | Próximo teste; plano pronto, sem execução. |
+| HDBSCAN | Forma grupos por densidade em níveis e comporta densidades variadas. | Executado como descoberta exploratória no treino; a API não documenta predição fora da amostra. |
 | K-means | Trilha de novidade por distância ao centróide e trilha separada de descoberta temática. | Executado no split canônico; métricas e limites abaixo. |
 
 ## Detectores de anomalia — resultados históricos em split incompatível
@@ -43,7 +44,7 @@ O relatório do notebook LOF também guarda os cortes nativos dos detectores. Pa
 
 ### Configurações e validação LOF
 
-O LOF testou `n_neighbors` 10, 20, 40 e 80. O candidato 80 foi congelado antes da avaliação final: ROC-AUC de validação **0,974691**, AP **0,981207**. Todos os detectores aprendem com 2.160 notícias True; a seleção usa validação, e o teste reúne 720 True e 1.800 Fake. O detalhe de cada abordagem está em [Isolation Forest](docs/modelos/isolation-forest.md), [LOF](docs/modelos/local-outlier-factor.md) e [One-Class SVM](docs/modelos/one-class-svm.md).
+O LOF testou `n_neighbors` 10, 20, 40 e 80. O candidato 80 foi congelado antes da avaliação final: ROC-AUC de validação **0,974691**, AP **0,981207**. Todos os detectores aprendem com 2.160 notícias True; a seleção usa validação, e o teste reúne 720 True e 1.800 Fake. O detalhe de cada abordagem está em [Isolation Forest](docs/modelos/isolation-forest-sinais-de-anomalia.md), [LOF](docs/modelos/local-outlier-factor.md) e [One-Class SVM](docs/modelos/one-class-svm.md).
 
 ## PU Learning
 
@@ -156,6 +157,36 @@ No teste temporal, as contagens True/Fake por cluster foram: `0` (39/333), `1` (
 
 No split canônico, o DBSCAN temático agrupou menos de um quarto do treino e obteve ARI/NMI abaixo do K-means; a silhouette positiva descreve somente a fração selecionada sem ruído. No holdout temporal, a fração não atribuída subiu para 84%. Os tamanhos completos, termos, IDs representativos, composição externa por grupo, todas as candidatas, custo e perfis estão em [`metrics.csv`](../outputs/model-comparison/dbscan-20260924T141332Z/metrics.csv) e [`cluster_profiles.csv`](../outputs/model-comparison/dbscan-20260924T141332Z/cluster_profiles.csv). O teste temático permanece análise externa de grupos, não previsão de notícias novas.
 
+## HDBSCAN — descoberta temática exploratória
+
+**Status: executado; sem decisão Fake/True.** O run [`hdbscan-20260924T150053Z`](../outputs/model-comparison/hdbscan-20260924T150053Z/run_manifest.json) reutiliza as listas canônicas e temporais de `record_id` e `group_id` do manifesto DBSCAN e confere que nenhum ID ou grupo cruza partições. O treino temático de HDBSCAN e o DBSCAN de comparação usam os mesmos IDs e a mesma representação TF-IDF word `(1,2)` + char_wb `(3,5)`, ajustada separadamente apenas no treino de cada protocolo.
+
+A implementação é `sklearn.cluster.HDBSCAN` do scikit-learn 1.9.1. A [API oficial](https://scikit-learn.org/1.9/modules/generated/sklearn.cluster.HDBSCAN.html) documenta ajuste e labels do conjunto ajustado, mas não um método para atribuir ou pontuar notícias novas. As seis features dos primeiros 300 caracteres foram recalculadas; imputer e scaler foram ajustados apenas em True-train nas variantes com e sem autoria, mantendo autoria binária quando incluída. Sem score fora da amostra documentado, essa trilha termina sem q95 ou métricas Fake/True e HDBSCAN não entra no ranking de classificação.
+
+A seleção foi transdutiva e sem labels: `min_cluster_size` em `{20, 50}`, `min_samples` em `{5, 10}`, `cluster_selection_method="eom"`, distância cosseno e algoritmo `brute`. Foi escolhida a maior silhouette cosseno dos registros não ruído no treino, exigindo ao menos 10% de cobertura; empates favorecem cobertura maior, menos grupos e parâmetros menores. Só depois de congelar a configuração entraram os labels de treino para ARI, NMI e composição externa. A estabilidade é a ARI média entre pares das quatro configurações da grade, uma medida de sensibilidade aos parâmetros.
+
+### Partição canônica
+
+| Método | Configuração congelada | Clusters | Tamanhos dos clusters | Ruído / cobertura | Silhouette cosseno | ARI externo | NMI externo | Estabilidade média |
+|---|---|---:|---|---:|---:|---:|---:|---:|
+| DBSCAN | `min_samples=5`, `eps=0,7718` | 39 | maiores: 588, 112, 58, 20, 13; tamanhos completos no perfil | 3.308 (76,57%) / 23,43% | 0,0342* | 0,0353 | 0,0592 | ARI 0,4709** |
+| HDBSCAN | `min_cluster_size=20`, `min_samples=10` | 2 | 1.076, 174 | 3.070 (71,06%) / 28,94% | 0,0398* | 0,0628 | 0,0629 | ARI 0,8315** |
+
+### Holdout temporal
+
+| Método | Configuração congelada | Clusters | Tamanhos dos clusters | Ruído / cobertura | Silhouette cosseno | ARI externo | NMI externo | Estabilidade média |
+|---|---|---:|---|---:|---:|---:|---:|---:|
+| DBSCAN | `min_samples=5`, `eps=0,7283` | 41 | maiores: 262, 41, 38, 30, 23; tamanhos completos no perfil | 3.614 (83,97%) / 16,03% | 0,0771* | 0,0240 | 0,0725 | ARI 0,3867** |
+| HDBSCAN | `min_cluster_size=50`, `min_samples=10` | 2 | 1.404, 244 | 2.656 (61,71%) / 38,29% | 0,0380* | 0,0742 | 0,0584 | ARI 0,7572** |
+
+* Silhouette cosseno calculada somente nos itens atribuídos, com amostra fixa de até 1.000 linhas. ** Estabilidade calculada como ARI média entre configurações candidatas no treino; as grades dos dois métodos são diferentes. A seleção e os rótulos externos descrevem agrupamentos do treino, não previsões de validação/teste nem classes Fake/True.
+
+HDBSCAN gerou dois grupos largos nos dois treinos. No canônico, teve menos ruído e silhouette/ARI/NMI um pouco maiores que DBSCAN; no temporal, teve menos ruído e ARI maior, enquanto DBSCAN teve silhouette e NMI maiores. A comparação é mista e não indica superioridade geral. A composição do maior cluster HDBSCAN foi 810 True e 266 Fake no canônico, e 993 True e 411 Fake no temporal; o ruído continha 1.265/1.805 True/Fake e 1.032/1.624 True/Fake, respectivamente.
+
+A matriz TF-IDF permaneceu CSR (`4.320 × 164.927`, 6.694.928 valores não nulos, 53,6 MB no canônico; `4.304 × 162.730`, 6.710.149 não nulos, 53,7 MB no temporal). A API `brute` materializou internamente distâncias densas `n × n`, estimadas em 142,4 e 141,3 MiB; a guarda de memória foi 512 MiB e passou nos dois casos. A construção TF-IDF + quatro ajustes HDBSCAN levou 29,0 s no canônico e 29,4 s no temporal. O pico de RSS amostrado do processo foi 871,1 MiB e 965,9 MiB (incremento máximo de 384,7 MiB e 418,3 MiB sobre o início de cada ajuste). O DBSCAN registrado reporta 23,7 s e 22,3 s para grafo/grade temática e picos de tentativa de 638,1/662,8 MiB; os escopos de medição de pico não são idênticos.
+
+Os perfis registram termos TF-IDF e IDs representativos, sem textos brutos. `metrics.csv`, `predictions.csv`, `cluster_profiles.csv` e o manifesto com parâmetros, custos, partições completas e limitações estão em [`hdbscan-20260924T150053Z`](../outputs/model-comparison/hdbscan-20260924T150053Z/). A origem das partições canônicas do run DBSCAN registra que o manifesto histórico do K-means não estava disponível e que o split foi recuperado da lógica salva no notebook; este run preserva essa ressalva.
+
 ### Auditoria de holdout por fonte
 
 O holdout por fonte estrito não foi executado: os 29 domínios (24 True, 5 Fake) não se sobrepõem entre classes e o grafo de domínios conectados pelos pares alinhados tem um único componente. Para manter `group_id` intacto, seria necessário separar esse componente inteiro; o holdout temporal é a avaliação secundária disponível.
@@ -165,8 +196,8 @@ O holdout por fonte estrito não foi executado: os 29 domínios (24 True, 5 Fake
 | Método | Status | Plano |
 |---|---|---|
 | DBSCAN | Executado; novidade e descoberta temática em split canônico e holdout temporal | [Plano](../docs/dbscan.md) · [resultado](docs/modelos/dbscan.md) |
-| HDBSCAN | A implementar; sem resultado | [Plano](../docs/hdbscan.md) |
+| HDBSCAN | Executado; descoberta exploratória; sem novidade fora da amostra | [Plano](../docs/hdbscan.md) · [resultado](docs/modelos/hdbscan.md) |
 | K-means — novidade | Executado; split canônico e holdout temporal secundário | [Plano](../docs/kmeans.md) · [resultado](docs/modelos/kmeans.md) |
 | K-means — descoberta temática | Executado; exploratório, sem classificação; split canônico e temporal | [Plano](../docs/kmeans.md) · [resultado](docs/modelos/kmeans.md) |
 
-HDBSCAN permanece pendente. Para incorporá-lo ao comparativo principal, execute-o conforme o [protocolo comum](../docs/comparison-protocol.md), registre os resultados por ID e mantenha a mesma partição de teste. Não misture métricas de splits históricos diferentes.
+HDBSCAN concluiu a descoberta exploratória nas partições de treino canônica e temporal. A trilha de novidade permanece sem resultado classificatório porque a API usada não documenta score/atribuição para registros novos. Mantenha os resultados exploratórios separados do ranking Fake/True e não misture métricas de splits históricos diferentes.
