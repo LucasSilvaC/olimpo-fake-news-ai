@@ -4,6 +4,10 @@
 
 O experimento [FP-Growth](docs/modelos/fp-growth.md) encontra combinações recorrentes das features de estilo existentes, sem usar rótulos Fake/True. O script executável fica em [`fp_growth.py`](fp_growth.py); os resultados são salvos em `../outputs/model-comparison/fp-growth-<UTC>/` como tabelas CSV brutos e consolidados, resumo Markdown e manifesto JSON. Esta análise exploratória fica separada do ranking de classificação em `RESULTADOS.md`.
 
+A [avaliação externa dos padrões congelados](docs/modelos/fp-growth-evaluation.md) usa [`evaluate_patterns.py`](evaluate_patterns.py) para medir a incidência de cada padrão em Fake e Real, sem alterar a descoberta. Os resultados ficam em `../outputs/model-comparison/fp-growth-evaluation-<UTC>/`.
+
+Os [controles de autoria](docs/modelos/fp-growth-controls.md) em [`fp_growth_controls.py`](fp_growth_controls.py) comparam autoria isolada, mineração textual sem autoria e avaliação dentro dos dois estratos de autoria, preservando o baseline original.
+
 Esta pasta reúne **sete experimentos de métodos**, uma comparação independente com o Jev e um arquivo de experimentos anteriores. Os notebooks ficam em `history/`, organizados por categoria: agrupamento, detecção de anomalias, aprendizado semi-supervisionado e aprendizado supervisionado. A documentação de cada método está em [`docs/modelos/`](docs/modelos/), e [`RESULTADOS.md`](RESULTADOS.md) consolida as métricas registradas, mantendo protocolos incompatíveis em quadros separados.
 
 ## Métodos em avaliação

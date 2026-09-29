@@ -1,0 +1,15 @@
+{
+  "created_utc": "2026-09-29T21:37:42.868723+00:00",
+  "discovery_run": "fp-growth-20260929T212058Z",
+  "discovery_manifest_sha256": "b440cb5b8740ea2acdfef75c4c8e6ec5109054f6a2830b1aa0c0330f1cb87d21",
+  "corpus_sha256": "be91c188f621424017bd79a0f33528dcc27f8a6151adb2bcb899c17719eb4090",
+  "membership_train_verified": true,
+  "records": 7200,
+  "fake": 3600,
+  "real": 3600,
+  "patterns": 31,
+  "baseline_fake": 0.5,
+  "baseline_real": 0.5,
+  "labels_used_only_after_membership": true,
+  "statistical_test": "two-sided Fisher exact; Benjamini-Hochberg across all evaluated patterns"
+}
