@@ -2,8 +2,8 @@
 
 ## 1. Dependencies and Logging Infrastructure
 
-- [ ] 1.1 Install `pino` and `pino-pretty` as devDependencies in `web-app` and verify installation succeeds with `pnpm --filter web-app list`
-- [ ] 1.2 Implement `ActionTestLogger` in `src/server/shared/logger/action-test-logger.ts` supporting lifecycle events (`INPUT_RECEIVED`, `VALIDATION`, `STATE_TRANSFORMATION`, `PERSISTENCE`, `SESSION_COOKIE`, `RESULT`) and verify with a quick helper test
+- [x] 1.1 Install `pino` and `pino-pretty` as devDependencies in `web-app` and verify installation succeeds with `pnpm --filter web-app list`
+- [x] 1.2 Implement `ActionTestLogger` in `src/server/shared/logger/action-test-logger.ts` supporting lifecycle events (`INPUT_RECEIVED`, `VALIDATION`, `STATE_TRANSFORMATION`, `PERSISTENCE`, `SESSION_COOKIE`, `RESULT`) and verify with a quick helper test
 
 ## 2. Auth Actions E2E Test Suite
 
