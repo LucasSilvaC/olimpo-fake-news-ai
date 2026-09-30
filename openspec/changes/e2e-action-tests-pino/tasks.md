@@ -7,8 +7,8 @@
 
 ## 2. Auth Actions E2E Test Suite
 
-- [ ] 2.1 Implement `src/app/api/auth/tests/auth-actions.e2e.test.ts` for `registerAction` simulating `FormData` submissions (valid user, duplicate email conflict, invalid email format, short password) with Pino state logs and verify tests pass with `pnpm --filter web-app test:unit src/app/api/auth/tests/auth-actions.e2e.test.ts`
-- [ ] 2.2 Extend `auth-actions.e2e.test.ts` to cover `loginAction` and `logoutAction` (valid credentials with JWT cookie set, invalid password, missing user, logout cookie cleared) with Pino state logs and verify tests pass
+- [x] 2.1 Implement `src/app/api/auth/tests/auth-actions.e2e.test.ts` for `registerAction` simulating `FormData` submissions (valid user, duplicate email conflict, invalid email format, short password) with Pino state logs and verify tests pass with `pnpm --filter web-app test:unit src/app/api/auth/tests/auth-actions.e2e.test.ts`
+- [x] 2.2 Extend `auth-actions.e2e.test.ts` to cover `loginAction` and `logoutAction` (valid credentials with JWT cookie set, invalid password, missing user, logout cookie cleared) with Pino state logs and verify tests pass
 
 ## 3. Rooms Actions E2E Test Suite
 
