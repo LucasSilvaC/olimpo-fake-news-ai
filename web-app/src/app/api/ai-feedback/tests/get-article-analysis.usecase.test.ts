@@ -35,12 +35,7 @@ describe("GetArticleAnalysisUseCase", () => {
       create: vi.fn(async (data: NewNewsArticle) => {
         const item: NewsArticle = {
           id: data.id,
-          url: data.url,
-          title: data.title,
-          content: data.content,
-          source: data.source ?? null,
-          author: data.author ?? null,
-          publishedAt: data.publishedAt ?? null,
+          article: data.article,
           targetClassification: data.targetClassification ?? "uncertain",
           createdAt: new Date(),
         };
@@ -90,12 +85,21 @@ describe("GetArticleAnalysisUseCase", () => {
 
     articleDb.set("article-2", {
       id: "article-2",
-      url: "https://noticia.com/artigo",
-      title: "Descoberta Científica Relevante",
-      content: "Pesquisa detalhada sobre avanços médicos.",
-      source: "Revista Científica",
-      author: "Dra. Maria",
-      publishedAt: new Date(),
+      article: {
+        url: "https://noticia.com/artigo",
+        canonicalUrl: "https://noticia.com/artigo",
+        title: "Descoberta Científica Relevante",
+        description: null,
+        authors: ["Dra. Maria"],
+        publishedAt: new Date().toISOString(),
+        modifiedAt: null,
+        content: "Pesquisa detalhada sobre avanços médicos.",
+        imageUrl: null,
+        publisher: "Revista Científica",
+        language: "pt",
+        extractionMethod: "local",
+        usedFallback: false,
+      },
       targetClassification: "reliable",
       createdAt: new Date(),
     });
@@ -126,12 +130,21 @@ describe("GetArticleAnalysisUseCase", () => {
 
     articleDb.set("article-3", {
       id: "article-3",
-      url: "https://noticia.com/artigo-3",
-      title: "Artigo Atualizado",
-      content: "Novo conteúdo verificado.",
-      source: "Agência",
-      author: "Editor",
-      publishedAt: new Date(),
+      article: {
+        url: "https://noticia.com/artigo-3",
+        canonicalUrl: "https://noticia.com/artigo-3",
+        title: "Artigo Atualizado",
+        description: null,
+        authors: ["Editor"],
+        publishedAt: new Date().toISOString(),
+        modifiedAt: null,
+        content: "Novo conteúdo verificado.",
+        imageUrl: null,
+        publisher: "Agência",
+        language: "pt",
+        extractionMethod: "local",
+        usedFallback: false,
+      },
       targetClassification: "reliable",
       createdAt: new Date(),
     });

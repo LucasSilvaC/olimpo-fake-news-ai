@@ -53,11 +53,13 @@ export class GetArticleAnalysisUseCase {
       }
       articleData = {
         id: articleRecord.id,
-        title: articleRecord.title,
-        content: articleRecord.content,
+        title: articleRecord.article.title ?? "Untitled News",
+        content: articleRecord.article.content ?? "",
         targetClassification: articleRecord.targetClassification as MLTargetType,
-        source: articleRecord.source,
-        author: articleRecord.author,
+        source: articleRecord.article.publisher ?? null,
+        author: articleRecord.article.authors?.length
+          ? articleRecord.article.authors.join(", ")
+          : null,
       };
     }
 
