@@ -1,12 +1,8 @@
 # FP-Growth: padrões frequentes de estilo
 
-Execute da raiz do repositório:
+Execute o [notebook do baseline com autoria](../../fp_growth_baseline_com_autoria.ipynb) em um kernel Python 3, a partir de uma pasta do repositório.
 
-```bash
-python machine-learning/unsupervised-learning/fp_growth.py
-```
-
-O script usa o ZIP Fake.br identificado e validado pelo SHA-256 do manifesto DBSCAN, e somente os `record_id` do treino canônico. `--protocol temporal` usa o treino temporal. A pasta de saída segue `machine-learning/outputs/model-comparison/fp-growth-<UTC>/`. Não há leitura dos rótulos, classificação ou comparação Fake/True.
+O notebook usa o ZIP Fake.br identificado e validado pelo SHA-256 do manifesto DBSCAN, e somente os `record_id` do treino canônico. Altere `RUN_ARGS` para `--protocol temporal` se desejar o treino temporal. A pasta de saída segue `machine-learning/outputs/model-comparison/fp-growth-<UTC>/`. Não há leitura dos rótulos, classificação ou comparação Fake/True.
 
 As seis medidas seguem `hdbscan.ipynb`: autoria, type-token ratio, densidade de links, densidade de pontuação, razão de palavras maiúsculas e diversidade lexical, calculadas nos primeiros 300 caracteres. A discretização usa os quantis 25% e 75% do treino, produzindo itens `*_baixo` e `*_alto`; autoria gera `com_autor` e `sem_autor`. Valores ausentes não ativam um item. Features com quantis iguais são omitidas e registradas no manifesto, pois não permitem separar níveis baixos e altos. Empates nos limites podem produzir faixas maiores que 25%.
 
