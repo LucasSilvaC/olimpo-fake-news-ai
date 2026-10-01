@@ -40,6 +40,10 @@ Currently, existing tests in `src/app/api/*/tests` focus on unit-level use cases
 - **Decision**: Provide clean in-memory state or repository test harnesses reset before each test (`beforeEach`) to ensure independent, deterministic test execution.
 - **Rationale**: Isolates tests from external Postgres/Redis dependencies while allowing tests to inspect internal state transitions.
 
+### 4. News Articles JSONB Structure in Simulation Suites
+- **Decision**: In action simulation suites (`rooms-actions.e2e.test.ts`, `voting-actions.e2e.test.ts`, `global-challenges-actions.e2e.test.ts`), simulate and assert `news_articles` records using the JSONB schema: `{ id, article: INewsArticle, targetClassification, createdAt }`.
+- **Rationale**: Keeps integration tests and mock data strictly synchronized with the updated `news_articles` Drizzle schema, ensuring realistic persistence logs under `phase: "PERSISTENCE"` and response payload logs under `phase: "RESULT"`.
+
 ## Risks / Trade-offs
 
 - [Risk] Verbose logs in standard CI runs.

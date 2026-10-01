@@ -15,6 +15,13 @@
       "when": 1789597119916,
       "tag": "0001_skinny_sue_storm",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1790888257339,
+      "tag": "0002_update_news_articles_jsonb",
+      "breakpoints": true
     }
   ]
 }
