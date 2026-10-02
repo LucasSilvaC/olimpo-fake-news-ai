@@ -1,0 +1,3 @@
+modelo,hiperparametro,valor_fixo
+Random Forest,min_samples_split,2
+Random Forest,max_features,sqrt

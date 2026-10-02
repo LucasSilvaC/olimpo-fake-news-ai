@@ -1,0 +1,130 @@
+{
+  "run_id": "20261002T005204066258Z",
+  "strategy": "Random Search",
+  "status": "search_in_progress",
+  "started_at_utc": "2026-10-02T00:52:04.066989+00:00",
+  "versions": {
+    "python": "3.14.4",
+    "numpy": "2.5.3",
+    "pandas": "3.0.6",
+    "scikit_learn": "1.9.1"
+  },
+  "input": {
+    "artifact_directory": "C:\\Users\\CUL7CA\\Desktop\\Eldorado\\olimpo-fake-news-ai\\machine-learning\\supervised-learning",
+    "X_train_shape": [
+      5760,
+      15
+    ],
+    "X_test_shape": [
+      1440,
+      15
+    ],
+    "y_train_distribution": {
+      "0": 2880,
+      "1": 2880
+    }
+  },
+  "validation": {
+    "strategy": "StratifiedKFold",
+    "n_splits": 3,
+    "shuffle": true,
+    "random_state": 42,
+    "scoring": {
+      "f1_macro": "f1_macro",
+      "accuracy": "accuracy",
+      "precision_macro": "precision_macro",
+      "recall_macro": "recall_macro",
+      "roc_auc": "roc_auc"
+    }
+  },
+  "parallelism": {
+    "n_jobs": 2,
+    "pre_dispatch": 2
+  },
+  "random_search": {
+    "iterations_per_model": 16,
+    "random_state": 42
+  },
+  "completed_baseline_configs": [
+    {
+      "model": "Regressão Logística",
+      "config": "word",
+      "cv_fits": 3
+    },
+    {
+      "model": "Regressão Logística",
+      "config": "word+char",
+      "cv_fits": 3
+    },
+    {
+      "model": "Regressão Logística",
+      "config": "word+meta",
+      "cv_fits": 3
+    },
+    {
+      "model": "Regressão Logística",
+      "config": "word+char+meta",
+      "cv_fits": 3
+    },
+    {
+      "model": "SVM Linear",
+      "config": "word",
+      "cv_fits": 3
+    },
+    {
+      "model": "SVM Linear",
+      "config": "word+char",
+      "cv_fits": 3
+    },
+    {
+      "model": "SVM Linear",
+      "config": "word+meta",
+      "cv_fits": 3
+    },
+    {
+      "model": "SVM Linear",
+      "config": "word+char+meta",
+      "cv_fits": 3
+    },
+    {
+      "model": "Random Forest",
+      "config": "word",
+      "cv_fits": 3
+    },
+    {
+      "model": "Random Forest",
+      "config": "word+char",
+      "cv_fits": 3
+    },
+    {
+      "model": "Random Forest",
+      "config": "word+meta",
+      "cv_fits": 3
+    },
+    {
+      "model": "Random Forest",
+      "config": "word+char+meta",
+      "cv_fits": 3
+    }
+  ],
+  "completed_models": [
+    {
+      "model": "Regressão Logística",
+      "candidate_count": 16,
+      "cv_fits": 48
+    },
+    {
+      "model": "SVM Linear",
+      "candidate_count": 16,
+      "cv_fits": 48
+    }
+  ],
+  "artifacts": [
+    "baseline_candidates.csv",
+    "search_candidates.csv",
+    "cv_results_01_regress_o_log_stica.csv",
+    "cv_results_02_svm_linear.csv"
+  ],
+  "updated_at_utc": "2026-10-02T01:00:23.880394+00:00",
+  "baseline_source": "standalone cross_validate with the current baseline parameters"
+}

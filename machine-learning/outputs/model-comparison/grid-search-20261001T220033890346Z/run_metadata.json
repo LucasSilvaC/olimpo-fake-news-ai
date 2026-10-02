@@ -1,0 +1,136 @@
+{
+  "run_id": "20261001T220033890346Z",
+  "strategy": "Grid Search",
+  "status": "complete",
+  "started_at_utc": "2026-10-01T22:00:33.892367+00:00",
+  "versions": {
+    "python": "3.14.4",
+    "numpy": "2.5.3",
+    "pandas": "3.0.6",
+    "scikit_learn": "1.9.1"
+  },
+  "input": {
+    "artifact_directory": "C:\\Users\\CUL7CA\\Desktop\\Eldorado\\olimpo-fake-news-ai\\machine-learning\\supervised-learning",
+    "X_train_shape": [
+      5760,
+      15
+    ],
+    "X_test_shape": [
+      1440,
+      15
+    ],
+    "y_train_distribution": {
+      "0": 2880,
+      "1": 2880
+    }
+  },
+  "validation": {
+    "strategy": "StratifiedKFold",
+    "n_splits": 3,
+    "shuffle": true,
+    "random_state": 42,
+    "scoring": {
+      "f1_macro": "f1_macro",
+      "accuracy": "accuracy",
+      "precision_macro": "precision_macro",
+      "recall_macro": "recall_macro",
+      "roc_auc": "roc_auc"
+    }
+  },
+  "parallelism": {
+    "n_jobs": 2,
+    "pre_dispatch": 2
+  },
+  "completed_baseline_configs": [
+    {
+      "model": "Regressão Logística",
+      "config": "word",
+      "cv_fits_reused": 3
+    },
+    {
+      "model": "Regressão Logística",
+      "config": "word+char",
+      "cv_fits_reused": 3
+    },
+    {
+      "model": "Regressão Logística",
+      "config": "word+meta",
+      "cv_fits_reused": 3
+    },
+    {
+      "model": "Regressão Logística",
+      "config": "word+char+meta",
+      "cv_fits_reused": 3
+    },
+    {
+      "model": "SVM Linear",
+      "config": "word",
+      "cv_fits_reused": 3
+    },
+    {
+      "model": "SVM Linear",
+      "config": "word+char",
+      "cv_fits_reused": 3
+    },
+    {
+      "model": "SVM Linear",
+      "config": "word+meta",
+      "cv_fits_reused": 3
+    },
+    {
+      "model": "SVM Linear",
+      "config": "word+char+meta",
+      "cv_fits_reused": 3
+    },
+    {
+      "model": "Random Forest",
+      "config": "word",
+      "cv_fits_reused": 3
+    },
+    {
+      "model": "Random Forest",
+      "config": "word+char",
+      "cv_fits_reused": 3
+    },
+    {
+      "model": "Random Forest",
+      "config": "word+meta",
+      "cv_fits_reused": 3
+    },
+    {
+      "model": "Random Forest",
+      "config": "word+char+meta",
+      "cv_fits_reused": 3
+    }
+  ],
+  "completed_models": [
+    {
+      "model": "Regressão Logística",
+      "candidate_count": 24,
+      "cv_fits": 72
+    },
+    {
+      "model": "SVM Linear",
+      "candidate_count": 24,
+      "cv_fits": 72
+    },
+    {
+      "model": "Random Forest",
+      "candidate_count": 64,
+      "cv_fits": 192
+    }
+  ],
+  "artifacts": [
+    "search_candidates.csv",
+    "cv_results_01_regress_o_log_stica.csv",
+    "cv_results_02_svm_linear.csv",
+    "cv_results_03_random_forest.csv",
+    "baseline_candidates.csv",
+    "best_search_candidates.csv",
+    "best_parameters.csv",
+    "sensitivity_results.csv",
+    "fixed_grid_parameters.csv"
+  ],
+  "updated_at_utc": "2026-10-02T00:51:08.178289+00:00",
+  "baseline_source": "candidatos correspondentes do Grid Search; sem novos ajustes"
+}
