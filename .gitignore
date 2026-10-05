@@ -1,3 +1,7 @@
 # /Acrux-Agent
 /news-parser-astra-spec
 /FakeRecogna.csv
+docs/*.out
+docs/*.toc
+docs/*.log
+docs/*.aux

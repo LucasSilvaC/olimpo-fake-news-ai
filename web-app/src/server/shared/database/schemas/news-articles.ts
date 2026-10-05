@@ -1,15 +1,12 @@
-import { pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import { jsonb, pgTable, text, timestamp } from "drizzle-orm/pg-core";
 
 import { mlTargetTypeEnum } from "./enums";
 
+import { INewsArticle } from "@/lib/news/types";
+
 export const newsArticles = pgTable("news_articles", {
   id: text("id").primaryKey(),
-  url: text("url").notNull(),
-  title: text("title").notNull(),
-  content: text("content").notNull(),
-  source: text("source"),
-  author: text("author"),
-  publishedAt: timestamp("published_at", { withTimezone: true }),
+  article: jsonb("article").$type<INewsArticle>().notNull(),
   targetClassification: mlTargetTypeEnum("target_classification").notNull().default("uncertain"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });

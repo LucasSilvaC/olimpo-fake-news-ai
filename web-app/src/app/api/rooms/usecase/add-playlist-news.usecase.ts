@@ -61,12 +61,7 @@ export class AddPlaylistNewsUseCase {
         const extracted = await this.extractNewsFn(item.url);
         const createdArticle = await this.newsArticleRepository.create({
           id: crypto.randomUUID(),
-          url: item.url,
-          title: extracted.title || "Untitled News",
-          content: extracted.content || "",
-          source: extracted.publisher ?? null,
-          author: extracted.authors?.length ? extracted.authors.join(", ") : null,
-          publishedAt: extracted.publishedAt ? new Date(extracted.publishedAt) : null,
+          article: extracted,
           targetClassification: "uncertain",
         });
         resolvedArticleId = createdArticle.id;

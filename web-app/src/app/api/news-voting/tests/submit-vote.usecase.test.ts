@@ -51,12 +51,21 @@ describe("SubmitVoteUseCase", () => {
 
   const sampleArticle: NewsArticle = {
     id: "art-1",
-    url: "https://example.com/news/1",
-    title: "Breaking News: Fact Check",
-    content: "Content about something real",
-    source: "NewsCorp",
-    author: "Jane Doe",
-    publishedAt: new Date(),
+    article: {
+      url: "https://example.com/news/1",
+      canonicalUrl: "https://example.com/news/1",
+      title: "Breaking News: Fact Check",
+      description: null,
+      authors: ["Jane Doe"],
+      publishedAt: new Date().toISOString(),
+      modifiedAt: null,
+      content: "Content about something real",
+      imageUrl: null,
+      publisher: "NewsCorp",
+      language: "en",
+      extractionMethod: "local",
+      usedFallback: false,
+    },
     targetClassification: "reliable",
     createdAt: new Date(),
   };
