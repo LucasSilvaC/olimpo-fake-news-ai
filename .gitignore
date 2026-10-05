@@ -1,2 +1,7 @@
 # /Acrux-Agent
 /news-parser-astra-spec
+docs/*.out
+docs/*.toc
+docs/*.log
+docs/*.pdf
+docs/*.aux
