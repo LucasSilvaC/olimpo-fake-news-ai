@@ -5,7 +5,7 @@ import glob, os
 from pathlib import Path
 from collections import Counter
 
-npl = spacy.load("pt_core_news_sm")
+nlp = spacy.load("pt_core_news_sm")
 
 def carregar_textos(pasta, label): 
     registros = []
@@ -19,24 +19,15 @@ def carregar_textos(pasta, label):
         registros.append({"id": id_noticia, "texto": texto, "label": label})
     return pd.DataFrame(registros)
 
-def metaExtractionFromText(text, dependency = True):
-    types_counter  = Counter()
-    types_counter['META_quant_tokens'] = len(text)
-    
-    for sentenca in text.sents:
-        for token in sentenca:
-            if token.pos_:
-                types_counter[f"POS_{token.pos_}"] += 1
-            if dependency:
-                if token.dep_:
-                    types_counter[f"DEP_{token.dep_}"] +=1
-    return types_counter
-
-def metaExtractionFromDataset(dataframe):
-    docs = list(npl.pipe(dataframe, batch_size=20, disable=["ner"]))
+def metaExtractionFromDataset(texts):
     acumulador = Counter()
-    for doc in docs:
-        acumulador.update(metaExtractionFromText(doc))
+    for doc in nlp.pipe(texts, batch_size=50): 
+        acumulador['META_quant_tokens'] += len(doc) 
+        for token in doc: 
+            if token.pos_: 
+                acumulador[f"POS_{token.pos_}"] += 1 
+            if token.dep_: 
+                acumulador[f"DEP_{token.dep_}"] += 1 
     return acumulador
 
 def formatarMetadados(metadado_counter, nome_arquivo_csv):
