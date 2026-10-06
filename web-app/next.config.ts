@@ -5,6 +5,10 @@ const isVercelBuild = process.env.VERCEL === "1";
 const nextConfig: NextConfig = {
   serverExternalPackages: ["jsdom", "undici"],
   poweredByHeader: false,
+  logging: {
+    // Server Function logs include their arguments, which can contain credentials.
+    serverFunctions: false,
+  },
   // Next 16.3 + Vercel's build adapter does not emit the root NFT that the
   // standalone finalizer expects. Vercel does not need standalone output;
   // keep it for Docker/self-hosted builds only.

@@ -51,13 +51,16 @@ Consulte `proposal.md` para a motivação e os arquivos em `specs/` para os requ
   ```
 - **Alternativas consideradas:** Camadas globais separadas (`src/server/domain`, `src/server/application`, `src/server/infrastructure`) — substituídas pela estrutura Feature-First dentro de `src/app/api/{feature}` e infraestrutura compartilhada em `src/server/shared` para maior coesão e facilidade de manutenção por funcionalidade.
 
-### 3. DDL e Drizzle Schema: Playlist de Notícias e Votação em 3 Opções
+### 3. DDL e Drizzle Schema: Playlist de Notícias, Schema JSONB e Votação em 3 Opções
 - **Decisão:** Ajustar as tabelas para suportar partidas com playlists de N rodadas e votos em 3 opções:
   - Enums: `ml_target_type` e `vote_option_type` com os valores `('reliable', 'uncertain', 'unreliable')`.
   - Tabela `rooms`: Campos `current_round` e `total_rounds`.
+  - Tabela `news_articles`: Entidade contendo `id` (PK texto), `article` (coluna JSONB contendo o payload completo extraído tipado como `INewsArticle` — `url`, `title`, `content`, `publisher`, `authors`, `publishedAt`, etc.), `target_classification` (enum `ml_target_type`) e `created_at` (timestamp com fuso horário). Essa modelagem preserva a integridade dos metadados extraídos pelo parser em um documento semi-estruturado sem fragmentar a tabela em colunas esparsas.
   - Tabela `room_playlist_items`: Relacionamento 1:N entre `rooms` e `news_articles` com ordenação `round_order` (1..N).
   - Tabela `news_votes`: Vinculada a `room_playlist_items` e `user_id`, garantindo unicidade por participante por rodada.
-- **Alternativas consideradas:** Armazenar array de IDs de notícias em coluna JSONB dentro de `rooms` (rejeitado por dificultar integridade referencial com `news_articles` e rastreamento relacional de votos).
+- **Alternativas consideradas:**
+  - Armazenar array de IDs de notícias em coluna JSONB dentro de `rooms` (rejeitado por dificultar integridade referencial com `news_articles` e rastreamento relacional de votos).
+  - Normalizar todos os campos da notícia em colunas individuais na tabela `news_articles` (rejeitado para flexibilizar a persistência direta do contrato `INewsArticle` extraído pelo parser e manter o schema limpo com a coluna JSONB `article`).
 
 ### 4. Redis para Estado Efêmero, Leaderboard e Pub/Sub
 - **Decisão:** Utilizar `ioredis` para três responsabilidades principais:

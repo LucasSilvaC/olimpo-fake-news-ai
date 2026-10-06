@@ -15,6 +15,7 @@ describe("GetSessionUseCase", () => {
     name: "Hermes Olympus",
     email: "hermes@olympus.ai",
     passwordHash: "hash",
+    role: "participant",
     xp: 350,
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -47,6 +48,7 @@ describe("GetSessionUseCase", () => {
     expect(session.name).toBe(validUser.name);
     expect(session.email).toBe(validUser.email);
     expect(session.xp).toBe(350);
+    expect(session.role).toBe("participant");
   });
 
   it("should reject when token is missing", async () => {

@@ -3,7 +3,8 @@ import { drizzleGlobalChallengeRepository as defaultChallengeRepository } from "
 import { IGlobalChallengeAnswerRepository } from "../repositories/global-challenge-answer.repository.interface";
 import { IGlobalChallengeRepository } from "../repositories/global-challenge.repository.interface";
 
-import { VoteOptionType } from "@/server/shared/database/schemas/enums";
+import { INewsArticle } from "@/lib/news/types";
+import { MLTargetType, VoteOptionType } from "@/server/shared/database/schemas/enums";
 
 export interface ListGlobalChallengesInput {
   userId?: string;
@@ -18,12 +19,9 @@ export interface ListedGlobalChallengeDTO {
   createdAt: Date;
   article: {
     id: string;
-    title: string;
-    content: string;
-    url: string;
-    source: string | null;
-    author: string | null;
-    publishedAt: Date | null;
+    targetClassification: MLTargetType;
+    article: INewsArticle;
+    createdAt: Date;
   };
   isAnswered: boolean;
   userAnswer?: VoteOptionType;
@@ -71,12 +69,9 @@ export class ListGlobalChallengesUseCase {
         createdAt: challenge.createdAt,
         article: {
           id: challenge.article.id,
-          title: challenge.article.title,
-          content: challenge.article.content,
-          url: challenge.article.url,
-          source: challenge.article.source,
-          author: challenge.article.author,
-          publishedAt: challenge.article.publishedAt,
+          targetClassification: challenge.article.targetClassification,
+          article: challenge.article.article,
+          createdAt: challenge.article.createdAt,
         },
         isAnswered: Boolean(userAns),
         userAnswer: userAns?.answer,

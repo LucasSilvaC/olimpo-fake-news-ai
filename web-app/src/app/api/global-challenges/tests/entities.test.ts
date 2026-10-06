@@ -8,12 +8,21 @@ import { VoteOptionType } from "@/server/shared/database/schemas/enums";
 describe("Global Challenges Entities", () => {
   const sampleArticle: NewsArticle = {
     id: "art-1",
-    url: "https://example.com/article-1",
-    title: "Article 1",
-    content: "Content 1",
-    source: "Example Source",
-    author: "Jane Doe",
-    publishedAt: new Date("2026-01-01"),
+    article: {
+      url: "https://example.com/article-1",
+      canonicalUrl: "https://example.com/article-1",
+      title: "Article 1",
+      description: null,
+      authors: ["Jane Doe"],
+      publishedAt: new Date("2026-01-01").toISOString(),
+      modifiedAt: null,
+      content: "Content 1",
+      imageUrl: null,
+      publisher: "Example Source",
+      language: "en",
+      extractionMethod: "local",
+      usedFallback: false,
+    },
     targetClassification: "reliable",
     createdAt: new Date("2026-01-01"),
   };

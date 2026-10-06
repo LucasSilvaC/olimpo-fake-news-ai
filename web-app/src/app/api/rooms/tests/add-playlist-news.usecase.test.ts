@@ -35,12 +35,21 @@ describe("AddPlaylistNewsUseCase", () => {
   const sampleArticles: NewsArticle[] = [
     {
       id: "art-1",
-      url: "https://example.com/news-1",
-      title: "Notícia 1",
-      content: "Conteúdo da notícia 1",
-      source: "Exemplo",
-      author: "Repórter",
-      publishedAt: new Date(),
+      article: {
+        url: "https://example.com/news-1",
+        canonicalUrl: "https://example.com/news-1",
+        title: "Notícia 1",
+        description: null,
+        authors: ["Repórter"],
+        publishedAt: new Date().toISOString(),
+        modifiedAt: null,
+        content: "Conteúdo da notícia 1",
+        imageUrl: null,
+        publisher: "Exemplo",
+        language: "pt",
+        extractionMethod: "local",
+        usedFallback: false,
+      },
       targetClassification: "reliable",
       createdAt: new Date(),
     },
@@ -84,12 +93,7 @@ describe("AddPlaylistNewsUseCase", () => {
       create: vi.fn(async (data: NewNewsArticle) => {
         const item: NewsArticle = {
           id: data.id,
-          url: data.url,
-          title: data.title,
-          content: data.content,
-          source: data.source ?? null,
-          author: data.author ?? null,
-          publishedAt: data.publishedAt ?? null,
+          article: data.article,
           targetClassification: data.targetClassification ?? "uncertain",
           createdAt: new Date(),
         };

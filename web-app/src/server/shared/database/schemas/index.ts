@@ -1,5 +1,6 @@
 export * from "./enums";
 export * from "./users";
+export * from "./user-avatars";
 export * from "./rooms";
 export * from "./room-members";
 export * from "./news-articles";

@@ -1,10 +1,24 @@
+"use client";
+
 import { Gamepad2, Newspaper } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import * as React from "react";
 
 import { ThemeToggle } from "@/components/molecules/theme-toggle";
 
-export function AppHeader(): React.ReactElement {
+export function AppHeader(): React.ReactElement | null {
+  const pathname = usePathname();
+
+  if (
+    pathname === "/" ||
+    pathname === "/register" ||
+    pathname === "/login" ||
+    pathname === "/registrar"
+  ) {
+    return null;
+  }
+
   return (
     <header className="border-border bg-background sticky top-0 z-50 border-b">
       <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-2.5 sm:px-6">
@@ -17,7 +31,7 @@ export function AppHeader(): React.ReactElement {
           </Link>
           <nav aria-label="Navegação entre Módulos" className="flex items-center gap-2 text-xs">
             <Link
-              href="/"
+              href="/extrair"
               className="text-muted-foreground hover:text-foreground hover:bg-muted inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 font-medium transition-colors"
             >
               <Newspaper className="h-3.5 w-3.5" />
