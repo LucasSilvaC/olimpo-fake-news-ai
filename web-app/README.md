@@ -272,3 +272,20 @@ Ao implementar novas funcionalidades, siga as seguintes diretrizes:
 - [Documento de Arquitetura de Software](docs/architecture.md)
 - [Relatório de Validação de Rede em Produção](validation/REPORT.md)
 - [Jina Reader: Documentação Oficial](https://github.com/jina-ai/reader#using-request-headers)
+
+## Docker: desenvolvimento com atualizacao automatica
+
+```sh
+docker compose up -d --build
+```
+
+O arquivo `compose.yaml` sobe o container `olimpo` e ativa `next dev` com Webpack e polling no
+Windows/Docker Desktop. Os arquivos locais ficam montados em `/app`; ao salvar
+alteracoes em `src`, o navegador recebe as atualizacoes pelo Fast Refresh.
+Dependencias e cache do Next usam volumes separados dos arquivos do Windows.
+
+Depois de alterar `package.json` ou `pnpm-lock.yaml`, atualize as dependencias:
+
+```sh
+docker compose exec app pnpm install --frozen-lockfile
+```
