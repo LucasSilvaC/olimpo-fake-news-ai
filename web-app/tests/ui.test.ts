@@ -4,7 +4,7 @@ import { test } from "node:test";
 import { JSDOM } from "jsdom";
 import { act, createElement } from "react";
 
-import Home from "../src/app/page";
+import Home from "../src/app/(protected)/page";
 import type { INewsArticle } from "../src/lib/news/types";
 
 test("formulário exibe loading, recupera erro e mostra artigo e JSON sem executar HTML", async (context) => {
