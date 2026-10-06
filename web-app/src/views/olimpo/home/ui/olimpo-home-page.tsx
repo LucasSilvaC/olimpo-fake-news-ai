@@ -57,8 +57,6 @@ export async function OlimpoHomePage(): Promise<React.ReactElement> {
             badge="Treino Individual"
             description="Aprimore seu faro contra fake news com quizzes temáticos diários, missões investigativas e ranking global individual."
             footer="Modo Solo & Quizzes"
-            href="/olimpo/tutorial"
-            icon="challenge"
             title="Fazer desafios"
           />
         </section>

@@ -18,7 +18,6 @@ export const config = {
     "/dev/sandbox",
     "/olimpo",
     "/olimpo/game",
-    "/olimpo/tutorial",
     "/olimpo/submit",
     "/olimpo/ranking",
   ],
