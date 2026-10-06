@@ -105,6 +105,9 @@ class PreparadorEntrada(BaseEstimator, TransformerMixin):
         return self._nlp_cache
 
     def transform(self, X):
+        # Uma string solta viraria uma lista de caracteres, e um DataFrame, a lista de colunas
+        if isinstance(X, (str, bytes, pd.DataFrame)):
+            raise TypeError("Passe uma lista ou Series de textos, por exemplo modelo.predict_proba([texto]).")
         textos = pd.Series(list(X) if not isinstance(X, pd.Series) else X.values, dtype=object)
         trunc = textos.fillna("").map(normalizar).map(truncar).reset_index(drop=True)
         if _CACHE_SPACY is None:
