@@ -1,0 +1,273 @@
+.page {
+  display: grid;
+  min-height: 100svh;
+  place-items: center;
+  padding: 32px 20px;
+  color: white;
+  background: radial-gradient(120% 120% at 50% 20%, #1e40af 0%, #1d4ed8 45%, #1e40af 100%);
+}
+.login {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: grid;
+  place-items: center;
+  border-radius: 20px;
+  background: rgb(255 255 255 / 97%);
+  color: #0f172a;
+}
+.content {
+  width: 100%;
+  text-align: center;
+}
+.scene {
+  position: relative;
+  width: 260px;
+  height: 210px;
+  margin: 0 auto 24px;
+  perspective: 800px;
+}
+.orbit {
+  position: absolute;
+  inset: 5px -8px;
+  border: 1px solid rgb(147 197 253 / 40%);
+  border-radius: 50%;
+  transform: rotate(-24deg);
+}
+.backCard {
+  position: absolute;
+  inset: 26px 15px 14px;
+  border-radius: 22px;
+  background: #93baff;
+  transform: rotate(8deg);
+}
+.card {
+  position: absolute;
+  inset: 20px 20px;
+  overflow: hidden;
+  border: 1px solid #dbeafe;
+  border-radius: 20px;
+  padding: 19px;
+  background: linear-gradient(135deg, white, #eff6ff);
+  box-shadow:
+    0 7px 0 #c7dcff,
+    0 20px 35px rgb(15 23 42 / 18%);
+  animation: hover 3s ease-in-out infinite;
+}
+.cardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #2563eb;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+}
+.spark {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #fbbf24;
+}
+.headline {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-top: 18px;
+  color: #0f172a;
+  font-size: 17px;
+  font-weight: 800;
+}
+.headline svg {
+  color: #2563eb;
+}
+.lines {
+  display: grid;
+  gap: 6px;
+  margin-top: 13px;
+}
+.lines span {
+  height: 5px;
+  border-radius: 8px;
+  background: #dbeafe;
+}
+.lines span:last-child {
+  width: 65%;
+}
+.answers {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+  font-size: 11px;
+  font-weight: 800;
+}
+.answers span {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 7px;
+  border-radius: 8px;
+}
+.fact {
+  background: #d1fae5;
+  color: #047857;
+  animation: verdict 3s ease-in-out infinite;
+}
+.fake {
+  background: #ffe4e6;
+  color: #be123c;
+  animation: verdict 3s ease-in-out -1.5s infinite;
+}
+.scan {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(110deg, transparent 30%, rgb(96 165 250 / 18%) 50%, transparent 70%);
+  animation: scan 1.5s ease-in-out infinite;
+}
+.coin {
+  position: absolute;
+  right: 0;
+  bottom: 9px;
+  width: 52px;
+  height: 52px;
+  transform-style: preserve-3d;
+  animation: flip 3s ease-in-out infinite;
+}
+.coinFront,
+.coinBack {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  border: 3px solid white;
+  border-radius: 16px;
+  backface-visibility: hidden;
+  box-shadow: 0 6px 16px rgb(15 23 42 / 15%);
+}
+.coinFront {
+  background: #10b981;
+  color: white;
+  transform: rotate(-8deg);
+}
+.coinBack {
+  background: #fb7185;
+  color: white;
+  transform: rotateY(180deg) rotate(-8deg);
+}
+.eyebrow {
+  margin: 0 0 10px;
+  color: #fde68a;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+}
+.title {
+  margin: 0;
+  font-size: clamp(20px, 4vw, 28px);
+  font-weight: 900;
+  letter-spacing: -0.04em;
+}
+.description {
+  margin: 10px 0 0;
+  color: #dbeafe;
+  font-size: 13px;
+}
+.progress {
+  width: 88px;
+  height: 4px;
+  margin: 24px auto 0;
+  overflow: hidden;
+  border-radius: 10px;
+  background: rgb(147 197 253 / 30%);
+}
+.progress span {
+  display: block;
+  width: 45%;
+  height: 100%;
+  border-radius: inherit;
+  background: #fcd34d;
+  animation: progress 1.2s ease-in-out infinite;
+}
+.login .scene {
+  zoom: 0.75;
+  margin-bottom: 20px;
+}
+.login .eyebrow {
+  color: #2563eb;
+  font-size: 8px;
+}
+.login .title {
+  font-size: 21px;
+}
+.login .description {
+  color: #64748b;
+  font-size: 12px;
+}
+.login .progress {
+  margin-top: 16px;
+}
+.login .progress span {
+  background: #2563eb;
+}
+@keyframes hover {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-5deg);
+  }
+  50% {
+    transform: translateY(-7px) rotate(-2deg);
+  }
+}
+@keyframes flip {
+  0%,
+  20%,
+  100% {
+    transform: rotateY(0);
+  }
+  45%,
+  70% {
+    transform: rotateY(180deg);
+  }
+}
+@keyframes verdict {
+  0%,
+  20%,
+  100% {
+    opacity: 1;
+  }
+  45%,
+  70% {
+    opacity: 0.45;
+  }
+}
+@keyframes scan {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+@keyframes progress {
+  0% {
+    transform: translateX(-110%);
+  }
+  100% {
+    transform: translateX(330%);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .content *,
+  .content *::before,
+  .content *::after {
+    animation: none;
+  }
+  .scan {
+    display: none;
+  }
+  .progress span {
+    width: 100%;
+  }
+}
