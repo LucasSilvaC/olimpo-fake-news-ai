@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 
+import { drizzleNewsArticleRepository } from "@/app/api/ai-feedback/repositories/drizzle-news-article.repository";
 import { drizzleUserRepository } from "@/app/api/auth/repositories/drizzle-user.repository";
 import { getSessionUseCase } from "@/app/api/auth/usecase/get-session.usecase";
 import { RoomPin } from "@/app/api/rooms/entities/room-pin.vo";
@@ -13,7 +14,13 @@ export default async function RoomPage({
   params: Promise<{ codigo: string }>;
 }): Promise<React.ReactElement> {
   const [{ codigo }, user] = await Promise.all([params, getSessionUseCase.execute()]);
-  const pin = RoomPin.normalize(codigo);
+  let decodedCodigo: string;
+  try {
+    decodedCodigo = decodeURIComponent(codigo);
+  } catch {
+    notFound();
+  }
+  const pin = RoomPin.normalize(decodedCodigo);
 
   if (!RoomPin.isValid(pin)) {
     notFound();
@@ -47,6 +54,23 @@ export default async function RoomPage({
     }),
   );
 
+  const newsPreviews =
+    room.hostId === user.id
+      ? await Promise.all(
+          playlistItems.map(async (item) => {
+            const article = await drizzleNewsArticleRepository.findById(item.articleId);
+            return {
+              id: item.id,
+              roundOrder: item.roundOrder,
+              title: article?.article.title ?? "Notícia sem título",
+              description: article?.article.description ?? null,
+              publisher: article?.article.publisher ?? null,
+              url: article?.article.url ?? "",
+            };
+          }),
+        )
+      : [];
+
   return (
     <RoomLobbyView
       room={{
@@ -61,6 +85,7 @@ export default async function RoomPage({
       }}
       members={members}
       playlistCount={playlistItems.length}
+      newsPreviews={newsPreviews}
       currentUserId={user.id}
     />
   );

@@ -6,6 +6,7 @@ import * as React from "react";
 import { toast } from "sonner";
 
 import { joinRoomAction } from "@/app/api/rooms/actions/join-room.action";
+import { getJoinRoomErrorMessage } from "@/lib/room-messages";
 
 export function JoinMatchCard(): React.ReactElement {
   const router = useRouter();
@@ -18,22 +19,38 @@ export function JoinMatchCard(): React.ReactElement {
 
     const normalizedPin = pin.replace(/\D/g, "").slice(0, 6);
     if (normalizedPin.length !== 6) {
-      toast.error("Digite os 6 números do código da sala.");
+      toast.warning("PIN incompleto", {
+        description: "Digite os 6 números do código da sala para continuar.",
+      });
       return;
     }
 
     setIsJoining(true);
+    const toastId = toast.loading("Conectando à sala...", {
+      description: "Estamos verificando o código de acesso.",
+    });
+
     try {
       const result = await joinRoomAction({ pin: normalizedPin });
       if (!result.success) {
-        toast.error(result.error);
+        toast.error("Não foi possível entrar na sala.", {
+          id: toastId,
+          description: getJoinRoomErrorMessage(result.error),
+        });
         setIsJoining(false);
         return;
       }
 
+      toast.success(result.alreadyJoined ? "Você já está nesta sala." : "Você entrou na sala!", {
+        id: toastId,
+        description: "Abrindo a sala " + result.room.pin + "...",
+      });
       router.push("/sala/" + encodeURIComponent(result.room.pin));
     } catch {
-      toast.error("Não foi possível entrar na sala. Confira o código e tente novamente.");
+      toast.error("Não foi possível conectar à sala.", {
+        id: toastId,
+        description: "Confira sua conexão e tente novamente.",
+      });
       setIsJoining(false);
     }
   };
@@ -46,7 +63,7 @@ export function JoinMatchCard(): React.ReactElement {
   return (
     <form
       onSubmit={(event) => void handleSubmit(event)}
-      className="group relative flex min-h-[350px] flex-col justify-between overflow-hidden rounded-3xl border border-white bg-white p-6 text-slate-800 shadow-xl shadow-blue-950/20 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-blue-950/30 sm:p-7"
+      className="group relative flex min-h-[350px] cursor-pointer flex-col justify-between overflow-hidden rounded-3xl border border-white bg-white p-6 text-slate-800 shadow-xl shadow-blue-950/20 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-blue-950/30 sm:p-7"
     >
       <span className="absolute inset-x-0 top-0 h-2 bg-gradient-to-r from-blue-500 to-indigo-600" />
 
@@ -84,7 +101,7 @@ export function JoinMatchCard(): React.ReactElement {
         <span className="text-sm font-semibold text-slate-600">Acesso instantâneo</span>
         <button
           type="submit"
-          disabled={isJoining || pin.replace(/\D/g, "").length !== 6}
+          disabled={isJoining}
           className="inline-flex h-10 cursor-pointer items-center justify-center gap-1.5 rounded-full bg-blue-600 px-4 text-sm font-bold text-white shadow-md shadow-blue-600/30 transition-all hover:bg-blue-700 active:scale-95 disabled:cursor-not-allowed disabled:opacity-60"
         >
           {isJoining ? (

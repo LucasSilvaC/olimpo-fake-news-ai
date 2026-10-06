@@ -22,18 +22,31 @@ export function CreateRoomCard({ creatorName }: ICreateRoomCardProps): React.Rea
     const roomName = creatorName.trim()
       ? "Sala de " + creatorName.trim()
       : "Sala de investigadores";
+    const toastId = toast.loading("Criando sua sala...", {
+      description: "Estamos preparando o espaço para a partida.",
+    });
 
     try {
       const result = await createRoomAction({ name: roomName, roundDurationSeconds: 30 });
       if (!result.success) {
-        toast.error(result.error);
+        toast.error("Não foi possível criar a sala.", {
+          id: toastId,
+          description: "Tente novamente em instantes.",
+        });
         setIsCreating(false);
         return;
       }
 
+      toast.success("Sala criada com sucesso!", {
+        id: toastId,
+        description: "Compartilhe o PIN " + result.pin + " com os jogadores.",
+      });
       router.push("/sala/" + encodeURIComponent(result.pin));
     } catch {
-      toast.error("Não foi possível criar a sala. Tente novamente.");
+      toast.error("Não foi possível criar a sala.", {
+        id: toastId,
+        description: "Confira sua conexão e tente novamente.",
+      });
       setIsCreating(false);
     }
   };
@@ -44,7 +57,7 @@ export function CreateRoomCard({ creatorName }: ICreateRoomCardProps): React.Rea
       onClick={() => void handleCreateRoom()}
       disabled={isCreating}
       aria-busy={isCreating}
-      className="group relative flex min-h-[350px] w-full flex-col justify-between overflow-hidden rounded-3xl border border-white bg-white p-6 text-left text-slate-800 shadow-xl shadow-blue-950/20 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-blue-950/30 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-amber-300 disabled:cursor-wait disabled:hover:translate-y-0 sm:p-7"
+      className="group relative flex min-h-[350px] w-full cursor-pointer flex-col justify-between overflow-hidden rounded-3xl border border-white bg-white p-6 text-left text-slate-800 shadow-xl shadow-blue-950/20 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-blue-950/30 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-amber-300 disabled:cursor-wait disabled:hover:translate-y-0 sm:p-7"
     >
       <span className="absolute inset-x-0 top-0 h-2 bg-gradient-to-r from-amber-400 to-amber-500" />
 
