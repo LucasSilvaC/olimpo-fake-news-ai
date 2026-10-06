@@ -1,12 +1,12 @@
 import { eq, sql } from "drizzle-orm";
 
-import { IUserRepository } from "./user.repository.interface";
+import { IUserAvatarRepository, IUserRepository } from "./user.repository.interface";
 
 import { AvatarConfig, avatarConfigSchema, DEFAULT_AVATAR } from "@/lib/avatar";
 import { databaseClient } from "@/server/shared/database/client";
 import { users, userAvatars, User, NewUser } from "@/server/shared/database/schemas";
 
-export class DrizzleUserRepository implements IUserRepository {
+export class DrizzleUserRepository implements IUserRepository, IUserAvatarRepository {
   constructor(private readonly db = databaseClient) {}
 
   async findByEmail(email: string): Promise<User | null> {
@@ -22,6 +22,21 @@ export class DrizzleUserRepository implements IUserRepository {
 
   async findById(id: string): Promise<User | null> {
     const [result] = await this.db.select().from(users).where(eq(users.id, id)).limit(1);
+
+    return result ?? null;
+  }
+
+  async findAvatarByUserId(id: string): Promise<AvatarConfig | null> {
+    const [result] = await this.db
+      .select({
+        gender: userAvatars.gender,
+        skin: userAvatars.skin,
+        outfit: userAvatars.outfit,
+        headwear: userAvatars.headwear,
+      })
+      .from(userAvatars)
+      .where(eq(userAvatars.userId, id))
+      .limit(1);
 
     return result ?? null;
   }
@@ -64,6 +79,18 @@ export class DrizzleUserRepository implements IUserRepository {
     }
 
     return updated;
+  }
+
+  async updateAvatar(id: string, avatar: AvatarConfig): Promise<void> {
+    const avatarConfig = avatarConfigSchema.parse(avatar);
+
+    await this.db
+      .insert(userAvatars)
+      .values({ userId: id, ...avatarConfig })
+      .onConflictDoUpdate({
+        target: userAvatars.userId,
+        set: avatarConfig,
+      });
   }
 }
 

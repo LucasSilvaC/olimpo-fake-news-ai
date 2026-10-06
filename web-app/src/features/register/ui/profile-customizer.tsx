@@ -75,10 +75,7 @@ export function ProfileCustomizer({ vm }: { vm: RegisterViewModel }) {
       <AvatarEditorModal
         open={editing}
         value={vm.avatar}
-        onSave={(avatar) => {
-          vm.setAvatar(avatar);
-          setEditing(false);
-        }}
+        onSave={(avatar) => vm.setAvatar(avatar)}
         onClose={() => setEditing(false)}
       />
     </section>

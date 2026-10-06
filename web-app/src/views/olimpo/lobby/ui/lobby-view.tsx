@@ -1,4 +1,4 @@
-import { BookOpen, Play, Plus } from "lucide-react";
+import { Play, Plus } from "lucide-react";
 import Link from "next/link";
 import * as React from "react";
 
@@ -53,7 +53,7 @@ export function LobbyView(): React.ReactElement {
           </span>
         </div>
 
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-6">
+        <div className="grid gap-2 sm:grid-cols-3 md:grid-cols-6">
           {players.map((p) => (
             <PlayerChip
               key={p.name}
@@ -88,20 +88,13 @@ export function LobbyView(): React.ReactElement {
           <Play className="h-4 w-4 fill-current" />
           <span>INICIAR PARTIDA AGORA</span>
         </Link>
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid gap-2">
           <Link
             href="/olimpo/submit"
             className={cn(buttonVariants({ variant: "outline" }), "gap-1.5 text-xs font-bold")}
           >
             <Plus className="h-3.5 w-3.5" />
             <span>Enviar Minha Notícia</span>
-          </Link>
-          <Link
-            href="/olimpo/tutorial"
-            className={cn(buttonVariants({ variant: "outline" }), "gap-1.5 text-xs font-bold")}
-          >
-            <BookOpen className="h-3.5 w-3.5" />
-            <span>Ver Como Jogar</span>
           </Link>
         </div>
       </div>

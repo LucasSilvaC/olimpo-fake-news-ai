@@ -1,7 +1,5 @@
-import * as React from "react";
+import { redirect } from "next/navigation";
 
-import { LobbyView } from "@/views/olimpo/lobby";
-
-export default function OlimpoLobbyPage(): React.ReactElement {
-  return <LobbyView />;
+export default function OlimpoLobbyPage(): never {
+  redirect("/");
 }

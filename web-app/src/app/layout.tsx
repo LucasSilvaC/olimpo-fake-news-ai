@@ -3,6 +3,7 @@ import { Montserrat } from "next/font/google";
 
 import { Toaster } from "@/components/atoms/sonner";
 import { ThemeProvider } from "@/components/organisms/theme-provider";
+import { Footer } from "@/widgets/footer";
 
 import "./globals.css";
 
@@ -26,6 +27,7 @@ export default function RootLayout({ children }: IRootLayoutProps): React.ReactE
       <body className={`${montserrat.className} min-h-screen antialiased`}>
         <ThemeProvider>
           {children}
+          <Footer />
           <Toaster position="top-center" richColors duration={7000} />
         </ThemeProvider>
       </body>

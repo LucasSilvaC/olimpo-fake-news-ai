@@ -65,7 +65,6 @@ export function useRegisterViewModel() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [avatar, setAvatar] = useState<AvatarConfig>(DEFAULT_AVATAR);
-  const [passwordVisible, setPasswordVisible] = useState(false);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<RegisterFieldErrors>({});
@@ -146,7 +145,6 @@ export function useRegisterViewModel() {
     email,
     password,
     avatar,
-    passwordVisible,
     pending,
     error,
     fieldErrors,
@@ -155,7 +153,6 @@ export function useRegisterViewModel() {
     setEmail: (value: string) => updateField("email", value),
     setPassword: (value: string) => updateField("password", value),
     setAvatar,
-    togglePassword: () => setPasswordVisible((value) => !value),
     touchField,
     submit,
   };

@@ -77,6 +77,7 @@ describe("AnswerGlobalChallengeUseCase", () => {
     userRepository = {
       findByEmail: vi.fn(),
       findById: vi.fn().mockResolvedValue(mockUser),
+      findAvatarByUserId: vi.fn(),
       create: vi.fn(),
       updateXp: vi.fn().mockResolvedValue({
         ...mockUser,

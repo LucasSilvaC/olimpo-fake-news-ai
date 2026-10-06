@@ -27,6 +27,7 @@ describe("GetSessionUseCase", () => {
       findById: vi.fn(async (id: string) => {
         return id === validUser.id ? validUser : null;
       }),
+      findAvatarByUserId: vi.fn(async () => null),
       create: vi.fn(),
       updateXp: vi.fn(),
     };

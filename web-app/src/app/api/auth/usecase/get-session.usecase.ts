@@ -4,6 +4,7 @@ import { AUTH_COOKIE_NAME, verifySessionToken } from "../entities/jwt.helper";
 import { drizzleUserRepository } from "../repositories/drizzle-user.repository";
 import { IUserRepository } from "../repositories/user.repository.interface";
 
+import { DEFAULT_AVATAR, type AvatarConfig } from "@/lib/avatar";
 import { UserRoleType } from "@/server/shared/database/schemas";
 
 export interface SessionUser {
@@ -12,6 +13,7 @@ export interface SessionUser {
   name: string;
   xp: number;
   role: UserRoleType;
+  avatar: AvatarConfig;
 }
 
 export class GetSessionUseCase {
@@ -45,12 +47,15 @@ export class GetSessionUseCase {
       throw new Error("Unauthorized: User not found");
     }
 
+    const avatar = (await this.userRepository.findAvatarByUserId(user.id)) ?? DEFAULT_AVATAR;
+
     return {
       id: user.id,
       name: user.name,
       email: user.email,
       xp: user.xp,
       role: user.role,
+      avatar,
     };
   }
 }
