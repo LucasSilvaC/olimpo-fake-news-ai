@@ -1,5 +1,4 @@
 Tipo,Tag,Quantidade,Porcentagem (%)
-META,quant_tokens,799162,100.0
 POS,PROPN,87442,10.94
 DEP,nsubj,48441,6.06
 DEP,flat:name,23666,2.96

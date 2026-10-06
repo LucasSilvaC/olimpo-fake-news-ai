@@ -35,6 +35,7 @@ def formatarMetadados(metadado_counter, nome_arquivo_csv):
     df[['Tipo', 'Tag']] = df['Chave_Original'].str.split('_', n=1, expand=True)
     df = df[['Tipo', 'Tag', 'Quantidade']]
     total_tokens = df.loc[df['Tag'] == 'quant_tokens', 'Quantidade'].values[0]
+    df = df[df['Tag'] != 'quant_tokens']
     df['Porcentagem (%)'] = ((df['Quantidade'] / total_tokens) * 100).round(2)
     df.to_csv(nome_arquivo_csv, index=False, encoding="utf-8")
     print(f"Sucesso! Arquivo '{nome_arquivo_csv}' salvo com as colunas separadas e porcentagens.")
