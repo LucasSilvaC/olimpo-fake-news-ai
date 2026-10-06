@@ -116,7 +116,7 @@
     \begin{tabular}{ll}
       \textbf{Projeto:} & Plataforma Olimpo — Gamificação e Combate à Desinformação \\
       \textbf{Parcerias:} & PUCC \& Instituto de Pesquisas Eldorado \\
-      \textbf{Stack Principal:} & Next.js 16, TypeScript, PostgreSQL (Drizzle), Redis, SSE \\
+      \textbf{Stack Principal:} & Next.js 16, TypeScript, PostgreSQL (Supabase / Drizzle), Redis, SSE \\
       \textbf{Tipografia:} & Calibri (Sans-Serif Corporativo) \\
       \textbf{Versão do Doc:} & 1.0.0 \\
       \textbf{Data:} & 2026
@@ -221,7 +221,7 @@ $$\text{UI / Formulário} \longrightarrow \text{Server Action (Zod)} \longrighta
 \section{Banco de Dados e Cache}
 
 \subsection{O que é?}
-Trata-se de uma estratégia de persistência poliglota e híbrida que combina um banco de dados relacional de conformidade ACID (\textbf{PostgreSQL}) com um armazenamento em memória de altíssimo desempenho (\textbf{Redis}). No Olimpo, o PostgreSQL é gerenciado pelo \textbf{Drizzle ORM} (com o driver nativo \texttt{postgres.js}), enquanto o cache, controle de conexões de eventos e dados efêmeros de partidas em andamento são gerenciados pelo \textbf{ioredis}.
+Trata-se de uma estratégia de persistência poliglota e híbrida que combina um banco de dados relacional de conformidade ACID (\textbf{PostgreSQL}, hospedado no \textbf{Supabase}) com um armazenamento em memória de altíssimo desempenho (\textbf{Redis}). No Olimpo, o PostgreSQL é gerenciado pelo \textbf{Drizzle ORM} (com o driver nativo \texttt{postgres.js}), enquanto o cache, controle de conexões de eventos e dados efêmeros de partidas em andamento são gerenciados pelo \textbf{ioredis}.
 
 \subsection{Por que?}
 Uma aplicação gamificada em tempo real apresenta padrões de acesso diametralmente opostos:
@@ -250,7 +250,45 @@ A integração de dados no projeto Olimpo ocorre da seguinte maneira:
 \end{enumerate}
 
 % ==============================================================================
-% SEÇÃO 4: NEXT.JS PARA BACKEND E FRONTEND
+% SEÇÃO 4: SUPABASE (INFRAESTRUTURA DE BANCO DE DADOS)
+% ==============================================================================
+\section{Supabase (Infraestrutura de Banco de Dados)}
+
+\subsection{O que é?}
+O \textbf{Supabase} é uma plataforma de código aberto baseada em computação em nuvem que fornece um ecossistema completo de \textit{Backend-as-a-Service} (BaaS) estruturado sobre o motor relacional \textbf{PostgreSQL}. Na arquitetura da plataforma Olimpo, o Supabase foi selecionado e configurado como a infraestrutura de hospedagem e gestão em nuvem do banco de dados relacional. Ele disponibiliza instâncias corporativas de PostgreSQL com alta disponibilidade, serviços nativos de pooler de conexões transacionais (\textbf{Supavisor}), backups contínuos automatizados, observabilidade em tempo real e um console administrativo visual (Supabase Studio) para auditoria e governança técnica.
+
+\subsection{Por que?}
+A opção por implementar a base relacional no Supabase, em vez de recorrer a soluções manuais autogerenciadas ou outros bancos legados, fundamenta-se nos seguintes pilares de engenharia:
+\begin{itemize}
+  \item \textbf{Sobrecarga Operacional Nula (Zero Ops):} A equipe de desenvolvimento não despende tempo gerenciando sistemas operacionais de servidores dedicados, configurando volumes de disco virtual (EBS), executando rotinas manuais de recuperação de desastres ou aplicando patches de vulnerabilidade no daemon do PostgreSQL. O ciclo operacional é plenamente gerenciado pela nuvem.
+  \item \textbf{Connection Pooling para o Paradigma Serverless:} A execução de rotas e procedimentos no Next.js (por meio de Server Actions e Route Handlers sob demanda) opera em ciclos de vida efêmeros. O acesso concorrente direto de funções serverless tradicionais ao PostgreSQL causaria rápida exaustão de conexões (\textit{connection exhaustion}). O Supabase resolve nativamente essa barreira com o \textbf{Supavisor} no modo transação (porta 6543), permitindo que centenas de invocações paralelas compartilhem um pool controlado de conexões seguras sem sobrecarregar o banco.
+  \item \textbf{Desacoplamento e Independência de Fornecedor (Sem Vendor Lock-in):} Embora o banco de dados resida na infraestrutura do Supabase, o Olimpo conecta-se estritamente como um cliente padrão PostgreSQL através do \textbf{Drizzle ORM} e do driver \texttt{postgres.js}. O vínculo dá-se unicamente via string de conexão (\texttt{DATABASE\_URL}), sem qualquer acoplamento a bibliotecas proprietárias de cliente do Supabase no núcleo da aplicação. Caso haja necessidade futura, a base de dados pode ser migrada para qualquer outro provedor PostgreSQL sem modificar uma única linha dos casos de uso ou repositórios.
+  \item \textbf{Console Studio e Governança de Dados:} O painel administrativo integrado possibilita inspecionar tabelas, monitorar a latência de consultas analíticas, verificar estatísticas de cache e validar a execução correta de transações diretamente na nuvem.
+\end{itemize}
+
+\subsection{Como?}
+A implementação e o ciclo de vida da persistência com o Supabase no Olimpo são estruturados da seguinte maneira:
+\begin{enumerate}
+  \item \textbf{Estratégia de Conexão com Pooling e Singleton:}
+  \begin{itemize}
+    \item A conexão é provisionada pela variável de ambiente \texttt{DATABASE\_URL} em \texttt{.env}, aplicando obrigatoriamente criptografia TLS/SSL em trânsito com \texttt{sslmode=require}.
+    \item Em tempo de execução da aplicação web (\texttt{src/server/shared/database/client.ts}), o cliente instancia o driver com \texttt{postgres(connectionString, \{ max: 1 \})} apontando para a porta do pooler do Supavisor, associando a instância ao \texttt{globalThis} para reuso inteligente entre invocações ativas em ambientes serverless.
+    \item Em rotinas de migração de esquema, utiliza-se a conexão direta (porta 5432) para viabilizar comandos DDL estruturais e travas transacionais de integridade.
+  \end{itemize}
+  \item \textbf{Migrações Declarativas com Drizzle Kit:}
+  \begin{itemize}
+    \item Todos os esquemas de dados relacionais (\texttt{user\_accounts}, \texttt{news\_articles}, \texttt{rooms}, \texttt{news\_votes}), tipos enumerados (\texttt{ml\_target\_type}, \texttt{vote\_option\_type}) e índices são definidos em TypeScript em \texttt{src/server/shared/database/schemas/}.
+    \item A ferramenta \texttt{drizzle-kit} gera scripts SQL determinísticos aplicados diretamente contra a instância PostgreSQL no Supabase, garantindo paridade absoluta de ambiente e histórico versionado no Git.
+  \end{itemize}
+  \item \textbf{Aproveitamento de Capacidades Avançadas do PostgreSQL:}
+  \begin{itemize}
+    \item Armazenamento de notícias completas na coluna semiestruturada \textbf{JSONB} da tabela \texttt{news\_articles}, viabilizando flexibilidade de metadados extraídos pelo motor de ingestão sem perda da rigidez relacional.
+    \item Chaves primárias baseadas em UUID v4 geradas nativamente e restrições de integridade referencial com remoção em cascata (\texttt{ON DELETE CASCADE}).
+  \end{itemize}
+\end{enumerate}
+
+% ==============================================================================
+% SEÇÃO 5: NEXT.JS PARA BACKEND E FRONTEND
 % ==============================================================================
 \section{Next.js para Backend e Frontend}
 
@@ -274,7 +312,7 @@ A estrutura de distribuição no projeto é particionada da seguinte forma:
 \end{itemize}
 
 % ==============================================================================
-% SEÇÃO 5: SSE PARA TEMPO REAL E NÃO WEBSOCKET
+% SEÇÃO 6: SSE PARA TEMPO REAL E NÃO WEBSOCKET
 % ==============================================================================
 \section{SSE para Tempo Real e Não WebSocket}
 
@@ -314,7 +352,7 @@ A implementação no Olimpo envolve duas pontas:
 \end{enumerate}
 
 % ==============================================================================
-% SEÇÃO 6: SERVERLESS
+% SEÇÃO 7: SERVERLESS
 % ==============================================================================
 \section{Serverless}
 
@@ -338,7 +376,7 @@ Para operar de forma robusta no modelo Serverless sem sofrer com problemas clás
 \end{itemize}
 
 % ==============================================================================
-% SEÇÃO 7: RESPOSTAS API
+% SEÇÃO 8: RESPOSTAS API
 % ==============================================================================
 \section{Respostas API}
 
@@ -384,7 +422,7 @@ O padrão de respostas no Olimpo é dividido conforme o mecanismo de transporte:
 \end{enumerate}
 
 % ==============================================================================
-% SEÇÃO 8: AUTENTICAÇÃO
+% SEÇÃO 9: AUTENTICAÇÃO
 % ==============================================================================
 \section{Autenticação}
 
@@ -451,7 +489,7 @@ A arquitetura de autenticação é encapsulada na funcionalidade modular \texttt
 
 
 % ==============================================================================
-% SEÇÃO 9: DEPENDENCY INJECTION
+% SEÇÃO 10: DEPENDENCY INJECTION
 % ==============================================================================
 \section{Dependency Injection}
 
@@ -493,7 +531,7 @@ O Olimpo utiliza o padrão de injeção via construtor com valores padrão estra
 \end{enumerate}
 
 % ==============================================================================
-% SEÇÃO 10: LAYERED ARCH (ARQUITETURA EM CAMADAS)
+% SEÇÃO 11: LAYERED ARCH (ARQUITETURA EM CAMADAS)
 % ==============================================================================
 \section{Layered Arch (Arquitetura em Camadas)}
 
@@ -537,7 +575,7 @@ No Olimpo, as camadas são organizadas por funcionalidade (\textit{Feature-First
 \end{itemize}
 
 % ==============================================================================
-% SEÇÃO 11: VALIDAÇÃO DE DADOS
+% SEÇÃO 12: VALIDAÇÃO DE DADOS
 % ==============================================================================
 \section{Validação de Dados}
 
@@ -580,7 +618,7 @@ A validação de dados no Olimpo é implementada em múltiplas camadas de prote�
 \end{enumerate}
 
 % ==============================================================================
-% SEÇÃO 12: PADRÃO DE CÓDIGO
+% SEÇÃO 13: PADRÃO DE CÓDIGO
 % ==============================================================================
 \section{Padrão de Código}
 
@@ -620,7 +658,7 @@ O ferramental de governança de código do Olimpo é composto por:
 \end{itemize}
 
 % ==============================================================================
-% SEÇÃO 13: FSD (FEATURE-SLICED DESIGN)
+% SEÇÃO 14: FSD (FEATURE-SLICED DESIGN)
 % ==============================================================================
 \section{FSD (Feature-Sliced Design)}
 
@@ -661,7 +699,7 @@ No ecossistema do Olimpo, o diretório \texttt{web-app/src/} adota o FSD distrib
 $$\text{src/app} \longrightarrow \text{src/views} \longrightarrow \text{src/widgets} \longrightarrow \text{src/features} \longrightarrow \text{src/entities} \longrightarrow \text{src/components/ui}$$
 
 % ==============================================================================
-% SEÇÃO 14: TESTES DE SOFTWARE E GARANTIA DE QUALIDADE
+% SEÇÃO 15: TESTES DE SOFTWARE E GARANTIA DE QUALIDADE
 % ==============================================================================
 \section{Testes de Software e Garantia de Qualidade}
 
@@ -740,7 +778,7 @@ A estrutura de testes no repositório é organizada e executada conforme a taxon
 \newpage
 \section{Considerações Finais}
 
-A arquitetura do \textbf{Olimpo — Fake News AI} foi projetada para garantir alto desempenho, segurança e manutenibilidade a longo prazo. A integração entre governança técnica (\textbf{OpenSpec}), desacoplamento de regras de negócio (\textbf{Clean Architecture}), persistência híbrida de baixa latência (\textbf{PostgreSQL} e \textbf{Redis}), eventos em tempo real via \textbf{SSE} e organização modular (\textbf{FSD}) estabelece uma base robusta e escalável para o sistema.
+A arquitetura do \textbf{Olimpo — Fake News AI} foi projetada para garantir alto desempenho, segurança e manutenibilidade a longo prazo. A integração entre governança técnica (\textbf{OpenSpec}), desacoplamento de regras de negócio (\textbf{Clean Architecture}), persistência híbrida de baixa latência (\textbf{PostgreSQL} no \textbf{Supabase} e \textbf{Redis}), eventos em tempo real via \textbf{SSE} e organização modular (\textbf{FSD}) estabelece uma base robusta e escalável para o sistema.
 
 A evolução contínua da aplicação deve priorizar a pureza do domínio de negócio, a validação rigorosa de entradas de rede e a cobertura contínua de testes automatizados, sustentando uma experiência multiplayer estável, interativa e segura no combate à desinformação.
 
