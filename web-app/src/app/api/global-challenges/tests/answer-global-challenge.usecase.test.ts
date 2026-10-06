@@ -51,6 +51,7 @@ describe("AnswerGlobalChallengeUseCase", () => {
     name: "User One",
     email: "user@olympus.ai",
     passwordHash: "hash",
+    role: "participant",
     xp: 100,
     createdAt: new Date(),
     updatedAt: new Date(),

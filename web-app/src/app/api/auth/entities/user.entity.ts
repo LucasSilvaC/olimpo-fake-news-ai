@@ -1,10 +1,13 @@
 import bcrypt from "bcryptjs";
 
+import { UserRoleType } from "@/server/shared/database/schemas";
+
 export interface UserEntityProps {
   id: string;
   name: string;
   email: string;
   passwordHash: string;
+  role?: UserRoleType;
   xp?: number;
   createdAt?: Date;
   updatedAt?: Date;
@@ -15,6 +18,7 @@ export interface UserDTO {
   name: string;
   email: string;
   xp: number;
+  role: UserRoleType;
 }
 
 export class UserEntity {
@@ -23,6 +27,7 @@ export class UserEntity {
   public readonly email: string;
   public readonly passwordHash: string;
   public readonly xp: number;
+  public readonly role: UserRoleType;
   public readonly createdAt: Date;
   public readonly updatedAt: Date;
 
@@ -32,6 +37,7 @@ export class UserEntity {
     this.email = props.email.toLowerCase().trim();
     this.passwordHash = props.passwordHash;
     this.xp = props.xp ?? 0;
+    this.role = props.role ?? "participant";
     this.createdAt = props.createdAt ?? new Date();
     this.updatedAt = props.updatedAt ?? new Date();
   }
@@ -61,6 +67,7 @@ export class UserEntity {
       name: this.name,
       email: this.email,
       xp: this.xp,
+      role: this.role,
     };
   }
 }

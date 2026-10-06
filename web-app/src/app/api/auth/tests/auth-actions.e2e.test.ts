@@ -40,6 +40,7 @@ vi.mock("../repositories/drizzle-user.repository", () => ({
     create: vi.fn(async (data: NewUser) => {
       const user: User = {
         ...data,
+        role: data.role ?? "participant",
         xp: data.xp ?? 0,
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -77,7 +78,7 @@ describe("Auth Server Actions E2E Simulation (Pino Observability)", () => {
   });
 
   describe("registerAction - FormData Submissions", () => {
-    it("should successfully register a valid user, persist record, and issue session cookie", async () => {
+    it("should successfully register a valid user without issuing a session cookie", async () => {
       const logger = createActionTestLogger("registerAction");
       currentLogger = logger;
       currentCookieStore = createMockCookieStore(logger);
@@ -109,10 +110,7 @@ describe("Auth Server Actions E2E Simulation (Pino Observability)", () => {
         expect(savedUser?.email).toBe("zeus@olympus.ai");
       }
 
-      expect(currentCookieStore.has(AUTH_COOKIE_NAME)).toBe(true);
-      const authCookie = currentCookieStore.get(AUTH_COOKIE_NAME);
-      expect(authCookie?.value).toBeDefined();
-      expect(authCookie?.value.length).toBeGreaterThan(20);
+      expect(currentCookieStore.has(AUTH_COOKIE_NAME)).toBe(false);
     });
 
     it("should reject registration when email already exists", async () => {
@@ -126,6 +124,7 @@ describe("Auth Server Actions E2E Simulation (Pino Observability)", () => {
         name: "Zeus Original",
         email: "zeus@olympus.ai",
         passwordHash: existingPasswordHash,
+        role: "participant",
         xp: 150,
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -145,7 +144,7 @@ describe("Auth Server Actions E2E Simulation (Pino Observability)", () => {
 
       expect(response.success).toBe(false);
       if (!response.success) {
-        expect(response.error).toMatch(/already exists/i);
+        expect(response.error).toMatch(/já está cadastrado/i);
       }
       expect(currentCookieStore.has(AUTH_COOKIE_NAME)).toBe(false);
     });
@@ -169,12 +168,12 @@ describe("Auth Server Actions E2E Simulation (Pino Observability)", () => {
 
       expect(response.success).toBe(false);
       if (!response.success) {
-        expect(response.error).toMatch(/email/i);
+        expect(response.error).toMatch(/e-mail/i);
       }
       expect(currentCookieStore.has(AUTH_COOKIE_NAME)).toBe(false);
     });
 
-    it("should reject registration when password is less than 6 characters", async () => {
+    it("should reject registration when password is less than 8 characters", async () => {
       const logger = createActionTestLogger("registerAction");
       currentLogger = logger;
       currentCookieStore = createMockCookieStore(logger);
@@ -182,7 +181,7 @@ describe("Auth Server Actions E2E Simulation (Pino Observability)", () => {
       const formData = new FormData();
       formData.append("name", "Hermes Runner");
       formData.append("email", "hermes@olympus.ai");
-      formData.append("password", "12345");
+      formData.append("password", "1234567");
 
       logger.inputReceived(formData);
 
@@ -193,7 +192,7 @@ describe("Auth Server Actions E2E Simulation (Pino Observability)", () => {
 
       expect(response.success).toBe(false);
       if (!response.success) {
-        expect(response.error).toMatch(/password/i);
+        expect(response.error).toMatch(/senha/i);
       }
       expect(currentCookieStore.has(AUTH_COOKIE_NAME)).toBe(false);
     });
@@ -211,6 +210,7 @@ describe("Auth Server Actions E2E Simulation (Pino Observability)", () => {
         name: "Hera Queen",
         email: "hera@olympus.ai",
         passwordHash,
+        role: "participant",
         xp: 250,
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -255,6 +255,7 @@ describe("Auth Server Actions E2E Simulation (Pino Observability)", () => {
         name: "Ares War",
         email: "ares@olympus.ai",
         passwordHash,
+        role: "participant",
         xp: 100,
         createdAt: new Date(),
         updatedAt: new Date(),

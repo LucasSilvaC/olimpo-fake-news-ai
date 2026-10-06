@@ -35,6 +35,7 @@
     "prepare": "husky"
   },
   "dependencies": {
+    "@base-ui/react": "^1.8.0",
     "@mozilla/readability": "^0.6.0",
     "bcryptjs": "^3.0.3",
     "class-variance-authority": "0.7.1",
@@ -51,6 +52,7 @@
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "server-only": "0.0.1",
+    "sonner": "^2.0.8",
     "tailwind-merge": "3.6.0",
     "undici": "^8.10.2",
     "zod": "^4.5.4"
