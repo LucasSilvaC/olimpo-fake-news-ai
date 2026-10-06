@@ -19,7 +19,6 @@ describe("authentication proxy", () => {
     "/",
     "/olimpo",
     "/olimpo/game",
-    "/olimpo/tutorial",
     "/olimpo/submit",
     "/olimpo/ranking",
     "/extrair",

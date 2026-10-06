@@ -1,6 +1,6 @@
 "use client";
 
-import { BookOpen, Home, PlusCircle, Trophy, Zap } from "lucide-react";
+import { Home, PlusCircle, Trophy, Zap } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import * as React from "react";
@@ -16,19 +16,18 @@ interface INavItem {
 }
 
 const NAV_ITEMS: INavItem[] = [
-  { href: "/olimpo", label: "1. Início / Lobby", shortLabel: "Lobby", icon: Home },
+  { href: "/", label: "1. Início / Lobby", shortLabel: "Lobby", icon: Home },
   { href: "/olimpo/game", label: "2. Responder Notícias", shortLabel: "Partida", icon: Zap },
   { href: "/olimpo/ranking", label: "3. Ranking Gamificado", shortLabel: "Ranking", icon: Trophy },
-  { href: "/olimpo/tutorial", label: "4. Tutorial", shortLabel: "Tutorial", icon: BookOpen },
-  { href: "/olimpo/submit", label: "5. Enviar Notícia", shortLabel: "Enviar", icon: PlusCircle },
+  { href: "/olimpo/submit", label: "4. Enviar Notícia", shortLabel: "Enviar", icon: PlusCircle },
 ];
 
 export function OlimpoNav(): React.ReactElement {
   const pathname = usePathname();
 
   const isActive = (href: string): boolean => {
-    if (href === "/olimpo") {
-      return pathname === "/olimpo";
+    if (href === "/") {
+      return pathname === "/";
     }
     return pathname.startsWith(href);
   };
