@@ -2,6 +2,7 @@
 /supervised-learning/Fake.br-Corpus-master/
 /supervised-learning/FakeRecogna.csv
 /supervised-learning/*.pkl
+/supervised-learning/*.parquet
 /unsupervised-learning/data
 
 # Python
