@@ -1,6 +1,6 @@
 # PU Learning
 
-- **Notebook:** [05_PU_Learning.ipynb](../../05_PU_Learning.ipynb)
+- **Notebook:** [pu-learning.ipynb](../aprendizado-semi-supervisionado/pu-learning.ipynb)
 - **Comparativo:** [RESULTADOS.md](../../RESULTADOS.md)
 
 ## Objetivo e método

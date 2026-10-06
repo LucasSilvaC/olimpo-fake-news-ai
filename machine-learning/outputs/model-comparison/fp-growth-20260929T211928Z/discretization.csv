@@ -1,0 +1,13 @@
+feature,item,criterion,low_quantile,high_quantile,low_threshold,high_threshold,missing,omitted
+tem_autor,com_autor,author_present == 1,,,,,0,False
+tem_autor,sem_autor,author_present == 0,,,,,0,False
+typeTokenRatio,typeTokenRatio_baixo,value <= low_threshold,0.25,0.75,0.6363636363636364,0.7307692307692307,0,False
+typeTokenRatio,typeTokenRatio_alto,value >= high_threshold,0.25,0.75,0.6363636363636364,0.7307692307692307,0,False
+linkDensity,linkDensity_baixo,value <= low_threshold,0.25,0.75,0.0,0.0,0,True
+linkDensity,linkDensity_alto,value >= high_threshold,0.25,0.75,0.0,0.0,0,True
+punctuationDensity,punctuationDensity_baixo,value <= low_threshold,0.25,0.75,0.12,0.1896551724137931,0,False
+punctuationDensity,punctuationDensity_alto,value >= high_threshold,0.25,0.75,0.12,0.1896551724137931,0,False
+uppercaseRatio,uppercaseRatio_baixo,value <= low_threshold,0.25,0.75,0.0,0.038461538461538464,0,False
+uppercaseRatio,uppercaseRatio_alto,value >= high_threshold,0.25,0.75,0.0,0.038461538461538464,0,False
+diversidade,diversidade_baixo,value <= low_threshold,0.25,0.75,0.7647058823529411,0.8541666666666666,0,False
+diversidade,diversidade_alto,value >= high_threshold,0.25,0.75,0.7647058823529411,0.8541666666666666,0,False

@@ -1,6 +1,6 @@
 # HDBSCAN — descoberta exploratória
 
-**Status: executado na trilha exploratória; sem decisão Fake/True.** O notebook [`anomaly-detection-hdbscan.ipynb`](../../anomaly-detection-hdbscan.ipynb) executa o run [`hdbscan-20260924T150053Z`](../../../outputs/model-comparison/hdbscan-20260924T150053Z/run_manifest.json). O plano original em [`machine-learning/docs/hdbscan.md`](../../../docs/hdbscan.md) foi preservado.
+**Status: executado na trilha exploratória; sem decisão Fake/True.** O notebook [`hdbscan.ipynb`](../../history/agrupamento/hdbscan.ipynb) executa o run [`hdbscan-20260924T150053Z`](../../../outputs/model-comparison/hdbscan-20260924T150053Z/run_manifest.json). O plano original em [`machine-learning/docs/hdbscan.md`](../../../docs/hdbscan.md) foi preservado.
 
 ## API e trilha de novidade
 

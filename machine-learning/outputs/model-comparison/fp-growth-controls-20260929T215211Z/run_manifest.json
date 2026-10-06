@@ -1,0 +1,41 @@
+{
+  "run_id": "fp-growth-controls-20260929T215211Z",
+  "created_utc": "2026-09-29T21:52:11.606989+00:00",
+  "baseline_discovery": "fp-growth-20260929T212058Z",
+  "baseline_evaluation": "fp-growth-evaluation-20260929T213741Z",
+  "baseline_manifest_sha256": "b440cb5b8740ea2acdfef75c4c8e6ec5109054f6a2830b1aa0c0330f1cb87d21",
+  "corpus_sha256": "be91c188f621424017bd79a0f33528dcc27f8a6151adb2bcb899c17719eb4090",
+  "protocol": "canonical_random_group",
+  "discovery_partition": "train",
+  "parameters": {
+    "min_support": 0.08,
+    "max_len": 3,
+    "min_confidence": 0.5,
+    "min_lift": 1.05,
+    "min_jaccard": 0.1,
+    "redundancy_jaccard": 0.9,
+    "consolidation_jaccard": 0.75,
+    "extension_tolerance": 0.03,
+    "low_quantile": 0.25,
+    "high_quantile": 0.75,
+    "protocol": "canonical"
+  },
+  "only_change_in_discovery": "tem_autor removed; same persisted textual thresholds",
+  "labels_used_after_discovery": true,
+  "train_membership_verified": true,
+  "author_only": {
+    "fisher_p": 0.0,
+    "chi2_p": 0.0,
+    "cramers_v": 0.9597222592485447
+  },
+  "counts": {
+    "records": 7200,
+    "train": 4320,
+    "patterns": 10,
+    "itemsets": 18,
+    "rules": 20
+  },
+  "statistics": "two-sided Fisher; BH within each evaluation table/stratum; Cramér V for author contingency",
+  "comparison": "exact sorted feature sets only; no label-driven pattern selection",
+  "baseline_metadata_pattern_count": 21
+}
