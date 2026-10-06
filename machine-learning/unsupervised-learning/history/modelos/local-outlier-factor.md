@@ -2,7 +2,7 @@
 
 **Status:** notebook executado com resultados de validação e teste salvos. É o único detector atual cujo próprio notebook preserva uma execução completa.
 
-- **Notebook:** [anomaly-detection-local-outlier-factor.ipynb](../../anomaly-detection-local-outlier-factor.ipynb)
+- **Notebook:** [local-outlier-factor.ipynb](../deteccao-de-anomalias/local-outlier-factor.ipynb)
 - **Comparativo:** [RESULTADOS.md](../../RESULTADOS.md)
 
 ## Objetivo e método

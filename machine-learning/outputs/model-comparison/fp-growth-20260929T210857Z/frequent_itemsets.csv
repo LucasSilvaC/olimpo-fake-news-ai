@@ -1,0 +1,42 @@
+support,features,itemset_size,pattern_id
+0.5006944444444444,"[""sem_autor""]",1,b74f6b178045
+0.49930555555555556,"[""com_autor""]",1,e3461d305ac6
+0.4356481481481482,"[""uppercaseRatio_baixo""]",1,8e98244619be
+0.2569444444444444,"[""diversidade_alto""]",1,0dd68855e97c
+0.2550925925925926,"[""punctuationDensity_alto""]",1,a4b9245a55c7
+0.25462962962962965,"[""uppercaseRatio_alto""]",1,2465ed80b599
+0.2539351851851852,"[""typeTokenRatio_baixo""]",1,97a2b1f9bc02
+0.25324074074074077,"[""punctuationDensity_baixo""]",1,7250a9dcad12
+0.2523148148148148,"[""typeTokenRatio_alto""]",1,1bd851a09c7a
+0.2516203703703704,"[""diversidade_baixo""]",1,11e0bf831005
+0.22060185185185185,"[""com_autor"", ""uppercaseRatio_baixo""]",2,c300023d13bf
+0.2150462962962963,"[""sem_autor"", ""uppercaseRatio_baixo""]",2,1800c0b9672c
+0.17222222222222222,"[""com_autor"", ""typeTokenRatio_alto""]",2,8ed1b3cd1e3d
+0.17199074074074075,"[""diversidade_baixo"", ""typeTokenRatio_baixo""]",2,60f27e4b6463
+0.16967592592592592,"[""punctuationDensity_alto"", ""sem_autor""]",2,ce15d5f1cf5d
+0.16574074074074074,"[""diversidade_alto"", ""typeTokenRatio_alto""]",2,e4ace79c89fb
+0.1648148148148148,"[""sem_autor"", ""typeTokenRatio_baixo""]",2,9dee6bb96f14
+0.15625,"[""com_autor"", ""punctuationDensity_baixo""]",2,0b59acfe6380
+0.1525462962962963,"[""diversidade_baixo"", ""sem_autor""]",2,7d9f8f5ed448
+0.14976851851851852,"[""com_autor"", ""diversidade_alto""]",2,fe5936057217
+0.13842592592592592,"[""punctuationDensity_alto"", ""typeTokenRatio_baixo""]",2,492d1cc6df52
+0.13819444444444445,"[""punctuationDensity_baixo"", ""typeTokenRatio_alto""]",2,c527c8dcf64c
+0.13796296296296295,"[""sem_autor"", ""uppercaseRatio_alto""]",2,a8c7b35b30a3
+0.11875,"[""typeTokenRatio_alto"", ""uppercaseRatio_baixo""]",2,f88e2cbda465
+0.11666666666666667,"[""com_autor"", ""uppercaseRatio_alto""]",2,4db0dac1316f
+0.1162037037037037,"[""punctuationDensity_baixo"", ""uppercaseRatio_baixo""]",2,afa9d3a0b198
+0.11527777777777778,"[""diversidade_alto"", ""uppercaseRatio_baixo""]",2,a06d35073061
+0.11296296296296296,"[""com_autor"", ""diversidade_alto"", ""typeTokenRatio_alto""]",3,b39ecda11b8f
+0.10787037037037037,"[""diversidade_baixo"", ""sem_autor"", ""typeTokenRatio_baixo""]",3,de1589a78e87
+0.10717592592592592,"[""diversidade_alto"", ""sem_autor""]",2,8089c9553752
+0.10625,"[""typeTokenRatio_baixo"", ""uppercaseRatio_baixo""]",2,15553bd8f401
+0.10532407407407407,"[""diversidade_baixo"", ""uppercaseRatio_baixo""]",2,d6124cde1930
+0.1050925925925926,"[""punctuationDensity_alto"", ""uppercaseRatio_baixo""]",2,45319f3f5de0
+0.09907407407407408,"[""com_autor"", ""diversidade_baixo""]",2,8335b3c73a69
+0.09837962962962964,"[""punctuationDensity_alto"", ""sem_autor"", ""typeTokenRatio_baixo""]",3,3c0f9975805b
+0.09699074074074074,"[""punctuationDensity_baixo"", ""sem_autor""]",2,437216423fd9
+0.09675925925925925,"[""com_autor"", ""punctuationDensity_baixo"", ""typeTokenRatio_alto""]",3,4eb4b330463b
+0.08912037037037036,"[""com_autor"", ""typeTokenRatio_baixo""]",2,2967678a0d61
+0.08541666666666667,"[""com_autor"", ""punctuationDensity_alto""]",2,409033ccbbf7
+0.08194444444444444,"[""com_autor"", ""typeTokenRatio_alto"", ""uppercaseRatio_baixo""]",3,47040babbc40
+0.08009259259259259,"[""sem_autor"", ""typeTokenRatio_alto""]",2,2cc79e8e48c3

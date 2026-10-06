@@ -1,0 +1,42 @@
+support,features,itemset_size,pattern_id,max_rule_confidence,max_rule_lift,max_rule_jaccard
+0.5006944444444444,"[""sem_autor""]",1,b74f6b178045,,,
+0.49930555555555556,"[""com_autor""]",1,e3461d305ac6,,,
+0.4356481481481482,"[""uppercaseRatio_baixo""]",1,8e98244619be,,,
+0.2569444444444444,"[""diversidade_alto""]",1,0dd68855e97c,,,
+0.2550925925925926,"[""punctuationDensity_alto""]",1,a4b9245a55c7,,,
+0.25462962962962965,"[""uppercaseRatio_alto""]",1,2465ed80b599,,,
+0.2539351851851852,"[""typeTokenRatio_baixo""]",1,97a2b1f9bc02,,,
+0.25324074074074077,"[""punctuationDensity_baixo""]",1,7250a9dcad12,,,
+0.2523148148148148,"[""typeTokenRatio_alto""]",1,1bd851a09c7a,,,
+0.2516203703703704,"[""diversidade_baixo""]",1,11e0bf831005,,,
+0.22060185185185185,"[""com_autor"", ""uppercaseRatio_baixo""]",2,c300023d13bf,,,
+0.2150462962962963,"[""sem_autor"", ""uppercaseRatio_baixo""]",2,1800c0b9672c,,,
+0.17222222222222222,"[""com_autor"", ""typeTokenRatio_alto""]",2,8ed1b3cd1e3d,0.6825688073394495,1.3670362761735844,0.2972433080303636
+0.17199074074074075,"[""diversidade_baixo"", ""typeTokenRatio_baixo""]",2,60f27e4b6463,0.6835326586936522,2.6917603332329785,0.5156141568355309
+0.16967592592592592,"[""punctuationDensity_alto"", ""sem_autor""]",2,ce15d5f1cf5d,0.6651542649727767,1.3284634418318981,0.2894944707740917
+0.16574074074074074,"[""diversidade_alto"", ""typeTokenRatio_alto""]",2,e4ace79c89fb,0.6568807339449542,2.5565088023803626,0.4824797843665768
+0.1648148148148148,"[""sem_autor"", ""typeTokenRatio_baixo""]",2,9dee6bb96f14,0.6490428441203281,1.296285292001765,0.2794348508634223
+0.15625,"[""com_autor"", ""punctuationDensity_baixo""]",2,0b59acfe6380,0.6170018281535649,1.2357199339932314,0.2620341614906832
+0.1525462962962963,"[""diversidade_baixo"", ""sem_autor""]",2,7d9f8f5ed448,0.6062557497700092,1.2108297914962736,0.2543419529139328
+0.14976851851851852,"[""com_autor"", ""diversidade_alto""]",2,fe5936057217,0.5828828828828829,1.167387136789084,0.2469465648854962
+0.13842592592592592,"[""punctuationDensity_alto"", ""typeTokenRatio_baixo""]",2,492d1cc6df52,0.5451230628988148,2.13696155328755,0.37351655215490315
+0.13819444444444445,"[""punctuationDensity_baixo"", ""typeTokenRatio_alto""]",2,c527c8dcf64c,0.5477064220183486,2.162789527531322,0.37618147448015127
+0.13796296296296295,"[""sem_autor"", ""uppercaseRatio_alto""]",2,a8c7b35b30a3,0.5418181818181818,1.0821334005800023,0.223472065991751
+0.11875,"[""typeTokenRatio_alto"", ""uppercaseRatio_baixo""]",2,f88e2cbda465,,,
+0.11666666666666667,"[""com_autor"", ""uppercaseRatio_alto""]",2,4db0dac1316f,,,
+0.1162037037037037,"[""punctuationDensity_baixo"", ""uppercaseRatio_baixo""]",2,afa9d3a0b198,,,
+0.11527777777777778,"[""diversidade_alto"", ""uppercaseRatio_baixo""]",2,a06d35073061,,,
+0.11296296296296296,"[""com_autor"", ""diversidade_alto"", ""typeTokenRatio_alto""]",3,b39ecda11b8f,0.7542503863987635,2.989322632332714,0.39071257005604476
+0.10787037037037037,"[""diversidade_baixo"", ""sem_autor"", ""typeTokenRatio_baixo""]",3,de1589a78e87,0.7071320182094082,2.7846949121829017,0.36124031007751933
+0.10717592592592592,"[""diversidade_alto"", ""sem_autor""]",2,8089c9553752,,,
+0.10625,"[""typeTokenRatio_baixo"", ""uppercaseRatio_baixo""]",2,15553bd8f401,,,
+0.10532407407407407,"[""diversidade_baixo"", ""uppercaseRatio_baixo""]",2,d6124cde1930,,,
+0.1050925925925926,"[""punctuationDensity_alto"", ""uppercaseRatio_baixo""]",2,45319f3f5de0,,,
+0.09907407407407408,"[""com_autor"", ""diversidade_baixo""]",2,8335b3c73a69,,,
+0.09837962962962964,"[""punctuationDensity_alto"", ""sem_autor"", ""typeTokenRatio_baixo""]",3,3c0f9975805b,0.7107023411371238,2.3399743061644815,0.3059755219582434
+0.09699074074074074,"[""punctuationDensity_baixo"", ""sem_autor""]",2,437216423fd9,,,
+0.09675925925925925,"[""com_autor"", ""punctuationDensity_baixo"", ""typeTokenRatio_alto""]",3,4eb4b330463b,0.7001675041876047,2.454311926605504,0.31031922791388267
+0.08912037037037036,"[""com_autor"", ""typeTokenRatio_baixo""]",2,2967678a0d61,,,
+0.08541666666666667,"[""com_autor"", ""punctuationDensity_alto""]",2,409033ccbbf7,,,
+0.08194444444444444,"[""com_autor"", ""typeTokenRatio_alto"", ""uppercaseRatio_baixo""]",3,47040babbc40,0.6900584795321638,1.3820364541395214,0.1528497409326425
+0.08009259259259259,"[""sem_autor"", ""typeTokenRatio_alto""]",2,2cc79e8e48c3,,,

@@ -1,6 +1,6 @@
 # DBSCAN
 
-**Status: executado.** Notebook: [anomaly-detection-dbscan.ipynb](../../anomaly-detection-dbscan.ipynb). Implementação reproduzível: [dbscan_experiment.py](../../dbscan_experiment.py). Run: [`dbscan-20260924T141332Z`](../../../outputs/model-comparison/dbscan-20260924T141332Z/run_manifest.json).
+**Status: executado.** Notebook: [dbscan.ipynb](../../history/agrupamento/dbscan.ipynb). Implementação reproduzível: [dbscan_experiment.py](../../dbscan_experiment.py). Run: [`dbscan-20260924T141332Z`](../../../outputs/model-comparison/dbscan-20260924T141332Z/run_manifest.json).
 
 O experimento mantém duas trilhas separadas: novidade por estilo, com score e limiar q95 para registros novos; e descoberta temática transdutiva, sem classificação Fake/True.
 

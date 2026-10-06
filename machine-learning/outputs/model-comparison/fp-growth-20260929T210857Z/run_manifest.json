@@ -1,0 +1,66 @@
+{
+  "method": "mlxtend.frequent_patterns.fpgrowth",
+  "created_utc": "2026-09-29T21:08:57.579028+00:00",
+  "corpus_sha256": "be91c188f621424017bd79a0f33528dcc27f8a6151adb2bcb899c17719eb4090",
+  "baseline_manifest": "outputs\\model-comparison\\dbscan-20260924T141332Z\\run_manifest.json",
+  "protocol": "canonical_random_group",
+  "partition": "train",
+  "record_count": 4320,
+  "parameters": {
+    "min_support": 0.08,
+    "max_len": 3,
+    "min_confidence": 0.5,
+    "min_lift": 1.05,
+    "min_jaccard": 0.1,
+    "redundancy_jaccard": 0.9,
+    "low_quantile": 0.25,
+    "high_quantile": 0.75,
+    "protocol": "canonical"
+  },
+  "features": [
+    "tem_autor",
+    "typeTokenRatio",
+    "linkDensity",
+    "punctuationDensity",
+    "uppercaseRatio",
+    "diversidade"
+  ],
+  "character_limit": 300,
+  "thresholds": {
+    "typeTokenRatio": {
+      "low": 0.6363636363636364,
+      "high": 0.7307692307692307,
+      "missing": 0
+    },
+    "linkDensity": {
+      "low": 0.0,
+      "high": 0.0,
+      "missing": 0,
+      "omitted": true
+    },
+    "punctuationDensity": {
+      "low": 0.12,
+      "high": 0.1896551724137931,
+      "missing": 0
+    },
+    "uppercaseRatio": {
+      "low": 0.0,
+      "high": 0.038461538461538464,
+      "missing": 0
+    },
+    "diversidade": {
+      "low": 0.7647058823529411,
+      "high": 0.8541666666666666,
+      "missing": 0
+    }
+  },
+  "item_count": 41,
+  "rule_count": 28,
+  "similar_pair_count": 0,
+  "notes": [
+    "Rótulos não são lidos ou usados no ajuste.",
+    "diversidade baixa expressa maior repetição lexical; não duplicada.",
+    "Subjetividade e exclamações não integram as seis features de estilo existentes.",
+    "Jaccard das regras é interseção/união dos eventos antecedente e consequente; similar_patterns usa cobertura por record_id."
+  ]
+}
