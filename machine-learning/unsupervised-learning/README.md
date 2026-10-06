@@ -1,14 +1,22 @@
 # Experimentos não supervisionados
 
+## FP-Growth linguístico: revisão dos metadados
+
+O [novo notebook linguístico sem autoria](history/mineracao-de-padroes/fp-growth-linguistico/fp_growth_linguistico_sem_autoria.ipynb) implementa a extração POS/DEP **por notícia**, com contagens, denominadores, taxas e indicadores de qualidade. Compara estilo legado, correção lexical/pontuação, acréscimo de POS e acréscimo de DEP nos mesmos IDs canônicos e na mesma janela de 300 caracteres. Quantis e regras são aprendidos somente no treino; suporte, confidence e lift são medidos nas regras congeladas em validação/teste, com bootstrap pareado da validação. O teste canônico já foi observado: os resultados são exploratórios.
+
+Consulte [protocolo, glossário e artefatos](docs/modelos/fp-growth-linguistico.md) e [as regras novas e a diferença para as anteriores](REGRAS_FP_GROWTH_LINGUISTICO.md). A execução produziu 10 regras elegíveis com estilo corrigido+POS, das quais 5 mantêm os filtros na validação; POS+DEP produziu 152, das quais 121 mantêm os filtros. As associações entre POS e funções sintáticas relacionadas exigem leitura de redundância. A redescoberta das regras é medida separadamente em 100 reamostragens dos grupos do treino, com quantis reaprendidos.
+
+Instale [`../requirements-linguistic.txt`](../requirements-linguistic.txt) em um ambiente Python 3 e execute o notebook em sequência. A implementação reutilizável está em [linguistic_features.py](history/mineracao-de-padroes/fp-growth-linguistico/linguistic_features.py) e [linguistic_fp_growth.py](history/mineracao-de-padroes/fp-growth-linguistico/linguistic_fp_growth.py); o notebook apresenta tabelas reais, diferenças entre representações e exemplos das regras extraídas. Os notebooks anteriores permanecem preservados. Regras direcionais e padrões consolidados têm contagens diferentes; nenhum desses experimentos é um classificador.
+
 ## FP-Growth: principal e baseline
 
 As [regras extraídas e sua utilidade para o projeto](REGRAS_FP_GROWTH.md) estão documentadas em um relatório próprio nesta pasta.
 
 | Papel | Notebook | Justificativa |
 |---|---|---|
-| Principal exploratório | [FP-Growth sem autoria e controles](fp_growth_principal_sem_autoria_controles.ipynb) | Remove `tem_autor` da descoberta e examina cada padrão dentro dos estratos de autoria. É a leitura mais útil para investigar sinais textuais neste corpus. |
-| Baseline | [FP-Growth com autoria](fp_growth_baseline_com_autoria.ipynb) | Preserva o experimento original e permite medir quanto os padrões refletem a metadata. |
-| Histórico | [Avaliação do FP-Growth com autoria](history/mineracao-de-padroes/avaliacao_fp_growth_com_autoria.ipynb) | Etapa de avaliação do baseline, mantida para reprodução e consulta. |
+| Principal exploratório | [FP-Growth sem autoria e controles](history/mineracao-de-padroes/fp-growth-legado/fp_growth_principal_sem_autoria_controles.ipynb) | Remove `tem_autor` da descoberta e examina cada padrão dentro dos estratos de autoria. É a leitura mais útil para investigar sinais textuais neste corpus. |
+| Baseline | [FP-Growth com autoria](history/mineracao-de-padroes/fp-growth-legado/fp_growth_baseline_com_autoria.ipynb) | Preserva o experimento original e permite medir quanto os padrões refletem a metadata. |
+| Histórico | [Avaliação do FP-Growth com autoria](history/mineracao-de-padroes/fp-growth-legado/avaliacao_fp_growth_com_autoria.ipynb) | Etapa de avaliação do baseline, mantida para reprodução e consulta. |
 
 O baseline encontrou 31 padrões, dos quais 21 incluem autoria. Autoria isolada tem Cramér V de 0,960 com o rótulo neste corpus; 3.528/3.601 notícias sem autor são Fake, contra 72/3.599 com autor. O experimento principal encontra 10 padrões textuais. Seu maior lift Fake agregado é 1,406, mas os contrastes diminuem ou mudam de direção dentro dos estratos. Por isso a escolha do principal considera a validade da interpretação para o projeto, e não o maior lift bruto. **Nenhum dos dois é um classificador; não há F1, acurácia ou ROC-AUC comparáveis aqui.** Consulte o [relatório de controles](../outputs/model-comparison/fp-growth-controls-20260929T215211Z/comparison_summary.md).
 
@@ -18,9 +26,9 @@ Execute os notebooks em kernel Python 3 a partir de uma pasta do repositório. S
 
 O experimento [FP-Growth](docs/modelos/fp-growth.md) encontra combinações recorrentes das features de estilo existentes, sem usar rótulos Fake/True. O notebook do baseline salva resultados em `../outputs/model-comparison/fp-growth-<UTC>/` como tabelas CSV brutas e consolidadas, resumo Markdown e manifesto JSON. Esta análise exploratória fica separada do ranking de classificação em `history/RESULTADOS.md`.
 
-A [avaliação externa dos padrões congelados](docs/modelos/fp-growth-evaluation.md) usa o [notebook histórico](history/mineracao-de-padroes/avaliacao_fp_growth_com_autoria.ipynb) para medir a incidência de cada padrão em Fake e Real, sem alterar a descoberta. Os resultados ficam em `../outputs/model-comparison/fp-growth-evaluation-<UTC>/`.
+A [avaliação externa dos padrões congelados](docs/modelos/fp-growth-evaluation.md) usa o [notebook histórico](history/mineracao-de-padroes/fp-growth-legado/avaliacao_fp_growth_com_autoria.ipynb) para medir a incidência de cada padrão em Fake e Real, sem alterar a descoberta. Os resultados ficam em `../outputs/model-comparison/fp-growth-evaluation-<UTC>/`.
 
-Os [controles de autoria](docs/modelos/fp-growth-controls.md) no [notebook principal](fp_growth_principal_sem_autoria_controles.ipynb) comparam autoria isolada, mineração textual sem autoria e avaliação dentro dos dois estratos de autoria, preservando o baseline original.
+Os [controles de autoria](docs/modelos/fp-growth-controls.md) no [notebook principal](history/mineracao-de-padroes/fp-growth-legado/fp_growth_principal_sem_autoria_controles.ipynb) comparam autoria isolada, mineração textual sem autoria e avaliação dentro dos dois estratos de autoria, preservando o baseline original.
 
 Esta pasta reúne **sete experimentos de métodos**, uma comparação independente com o Jev e um arquivo de experimentos anteriores. Esses notebooks ficam em `history/`, organizados por categoria: agrupamento, detecção de anomalias e aprendizado semi-supervisionado. A documentação de cada método está em [`docs/modelos/`](docs/modelos/), e [`history/RESULTADOS.md`](history/RESULTADOS.md) consolida as métricas registradas, mantendo protocolos incompatíveis em quadros separados.
 
