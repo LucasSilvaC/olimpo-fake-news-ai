@@ -4,8 +4,8 @@ import { test } from "node:test";
 import { JSDOM } from "jsdom";
 import { act, createElement } from "react";
 
-import Home from "../src/app/(protected)/page";
 import type { INewsArticle } from "../src/lib/news/types";
+import { HomePage } from "../src/views/home";
 
 test("formulário exibe loading, recupera erro e mostra artigo e JSON sem executar HTML", async (context) => {
   const dom = new JSDOM('<div id="root"></div>', { url: "http://localhost/" });
@@ -26,7 +26,7 @@ test("formulário exibe loading, recupera erro e mostra artigo e JSON sem execut
     });
   });
   try {
-    await act(async () => root.render(createElement(Home)));
+    await act(async () => root.render(createElement(HomePage)));
     const input = container.querySelector("input")!;
     const button = container.querySelector("button")!;
     const form = container.querySelector("form")!;
