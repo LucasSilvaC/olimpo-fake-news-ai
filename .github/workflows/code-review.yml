@@ -26,15 +26,15 @@ jobs:
       NEXT_PUBLIC_APP_URL: http://127.0.0.1:3000
     steps:
       - name: Check out pull request
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Set up pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
         with:
           version: 11.10.0
 
       - name: Set up Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version-file: web-app/.nvmrc
           cache: pnpm
@@ -45,7 +45,7 @@ jobs:
 
       - name: Comment ESLint findings on the pull request
         if: github.event.pull_request.head.repo.full_name == github.repository
-        uses: reviewdog/action-eslint@2fee6dd72a5419ff4113f694e2068d2a03bb35dd # v1.33.2
+        uses: reviewdog/action-eslint@b6303df522851d0e9abaea654da0222037d97e75 # v1.36.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           reporter: github-pr-review

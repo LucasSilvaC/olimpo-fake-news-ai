@@ -3,15 +3,15 @@
 > **Plataforma Gamificada de Combate à Desinformação e Fact-Checking em Tempo Real**  
 > *Parceria Institucional: Pontifícia Universidade Católica de Campinas (PUCC) & Instituto de Pesquisas Eldorado*
 
-[![Next.js 16](https://img.shields.io/badge/Next.js-16.3.4-black?style=flat&logo=next.js)](https://nextjs.org/)
+[![Next.js 16](https://img.shields.io/badge/Next.js-16.3.8-black?style=flat&logo=next.js)](https://nextjs.org/)
 [![React 19](https://img.shields.io/badge/React-19.2-blue?style=flat&logo=react)](https://react.dev/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue?style=flat&logo=typescript)](https://www.typescriptlang.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-6.0-blue?style=flat&logo=typescript)](https://www.typescriptlang.org/)
 [![Tailwind CSS v4](https://img.shields.io/badge/Tailwind_CSS-v4.3-38bdf8?style=flat&logo=tailwindcss)](https://tailwindcss.com/)
-[![Drizzle ORM](https://img.shields.io/badge/Drizzle_ORM-0.45-C5F74F?style=flat)](https://orm.drizzle.team/)
+[![Drizzle ORM](https://img.shields.io/badge/Drizzle_ORM-0.45.3-C5F74F?style=flat)](https://orm.drizzle.team/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-3.4-336791?style=flat&logo=postgresql)](https://www.postgresql.org/)
 [![Redis](https://img.shields.io/badge/Redis-6.0-DC382D?style=flat&logo=redis)](https://redis.io/)
 [![Vitest](https://img.shields.io/badge/Vitest-4.1-yellow?style=flat&logo=vitest)](https://vitest.dev/)
-[![Playwright](https://img.shields.io/badge/Playwright-1.62-green?style=flat&logo=playwright)](https://playwright.dev/)
+[![Playwright](https://img.shields.io/badge/Playwright-1.63-green?style=flat&logo=playwright)](https://playwright.dev/)
 [![OpenSpec](https://img.shields.io/badge/OpenSpec-Enabled-purple?style=flat)](openspec/)
 [![Architecture Doc](https://img.shields.io/badge/Architecture_Doc-PDF_Available-red?style=flat&logo=adobeacrobatreader)](docs/arquitetura.pdf)
 

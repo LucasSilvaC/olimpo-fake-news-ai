@@ -2,6 +2,7 @@
 
 import { Check, RotateCcw, Shuffle, X } from "lucide-react";
 import { useEffect, useId, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 
 import styles from "./avatar-editor-modal.module.css";
 
@@ -17,16 +18,20 @@ import {
 interface AvatarEditorModalProps {
   open: boolean;
   value: AvatarConfig;
-  onSave: (value: AvatarConfig) => void;
+  onSave: (value: AvatarConfig) => void | Promise<void>;
   onClose: () => void;
 }
 
 export function AvatarEditorModal(props: AvatarEditorModalProps) {
-  return props.open ? <EditorSession {...props} /> : null;
+  if (!props.open || typeof document === "undefined") return null;
+
+  return createPortal(<EditorSession {...props} />, document.body);
 }
 
 function EditorSession({ value, onSave, onClose }: AvatarEditorModalProps) {
   const [draft, setDraft] = useState<AvatarConfig>(value);
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
   const dialogRef = useRef<HTMLDialogElement>(null);
   const titleId = useId();
   const descriptionId = useId();
@@ -51,6 +56,25 @@ function EditorSession({ value, onSave, onClose }: AvatarEditorModalProps) {
     });
   }
 
+  async function saveAvatar() {
+    if (saving) return;
+
+    setSaving(true);
+    setSaveError(null);
+    try {
+      await onSave(draft);
+      onClose();
+    } catch (error: unknown) {
+      setSaveError(
+        error instanceof Error
+          ? error.message
+          : "Não foi possível salvar seu avatar. Tente novamente.",
+      );
+    } finally {
+      setSaving(false);
+    }
+  }
+
   return (
     <dialog
       ref={dialogRef}
@@ -59,7 +83,7 @@ function EditorSession({ value, onSave, onClose }: AvatarEditorModalProps) {
       aria-describedby={descriptionId}
       onCancel={(event) => {
         event.preventDefault();
-        onClose();
+        if (!saving) onClose();
       }}
     >
       <header className={styles.header}>
@@ -73,6 +97,7 @@ function EditorSession({ value, onSave, onClose }: AvatarEditorModalProps) {
         </div>
         <button
           type="button"
+          disabled={saving}
           onClick={onClose}
           aria-label="Fechar editor de avatar"
           className={styles.iconButton}
@@ -87,6 +112,7 @@ function EditorSession({ value, onSave, onClose }: AvatarEditorModalProps) {
             <button
               type="button"
               className={styles.iconButton}
+              disabled={saving}
               aria-label="Restaurar avatar inicial"
               title="Restaurar avatar inicial"
               onClick={() => setDraft(DEFAULT_AVATAR)}
@@ -109,7 +135,7 @@ function EditorSession({ value, onSave, onClose }: AvatarEditorModalProps) {
             <p className={styles.previewHint}>
               Cada detalhe conta. Monte um personagem com a sua cara.
             </p>
-            <button type="button" className={styles.shuffle} onClick={shuffle}>
+            <button type="button" className={styles.shuffle} onClick={shuffle} disabled={saving}>
               <Shuffle size={16} /> Surpreenda-me
             </button>
           </div>
@@ -119,7 +145,7 @@ function EditorSession({ value, onSave, onClose }: AvatarEditorModalProps) {
           </div>
         </section>
         <section className={styles.controls} aria-label="Personalizar avatar">
-          <fieldset>
+          <fieldset disabled={saving}>
             <legend>Gênero</legend>
             <div className={styles.genders}>
               {(
@@ -141,7 +167,7 @@ function EditorSession({ value, onSave, onClose }: AvatarEditorModalProps) {
               ))}
             </div>
           </fieldset>
-          <fieldset>
+          <fieldset disabled={saving}>
             <legend>Tom de pele</legend>
             <div className={styles.swatches}>
               {AVATAR_SKINS.map((item, index) => (
@@ -162,7 +188,7 @@ function EditorSession({ value, onSave, onClose }: AvatarEditorModalProps) {
               ))}
             </div>
           </fieldset>
-          <fieldset>
+          <fieldset disabled={saving}>
             <legend>Roupa</legend>
             <div className={styles.options}>
               {AVATAR_OUTFITS.map((item) => (
@@ -186,7 +212,7 @@ function EditorSession({ value, onSave, onClose }: AvatarEditorModalProps) {
               ))}
             </div>
           </fieldset>
-          <fieldset>
+          <fieldset disabled={saving}>
             <legend>Acessório</legend>
             <div className={styles.options}>
               {AVATAR_HEADWEARS.map((item) => (
@@ -213,19 +239,25 @@ function EditorSession({ value, onSave, onClose }: AvatarEditorModalProps) {
         </section>
       </div>
       <footer className={styles.footer}>
-        <button
-          type="button"
-          className={styles.save}
-          onClick={() => {
-            onSave(draft);
-            onClose();
-          }}
-        >
-          Salvar avatar <Check size={18} />
-        </button>
-        <button type="button" className={styles.cancel} onClick={onClose}>
-          Cancelar
-        </button>
+        {saveError ? (
+          <p className={styles.saveError} role="alert">
+            {saveError}
+          </p>
+        ) : null}
+        <div className={styles.footerActions}>
+          <button
+            type="button"
+            className={styles.save}
+            onClick={saveAvatar}
+            disabled={saving}
+            aria-busy={saving}
+          >
+            {saving ? "Salvando..." : "Salvar avatar"} <Check size={18} />
+          </button>
+          <button type="button" className={styles.cancel} onClick={onClose} disabled={saving}>
+            Cancelar
+          </button>
+        </div>
       </footer>
     </dialog>
   );

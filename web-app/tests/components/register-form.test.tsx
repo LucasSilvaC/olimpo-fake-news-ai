@@ -32,13 +32,13 @@ function fillRegistration() {
 }
 
 describe("registration", () => {
-  it("edits the avatar and preserves password visibility controls", () => {
+  it("edits the avatar and preserves password visibility controls", async () => {
     render(<RegisterForm />);
     fireEvent.click(screen.getByRole("button", { name: "Editar avatar" }));
     expect(screen.getByRole("dialog")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Feminino" }));
     fireEvent.click(screen.getByRole("button", { name: "Salvar avatar" }));
-    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
     const password = screen.getByLabelText(/^Senha/);
     fireEvent.change(password, { target: { value: "Olimpo@2025" } });
     expect(screen.getByText("Senha forte")).toBeInTheDocument();
@@ -75,6 +75,7 @@ describe("registration", () => {
     fireEvent.click(screen.getByRole("button", { name: "Armadura heroica" }));
     fireEvent.click(screen.getByRole("button", { name: "Coroa real" }));
     fireEvent.click(screen.getByRole("button", { name: "Salvar avatar" }));
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
     fireEvent.click(screen.getByRole("button", { name: "Editar avatar" }));
     expect(screen.getByRole("button", { name: "Feminino" })).toHaveAttribute(
       "aria-pressed",

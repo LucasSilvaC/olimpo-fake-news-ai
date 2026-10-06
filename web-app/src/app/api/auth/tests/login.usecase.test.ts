@@ -37,6 +37,7 @@ describe("LoginUseCase", () => {
       findById: vi.fn(async (id: string) => {
         return id === existingUser.id ? existingUser : null;
       }),
+      findAvatarByUserId: vi.fn(async () => null),
       create: vi.fn(),
       updateXp: vi.fn(),
     };
