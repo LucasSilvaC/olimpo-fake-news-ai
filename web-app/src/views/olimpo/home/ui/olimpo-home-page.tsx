@@ -3,6 +3,7 @@ import Link from "next/link";
 import { connection } from "next/server";
 import * as React from "react";
 
+import { CreateRoomCard } from "./parts/create-room-card";
 import { HomeIntro } from "./parts/home-intro";
 import { JoinMatchCard } from "./parts/join-match-card";
 import { ModeCard } from "./parts/mode-card";
@@ -49,15 +50,7 @@ export async function OlimpoHomePage(): Promise<React.ReactElement> {
           aria-label="Modos de jogo"
           className="grid w-full max-w-5xl grid-cols-1 gap-5 md:grid-cols-3 md:gap-6"
         >
-          <ModeCard
-            accent="amber"
-            badge="Modo Líder"
-            description="Seja o anfitrião, configure notícias com URLs personalizadas, defina o tempo por rodada e compartilhe o PIN com amigos."
-            footer="Gerar PIN de 6 dígitos"
-            href="/olimpo"
-            icon="create"
-            title="Criar partida"
-          />
+          <CreateRoomCard creatorName={user.name} />
           <JoinMatchCard />
           <ModeCard
             accent="emerald"

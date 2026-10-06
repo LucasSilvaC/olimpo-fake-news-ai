@@ -13,6 +13,7 @@ export async function proxy(request: NextRequest) {
 export const config = {
   matcher: [
     "/",
+    "/sala/:path*",
     "/extrair",
     "/dev/sandbox",
     "/olimpo",
