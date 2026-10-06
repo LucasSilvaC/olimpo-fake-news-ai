@@ -77,6 +77,7 @@ describe("UserEntity", () => {
         name: "Olympus User",
         email: "user@olympus.ai",
         xp: 150,
+        role: "participant",
       });
       expect((dto as unknown as Record<string, unknown>).passwordHash).toBeUndefined();
     });

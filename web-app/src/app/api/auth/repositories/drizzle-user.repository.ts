@@ -2,8 +2,9 @@ import { eq, sql } from "drizzle-orm";
 
 import { IUserRepository } from "./user.repository.interface";
 
+import { AvatarConfig, avatarConfigSchema, DEFAULT_AVATAR } from "@/lib/avatar";
 import { databaseClient } from "@/server/shared/database/client";
-import { users, User, NewUser } from "@/server/shared/database/schemas";
+import { users, userAvatars, User, NewUser } from "@/server/shared/database/schemas";
 
 export class DrizzleUserRepository implements IUserRepository {
   constructor(private readonly db = databaseClient) {}
@@ -25,21 +26,27 @@ export class DrizzleUserRepository implements IUserRepository {
     return result ?? null;
   }
 
-  async create(data: NewUser): Promise<User> {
-    const [created] = await this.db
-      .insert(users)
-      .values({
-        ...data,
-        email: data.email.toLowerCase().trim(),
-        xp: data.xp ?? 0,
-      })
-      .returning();
+  async create(data: NewUser, avatar: AvatarConfig = DEFAULT_AVATAR): Promise<User> {
+    const avatarConfig = avatarConfigSchema.parse(avatar);
 
-    if (!created) {
-      throw new Error("Failed to create user record");
-    }
+    return this.db.transaction(async (transaction) => {
+      const [created] = await transaction
+        .insert(users)
+        .values({
+          ...data,
+          email: data.email.toLowerCase().trim(),
+          xp: data.xp ?? 0,
+        })
+        .returning();
 
-    return created;
+      if (!created) {
+        throw new Error("Failed to create user record");
+      }
+
+      await transaction.insert(userAvatars).values({ userId: created.id, ...avatarConfig });
+
+      return created;
+    });
   }
 
   async updateXp(id: string, xpDelta: number): Promise<User> {

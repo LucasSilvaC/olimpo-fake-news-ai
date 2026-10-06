@@ -5,7 +5,7 @@ import * as React from "react";
 import { OlimpoNav } from "@/components/organisms/olimpo-nav";
 
 export const metadata: Metadata = {
-  title: "Olimpo — Fake-or-Fact // Kahoot de Fake News",
+  title: "Olimpo Fake News",
   description: "Jogo multiplayer gamificado e educativo de combate à desinformação.",
 };
 
