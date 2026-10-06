@@ -1,5 +1,5 @@
 "use client";
-import { ArrowRight, Eye, EyeOff, LockKeyhole, Mail, UserRound } from "lucide-react";
+import { ArrowRight, Eye, LockKeyhole, Mail, UserRound } from "lucide-react";
 
 import { useRegisterViewModel } from "../model/use-register-view-model";
 
@@ -45,7 +45,7 @@ export function RegisterForm() {
       <RegistrationField
         id="register-password"
         name="password"
-        type={vm.passwordVisible ? "text" : "password"}
+        type="password"
         label="Senha"
         hint="Mínimo de 8 caracteres"
         icon={LockKeyhole}
@@ -58,15 +58,10 @@ export function RegisterForm() {
         onBlur={() => vm.touchField("password")}
         error={vm.fieldErrors.password}
         trailing={
-          <Button
-            type="button"
-            className="absolute inset-y-0 right-0 h-full cursor-pointer bg-transparent px-4 text-slate-500 hover:text-slate-700 hover:opacity-100"
-            onClick={vm.togglePassword}
-            aria-label={vm.passwordVisible ? "Ocultar senha" : "Mostrar senha"}
-            aria-pressed={vm.passwordVisible}
-          >
-            {vm.passwordVisible ? <EyeOff className="size-5" /> : <Eye className="size-5" />}
-          </Button>
+          <Eye
+            aria-hidden="true"
+            className="pointer-events-none absolute top-1/2 right-4 size-5 -translate-y-1/2 text-slate-500"
+          />
         }
       >
         <PasswordStrength strength={vm.strength} />
@@ -84,7 +79,7 @@ export function RegisterForm() {
       >
         {vm.error}
       </div>
-      <Button type="submit" variant="registration-submit" disabled={vm.pending} aria-live="polite">
+      <Button disabled={vm.pending} aria-live="polite">
         {vm.pending ? "Criando sua conta…" : "Criar minha conta"}
         <ArrowRight aria-hidden="true" className="size-5" />
       </Button>

@@ -16,14 +16,14 @@ export function AuthLayout({ children }: { children: ReactNode }) {
   const href = isLogin ? "/register" : "/login";
 
   return (
-    <div className={styles.page}>
+    <div className="flex min-h-screen flex-col overflow-x-clip bg-[radial-gradient(120%_120%_at_50%_20%,#1e40af_0%,#1d4ed8_45%,#1e40af_100%)]">
       <Header>
         <Link
           href={href}
           scroll={false}
           className={cn(
             buttonVariants({ variant: "textonly", size: "unstyled" }),
-            "text-md hidden focus-visible:ring-amber-300 sm:inline-flex",
+            "text-md hidden w-max shrink-0 whitespace-nowrap focus-visible:ring-amber-300 sm:inline-flex",
           )}
         >
           {isLogin ? "Ainda não tem uma conta?" : "Já tem uma conta?"}
@@ -33,17 +33,35 @@ export function AuthLayout({ children }: { children: ReactNode }) {
           scroll={false}
           className={cn(
             buttonVariants(),
-            "h-12 cursor-pointer rounded-full border border-white/20 bg-white/15 px-6 text-lg font-semibold text-white shadow-sm backdrop-blur-sm hover:border-white/50 hover:bg-white/15 hover:opacity-100 focus-visible:ring-amber-300",
+            "h-16 w-[180px] shrink-0 cursor-pointer whitespace-nowrap rounded-full border border-white/20 bg-white/15 px-6 text-lg font-semibold text-white shadow-sm backdrop-blur-sm hover:border-white/50 hover:bg-white/15 hover:opacity-100 focus-visible:ring-amber-300",
           )}
         >
           {isLogin ? "Criar conta" : "Entrar"}
         </Link>
       </Header>
-      <main className={styles.main} data-mode={isLogin ? "login" : "register"}>
-        <div className={styles.intro}>
+      <main
+        className={cn(
+          styles.main,
+          "mx-auto grid w-full max-w-[1400px] flex-1 items-center gap-6 px-4 py-5 sm:px-6 lg:grid-cols-2 lg:gap-[var(--panel-gap)] lg:px-10 lg:py-3",
+        )}
+        data-mode={isLogin ? "login" : "register"}
+      >
+        <div
+          className={cn(
+            styles.intro,
+            "min-w-0 transition-transform duration-[850ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none",
+          )}
+        >
           <AuthIntro isLogin={isLogin} />
         </div>
-        <div className={styles.form}>{children}</div>
+        <div
+          className={cn(
+            styles.form,
+            "relative z-[1] min-w-0 transition-transform duration-[850ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none",
+          )}
+        >
+          {children}
+        </div>
       </main>
     </div>
   );

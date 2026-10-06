@@ -24,10 +24,15 @@ export function AuthIntro({ isLogin }: { isLogin: boolean }) {
           ? "Novas manchetes, novos desafios. Continue de onde parou, teste seu olhar e suba no ranking combatendo a desinformação."
           : "Fato ou fake? Desafie seu olhar, descubra o que está por trás das manchetes e aprenda a combater a desinformação jogando."}
       </p>
-      <div className={styles.scene} aria-hidden="true">
-        <div className={styles.orbit} />
-        <div className={styles.backCard} />
-        <div className={styles.newsCard}>
+      <div
+        className="relative mt-3 hidden h-[350px] [perspective:900px] lg:block"
+        aria-hidden="true"
+      >
+        <div className="absolute [inset:25px_20px_10px] [transform:rotate(-20deg)] rounded-[50%] [background:radial-gradient(ellipse,_rgb(255_255_255_/_10%),_transparent_70%)] [border:1px_solid_rgb(255_255_255_/_18%)]" />
+        <div className="absolute top-[34px] left-[12%] h-[270px] w-[76%] [transform:rotate(7deg)_translate(12px,_-4px)] rounded-[22px] border border-white/50 bg-[#a6caff]" />
+        <div
+          className={`absolute top-[34px] left-[12%] w-[76%] [transform:rotateY(-9deg)_rotateX(5deg)_rotate(-5deg)] rounded-[22px] bg-[linear-gradient(135deg,_#fff,_#f3f7ff)] p-[26px] shadow-[0_9px_0_#d4e3fc,0_25px_45px_rgb(14_48_115_/_25%)] ${styles.floatCard}`}
+        >
           <div className="flex items-center justify-between text-[11px] font-bold tracking-[0.18em] text-blue-600">
             OLIMPO / DESAFIO <span className="size-2 rounded-full bg-amber-400" />
           </div>
@@ -54,7 +59,7 @@ export function AuthIntro({ isLogin }: { isLogin: boolean }) {
             </span>
           </div>
         </div>
-        <div className={styles.badge}>
+        <div className="absolute right-0 bottom-[18px] flex rotate-[5deg] items-center gap-[10px] rounded-2xl border border-[#ffe299] bg-[#ffd15c] px-4 py-3 text-[11px] text-[#654000] shadow-[0_6px_0_#e6a929,0_16px_28px_rgb(14_48_115_/_18%)]">
           <Trophy className="size-6" />
           <span>
             Olhar crítico.
