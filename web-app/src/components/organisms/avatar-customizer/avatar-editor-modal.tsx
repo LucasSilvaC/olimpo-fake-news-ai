@@ -155,6 +155,8 @@ function EditorSession({ value, onSave, onClose }: AvatarEditorModalProps) {
             </p>
             <button
               type="button"
+              onClick={shuffle}
+              disabled={saving}
               className="mt-[14px] flex cursor-pointer items-center justify-center gap-[7px] rounded-xl border border-blue-200/60 bg-blue-50 px-3 py-2.5 text-[11px] font-bold text-blue-600 transition-colors hover:bg-blue-100 focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-blue-600 disabled:cursor-wait disabled:opacity-[0.65] max-[640px]:px-2.5 max-[640px]:py-[9px] max-[640px]:text-[10px] max-[360px]:gap-[5px] max-[360px]:p-2 min-[900px]:mt-2"
             >
               <Shuffle size={16} /> Surpreenda-me
@@ -280,6 +282,7 @@ function EditorSession({ value, onSave, onClose }: AvatarEditorModalProps) {
         <div className="flex gap-3 max-[360px]:flex-col max-[360px]:gap-2 min-[900px]:justify-end">
           <Button
             type="button"
+            onClick={saveAvatar}
             disabled={saving}
             aria-busy={saving}
           >

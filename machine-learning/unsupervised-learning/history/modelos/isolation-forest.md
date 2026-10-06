@@ -2,7 +2,7 @@
 
 **Status:** experimento atual; o notebook próprio não tem resultados de execução salvos. A tabela abaixo usa os números do controle Isolation Forest q95 reportado no notebook LOF.
 
-- **Notebook:** [anomaly-detection-isolation-forest.ipynb](../../anomaly-detection-isolation-forest.ipynb)
+- **Notebook:** [isolation-forest.ipynb](../deteccao-de-anomalias/isolation-forest.ipynb)
 - **Comparativo:** [RESULTADOS.md](../../RESULTADOS.md)
 
 ## Objetivo e método

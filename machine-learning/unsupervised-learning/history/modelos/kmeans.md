@@ -121,7 +121,7 @@ No teste temporal, silhouette foi 0,0016, ARI 0,1249 e NMI 0,1276; os tamanhos d
 
 Run e arquivos sem texto bruto:
 
-- [Notebook executado](../../anomaly-detection-kmeans.ipynb) â€” contÃ©m as duas trilhas e os outputs desta execuÃ§Ã£o.
+- [Notebook executado](../agrupamento/kmeans.ipynb) â€” contÃ©m as duas trilhas e os outputs desta execuÃ§Ã£o.
 - [`metrics.csv`](../../../outputs/model-comparison/kmeans-canonical-20260924T003936Z/metrics.csv) â€” seleÃ§Ã£o de validaÃ§Ã£o, teste congelado, tamanhos/composiÃ§Ã£o e mÃ©tricas internas/externas dos dois protocolos.
 - [`predictions.csv`](../../../outputs/model-comparison/kmeans-canonical-20260924T003936Z/predictions.csv) â€” IDs, grupo, protocolo, partiÃ§Ã£o, label para avaliaÃ§Ã£o, cluster, score, limiar e decisÃ£o aplicÃ¡vel.
 - [`topic_cluster_profiles.csv`](../../../outputs/model-comparison/kmeans-canonical-20260924T003936Z/topic_cluster_profiles.csv) â€” termos e IDs prÃ³ximos dos centroides do split canÃ´nico, sem textos.

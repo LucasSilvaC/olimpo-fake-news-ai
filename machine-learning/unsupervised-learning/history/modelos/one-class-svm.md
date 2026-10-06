@@ -2,7 +2,7 @@
 
 **Status:** experimento atual; o notebook próprio não tem resultados de execução salvos. A tabela abaixo usa os números do controle One-Class SVM q95 reportado no notebook LOF.
 
-- **Notebook:** [anomaly-detection-one-class-svm.ipynb](../../anomaly-detection-one-class-svm.ipynb)
+- **Notebook:** [one-class-svm.ipynb](../deteccao-de-anomalias/one-class-svm.ipynb)
 - **Comparativo:** [RESULTADOS.md](../../RESULTADOS.md)
 
 ## Objetivo e método

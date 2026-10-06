@@ -1,6 +1,6 @@
 # Isolation Forest: sinais usados para marcar uma notícia como anômala
 
-Notebook de referência: [anomaly-detection-isolation-forest.ipynb](../../anomaly-detection-isolation-forest.ipynb).
+Notebook de referência: [isolation-forest.ipynb](../../history/deteccao-de-anomalias/isolation-forest.ipynb).
 
 ## Em poucas palavras
 
