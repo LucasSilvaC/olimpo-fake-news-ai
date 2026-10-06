@@ -26,6 +26,7 @@ describe("RegisterUseCase", () => {
       findById: vi.fn(async (id: string) => {
         return usersStore.find((u) => u.id === id) ?? null;
       }),
+      findAvatarByUserId: vi.fn(async () => null),
       create: vi.fn(async (data) => {
         const created: User = {
           id: data.id ?? "generated-id-1",

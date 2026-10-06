@@ -92,6 +92,7 @@ describe("FinishMatchUseCase", () => {
     userRepository = {
       findByEmail: vi.fn(),
       findById: vi.fn(),
+      findAvatarByUserId: vi.fn(),
       create: vi.fn(),
       updateXp: vi.fn().mockResolvedValue({} as never),
     };

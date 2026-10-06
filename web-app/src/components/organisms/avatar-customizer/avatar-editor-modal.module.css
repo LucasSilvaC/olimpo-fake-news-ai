@@ -306,8 +306,21 @@
 }
 .footer {
   display: flex;
+  flex-direction: column;
   gap: 12px;
   padding: 4px 28px 28px;
+}
+.footerActions {
+  display: flex;
+  gap: 12px;
+}
+.saveError {
+  border-radius: 12px;
+  background: #fef2f2;
+  color: #b91c1c;
+  padding: 10px 12px;
+  font-size: 12px;
+  line-height: 1.5;
 }
 .cancel,
 .save {
@@ -349,6 +362,10 @@
 .dialog button:focus-visible {
   outline: 2px solid #2563eb;
   outline-offset: 3px;
+}
+.dialog button:disabled {
+  cursor: wait;
+  opacity: 0.65;
 }
 @keyframes modalEnter {
   from {
@@ -429,6 +446,9 @@
     justify-content: flex-end;
     padding-top: 16px;
     border-top: 1px solid #f1f5f9;
+  }
+  .footerActions {
+    justify-content: flex-end;
   }
   .save {
     flex: none;
@@ -557,6 +577,10 @@
     padding: 8px;
   }
   .footer {
+    flex-direction: column;
+    gap: 8px;
+  }
+  .footerActions {
     flex-direction: column;
     gap: 8px;
   }
