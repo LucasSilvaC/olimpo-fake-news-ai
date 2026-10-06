@@ -21,6 +21,7 @@ describe("LoginUseCase", () => {
       name: "Zeus Olympus",
       email: "zeus@olympus.ai",
       passwordHash,
+      role: "participant",
       xp: 250,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -54,6 +55,7 @@ describe("LoginUseCase", () => {
       name: existingUser.name,
       email: existingUser.email,
       xp: 250,
+      role: "participant",
     });
     expect(result.token).toBeDefined();
     expect(typeof result.token).toBe("string");

@@ -34,6 +34,7 @@ vi.mock("../repositories/drizzle-user.repository", () => ({
     create: vi.fn(async (data: NewUser) => {
       const user: User = {
         ...data,
+        role: data.role ?? "participant",
         xp: data.xp ?? 0,
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -52,7 +53,7 @@ describe("Auth Server Actions", () => {
   });
 
   describe("registerAction", () => {
-    it("should successfully register a user and set the session cookie", async () => {
+    it("should successfully register a user without setting a session cookie", async () => {
       const formData = new FormData();
       formData.append("name", "Apollo Deity");
       formData.append("email", "apollo@olympus.ai");
@@ -66,15 +67,7 @@ describe("Auth Server Actions", () => {
         expect(response.user.email).toBe("apollo@olympus.ai");
       }
 
-      expect(mockCookieStore.set).toHaveBeenCalledWith(
-        AUTH_COOKIE_NAME,
-        expect.any(String),
-        expect.objectContaining({
-          httpOnly: true,
-          sameSite: "lax",
-          path: "/",
-        }),
-      );
+      expect(mockCookieStore.set).not.toHaveBeenCalled();
     });
 
     it("should reject invalid email via Zod validation", async () => {
@@ -86,7 +79,7 @@ describe("Auth Server Actions", () => {
       const response = await registerAction(formData);
       expect(response.success).toBe(false);
       if (!response.success) {
-        expect(response.error).toMatch(/email/i);
+        expect(response.error).toMatch(/e-mail/i);
       }
     });
 
@@ -99,7 +92,7 @@ describe("Auth Server Actions", () => {
       const response = await registerAction(formData);
       expect(response.success).toBe(false);
       if (!response.success) {
-        expect(response.error).toMatch(/password/i);
+        expect(response.error).toMatch(/senha/i);
       }
     });
   });
@@ -112,6 +105,7 @@ describe("Auth Server Actions", () => {
         name: "Ares War",
         email: "ares@olympus.ai",
         passwordHash,
+        role: "participant",
         xp: 100,
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -137,6 +131,7 @@ describe("Auth Server Actions", () => {
         expect.objectContaining({
           httpOnly: true,
           sameSite: "lax",
+          path: "/",
         }),
       );
     });

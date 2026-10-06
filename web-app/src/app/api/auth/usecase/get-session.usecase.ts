@@ -4,11 +4,14 @@ import { AUTH_COOKIE_NAME, verifySessionToken } from "../entities/jwt.helper";
 import { drizzleUserRepository } from "../repositories/drizzle-user.repository";
 import { IUserRepository } from "../repositories/user.repository.interface";
 
+import { UserRoleType } from "@/server/shared/database/schemas";
+
 export interface SessionUser {
   id: string;
   email: string;
   name: string;
   xp: number;
+  role: UserRoleType;
 }
 
 export class GetSessionUseCase {
@@ -47,6 +50,7 @@ export class GetSessionUseCase {
       name: user.name,
       email: user.email,
       xp: user.xp,
+      role: user.role,
     };
   }
 }

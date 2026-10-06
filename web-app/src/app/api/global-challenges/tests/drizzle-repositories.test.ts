@@ -20,12 +20,21 @@ describe("Global Challenges Drizzle Repositories", () => {
 
   const sampleArticle: NewsArticle = {
     id: "art-1",
-    url: "https://news.com/1",
-    title: "Article 1",
-    content: "Content 1",
-    source: "Source 1",
-    author: "Author 1",
-    publishedAt: new Date("2026-01-01"),
+    article: {
+      url: "https://news.com/1",
+      canonicalUrl: "https://news.com/1",
+      title: "Article 1",
+      description: "Description 1",
+      authors: ["Author 1"],
+      publishedAt: "2026-01-01",
+      modifiedAt: null,
+      content: "Content 1",
+      imageUrl: null,
+      publisher: "Source 1",
+      language: "en",
+      extractionMethod: "local",
+      usedFallback: false,
+    },
     targetClassification: "reliable",
     createdAt: new Date("2026-01-01"),
   };

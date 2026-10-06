@@ -1,3 +1,10 @@
-/supervised-learning/Fake.br-Corpus-master
+# Dados e artefatos gerados (reproduzíveis pelos notebooks)
+/supervised-learning/Fake.br-Corpus-master/
+/supervised-learning/FakeRecogna.csv
 /supervised-learning/*.pkl
 /unsupervised-learning/data
+
+# Python
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
