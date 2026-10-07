@@ -13,7 +13,7 @@
 [![Vitest](https://img.shields.io/badge/Vitest-4.1-yellow?style=flat&logo=vitest)](https://vitest.dev/)
 [![Playwright](https://img.shields.io/badge/Playwright-1.63-green?style=flat&logo=playwright)](https://playwright.dev/)
 [![OpenSpec](https://img.shields.io/badge/OpenSpec-Enabled-purple?style=flat)](openspec/)
-[![Architecture Doc](https://img.shields.io/badge/Architecture_Doc-PDF_Available-red?style=flat&logo=adobeacrobatreader)](docs/arquitetura.pdf)
+[![Architecture Doc](https://img.shields.io/badge/Architecture_Doc-PDF_Available-red?style=flat&logo=adobeacrobatreader)](docs/codigo/arquitetura.pdf)
 
 ---
 
@@ -48,7 +48,7 @@ Em salas multiplayer dinâmicas ou partidas individuais, os participantes enfren
 
 ## 🏛️ 2. Fundamentos de Arquitetura e Engenharia de Software
 
-O ecossistema Olimpo foi desenvolvido sobre uma arquitetura moderna, escalável e tipada de ponta a ponta. A documentação completa e formal de arquitetura encontra-se compilada no documento LaTeX [`docs/arquitetura.tex`](docs/arquitetura.tex) e disponível em formato PDF em [`docs/arquitetura.pdf`](docs/arquitetura.pdf).
+O ecossistema Olimpo foi desenvolvido sobre uma arquitetura moderna, escalável e tipada de ponta a ponta. A documentação completa e formal está organizada em [`docs/codigo/`](docs/codigo/README.md), com fonte LaTeX e versão PDF.
 
 ### 📐 Resumo dos Pilares Técnicos
 
@@ -128,9 +128,9 @@ O projeto adota uma esteira completa de garantia de qualidade automatizada:
 
 ```text
 olimpo-fake-news-ai/
-├── docs/                                  # Documentação formal e LaTeX
-│   ├── arquitetura.tex                    # Fonte LaTeX detalhada (Calibri, Sumário, 14 Seções)
-│   └── arquitetura.pdf                    # Documento compilado de arquitetura (24 páginas)
+├── docs/
+│   ├── codigo/                            # Arquitetura, acessibilidade e decisões técnicas
+│   └── machine-learning/                  # Protocolos, modelos e entregáveis de ML
 ├── openspec/                              # Governança OpenSpec (Spec-Driven Development)
 │   ├── specs/                             # Capacidades canônicas (auth, rooms, news-voting, sse, etc.)
 │   └── changes/                           # Histórico e propostas ativas de mudanças
@@ -224,8 +224,11 @@ pnpm format
 ## 📄 6. Documentação Detalhada
 
 Para uma imersão técnica exaustiva em cada decisão de arquitetura, consulte:
-- **[Documento de Arquitetura de Software (PDF)](docs/arquitetura.pdf)**
-- **[Código-Fonte LaTeX da Arquitetura](docs/arquitetura.tex)**
+- **[Índice da documentação (machine learning e código)](docs/README.md)**
+- **[Documentação de machine learning](docs/machine-learning/README.md)**
+- **[Documentação de código e software](docs/codigo/README.md)**
+- **[Documento de Arquitetura de Software (PDF)](docs/codigo/arquitetura.pdf)**
+- **[Código-Fonte LaTeX da Arquitetura](docs/codigo/arquitetura.tex)**
 - **[Especificações de Domínio OpenSpec](openspec/specs/)**
 
 ---

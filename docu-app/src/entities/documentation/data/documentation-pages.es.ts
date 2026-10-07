@@ -422,7 +422,7 @@ export const documentationPagesEs: IDocumentationPage[] = [
             items: [
               {
                 label: "Documento de arquitectura (PDF)",
-                href: `${repository}/docs/arquitetura.pdf`,
+                href: `${repository}/docs/codigo/arquitetura.pdf`,
                 description: "Decisiones técnicas y límites operativos del proyecto.",
               },
               {
@@ -496,7 +496,7 @@ export const documentationPagesEs: IDocumentationPage[] = [
             items: [
               {
                 label: "Documento de arquitectura (PDF)",
-                href: `${repository}/docs/arquitetura.pdf`,
+                href: `${repository}/docs/codigo/arquitetura.pdf`,
                 description: "Persistencia híbrida, Pub/Sub e implementación de SSE.",
               },
               {
@@ -665,12 +665,12 @@ export const documentationPagesEs: IDocumentationPage[] = [
             items: [
               {
                 label: "Informe de arquitectura y accesibilidad",
-                href: `${repository}/docs/arquitetura.pdf`,
+                href: `${repository}/docs/codigo/arquitetura.pdf`,
                 description: "Estrategia de calidad y evidencias de accesibilidad.",
               },
               {
                 label: "Mediciones de contraste",
-                href: `${repository}/docs/acessibilidade-contrastes.json`,
+                href: `${repository}/docs/codigo/acessibilidade-contrastes.json`,
                 description: "Pares medidos, relación de contraste y alcance de la auditoría.",
               },
             ],

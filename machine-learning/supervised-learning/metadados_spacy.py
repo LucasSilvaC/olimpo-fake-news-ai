@@ -6,6 +6,7 @@ depender do tamanho do texto. A entrada esperada é o mesmo texto que o TF-IDF v
 `fit`, então pode ser pré-calculada uma vez e cacheada sem vazamento.
 
 Requer: pip install spacy && python -m spacy download pt_core_news_sm
+Documentação das features: docs/modelos/metadados-spacy.md
 """
 
 import numpy as np
