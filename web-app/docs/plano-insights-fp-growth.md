@@ -121,8 +121,8 @@ Texto vazio, sem tokens elegíveis ou fora do domínio suportado: pedir conteúd
 
 ### Situação encontrada
 
-- `src/widgets/news-extractor/ui/news-extractor.tsx` e `features/extract-news/` já oferecem entrada por URL e exibição do artigo.
-- `src/app/api/news/extract/route.ts` extrai a notícia; hoje não entrega insights FP-Growth.
+- `src/views/room-lobby/ui/room-lobby-view.tsx` oferece entrada por URL e exibição das notícias da playlist, usando `AddPlaylistNewsUseCase` e o parser compartilhado em `src/lib/news/`.
+- O parser compartilhado em `src/lib/news/extract-news.ts` extrai notícias para o fluxo da sala; ainda não entrega insights FP-Growth.
 - `src/app/api/ai-feedback/` tem entidade, contratos, caso de uso, repositórios e serviço mock. Seu contrato exige `classification`, `confidence` e `reasons`.
 - `MockAIAnalysisService` prioriza o `targetClassification` recebido; caso contrário, classifica por palavras e devolve razões e confidências fixas. Isso não implementa a reflexão proposta nem verifica as alegações contidas nas razões.
 - `SubmitNewsForm` atualmente atualiza uma lista local e solicita gabarito ao criador. Não é ainda um fluxo conectado de submissão e análise.

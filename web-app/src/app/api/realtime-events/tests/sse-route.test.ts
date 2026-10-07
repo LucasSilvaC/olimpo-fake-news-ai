@@ -1,11 +1,24 @@
 import Redis from "ioredis";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { GET } from "@/app/api/rooms/[pin]/events/route";
 import { createSSEResponse } from "@/app/api/rooms/[pin]/events/sse-response";
 import { IRedisRoomRepository } from "@/app/api/rooms/repositories/redis-room.repository.interface";
 import { IRoomRepository } from "@/app/api/rooms/repositories/room.repository.interface";
 import { Room } from "@/server/shared/database/schemas";
+
+const mocks = vi.hoisted(() => ({
+  getSession: vi.fn(),
+  touch: vi.fn(),
+  disconnect: vi.fn(),
+}));
+vi.mock("@/app/api/auth/usecase/get-session.usecase", () => ({
+  getSessionUseCase: { execute: mocks.getSession },
+}));
+vi.mock("@/app/api/realtime-events/repositories/redis-room-presence", async (importOriginal) => ({
+  ...(await importOriginal<object>()),
+  redisRoomPresence: { touch: mocks.touch, disconnect: mocks.disconnect },
+}));
 
 interface MockSubscriber {
   on: ReturnType<typeof vi.fn>;
@@ -17,6 +30,17 @@ interface MockSubscriber {
 }
 
 describe("SSE Route Handler (/api/rooms/[pin]/events)", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+    vi.clearAllMocks();
+    mocks.getSession.mockResolvedValue({ id: "participant-1" });
+    mocks.touch.mockResolvedValue(["participant-1"]);
+    mocks.disconnect.mockResolvedValue(undefined);
+  });
+  afterEach(() => {
+    vi.clearAllTimers();
+    vi.useRealTimers();
+  });
   const sampleRoom: Room = {
     id: "room-123",
     pin: "123 456",
@@ -139,6 +163,10 @@ describe("SSE Route Handler (/api/rooms/[pin]/events)", () => {
     const first = await reader.read();
     expect(decoder.decode(first.value)).toBe(": connected\n\n");
 
+    const snapshot = await reader.read();
+    expect(decoder.decode(snapshot.value)).toContain("event: PRESENCE_CHANGED");
+    expect(decoder.decode(snapshot.value)).toContain('"userIds":["participant-1"]');
+
     // Emit a typed domain event
     const eventPayload = {
       type: "MEMBER_JOINED",
@@ -196,5 +224,51 @@ describe("SSE Route Handler (/api/rooms/[pin]/events)", () => {
     });
 
     expect(response.status).toBe(400);
+  });
+
+  it("rejects unauthenticated presence connections", async () => {
+    mocks.getSession.mockRejectedValueOnce(new Error("Unauthorized"));
+    const response = await createSSEResponse(new Request("http://localhost"), "123456");
+    expect(response.status).toBe(401);
+    expect(mocks.touch).not.toHaveBeenCalled();
+  });
+
+  it("renews presence and stops renewing after cancellation", async () => {
+    const subscriber = createMockSubscriber();
+    const response = await createSSEResponse(new Request("http://localhost"), "123456", {
+      roomRepository: createMockRoomRepo(),
+      redisRoomRepo: createMockRedisRoomRepo(),
+      createSubscriber: () => subscriber as unknown as Redis,
+    });
+    const reader = response.body!.getReader();
+    await reader.read();
+    await reader.read();
+    expect(mocks.touch).toHaveBeenCalledOnce();
+    await vi.advanceTimersByTimeAsync(5_000);
+    expect(mocks.touch).toHaveBeenCalledTimes(2);
+    await reader.cancel();
+    expect(mocks.disconnect).toHaveBeenCalledWith(
+      sampleRoom.id,
+      sampleRoom.pin,
+      expect.stringMatching(/^participant-1\|/),
+    );
+    await vi.advanceTimersByTimeAsync(30_000);
+    expect(mocks.touch).toHaveBeenCalledTimes(2);
+  });
+
+  it("cleans up on presence failure so EventSource can reconnect", async () => {
+    mocks.touch.mockRejectedValueOnce(new Error("Redis unavailable"));
+    const subscriber = createMockSubscriber();
+    const response = await createSSEResponse(new Request("http://localhost"), "123456", {
+      roomRepository: createMockRoomRepo(),
+      redisRoomRepo: createMockRedisRoomRepo(),
+      createSubscriber: () => subscriber as unknown as Redis,
+    });
+    const reader = response.body!.getReader();
+    await reader.read();
+    await expect(reader.read()).rejects.toThrow("Redis unavailable");
+    await vi.advanceTimersByTimeAsync(0);
+    expect(subscriber.quit).toHaveBeenCalled();
+    expect(mocks.disconnect).toHaveBeenCalledOnce();
   });
 });

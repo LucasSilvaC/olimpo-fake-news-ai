@@ -1,7 +1,8 @@
 import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { RoomLobbyView } from "@/views/room-lobby/ui/room-lobby-view";
+import { DEFAULT_AVATAR } from "@/lib/avatar";
+import { RoomLobbyView, type RoomLobbyMember } from "@/views/room-lobby/ui/room-lobby-view";
 
 const mocks = vi.hoisted(() => ({ push: vi.fn(), refresh: vi.fn(), start: vi.fn() }));
 vi.mock("next/navigation", () => ({ useRouter: () => mocks }));
@@ -16,7 +17,7 @@ vi.mock("sonner", () => ({
 }));
 
 let events: EventTarget;
-function mount() {
+function mount(members: RoomLobbyMember[] = []) {
   return render(
     <RoomLobbyView
       room={{
@@ -29,7 +30,7 @@ function mount() {
         currentRound: 0,
         totalRounds: 1,
       }}
-      members={[]}
+      members={members}
       playlistCount={1}
       newsPreviews={[]}
       currentUserId="host"
@@ -98,5 +99,66 @@ describe("lobby landing transition", () => {
     act(() => events.dispatchEvent(new Event("ROUND_STARTED")));
     act(() => vi.advanceTimersByTime(0));
     expect(mocks.refresh).toHaveBeenCalledOnce();
+  });
+
+  it("updates cards and count on departure and reconnection, preserving the host", () => {
+    mount([
+      {
+        id: "host-member",
+        userId: "host",
+        name: "Anfitrião",
+        role: "host",
+        score: 0,
+        avatar: DEFAULT_AVATAR,
+      },
+      {
+        id: "player-member",
+        userId: "player",
+        name: "Jogador teste",
+        role: "participant",
+        score: 0,
+        avatar: DEFAULT_AVATAR,
+      },
+    ]);
+    const presence = (userIds: string[]) =>
+      act(() =>
+        events.dispatchEvent(
+          new MessageEvent("PRESENCE_CHANGED", {
+            data: JSON.stringify({ pin: "568 912", payload: { userIds } }),
+          }),
+        ),
+      );
+    presence(["host", "player"]);
+    expect(screen.getByText("2 jogadores")).toBeInTheDocument();
+    presence([]);
+    expect(screen.queryByText("Jogador teste")).not.toBeInTheDocument();
+    expect(screen.getByText("Anfitrião")).toBeInTheDocument();
+    expect(screen.getByText("1 jogador")).toBeInTheDocument();
+    presence(["player"]);
+    expect(screen.getByText("Jogador teste")).toBeInTheDocument();
+    expect(screen.getByText("2 jogadores")).toBeInTheDocument();
+    expect(mocks.refresh).not.toHaveBeenCalled();
+  });
+
+  it("ignores malformed presence snapshots", () => {
+    mount([
+      {
+        id: "player-member",
+        userId: "player",
+        name: "Jogador teste",
+        role: "participant",
+        score: 0,
+        avatar: DEFAULT_AVATAR,
+      },
+    ]);
+    act(() => events.dispatchEvent(new MessageEvent("PRESENCE_CHANGED", { data: "invalid" })));
+    act(() =>
+      events.dispatchEvent(
+        new MessageEvent("PRESENCE_CHANGED", {
+          data: JSON.stringify({ pin: "568 912", payload: { userIds: {} } }),
+        }),
+      ),
+    );
+    expect(screen.getByText("Jogador teste")).toBeInTheDocument();
   });
 });
