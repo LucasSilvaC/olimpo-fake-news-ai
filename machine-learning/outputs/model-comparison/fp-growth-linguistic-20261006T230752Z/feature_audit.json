@@ -1,0 +1,547 @@
+{
+  "records": 7200,
+  "unique_record_ids": true,
+  "quality": {
+    "quality_empty": 0,
+    "quality_noeligible": 0,
+    "quality_truncated": 7101,
+    "quality_complete_last_sentence_dropped": 6988,
+    "quality_complete_noeligible": 126
+  },
+  "distributions": {
+    "tem_autor": {
+      "present": 7200,
+      "missing": 0,
+      "zeros": 3601,
+      "unique": 2,
+      "min": 0.0,
+      "max": 1.0,
+      "mean": 0.4998611111111111,
+      "median": 0.0
+    },
+    "typeTokenRatio": {
+      "present": 7200,
+      "missing": 0,
+      "zeros": 0,
+      "unique": 434,
+      "min": 0.358974358974359,
+      "max": 0.9215686274509803,
+      "mean": 0.6813100857730955,
+      "median": 0.6833333333333333
+    },
+    "linkDensity": {
+      "present": 7200,
+      "missing": 0,
+      "zeros": 7200,
+      "unique": 1,
+      "min": 0.0,
+      "max": 0.0,
+      "mean": 0.0,
+      "median": 0.0
+    },
+    "punctuationDensity": {
+      "present": 7200,
+      "missing": 0,
+      "zeros": 1,
+      "unique": 364,
+      "min": 0.0,
+      "max": 0.47058823529411764,
+      "mean": 0.15676116302647525,
+      "median": 0.15254237288135594
+    },
+    "uppercaseRatio": {
+      "present": 7200,
+      "missing": 0,
+      "zeros": 3156,
+      "unique": 134,
+      "min": 0.0,
+      "max": 0.42,
+      "mean": 0.02139392419602696,
+      "median": 0.02
+    },
+    "diversidade": {
+      "present": 7200,
+      "missing": 0,
+      "zeros": 0,
+      "unique": 300,
+      "min": 0.5454545454545454,
+      "max": 1.0,
+      "mean": 0.8081226383610199,
+      "median": 0.8125
+    },
+    "text_chars_raw": {
+      "present": 7200,
+      "missing": 0,
+      "zeros": 0,
+      "unique": 4537,
+      "min": 46.0,
+      "max": 46084.0,
+      "mean": 3900.797777777778,
+      "median": 2187.0
+    },
+    "text_chars_normalized": {
+      "present": 7200,
+      "missing": 0,
+      "zeros": 0,
+      "unique": 4538,
+      "min": 46.0,
+      "max": 46084.0,
+      "mean": 3900.837777777778,
+      "median": 2187.0
+    },
+    "text_chars_window": {
+      "present": 7200,
+      "missing": 0,
+      "zeros": 0,
+      "unique": 85,
+      "min": 46.0,
+      "max": 300.0,
+      "mean": 298.1641666666667,
+      "median": 300.0
+    },
+    "tokens_all": {
+      "present": 7200,
+      "missing": 0,
+      "zeros": 0,
+      "unique": 67,
+      "min": 11.0,
+      "max": 82.0,
+      "mean": 57.83125,
+      "median": 58.0
+    },
+    "tokens_nonspace": {
+      "present": 7200,
+      "missing": 0,
+      "zeros": 0,
+      "unique": 64,
+      "min": 11.0,
+      "max": 77.0,
+      "mean": 56.02013888888889,
+      "median": 56.0
+    },
+    "tokens_lexical": {
+      "present": 7200,
+      "missing": 0,
+      "zeros": 0,
+      "unique": 51,
+      "min": 9.0,
+      "max": 64.0,
+      "mean": 48.611666666666665,
+      "median": 49.0
+    },
+    "punctuation_count_spacy": {
+      "present": 7200,
+      "missing": 0,
+      "zeros": 3,
+      "unique": 25,
+      "min": 0.0,
+      "max": 24.0,
+      "mean": 7.408472222222223,
+      "median": 7.0
+    },
+    "punctuationDensity_spacy": {
+      "present": 7200,
+      "missing": 0,
+      "zeros": 3,
+      "unique": 303,
+      "min": 0.0,
+      "max": 0.4,
+      "mean": 0.13058645929452725,
+      "median": 0.12727272727272726
+    },
+    "tokens_complete_lexical": {
+      "present": 7200,
+      "missing": 0,
+      "zeros": 126,
+      "unique": 60,
+      "min": 0.0,
+      "max": 60.0,
+      "mean": 36.9825,
+      "median": 39.0
+    },
+    "text_chars_complete_kept": {
+      "present": 7200,
+      "missing": 0,
+      "zeros": 18,
+      "unique": 271,
+      "min": 0.0,
+      "max": 300.0,
+      "mean": 229.73083333333332,
+      "median": 246.0
+    },
+    "POS_ADJ_count": {
+      "present": 7200,
+      "missing": 0,
+      "zeros": 851,
+      "unique": 13,
+      "min": 0.0,
+      "max": 12.0,
+      "mean": 2.3759722222222224,
+      "median": 2.0
+    },
+    "POS_ADJ_rate": {
+      "present": 7200,
+      "missing": 0,
+      "zeros": 851,
+      "unique": 151,
+      "min": 0.0,
+      "max": 0.24,
+      "mean": 0.04919450779352318,
+      "median": 0.041666666666666664
+    },
+    "POS_ADV_count": {
+      "present": 7200,
+      "missing": 0,
+      "zeros": 2155,
+      "unique": 11,
+      "min": 0.0,
+      "max": 10.0,
+      "mean": 1.4097222222222223,
+      "median": 1.0
+    },
+    "POS_ADV_rate": {
+      "present": 7200,
+      "missing": 0,
+      "zeros": 2155,
+      "unique": 132,
+      "min": 0.0,
+      "max": 0.2,
+      "mean": 0.028711981464976142,
+      "median": 0.02127659574468085
+    },
+    "POS_NOUN_count": {
+      "present": 7200,
+      "missing": 0,
+      "zeros": 1,
+      "unique": 21,
+      "min": 0.0,
+      "max": 20.0,
+      "mean": 11.065555555555555,
+      "median": 11.0
+    },
+    "POS_NOUN_rate": {
+      "present": 7200,
+      "missing": 0,
+      "zeros": 1,
+      "unique": 269,
+      "min": 0.0,
+      "max": 0.4523809523809524,
+      "mean": 0.22832921103288117,
+      "median": 0.22448979591836735
+    },
+    "POS_PROPN_count": {
+      "present": 7200,
+      "missing": 0,
+      "zeros": 76,
+      "unique": 26,
+      "min": 0.0,
+      "max": 26.0,
+      "mean": 7.911527777777778,
+      "median": 8.0
+    },
+    "POS_PROPN_rate": {
+      "present": 7200,
+      "missing": 0,
+      "zeros": 76,
+      "unique": 341,
+      "min": 0.0,
+      "max": 0.6046511627906976,
+      "mean": 0.16350420537568533,
+      "median": 0.1590909090909091
+    },
+    "POS_VERB_count": {
+      "present": 7200,
+      "missing": 0,
+      "zeros": 3,
+      "unique": 16,
+      "min": 0.0,
+      "max": 15.0,
+      "mean": 6.099166666666667,
+      "median": 6.0
+    },
+    "POS_VERB_rate": {
+      "present": 7200,
+      "missing": 0,
+      "zeros": 3,
+      "unique": 219,
+      "min": 0.0,
+      "max": 0.3333333333333333,
+      "mean": 0.12593312253943933,
+      "median": 0.12244897959183673
+    },
+    "POS_PRON_count": {
+      "present": 7200,
+      "missing": 0,
+      "zeros": 2339,
+      "unique": 12,
+      "min": 0.0,
+      "max": 12.0,
+      "mean": 1.3147222222222221,
+      "median": 1.0
+    },
+    "POS_PRON_rate": {
+      "present": 7200,
+      "missing": 0,
+      "zeros": 2339,
+      "unique": 131,
+      "min": 0.0,
+      "max": 0.21052631578947367,
+      "mean": 0.02675502804877269,
+      "median": 0.020833333333333332
+    },
+    "DEP_nsubj_count": {
+      "present": 7200,
+      "missing": 0,
+      "zeros": 58,
+      "unique": 11,
+      "min": 0.0,
+      "max": 10.0,
+      "mean": 3.564722222222222,
+      "median": 3.5
+    },
+    "DEP_nsubj_rate": {
+      "present": 7200,
+      "missing": 0,
+      "zeros": 58,
+      "unique": 159,
+      "min": 0.0,
+      "max": 0.2,
+      "mean": 0.07350226823600521,
+      "median": 0.07272727272727272
+    },
+    "DEP_complete_nsubj_count": {
+      "present": 7200,
+      "missing": 0,
+      "zeros": 275,
+      "unique": 10,
+      "min": 0.0,
+      "max": 9.0,
+      "mean": 2.843611111111111,
+      "median": 3.0
+    },
+    "DEP_complete_nsubj_rate": {
+      "present": 7074,
+      "missing": 126,
+      "zeros": 149,
+      "unique": 183,
+      "min": 0.0,
+      "max": 0.42857142857142855,
+      "mean": 0.07835012741119152,
+      "median": 0.07692307692307693
+    },
+    "DEP_obj_count": {
+      "present": 7200,
+      "missing": 0,
+      "zeros": 240,
+      "unique": 10,
+      "min": 0.0,
+      "max": 9.0,
+      "mean": 2.9779166666666668,
+      "median": 3.0
+    },
+    "DEP_obj_rate": {
+      "present": 7200,
+      "missing": 0,
+      "zeros": 240,
+      "unique": 154,
+      "min": 0.0,
+      "max": 0.2,
+      "mean": 0.06158927827851905,
+      "median": 0.061224489795918366
+    },
+    "DEP_complete_obj_count": {
+      "present": 7200,
+      "missing": 0,
+      "zeros": 582,
+      "unique": 9,
+      "min": 0.0,
+      "max": 8.0,
+      "mean": 2.4272222222222224,
+      "median": 2.0
+    },
+    "DEP_complete_obj_rate": {
+      "present": 7074,
+      "missing": 126,
+      "zeros": 456,
+      "unique": 181,
+      "min": 0.0,
+      "max": 0.2857142857142857,
+      "mean": 0.06686459992905677,
+      "median": 0.06451612903225806
+    },
+    "DEP_amod_count": {
+      "present": 7200,
+      "missing": 0,
+      "zeros": 1185,
+      "unique": 11,
+      "min": 0.0,
+      "max": 10.0,
+      "mean": 1.9825,
+      "median": 2.0
+    },
+    "DEP_amod_rate": {
+      "present": 7200,
+      "missing": 0,
+      "zeros": 1185,
+      "unique": 142,
+      "min": 0.0,
+      "max": 0.20833333333333334,
+      "mean": 0.04113480307098024,
+      "median": 0.0392156862745098
+    },
+    "DEP_complete_amod_count": {
+      "present": 7200,
+      "missing": 0,
+      "zeros": 1813,
+      "unique": 10,
+      "min": 0.0,
+      "max": 10.0,
+      "mean": 1.55875,
+      "median": 1.0
+    },
+    "DEP_complete_amod_rate": {
+      "present": 7074,
+      "missing": 126,
+      "zeros": 1687,
+      "unique": 166,
+      "min": 0.0,
+      "max": 0.375,
+      "mean": 0.04292872142835681,
+      "median": 0.037037037037037035
+    },
+    "DEP_advmod_count": {
+      "present": 7200,
+      "missing": 0,
+      "zeros": 2375,
+      "unique": 10,
+      "min": 0.0,
+      "max": 9.0,
+      "mean": 1.2916666666666667,
+      "median": 1.0
+    },
+    "DEP_advmod_rate": {
+      "present": 7200,
+      "missing": 0,
+      "zeros": 2375,
+      "unique": 125,
+      "min": 0.0,
+      "max": 0.18,
+      "mean": 0.02629888954863169,
+      "median": 0.020833333333333332
+    },
+    "DEP_complete_advmod_count": {
+      "present": 7200,
+      "missing": 0,
+      "zeros": 3013,
+      "unique": 8,
+      "min": 0.0,
+      "max": 7.0,
+      "mean": 1.0026388888888889,
+      "median": 1.0
+    },
+    "DEP_complete_advmod_rate": {
+      "present": 7074,
+      "missing": 126,
+      "zeros": 2887,
+      "unique": 144,
+      "min": 0.0,
+      "max": 0.21052631578947367,
+      "mean": 0.026608734321190156,
+      "median": 0.022727272727272728
+    },
+    "DEP_ccomp_count": {
+      "present": 7200,
+      "missing": 0,
+      "zeros": 4252,
+      "unique": 6,
+      "min": 0.0,
+      "max": 5.0,
+      "mean": 0.5797222222222222,
+      "median": 0.0
+    },
+    "DEP_ccomp_rate": {
+      "present": 7200,
+      "missing": 0,
+      "zeros": 4252,
+      "unique": 78,
+      "min": 0.0,
+      "max": 0.09615384615384616,
+      "mean": 0.011926809975023343,
+      "median": 0.0
+    },
+    "DEP_complete_ccomp_count": {
+      "present": 7200,
+      "missing": 0,
+      "zeros": 4724,
+      "unique": 6,
+      "min": 0.0,
+      "max": 5.0,
+      "mean": 0.46291666666666664,
+      "median": 0.0
+    },
+    "DEP_complete_ccomp_rate": {
+      "present": 7074,
+      "missing": 126,
+      "zeros": 4598,
+      "unique": 94,
+      "min": 0.0,
+      "max": 0.125,
+      "mean": 0.012520811588791427,
+      "median": 0.0
+    },
+    "DEP_advcl_count": {
+      "present": 7200,
+      "missing": 0,
+      "zeros": 4224,
+      "unique": 5,
+      "min": 0.0,
+      "max": 4.0,
+      "mean": 0.5375,
+      "median": 0.0
+    },
+    "DEP_advcl_rate": {
+      "present": 7200,
+      "missing": 0,
+      "zeros": 4224,
+      "unique": 70,
+      "min": 0.0,
+      "max": 0.09090909090909091,
+      "mean": 0.0110469918310301,
+      "median": 0.0
+    },
+    "DEP_complete_advcl_count": {
+      "present": 7200,
+      "missing": 0,
+      "zeros": 4757,
+      "unique": 5,
+      "min": 0.0,
+      "max": 4.0,
+      "mean": 0.42041666666666666,
+      "median": 0.0
+    },
+    "DEP_complete_advcl_rate": {
+      "present": 7074,
+      "missing": 126,
+      "zeros": 4631,
+      "unique": 86,
+      "min": 0.0,
+      "max": 0.14285714285714285,
+      "mean": 0.011195704059652752,
+      "median": 0.0
+    }
+  },
+  "legacy_identity_max_abs_error": 1.1102230246251565e-16,
+  "denominators": {
+    "POS_and_DEP": "tokens_lexical: excludes space/punctuation, includes NUM",
+    "punctuationDensity_spacy": "tokens_nonspace",
+    "DEP_complete": "tokens_complete_lexical"
+  },
+  "warnings": [
+    "Legacy typeTokenRatio = diversidade * (1 - punctuationDensity); rules between them may be mathematical.",
+    "Legacy punctuationDensity includes numeric regex tokens; spaCy punctuation is a separately versioned measurement.",
+    "POS rates and DEP rates are compositions over the same lexical tokens; tags within each system compete for mass.",
+    "POS and DEP are model predictions; ADJ/amod and ADV/advmod may be structurally redundant.",
+    "DEP_complete drops the possibly clipped final predicted sentence without reparsing; terminal punctuation and predicted boundaries can be wrong.",
+    "Missing rates indicate zero eligible tokens; zero rates in valid documents mean the tag was absent."
+  ]
+}

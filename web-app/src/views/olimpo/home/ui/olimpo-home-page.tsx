@@ -1,5 +1,3 @@
-import { ShieldCheck } from "lucide-react";
-import Link from "next/link";
 import { connection } from "next/server";
 import * as React from "react";
 
@@ -26,20 +24,7 @@ export async function OlimpoHomePage(): Promise<React.ReactElement> {
         className="pointer-events-none absolute right-[-8rem] bottom-1/4 -z-10 size-96 rounded-full bg-indigo-400/20 blur-3xl"
       />
 
-      <Header
-        className="relative z-20"
-        logo={
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2.5 text-lg font-extrabold tracking-tight text-white transition-opacity hover:opacity-85 sm:text-xl"
-          >
-            <span className="flex size-9 items-center justify-center rounded-xl bg-white text-blue-600 shadow-lg shadow-blue-950/20">
-              <ShieldCheck className="size-5" aria-hidden="true" />
-            </span>
-            Olimpo
-          </Link>
-        }
-      >
+      <Header className="relative z-20">
         <ProfileProgress name={user.name} xp={user.xp} avatar={user.avatar} />
       </Header>
 

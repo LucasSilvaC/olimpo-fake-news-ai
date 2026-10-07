@@ -3,6 +3,7 @@ import { Montserrat } from "next/font/google";
 
 import { Toaster } from "@/components/atoms/sonner";
 import { ThemeProvider } from "@/components/organisms/theme-provider";
+import { VlibrasWidget } from "@/components/organisms/vlibras-widget";
 import { Footer } from "@/widgets/footer";
 
 import "./globals.css";
@@ -28,6 +29,7 @@ export default function RootLayout({ children }: IRootLayoutProps): React.ReactE
         <ThemeProvider>
           {children}
           <Footer />
+          <VlibrasWidget />
           <Toaster position="top-center" richColors duration={7000} />
         </ThemeProvider>
       </body>

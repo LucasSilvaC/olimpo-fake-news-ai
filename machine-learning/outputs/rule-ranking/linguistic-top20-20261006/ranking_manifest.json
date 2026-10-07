@@ -1,0 +1,56 @@
+{
+  "status": "executed",
+  "created_utc": "2026-10-06T23:46:36.857627+00:00",
+  "source_run": "fp-growth-linguistic-20261006T230752Z",
+  "variant": "corrected_pos_dep",
+  "directed_rules": 152,
+  "unique_patterns": 93,
+  "max_requested": 20,
+  "selected": 20,
+  "target_counts": {
+    "True": 20
+  },
+  "selection": "Validation class labels only; no test/all-corpus values used. Supervised post-selection of label-free discoveries.",
+  "score": "100 * max(target-purity CI95 lower fraction - target baseline fraction,0) * sqrt(target class coverage fraction) * representative train-rule rediscovery fraction",
+  "eligibility": {
+    "minimum_validation_occurrences": 100,
+    "paired_permutation_q_BY_max": 0.05,
+    "ranking_score_positive": true,
+    "max_coverage_Jaccard": 0.8
+  },
+  "bootstrap": {
+    "repetitions": 1000,
+    "seed": 42,
+    "unit": "whole canonical groups",
+    "interval": "pointwise percentile95; no simultaneous/selection correction"
+  },
+  "permutation": {
+    "repetitions": 4999,
+    "seed": 42,
+    "unit": "swap class labels within whole balanced canonical groups",
+    "two_sided": "absolute difference",
+    "adjustments": [
+      "BH",
+      "BY"
+    ],
+    "family": 93
+  },
+  "author_control": "Standardize stratum class purity to each partition population author shares; subtract corresponding stratum baseline, not causal adjustment.",
+  "percentage_scale": "0--100; pp columns are percentage-point differences",
+  "occurrence_definition": "all antecedent AND consequent items present; reverse arrows share composition",
+  "source_sha256": {
+    "compare_linguistic_rules.py": "3967dd2f5c95054e0f980a7199a3fce8a2d5565c337679f8f890c69c90772f28",
+    "features.csv": "dae520912360c8cb2e0a5dcee17bcd77b9d615e3146bc94fc3fc4c1e879a16fe",
+    "split_assignments.csv": "948f25c0409861b8f15d970ec78fa57368bf7d84a312706c41f1efbcabb59481",
+    "discretization.csv": "6308bd5c023cd6737fcb5c78461bbb92432a74241a1067f69ba3de079660b404",
+    "rule_metrics.csv": "859a23be1caf7727926f3827ad8a4a617b8b7195e5a764fb8da6b7dcd9d855d1",
+    "training_rediscovery_stability.csv": "298f4b29937816a975c31af9bd16af451516e8a6b72cc8fdb84796948dcd9e59"
+  },
+  "notes": [
+    "Canonical test already used; exploratory and not confirmatory.",
+    "Ranking with labels is not wholly unsupervised.",
+    "Composition is not causality, external accuracy, or a factual verification system.",
+    "In-sample group bootstrap can understate uncertainty with zero/small minority cells; author-overlap counts are exposed.",
+    "Representative direction chosen by train rediscovery, train lift and train confidence, not class purity."
+  ]
+}

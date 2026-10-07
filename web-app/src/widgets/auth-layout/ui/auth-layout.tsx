@@ -33,7 +33,7 @@ export function AuthLayout({ children }: { children: ReactNode }) {
           scroll={false}
           className={cn(
             buttonVariants(),
-            "h-16 w-[180px] shrink-0 cursor-pointer whitespace-nowrap rounded-full border border-white/20 bg-white/15 px-6 text-lg font-semibold text-white shadow-sm backdrop-blur-sm hover:border-white/50 hover:bg-white/15 hover:opacity-100 focus-visible:ring-amber-300",
+            "h-16 w-[180px] shrink-0 cursor-pointer rounded-full border border-white/20 bg-white/15 px-6 text-lg font-semibold whitespace-nowrap text-white shadow-sm backdrop-blur-sm hover:border-white/50 hover:bg-white/15 hover:opacity-100 focus-visible:ring-amber-300",
           )}
         >
           {isLogin ? "Criar conta" : "Entrar"}
@@ -49,7 +49,7 @@ export function AuthLayout({ children }: { children: ReactNode }) {
         <div
           className={cn(
             styles.intro,
-            "min-w-0 transition-transform duration-[850ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none",
+            "min-w-0 transition-transform duration-[850ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none motion-reduce:duration-0",
           )}
         >
           <AuthIntro isLogin={isLogin} />
@@ -57,7 +57,7 @@ export function AuthLayout({ children }: { children: ReactNode }) {
         <div
           className={cn(
             styles.form,
-            "relative z-[1] min-w-0 transition-transform duration-[850ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none",
+            "relative z-[1] min-w-0 transition-transform duration-[850ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none motion-reduce:duration-0",
           )}
         >
           {children}

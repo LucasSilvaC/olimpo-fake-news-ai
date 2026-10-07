@@ -1,0 +1,147 @@
+{
+  "data": "2026-10-07",
+  "metodo": "WCAG luminancia relativa; OKLCH convertido para sRGB com clipping",
+  "escopo": "Pares opacos selecionados no codigo; sem medir DOM, opacidades, hover ou todas as telas",
+  "fontes": [
+    "web-app/src/app/globals.css",
+    "web-app/node_modules/tailwindcss/theme.css"
+  ],
+  "medicoes": [
+    {
+      "par": "Texto principal claro",
+      "frente": "oklch(0.145 0 0)",
+      "fundo": "oklch(1 0 0)",
+      "razao": 19.793,
+      "limiar": 4.5,
+      "atinge_limiar": true
+    },
+    {
+      "par": "Texto principal escuro",
+      "frente": "oklch(0.985 0 0)",
+      "fundo": "oklch(0.145 0 0)",
+      "razao": 18.958,
+      "limiar": 4.5,
+      "atinge_limiar": true
+    },
+    {
+      "par": "Texto de card escuro",
+      "frente": "oklch(0.985 0 0)",
+      "fundo": "oklch(0.205 0 0)",
+      "razao": 17.157,
+      "limiar": 4.5,
+      "atinge_limiar": true
+    },
+    {
+      "par": "Primary claro",
+      "frente": "oklch(0.985 0 0)",
+      "fundo": "oklch(0.205 0 0)",
+      "razao": 17.157,
+      "limiar": 4.5,
+      "atinge_limiar": true
+    },
+    {
+      "par": "Primary escuro",
+      "frente": "oklch(0.205 0 0)",
+      "fundo": "oklch(0.922 0 0)",
+      "razao": 14.225,
+      "limiar": 4.5,
+      "atinge_limiar": true
+    },
+    {
+      "par": "Muted claro",
+      "frente": "oklch(0.556 0 0)",
+      "fundo": "oklch(0.97 0 0)",
+      "razao": 4.339,
+      "limiar": 4.5,
+      "atinge_limiar": false
+    },
+    {
+      "par": "Muted escuro",
+      "frente": "oklch(0.708 0 0)",
+      "fundo": "oklch(0.269 0 0)",
+      "razao": 5.829,
+      "limiar": 4.5,
+      "atinge_limiar": true
+    },
+    {
+      "par": "Cadastro: slate-900 / slate-50",
+      "frente": "oklch(20.8% 0.042 265.755)",
+      "fundo": "oklch(98.4% 0.003 247.858)",
+      "razao": 17.047,
+      "limiar": 4.5,
+      "atinge_limiar": true
+    },
+    {
+      "par": "Cadastro: placeholder slate-500 / slate-50",
+      "frente": "oklch(55.4% 0.046 257.417)",
+      "fundo": "oklch(98.4% 0.003 247.858)",
+      "razao": 4.554,
+      "limiar": 4.5,
+      "atinge_limiar": true
+    },
+    {
+      "par": "Botao: slate-950 / amber-400",
+      "frente": "oklch(12.9% 0.042 264.695)",
+      "fundo": "oklch(82.8% 0.189 84.429)",
+      "razao": 11.747,
+      "limiar": 4.5,
+      "atinge_limiar": true
+    },
+    {
+      "par": "Erro: red-700 / branco",
+      "frente": "oklch(50.5% 0.213 27.518)",
+      "fundo": "#ffffff",
+      "razao": 6.42,
+      "limiar": 4.5,
+      "atinge_limiar": true
+    },
+    {
+      "par": "Foco cadastro: blue-700 / branco",
+      "frente": "oklch(48.8% 0.243 264.376)",
+      "fundo": "#ffffff",
+      "razao": 6.824,
+      "limiar": 3,
+      "atinge_limiar": true
+    },
+    {
+      "par": "Ring claro / background",
+      "frente": "oklch(0.708 0 0)",
+      "fundo": "oklch(1 0 0)",
+      "razao": 2.593,
+      "limiar": 3,
+      "atinge_limiar": false
+    },
+    {
+      "par": "Border claro / background",
+      "frente": "oklch(0.922 0 0)",
+      "fundo": "oklch(1 0 0)",
+      "razao": 1.259,
+      "limiar": 3,
+      "atinge_limiar": false
+    },
+    {
+      "par": "Texto branco / parada do gradiente #4387f4",
+      "frente": "#ffffff",
+      "fundo": "#4387f4",
+      "razao": 3.494,
+      "limiar": 4.5,
+      "atinge_limiar": false
+    },
+    {
+      "par": "Texto branco / parada do gradiente #3478ed",
+      "frente": "#ffffff",
+      "fundo": "#3478ed",
+      "razao": 4.154,
+      "limiar": 4.5,
+      "atinge_limiar": false
+    },
+    {
+      "par": "Texto branco / parada do gradiente #2f70e3",
+      "frente": "#ffffff",
+      "fundo": "#2f70e3",
+      "razao": 4.618,
+      "limiar": 4.5,
+      "atinge_limiar": true
+    }
+  ]
+}

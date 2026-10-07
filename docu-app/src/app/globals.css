@@ -1,0 +1,58 @@
+@import "tailwindcss";
+
+:root {
+  --background: #3478ed;
+  --foreground: oklch(20.8% 0.042 265.755);
+  --card: #ffffff;
+  --card-foreground: oklch(20.8% 0.042 265.755);
+  --muted: oklch(97% 0.014 254.604);
+  --muted-foreground: oklch(44.6% 0.043 257.281);
+  --border: oklch(92.9% 0.013 255.508);
+  --primary: oklch(82.8% 0.189 84.429);
+  --primary-foreground: oklch(12.9% 0.042 264.695);
+  --ring: oklch(54.6% 0.245 262.881);
+  --radius: 1rem;
+}
+
+@theme inline {
+  --font-sans: var(--font-montserrat);
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-ring: var(--ring);
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 2rem;
+  }
+
+  body {
+    min-height: 100vh;
+    color: #ffffff;
+    background: radial-gradient(120% 120% at 50% 20%, #4387f4 0%, #3478ed 45%, #2f70e3 100%);
+  }
+
+  ::selection {
+    color: #172554;
+    background: #fde68a;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}

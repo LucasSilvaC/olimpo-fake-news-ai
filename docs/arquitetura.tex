@@ -118,8 +118,8 @@
       \textbf{Parcerias:} & PUCC \& Instituto de Pesquisas Eldorado \\
       \textbf{Stack Principal:} & Next.js 16, TypeScript, PostgreSQL (Supabase / Drizzle), Redis, SSE \\
       \textbf{Tipografia:} & Calibri (Sans-Serif Corporativo) \\
-      \textbf{Versão do Doc:} & 1.0.0 \\
-      \textbf{Data:} & 2026
+      \textbf{Versão do Doc:} & 1.2.0 \\
+      \textbf{Data:} & 7 de outubro de 2026
     \end{tabular}
   \end{minipage}
 
@@ -771,6 +771,272 @@ A estrutura de testes no repositório é organizada e executada conforme a taxon
     \end{quote}
   \end{itemize}
 \end{enumerate}
+
+% ==============================================================================
+% SEÇÃO 16: CI/CD, VERSIONAMENTO E DEPLOY DO WEB-APP
+% ==============================================================================
+\newpage
+\section{CI/CD, Versionamento e Deploy do Web-App}
+\label{sec:cicd}
+\begingroup
+\sloppy
+
+\subsection{O que é?}
+O ciclo de entrega do \textbf{web-app} combina versionamento em Git, validação automatizada em \textbf{GitHub Actions} e configuração de implantação em \textbf{Vercel} ou contêineres \textbf{Docker}. A integração contínua (CI) verifica qualidade, testes, compilação e segurança das alterações. A entrega e implantação (CD) dependem do ambiente de hospedagem escolhido.
+
+\textbf{Escopo verificado em 7 de outubro de 2026:} o repositório contém quatro workflows de verificação e a configuração de build da Vercel, mas \textbf{não contém um workflow de publicação}, push de imagem para registry ou promoção entre ambientes. Assim, a configuração em código comprova como o aplicativo é preparado para deploy; a conexão Git da Vercel, a branch de produção, os domínios e as variáveis cadastradas no provedor precisam ser conferidos no painel. Também não há evidência local de que um deploy aguarde o sucesso das verificações do GitHub.
+
+\subsection{Por que?}
+\begin{itemize}
+  \item \textbf{Reprodutibilidade:} o lockfile fixa a resolução de dependências e o CI instala com \texttt{--frozen-lockfile}, evitando alterações silenciosas durante a validação.
+  \item \textbf{Rastreabilidade:} branches, pull requests e commits identificam as alterações de aplicação, infraestrutura e migrações de banco de dados.
+  \item \textbf{Qualidade antes da entrega:} formatação, lint, tipos, testes e build são executados em sequência; uma falha interrompe as etapas seguintes do job.
+  \item \textbf{Segurança contínua:} auditoria de pacotes, análise estática e revisão de dependências complementam os testes funcionais.
+  \item \textbf{Separação dos ambientes:} o build adaptado à Vercel e o artefato standalone para Docker atendem formas diferentes de executar a mesma aplicação.
+\end{itemize}
+
+\subsection{Como foi feito o versionamento?}
+\subsubsection{Git, branches e pull requests}
+O histórico local registra branches \texttt{main} e \texttt{dev}, além de branches de trabalho com prefixos como \texttt{feat/} e \texttt{feature/}. A evolução foi integrada por pull requests e merges, inclusive de \texttt{dev} para \texttt{main}. Isso descreve o fluxo observado; não comprova uma política obrigatória de branches ou proteção configurada no GitHub.
+
+Marcos verificáveis da implantação e das pipelines:
+\begin{itemize}
+  \item \texttt{09cf602} (16/09/2026), \texttt{chore(ci): configure github quality gates}: centralizou os workflows na pasta \path{.github/workflows/} da raiz e incluiu CodeQL, Dependency Review e Dependabot.
+  \item \texttt{5984233} (16/09/2026), \texttt{chore(deploy): configure vercel build}: adicionou \path{web-app/vercel.json} com os comandos de instalação e compilação.
+  \item \texttt{fed0e47}, \texttt{chore(config): next config standalone}: registrou a configuração de saída standalone do Next.js.
+  \item \texttt{9445a2b} (06/10/2026), \texttt{chore(deploy): update container setup and docs}: atualizou Dockerfile, Compose e instruções de execução em contêiner.
+\end{itemize}
+
+\subsubsection{Conventional Commits e hooks locais}
+O arquivo \path{web-app/commitlint.config.mjs} utiliza \texttt{@commitlint/config-conventional} e exige tipo, escopo e assunto em letras minúsculas, com limite de 100 caracteres no cabeçalho. Exemplos compatíveis: \texttt{feat(auth): adiciona avatar}, \texttt{fix(deploy): ajusta build} e \texttt{ci(checks): atualiza verificacoes}.
+
+O Husky é instalado pelo script \texttt{prepare}. O hook \texttt{pre-commit} executa \texttt{pnpm exec lint-staged}: arquivos TypeScript recebem ESLint com correção e Prettier; CSS, JSON, Markdown e YAML recebem Prettier. O hook \texttt{commit-msg} valida a mensagem com Commitlint. Esses hooks atuam na estação do desenvolvedor; o \texttt{pre-commit} não executa toda a suíte de testes. O histórico também possui mensagens anteriores ou de merge fora do padrão, portanto a configuração atual não implica conformidade retroativa de todos os commits.
+
+\subsubsection{Versões do pacote, dependências e banco}
+\path{web-app/package.json} declara \texttt{version: 0.1.0}, \texttt{private: true} e \texttt{packageManager: pnpm@11.10.0}. A versão do pacote identifica o projeto, mas não é incrementada por uma pipeline de release. Não foram encontradas tags Git no checkout inspecionado nem automação de changelog ou release; a referência auditável de uma entrega é o commit utilizado.
+
+\path{web-app/pnpm-lock.yaml} versiona as dependências resolvidas. O arquivo \texttt{.nvmrc} fixa Node.js 24 para desenvolvimento e CI, em acordo com \texttt{engines.node} (\texttt{>=24.0.0 <25.0.0}). O Dockerfile atualmente usa \texttt{node:26-alpine}, uma divergência que deve ser considerada ao reproduzir o ambiente; este documento registra o estado existente.
+
+As migrações SQL e os metadados do Drizzle ficam em \path{web-app/drizzle/}. \texttt{pnpm db:generate} gera migrações e \texttt{pnpm db:migrate} as aplica. A alteração de schema deve acompanhar o commit da aplicação, permitindo relacionar código e banco. A reversão do código não desfaz automaticamente migrações já aplicadas.
+
+\subsection{Pipelines de integração contínua}
+\subsubsection{CI: validação completa}
+\path{.github/workflows/ci.yml} é acionado em \textbf{pull requests} e em \textbf{push para main}. O job \texttt{verify} executa em \texttt{ubuntu-latest}, com timeout de 20 minutos e diretório de trabalho \texttt{web-app}. A permissão é \texttt{contents: read}; execuções anteriores do mesmo grupo são canceladas quando há uma atualização.
+
+A sequência implementada é:
+\begin{enumerate}
+  \item Checkout do código, instalação do pnpm 11.10.0 e configuração do Node.js usando \texttt{web-app/.nvmrc}, com cache do pnpm vinculado ao lockfile.
+  \item \texttt{pnpm install --frozen-lockfile} para instalar sem regenerar o lockfile.
+  \item \texttt{pnpm audit --audit-level high} para verificar vulnerabilidades de alta severidade ou superiores.
+  \item \texttt{pnpm check}, que executa, nesta ordem: \texttt{format:check}, \texttt{lint}, \texttt{typecheck}, \texttt{test} e \texttt{build}. O script \texttt{test} reúne Vitest (\texttt{test:unit}) e os testes legados com TSX (\texttt{test:legacy}).
+  \item Instalação do Chromium e dependências de sistema com \texttt{pnpm exec playwright install --with-deps chromium}.
+  \item \texttt{pnpm test:e2e} para os testes de interface com Playwright.
+\end{enumerate}
+
+O workflow define \texttt{NODE\_ENV=test} e a URL pública local. Não provisiona serviços PostgreSQL ou Redis, não aplica migrações e não injeta credenciais de produção. A configuração atual do Playwright executa \textbf{somente Chromium}, inicia \texttt{pnpm dev}, usa até duas novas tentativas no CI e coleta trace na primeira tentativa adicional. Portanto, esses E2E exercitam o servidor de desenvolvimento; o build de produção é verificado em uma etapa separada.
+
+\subsubsection{Automated Code Review}
+\path{.github/workflows/code-review.yml} roda quando uma PR é aberta, atualizada ou reaberta. Prepara Node.js e pnpm, instala com lockfile congelado, publica achados de ESLint via \textbf{reviewdog}, executa \texttt{pnpm typecheck} e \texttt{pnpm test:unit}. O job tem timeout de 20 minutos e permite escrita em pull requests.
+
+Os comentários do reviewdog só são publicados quando a branch da PR pertence ao mesmo repositório; o filtro prioriza linhas adicionadas. A opção \texttt{fail\_level: none} torna essa etapa de comentários informativa. Typecheck e testes continuam sujeitos a falha, e o lint bloqueante está no workflow CI. O script local \texttt{pnpm review:pr}, que usa Acrux, é uma ferramenta distinta: não é executado por esse workflow.
+
+\subsubsection{CodeQL e Dependency Review}
+\begin{itemize}
+  \item \textbf{CodeQL} (\path{.github/workflows/codeql.yml}): analisa JavaScript/TypeScript sem etapa de build, em PRs, pushes para \texttt{main} e semanalmente pelo cron \texttt{30 2 * * 1} (segunda-feira às 02:30 UTC; domingo às 23:30 em São Paulo). A permissão \texttt{security-events: write} permite enviar os resultados à área de segurança do GitHub.
+  \item \textbf{Dependency Review} (\path{.github/workflows/dependency-review.yml}): verifica alterações de dependências em PRs, com timeout de 10 minutos e \texttt{fail-on-severity: high}. Complementa a auditoria do CI ao analisar o delta de dependências.
+  \item \textbf{Dependabot} (\path{.github/dependabot.yml}): verifica semanalmente pacotes npm de \texttt{/web-app}, imagens Docker e GitHub Actions; atualizações npm minor e patch são agrupadas em \texttt{non-major}. Essa configuração cria propostas de atualização, sem configurar merge automático.
+\end{itemize}
+
+As quatro pipelines não formam um único job encadeado: seus gatilhos permitem execuções independentes. Torná-las requisitos obrigatórios para merge depende das regras de proteção do repositório, que não são demonstradas pelos arquivos YAML.
+
+\subsection{Deploy do web-app}
+\subsubsection{Vercel: configuração disponível}
+\path{web-app/vercel.json} identifica o framework \texttt{nextjs} e declara:
+\begin{quote}
+\texttt{installCommand: pnpm install --frozen-lockfile}\\
+\texttt{buildCommand: pnpm build}
+\end{quote}
+
+Em \path{web-app/next.config.ts}, a variável \texttt{VERCEL=1} desativa \texttt{output: standalone}. O comentário do código registra que o adaptador de build da Vercel não precisa desse formato e que sua finalização standalone apresenta incompatibilidade nessa versão do Next.js. Fora da Vercel, o projeto mantém a saída standalone para hospedagem própria e Docker.
+
+Para reproduzir a configuração de hospedagem, o projeto da Vercel deve apontar para o diretório raiz \texttt{web-app}, usar uma versão de Node.js compatível com o pacote e receber as variáveis de cada ambiente. A integração Git pode ser utilizada para publicar revisões; sua ativação, a branch de produção e a existência de previews são configurações externas a confirmar. Não há comando de deploy da Vercel nos workflows inspecionados nem migração de banco no build configurado.
+
+\subsubsection{Docker: artefato de produção e Compose local}
+O Dockerfile utiliza estágios separados: \texttt{base}, \texttt{dependencies}, \texttt{development}, \texttt{migrator}, \texttt{builder} e \texttt{runner}. A instalação usa lockfile congelado; o builder executa \texttt{pnpm build}. O runner copia \texttt{.next/standalone}, \texttt{.next/static} e \texttt{public}, executa como usuário \texttt{nextjs} e inicia \texttt{node server.js} na porta 3000.
+
+\textbf{O Compose atual é de desenvolvimento:} \path{web-app/compose.yaml} seleciona o estágio \texttt{development}, monta o código local e inicia Next.js com Webpack, polling e Fast Refresh. Ele sobe PostgreSQL 18 e Redis 7 com volumes persistentes. O serviço \texttt{migrate} aguarda o PostgreSQL saudável; o aplicativo aguarda PostgreSQL, Redis e a conclusão bem-sucedida das migrações.
+
+Execução local a partir de \texttt{web-app}:
+\begin{verbatim}
+docker compose up -d --build
+docker compose logs -f app
+\end{verbatim}
+
+Para gerar manualmente um artefato de produção, o alvo correto é \texttt{runner}. O roteiro abaixo é uma possibilidade operacional baseada no Dockerfile, \textbf{não uma pipeline de publicação existente}; substitua \texttt{<sha>} pelo commit entregue:
+\begin{verbatim}
+docker build --target runner -t olimpo-web:<sha> .
+docker run --rm --env-file .env.production \
+  -e HOSTNAME=0.0.0.0 -p 3000:3000 olimpo-web:<sha>
+\end{verbatim}
+
+O exemplo usa continuação de linha de shell POSIX; em PowerShell, execute o comando \texttt{docker run} em uma linha. O arquivo \texttt{.env.production} deve ser criado no ambiente de operação e não versionado. Essa execução pressupõe PostgreSQL e Redis acessíveis pelo contêiner e migrações previamente aplicadas; os serviços locais do Compose não são provisionados por \texttt{docker run}.
+
+\subsubsection{Variáveis, migrações e verificação da entrega}
+As variáveis documentadas em \path{web-app/.env.example} incluem:
+\begin{itemize}
+  \item \texttt{DATABASE\_URL}: conexão PostgreSQL do ambiente, com Drizzle e migrações apontando para o mesmo banco.
+  \item \texttt{REDIS\_URL}: conexão do cache e dos eventos Pub/Sub.
+  \item \texttt{AUTH\_SECRET}: segredo de assinatura das sessões; o valor de exemplo é destinado ao desenvolvimento.
+  \item \texttt{NEXT\_PUBLIC\_APP\_URL}: URL pública da aplicação, a definir antes da compilação quando utilizada no código cliente.
+  \item \texttt{JINA\_API\_KEY}: credencial opcional do fallback de extração de notícias.
+\end{itemize}
+
+Na implantação Vercel ou no runner Docker, a aplicação das migrações exige uma etapa operacional separada (\texttt{pnpm db:migrate} em ambiente com dependências e acesso ao banco). O serviço migrator do Compose cobre somente o fluxo ali definido. O pipeline CI não executa migrações contra produção.
+
+Após publicar, \texttt{GET /api/health} retorna \texttt{\{"status":"ok"\}} e permite verificar a resposta HTTP do aplicativo. Esse endpoint não consulta PostgreSQL nem Redis; login, criação/entrada em sala e recebimento de eventos devem ser verificados para avaliar as integrações. Registre o commit entregue, o resultado dos checks e a revisão de hospedagem ou imagem utilizada.
+
+Uma reversão deve selecionar uma revisão ou imagem anterior identificável e avaliar a compatibilidade com o schema vigente. Não há automação de rollback no repositório. A implantação de CD encadeado ao CI, publicação de imagens, promoção de ambientes e releases com tags permanece uma evolução possível, não parte do fluxo implementado.
+
+\par
+\endgroup
+
+% ==============================================================================
+% SEÇÃO 17: ACESSIBILIDADE DIGITAL, VLIBRAS E WCAG
+% ==============================================================================
+\newpage
+\section{Acessibilidade Digital, VLibras e WCAG}
+\label{sec:acessibilidade}
+\begingroup
+\sloppy
+
+\subsection{O que é?}
+A acessibilidade do Olimpo é apoiada por integração com \textbf{VLibras}, HTML semântico, atributos ARIA, foco visível, identificação textual de erros e respeito à preferência de redução de movimento em componentes específicos. Esta seção relaciona essas implementações a critérios da \textbf{WCAG 2.2}, publicada pelo W3C, e apresenta medições reproduzíveis de contraste realizadas em 7 de outubro de 2026.
+
+As WCAG organizam a acessibilidade em quatro princípios: conteúdo perceptível, interface operável, informação compreensível e implementação robusta. O nível AA exige o atendimento dos critérios A e AA aplicáveis às páginas completas e aos processos completos. A referência normativa é a \href{https://www.w3.org/TR/WCAG22/}{recomendação WCAG 2.2 do W3C}.
+
+\textbf{Resultado da análise:} há evidências concretas de recursos de acessibilidade e de pares de cores com contraste adequado. Contudo, também foram identificados pares abaixo dos limiares de referência e uma falha em teste de componente. O levantamento não permite declarar que todas as cores, telas ou funcionalidades atendem integralmente à WCAG AA. Trata-se de documentação de implementação e verificação parcial, com o escopo explicitado a seguir.
+
+\subsection{Por que?}
+O jogo utiliza notícias, formulários, decisões de votação e atualizações em tempo real. Rótulos acessíveis e informações textuais auxiliam usuários de leitores de tela; foco visível e controles nativos favorecem navegação por teclado; contraste ajuda pessoas com baixa visão; a redução de movimento atende preferências de usuários sensíveis a animações. O VLibras acrescenta uma opção de tradução de conteúdo para pessoas que utilizam a Língua Brasileira de Sinais.
+
+\subsection{Como o VLibras foi integrado?}
+\path{web-app/src/components/organisms/vlibras-widget.tsx} implementa o componente cliente \texttt{VlibrasWidget}. Ele é importado e renderizado no layout raiz, \path{web-app/src/app/layout.tsx}, dentro do provedor de tema, junto aos elementos globais da aplicação. Assim, sua montagem está prevista nas rotas que utilizam esse layout.
+
+As evidências de integração são:
+\begin{itemize}
+  \item Carregamento do script oficial \url{https://vlibras.gov.br/app/vlibras-plugin.js} via \texttt{next/script}, com estratégia \texttt{afterInteractive}.
+  \item Inicialização no callback \texttt{onReady}, após verificar a presença de \texttt{window.VLibras}, com \texttt{new window.VLibras.Widget} apontando para \url{https://vlibras.gov.br/app}.
+  \item Marcação de integração com os atributos \texttt{vw}, \texttt{vw-access-button} e \texttt{vw-plugin-wrapper}, e identificação do contêiner como \texttt{Widget de acessibilidade VLibras}.
+\end{itemize}
+
+O uso do script e do construtor está alinhado às formas descritas no \href{https://vlibras.gov.br/doc/widget/installation/webpageintegration.html}{manual oficial de integração do VLibras}. A finalidade de tradução do português para Libras é descrita na \href{https://vlibras.gov.br/doc/widget/introduction/overview.html}{visão geral oficial da ferramenta}.
+
+A inspeção confirma a integração no código, não o carregamento efetivo do serviço em produção nem a qualidade de cada tradução. O widget depende do serviço externo. A presença de tradução para Libras complementa os demais recursos; por si só, não comprova conformidade WCAG, acessibilidade por teclado ou compatibilidade de toda a interface com leitores de tela.
+
+\subsection{Evidências no código e relação com WCAG}
+\subsubsection{Idioma, estrutura e nomes acessíveis}
+\begin{itemize}
+  \item \textbf{Idioma da página (3.1.1, A):} o layout raiz declara \texttt{html lang="pt-BR"}, permitindo identificar o idioma principal.
+  \item \textbf{Informações e relações (1.3.1, A):} \path{src/features/register/ui/registration-field.tsx}, relativo a \texttt{web-app}, associa \texttt{Label htmlFor} ao \texttt{id} do campo. O estado obrigatório tem texto \texttt{sr-only}; os ícones decorativos recebem \texttt{aria-hidden}.
+  \item \textbf{Nomes e estados (4.1.2, A):} o editor de avatar associa título e descrição ao \texttt{dialog} com \texttt{aria-labelledby} e \texttt{aria-describedby}; escolhas usam \texttt{aria-pressed} e nomes de opções. O avatar rotulado utiliza \texttt{role="img"} e \texttt{aria-label} em \path{src/components/organisms/avatar-customizer/avatar-character.tsx}.
+  \item \textbf{Identificação sem depender somente de cor (1.4.1, A):} \path{src/components/molecules/decision-button.tsx} apresenta rótulo textual para cada decisão; erros do cadastro são descritos em texto. A cor reforça a informação, em vez de ser seu único portador nesses componentes.
+\end{itemize}
+
+Esses exemplos demonstram técnicas relacionadas aos critérios indicados. A avaliação de todas as imagens, landmarks, títulos e nomes acessíveis das demais rotas permanece fora deste levantamento.
+
+\subsubsection{Teclado, foco e diálogos}
+Os componentes \path{src/components/atoms/button.tsx} e \path{src/components/atoms/input.tsx} utilizam elementos nativos e classes \texttt{focus-visible}. No cadastro, o foco do botão principal recebe dois contornos, escuro e branco, pela classe \texttt{register-submit-focus} em \texttt{globals.css}. Essas implementações apoiam 2.1.1 (Teclado, A) e 2.4.7 (Foco visível, AA); a \href{https://www.w3.org/WAI/WCAG22/Understanding/focus-visible.html}{orientação do W3C para foco visível} explica sua finalidade.
+
+\path{src/components/organisms/avatar-customizer/avatar-editor-modal.tsx} abre um diálogo nativo com \texttt{showModal()}, guarda o elemento anteriormente focado e devolve o foco ao fechar. O tratamento de \texttt{onCancel} permite fechamento com Escape quando não há salvamento em andamento. \path{tests/e2e/register-avatar.spec.ts} contém cenários que verificam Escape, cancelamento e retorno do foco ao botão de edição. A existência desses cenários é evidência de cobertura planejada; eles não foram executados nesta revisão documental.
+
+Os contornos e o diálogo não bastam para afirmar atendimento integral de 2.1.2 (ausência de bloqueio de teclado), 2.4.3 (ordem de foco) ou 2.4.11 (foco não encoberto). Esses pontos exigem navegação real pelas páginas, inclusive com menus, notificações e o widget VLibras abertos.
+
+\subsubsection{Formulários, erros e atualizações dinâmicas}
+No cadastro, \texttt{registration-field.tsx} utiliza \texttt{aria-invalid} e associa dicas e erros por \texttt{aria-describedby}. As mensagens apresentam a causa do erro em texto; o view model em \path{src/features/register/model/use-register-view-model.ts} direciona o foco ao primeiro campo inválido e ao resumo de erro do servidor. São evidências relacionadas a 3.3.1 (Identificação de erros, A) e 3.3.2 (Rótulos ou instruções, A), conforme a \href{https://www.w3.org/WAI/WCAG22/Understanding/error-identification.html}{orientação do W3C sobre identificação de erros}.
+
+\path{src/features/register/ui/register-form.tsx} declara preenchimento automático para apelido, e-mail e nova senha, além de \texttt{aria-busy} e resumo com \texttt{role="alert"}. \path{src/features/extract-news/ui/extract-news-form.tsx} e \path{src/components/molecules/loading/loading.tsx} incluem \texttt{role="status"} e \texttt{aria-live="polite"}; o indicador de carregamento fornece texto oculto visualmente. Essas marcações apoiam 4.1.3 (Mensagens de status, AA), descrito na \href{https://www.w3.org/WAI/WCAG22/Understanding/status-messages.html}{orientação do W3C sobre mensagens de status}. A qualidade e frequência dos anúncios precisam ser verificadas com tecnologia assistiva.
+
+\subsubsection{Redução de movimento e adaptação da interface}
+\path{src/components/molecules/loading/loading.module.css} desativa animações e oculta a varredura no modo \texttt{prefers-reduced-motion: reduce}. O editor de avatar contém variantes \texttt{motion-reduce}; o lobby consulta essa preferência e remove o atraso de 2,2 segundos antes da navegação, em \path{src/views/room-lobby/ui/room-lobby-view.tsx}. Isso evidencia atenção à redução de animações, relacionada a 2.3.3 (Animação por interações, AAA), sem demonstrar cobertura de todas as animações do sistema.
+
+O teste E2E do editor de avatar verifica ausência de overflow horizontal em viewport de 390 pixels e posicionamento de controles em tamanhos desktop. Essa cobertura é relevante à adaptação da interface, mas não substitui a avaliação de 1.4.10 (Reflow, AA) a 320 pixels CSS, zoom e espaçamento de texto. A escolha de tema claro/escuro, configurada em \texttt{theme-provider.tsx}, também não substitui a medição dos contrastes de cada tema.
+
+\subsection{Contrastes: método e resultados}
+\subsubsection{Método reproduzível}
+O levantamento utiliza as cores reais de \path{web-app/src/app/globals.css} e os tokens Tailwind da dependência instalada em \path{web-app/node_modules/tailwindcss/theme.css}. O script \path{docs/scripts/medir_contraste.py} lê esses arquivos e grava \path{docs/acessibilidade-contrastes.json}. Execute da raiz do repositório, após instalar as dependências:
+\begin{verbatim}
+python docs/scripts/medir_contraste.py
+\end{verbatim}
+
+A razão é calculada como $(L_{maior}+0{,}05)/(L_{menor}+0{,}05)$, com luminância relativa em sRGB. Os valores OKLCH são convertidos para sRGB com clipping de canais fora do gamut, seguindo as transformações de \href{https://www.w3.org/TR/css-color-4/\#color-conversion-code}{CSS Color 4}. Os números de cores cromáticas são aproximações; o mapeamento de gamut do navegador pode alterar o resultado. A comparação usa o valor sem arredondamento; as tabelas arredondam apenas para apresentação.
+
+O critério 1.4.3 (AA) estabelece \textbf{4,5:1 para texto comum} e \textbf{3:1 para texto grande}, definido como pelo menos 18 pontos ou 14 pontos em negrito. Placeholders também precisam de contraste adequado. O critério 1.4.11 (AA) usa \textbf{3:1} para informação visual necessária a identificar componentes e estados. As fontes são as orientações do W3C para \href{https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html}{contraste de texto} e \href{https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast.html}{contraste não textual}.
+
+\subsubsection{Pares que atingem os limiares medidos}
+\begin{center}
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X r l}
+\hline
+\textbf{Par de cores / uso} & \textbf{Razão} & \textbf{Referência} \\
+\hline
+\texttt{foreground/background}, claro & 19,79:1 & Texto AA \\
+\texttt{foreground/background}, escuro & 18,96:1 & Texto AA \\
+\texttt{card-foreground/card}, escuro & 17,16:1 & Texto AA \\
+\texttt{primary-foreground/primary}, claro & 17,16:1 & Texto AA \\
+\texttt{primary-foreground/primary}, escuro & 14,23:1 & Texto AA \\
+\texttt{muted-foreground/muted}, escuro & 5,83:1 & Texto AA \\
+Cadastro: \texttt{slate-900/slate-50} & 17,05:1 & Texto AA \\
+Placeholder: \texttt{slate-500/slate-50} & 4,55:1 & Texto AA \\
+Botão: \texttt{slate-950/amber-400} & 11,75:1 & Texto AA \\
+Erro: \texttt{red-700/branco} & 6,42:1 & Texto AA \\
+Foco cadastro: \texttt{blue-700/branco} & 6,82:1 & Não textual AA \\
+\hline
+\end{tabularx}
+\end{center}
+
+Os pares de cadastro e botão correspondem às classes em \texttt{input.tsx}, \texttt{button.tsx} e \texttt{registration-field.tsx}. Os pares semânticos são definições de tokens: sua aprovação não significa que todos os elementos usem esse fundo. Por exemplo, o \texttt{body} define texto branco sobre um gradiente azul, em vez do par \texttt{foreground/background} do tema claro.
+
+\subsubsection{Exceções e pontos de atenção encontrados}
+\begin{center}
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X r >{\raggedright\arraybackslash}p{5cm}}
+\hline
+\textbf{Par medido} & \textbf{Razão} & \textbf{Resultado} \\
+\hline
+\texttt{muted-foreground/muted}, claro & 4,34:1 & Abaixo de 4,5:1 para texto comum \\
+\texttt{ring/background}, claro & 2,59:1 & Abaixo de 3:1 para indicador necessário \\
+\texttt{border/background}, claro & 1,26:1 & Abaixo de 3:1; depende da função da borda \\
+Branco / \texttt{\#4387f4} & 3,49:1 & Abaixo de 4,5:1; atinge 3:1 \\
+Branco / \texttt{\#3478ed} & 4,15:1 & Abaixo de 4,5:1; atinge 3:1 \\
+Branco / \texttt{\#2f70e3} & 4,62:1 & Atinge 4,5:1 nesta parada \\
+\hline
+\end{tabularx}
+\end{center}
+
+\path{src/components/atoms/badge.tsx}, relativo a \texttt{web-app}, usa o par \texttt{bg-muted text-muted-foreground} na variante \texttt{secondary}; portanto há um uso concreto do par de 4,34:1. \texttt{input.tsx} na variante padrão e \texttt{decision-button.tsx} usam \texttt{ring-ring}. A borda de baixo contraste só caracteriza falha de 1.4.11 quando é necessária à identificação do componente ou estado; bordas puramente decorativas não são automaticamente uma falha.
+
+Os três pares branco/azul são paradas do gradiente do \texttt{body}, não uma medição de cada pixel atrás de um texto. \path{src/views/olimpo/home/ui/parts/home-intro.tsx} contém um título grande e um parágrafo branco \texttt{text-base} sobre a página. As paradas mais claras atingem a referência de texto grande, mas não a de texto comum. Isso indica necessidade de medir o fundo efetivo sob o parágrafo nos diferentes tamanhos de tela. Gradientes, transparências, sobreposições, hover, estados desabilitados e mudanças de tema precisam de avaliação contextual.
+
+\subsection{Testes existentes e verificação realizada}
+\begin{itemize}
+  \item \path{tests/components/article-preview.test.tsx}: consulta cabeçalho por papel e nível e verifica link de imagem por nome acessível.
+  \item \path{tests/components/register-form.test.tsx}: consulta campos por rótulo, diálogo por papel, botão por nome, erro por \texttt{role="alert"} e seleção por \texttt{aria-pressed}.
+  \item \path{tests/unit/room-lobby-landing.test.tsx}: verifica que a preferência de movimento reduzido elimina o atraso de navegação.
+  \item \path{tests/e2e/register-avatar.spec.ts}: contém cenários de Escape, retorno de foco, estado selecionado e ausência de overflow em viewport mobile.
+\end{itemize}
+
+Os caminhos acima são relativos a \texttt{web-app}. Nesta revisão foram executadas as três suítes de componentes/unidade com Vitest: \textbf{8 testes, 7 aprovados e 1 falha}. A falha ocorreu em \texttt{register-form.test.tsx}, ao procurar o botão com nome acessível \texttt{Mostrar senha}, não encontrado na renderização atual. Esse resultado registra uma divergência entre o teste e o componente; não comprova, isoladamente, violação de um critério WCAG. Os testes E2E foram inspecionados, mas não executados nesta revisão.
+
+O CI existente executa os testes do projeto e lint, porém não foi encontrada integração de auditoria WCAG com axe ou Lighthouse, nem verificação automática de todos os contrastes. O script de medição desta seção é uma ferramenta documental e não foi conectado à pipeline. Consultas por papéis e nomes acessíveis fornecem evidência útil, mas não constituem auditoria completa com leitores de tela.
+
+\subsection{Limites da evidência e continuidade da avaliação}
+O estado documentado permite afirmar que \textbf{o Olimpo implementa recursos relacionados a acessibilidade e WCAG, inclui VLibras e possui diversos pares de cores com contraste adequado}. Para uma declaração de conformidade AA, ainda é necessário avaliar páginas e fluxos completos, corrigir e verificar as exceções identificadas e registrar os resultados.
+
+A avaliação deve abranger teclado e leitores de tela, contraste renderizado em ambos os temas e estados, reflow a 320 pixels CSS, zoom, espaçamento de texto, nomes e alternativas de imagens, foco não encoberto pelo widget ou notificações e tamanho dos alvos de interação. Como o jogo tem rodadas cronometradas, também é necessário avaliar os limites de tempo segundo 2.2.1 (A), incluindo eventual justificativa de exceção aplicável. A preferência de movimento reduzido do lobby não é uma adaptação do tempo para responder à rodada.
+
+As evidências quantitativas ficam preservadas em \path{docs/acessibilidade-contrastes.json}, com cores de origem, razão, limiar e resultado por par. As fontes normativas e de VLibras estão vinculadas nos tópicos correspondentes, permitindo revisar esta seção quando o código e os testes evoluírem.
+\par
+\endgroup
 
 % ==============================================================================
 % CONCLUSÃO E CONSIDERAÇÕES FINAIS

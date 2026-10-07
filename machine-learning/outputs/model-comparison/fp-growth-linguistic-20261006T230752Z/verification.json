@@ -1,0 +1,24 @@
+{
+  "status": "passed",
+  "semantic_unit_tests": 14,
+  "records": 7200,
+  "eligible_rules_checked": 388,
+  "partitions_checked": 3,
+  "metrics_independently_recomputed": [
+    "occurrences",
+    "support",
+    "confidence",
+    "lift",
+    "jaccard"
+  ],
+  "notebook_executed_code_cells": 12,
+  "original_notebooks_preserved": true,
+  "canonical_group_leakage": false,
+  "train_only_quantiles_verified": true,
+  "bootstrap_manifest_integrity_verified": true,
+  "supplementary_source_sha256": {
+    "linguistic_posthoc.py": "0c6260c345a2bad40202c64213e1b7c8779d3ad337616c6eb896f5b058ff28bb",
+    "annotation_preview.py": "8d5c7d08f195f135bfd2d2f8e586f59659f52eca36158ed73243ff7ca29bf8c0",
+    "fp_growth_linguistico_sem_autoria.ipynb": "b1d96b74dbff0a06dfe465a5ad61cc70d6a4499b97e4de553098e0ec7badd286"
+  }
+}

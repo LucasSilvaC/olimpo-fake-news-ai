@@ -1,0 +1,19 @@
+{
+  "badge": "Product and engineering guides",
+  "title": "See how Olimpo works from the inside.",
+  "description": "Learn the purpose of the project, follow a game from start to finish, and see how the app organizes news, data, and real-time updates.",
+  "primaryAction": "How a game works",
+  "secondaryAction": "View the architecture",
+  "guideCount": "{count} {count, plural, one {guide} other {guides}} across 3 areas",
+  "photoAlt": "A person reading a newspaper on a street in Zurich.",
+  "photoCaption": "Read, verify, discuss.",
+  "photoCredit": "Photo:",
+  "photoSource": "Wikimedia Commons",
+  "groupsEyebrow": "Browse by area",
+  "groupsTitle": "Guides to help you get started",
+  "articleCount": "{count} articles · sources at the end of each guide",
+  "openGuide": "Open guide",
+  "traceableTitle": "Traceable content",
+  "traceableDescription": "Each technical guide links to its specification, README, or source document.",
+  "updateGuides": "How to update these guides"
+}

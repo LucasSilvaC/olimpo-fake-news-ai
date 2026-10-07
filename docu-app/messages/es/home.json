@@ -1,0 +1,19 @@
+{
+  "badge": "Guías de producto e ingeniería",
+  "title": "Descubre Olimpo por dentro.",
+  "description": "Conoce el propósito del proyecto, sigue el desarrollo de una partida y descubre cómo la aplicación organiza noticias, datos y actualizaciones en tiempo real.",
+  "primaryAction": "Cómo funciona una partida",
+  "secondaryAction": "Ver la arquitectura",
+  "guideCount": "{count} {count, plural, one {guía} other {guías}} en 3 áreas",
+  "photoAlt": "Una persona lee un periódico en una calle de Zúrich.",
+  "photoCaption": "Leer, verificar, conversar.",
+  "photoCredit": "Foto:",
+  "photoSource": "Wikimedia Commons",
+  "groupsEyebrow": "Explora las áreas",
+  "groupsTitle": "Guías para seguir aprendiendo",
+  "articleCount": "{count} artículos · fuentes al final de cada guía",
+  "openGuide": "Abrir guía",
+  "traceableTitle": "Contenido rastreable",
+  "traceableDescription": "Cada guía técnica enlaza con su especificación, README o documento de origen.",
+  "updateGuides": "Cómo actualizar estas guías"
+}

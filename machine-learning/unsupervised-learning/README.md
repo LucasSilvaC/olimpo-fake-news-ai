@@ -1,5 +1,14 @@
 # Experimentos não supervisionados
 
+## FP-Growth linguístico: revisão dos metadados
+
+O [novo notebook linguístico sem autoria](history/mineracao-de-padroes/fp-growth-linguistico/fp_growth_linguistico_sem_autoria.ipynb) implementa a extração POS/DEP **por notícia**, com contagens, denominadores, taxas e indicadores de qualidade. Compara estilo legado, correção lexical/pontuação, acréscimo de POS e acréscimo de DEP nos mesmos IDs canônicos e na mesma janela de 300 caracteres. Quantis e regras são aprendidos somente no treino; suporte, confidence e lift são medidos nas regras congeladas em validação/teste, com bootstrap pareado da validação. O teste canônico já foi observado: os resultados são exploratórios.
+
+Consulte [protocolo, glossário e artefatos](docs/modelos/fp-growth-linguistico.md) e [as regras novas e a diferença para as anteriores](REGRAS_FP_GROWTH_LINGUISTICO.md). A execução produziu 10 regras elegíveis com estilo corrigido+POS, das quais 5 mantêm os filtros na validação; POS+DEP produziu 152, das quais 121 mantêm os filtros. As associações entre POS e funções sintáticas relacionadas exigem leitura de redundância. A redescoberta das regras é medida separadamente em 100 reamostragens dos grupos do treino, com quantis reaprendidos.
+
+Instale [`../requirements-linguistic.txt`](../requirements-linguistic.txt) em um ambiente Python 3 e execute o notebook em sequência. A implementação reutilizável está em [linguistic_features.py](history/mineracao-de-padroes/fp-growth-linguistico/linguistic_features.py) e [linguistic_fp_growth.py](history/mineracao-de-padroes/fp-growth-linguistico/linguistic_fp_growth.py); o notebook apresenta tabelas reais, diferenças entre representações e exemplos das regras extraídas. Os notebooks anteriores permanecem preservados. Regras direcionais e padrões consolidados têm contagens diferentes; nenhum desses experimentos é um classificador.
+
+
 ## FP-Growth: principal e baseline
 
 As [regras extraídas e sua utilidade para o projeto](REGRAS_FP_GROWTH.md) estão documentadas em um relatório próprio nesta pasta.
@@ -17,6 +26,7 @@ Execute os notebooks em kernel Python 3 a partir de uma pasta do repositório. S
 ## Mineração de padrões frequentes
 
 O experimento [FP-Growth](docs/modelos/fp-growth.md) encontra combinações recorrentes das features de estilo existentes, sem usar rótulos Fake/True. O notebook do baseline salva resultados em `../outputs/model-comparison/fp-growth-<UTC>/` como tabelas CSV brutas e consolidadas, resumo Markdown e manifesto JSON. Esta análise exploratória fica separada do ranking de classificação em `history/RESULTADOS.md`.
+
 
 A [avaliação externa dos padrões congelados](docs/modelos/fp-growth-evaluation.md) usa o [notebook histórico](history/mineracao-de-padroes/avaliacao_fp_growth_com_autoria.ipynb) para medir a incidência de cada padrão em Fake e Real, sem alterar a descoberta. Os resultados ficam em `../outputs/model-comparison/fp-growth-evaluation-<UTC>/`.
 
