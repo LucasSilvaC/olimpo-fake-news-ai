@@ -1,0 +1,6 @@
+display_id,pattern_id,representative_id,is_primary,features,itemset_size,support,max_rule_lift,max_rule_confidence,max_rule_jaccard,families,cross_family,closed,redundancy,redundancy_reasons,similar_patterns,related_details,rule_count,main_associations
+P01,b4be02219361,P01,True,"[""punctuationDensity_spacy_baixo"", ""uppercaseRatio_baixo""]",2,0.11874999999999999,,,,"[""estilo""]",False,True,media,"[""mesma_familia""]",[],[],0,[]
+P02,a06d35073061,P02,True,"[""diversidade_alto"", ""uppercaseRatio_baixo""]",2,0.11527777777777778,,,,"[""estilo"", ""lexical""]",True,True,baixa,[],[],[],0,[]
+P03,5da6816eeec2,P03,True,"[""punctuationDensity_spacy_alto"", ""uppercaseRatio_baixo""]",2,0.10625,,,,"[""estilo""]",False,True,media,"[""mesma_familia""]",[],[],0,[]
+P04,d6124cde1930,P04,True,"[""diversidade_baixo"", ""uppercaseRatio_baixo""]",2,0.10532407407407407,,,,"[""estilo"", ""lexical""]",True,True,baixa,[],[],[],0,[]
+P05,b8316afc7303,P05,True,"[""punctuationDensity_spacy_alto"", ""uppercaseRatio_alto""]",2,0.08009259259259259,,,,"[""estilo""]",False,True,media,"[""mesma_familia""]",[],[],0,[]

@@ -12,7 +12,6 @@ import {
   Play,
   Plus,
   Radio,
-  ShieldCheck,
   Users,
 } from "lucide-react";
 import Link from "next/link";
@@ -310,17 +309,6 @@ export function RoomLobbyView({
 
       <Header
         className="relative z-20"
-        logo={
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2.5 text-lg font-extrabold tracking-tight text-white transition-opacity hover:opacity-85 sm:text-xl"
-          >
-            <span className="flex size-9 items-center justify-center rounded-xl bg-white text-blue-600 shadow-lg shadow-blue-950/20">
-              <ShieldCheck className="size-5" aria-hidden="true" />
-            </span>
-            Olimpo
-          </Link>
-        }
       >
         <Link
           href="/"

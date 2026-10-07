@@ -1,0 +1,9 @@
+feature,item,direction,threshold,low_threshold,high_threshold,low_quantile,high_quantile,missing,omitted,omission_reason,criterion,train_occurrences,train_actual_support,validation_missing,validation_actual_support,test_missing,test_actual_support
+diversidade,diversidade_baixo,baixo,0.76470588235294112,0.76470588235294112,0.85416666666666663,0.25,0.75,0,False,,value <= threshold,1087,0.25162037037037038,0,0.24583333333333332,0,0.24027777777777778
+diversidade,diversidade_alto,alto,0.85416666666666663,0.76470588235294112,0.85416666666666663,0.25,0.75,0,False,,value >= threshold,1110,0.25694444444444442,0,0.26527777777777778,0,0.26805555555555555
+linkDensity,linkDensity_baixo,baixo,0,0,0,0.25,0.75,0,True,equal_quantiles,value <= threshold,0,0,0,,0,
+linkDensity,linkDensity_alto,alto,0,0,0,0.25,0.75,0,True,equal_quantiles,value >= threshold,0,0,0,,0,
+uppercaseRatio,uppercaseRatio_baixo,baixo,0,0,0.038461538461538464,0.25,0.75,0,False,,value <= threshold,1882,0.43564814814814817,0,0.43680555555555556,0,0.44791666666666669
+uppercaseRatio,uppercaseRatio_alto,alto,0.038461538461538464,0,0.038461538461538464,0.25,0.75,0,False,,value >= threshold,1100,0.25462962962962965,0,0.26250000000000001,0,0.2326388888888889
+punctuationDensity_spacy,punctuationDensity_spacy_baixo,baixo,0.096153846153846159,0.096153846153846159,0.15873015873015872,0.25,0.75,0,False,,value <= threshold,1085,0.25115740740740738,0,0.24791666666666667,0,0.23333333333333334
+punctuationDensity_spacy,punctuationDensity_spacy_alto,alto,0.15873015873015872,0.096153846153846159,0.15873015873015872,0.25,0.75,0,False,,value >= threshold,1091,0.25254629629629627,0,0.24652777777777779,0,0.25833333333333336

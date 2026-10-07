@@ -1,0 +1,8 @@
+comparison,new_variant,old_variant,new_rules,retained_rules,removed_rules,new_patterns,retained_patterns,removed_patterns
+legacy_style_vs_legacy_author,legacy_style,legacy_author,0,8,20,0,10,21
+legacy_pos_vs_legacy_style,legacy_pos,legacy_style,10,8,0,55,10,0
+corrected_style_vs_legacy_style,corrected_style,legacy_style,0,0,8,3,2,8
+corrected_pos_vs_corrected_style,corrected_pos,corrected_style,10,0,0,52,5,0
+corrected_pos_vs_legacy_pos,corrected_pos,legacy_pos,0,10,8,9,48,17
+corrected_pos_dep_vs_corrected_pos,corrected_pos_dep,corrected_pos,142,10,0,198,57,0
+corrected_pos_dep_complete_vs_corrected_pos_dep,corrected_pos_dep_complete,corrected_pos_dep,162,10,142,216,57,198

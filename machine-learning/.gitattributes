@@ -1,0 +1,6 @@
+# Preserve audited bytes and SHA-256 checksums across Windows/Linux checkouts.
+outputs/linguistic-feature-cache/** -text
+outputs/metadata-review/20261006/** -text
+outputs/model-comparison/fp-growth-linguistic-20261006T230752Z/** -text
+outputs/rule-ranking/linguistic-top25-porcentagens-20261006/** -text
+unsupervised-learning/history/mineracao-de-padroes/fp-growth-linguistico/** -text

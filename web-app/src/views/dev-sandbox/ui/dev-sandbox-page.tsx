@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import * as React from "react";
 
 import { Badge } from "@/components/atoms/badge";
@@ -34,15 +35,25 @@ export function DevSandboxPage(): React.ReactElement {
         {/* Header */}
         <header className="border-b pb-4">
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-2xl font-bold tracking-tight">Developer Sandbox</h1>
-                <Badge variant="tag">Dev Environment</Badge>
+            <div className="flex items-center gap-3">
+              <Image
+                src="/olimpo-logo.svg"
+                alt="Olimpo"
+                width={44}
+                height={44}
+                priority
+                className="size-11 object-contain"
+              />
+              <div>
+                <div className="flex items-center gap-2">
+                  <h1 className="text-2xl font-bold tracking-tight">Developer Sandbox</h1>
+                  <Badge variant="tag">Dev Environment</Badge>
+                </div>
+                <p className="text-muted-foreground mt-1 text-sm">
+                  Raw test harness for Server Actions (Auth, Rooms, Voting, Gamification) and SSE
+                  Streams.
+                </p>
               </div>
-              <p className="text-muted-foreground mt-1 text-sm">
-                Raw test harness for Server Actions (Auth, Rooms, Voting, Gamification) and SSE
-                Streams.
-              </p>
             </div>
             {history.length > 0 && (
               <Button variant="outline" size="sm" onClick={handleClear}>

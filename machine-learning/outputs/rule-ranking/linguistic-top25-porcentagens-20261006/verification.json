@@ -1,0 +1,30 @@
+{
+  "status": "passed",
+  "source_checksums_verified": 6,
+  "all_patterns_recomputed": 93,
+  "selected_patterns_recomputed": 25,
+  "news_rows_verified": 7200,
+  "independent_metric_checks": 2976,
+  "group_partition_leakage": false,
+  "minimum_occurrences_and_q_verified": true,
+  "selected_pairwise_jaccard_below_0_8": true,
+  "local_document_links_verified": 23,
+  "partitions": {
+    "test": {
+      "Fake": 720,
+      "True": 720
+    },
+    "train": {
+      "Fake": 2160,
+      "True": 2160
+    },
+    "validation": {
+      "Fake": 720,
+      "True": 720
+    }
+  },
+  "unit_tests": {
+    "suite": "test_rule_ranking.py",
+    "passed": 4
+  }
+}

@@ -1,0 +1,249 @@
+{
+  "metadata": {
+    "corpus_sha256": "be91c188f621424017bd79a0f33528dcc27f8a6151adb2bcb899c17719eb4090",
+    "model": "core_news_sm",
+    "model_version": "3.8.0",
+    "spacy_version": "3.8.16",
+    "pipeline": [
+      "tok2vec",
+      "morphologizer",
+      "parser",
+      "lemmatizer",
+      "attribute_ruler"
+    ],
+    "character_limit": 300,
+    "extraction_sha256": "7ccd329258fca25ad3374368ef351863f44073974aae078bff5db9af386262a0",
+    "normalization": "NFKC; strip leading BOM; first300 characters"
+  },
+  "csv_sha256": "dae520912360c8cb2e0a5dcee17bcd77b9d615e3146bc94fc3fc4c1e879a16fe",
+  "schema": [
+    {
+      "column": "tem_autor",
+      "dtype": "int64"
+    },
+    {
+      "column": "typeTokenRatio",
+      "dtype": "float64"
+    },
+    {
+      "column": "linkDensity",
+      "dtype": "float64"
+    },
+    {
+      "column": "punctuationDensity",
+      "dtype": "float64"
+    },
+    {
+      "column": "uppercaseRatio",
+      "dtype": "float64"
+    },
+    {
+      "column": "diversidade",
+      "dtype": "float64"
+    },
+    {
+      "column": "text_chars_raw",
+      "dtype": "int64"
+    },
+    {
+      "column": "text_chars_normalized",
+      "dtype": "int64"
+    },
+    {
+      "column": "text_chars_window",
+      "dtype": "int64"
+    },
+    {
+      "column": "tokens_all",
+      "dtype": "int64"
+    },
+    {
+      "column": "tokens_nonspace",
+      "dtype": "int64"
+    },
+    {
+      "column": "tokens_lexical",
+      "dtype": "int64"
+    },
+    {
+      "column": "punctuation_count_spacy",
+      "dtype": "int64"
+    },
+    {
+      "column": "punctuationDensity_spacy",
+      "dtype": "float64"
+    },
+    {
+      "column": "quality_empty",
+      "dtype": "bool"
+    },
+    {
+      "column": "quality_noeligible",
+      "dtype": "bool"
+    },
+    {
+      "column": "quality_truncated",
+      "dtype": "bool"
+    },
+    {
+      "column": "quality_complete_last_sentence_dropped",
+      "dtype": "bool"
+    },
+    {
+      "column": "quality_complete_noeligible",
+      "dtype": "bool"
+    },
+    {
+      "column": "tokens_complete_lexical",
+      "dtype": "int64"
+    },
+    {
+      "column": "text_chars_complete_kept",
+      "dtype": "int64"
+    },
+    {
+      "column": "POS_ADJ_count",
+      "dtype": "int64"
+    },
+    {
+      "column": "POS_ADJ_rate",
+      "dtype": "float64"
+    },
+    {
+      "column": "POS_ADV_count",
+      "dtype": "int64"
+    },
+    {
+      "column": "POS_ADV_rate",
+      "dtype": "float64"
+    },
+    {
+      "column": "POS_NOUN_count",
+      "dtype": "int64"
+    },
+    {
+      "column": "POS_NOUN_rate",
+      "dtype": "float64"
+    },
+    {
+      "column": "POS_PROPN_count",
+      "dtype": "int64"
+    },
+    {
+      "column": "POS_PROPN_rate",
+      "dtype": "float64"
+    },
+    {
+      "column": "POS_VERB_count",
+      "dtype": "int64"
+    },
+    {
+      "column": "POS_VERB_rate",
+      "dtype": "float64"
+    },
+    {
+      "column": "POS_PRON_count",
+      "dtype": "int64"
+    },
+    {
+      "column": "POS_PRON_rate",
+      "dtype": "float64"
+    },
+    {
+      "column": "DEP_nsubj_count",
+      "dtype": "int64"
+    },
+    {
+      "column": "DEP_nsubj_rate",
+      "dtype": "float64"
+    },
+    {
+      "column": "DEP_complete_nsubj_count",
+      "dtype": "int64"
+    },
+    {
+      "column": "DEP_complete_nsubj_rate",
+      "dtype": "float64"
+    },
+    {
+      "column": "DEP_obj_count",
+      "dtype": "int64"
+    },
+    {
+      "column": "DEP_obj_rate",
+      "dtype": "float64"
+    },
+    {
+      "column": "DEP_complete_obj_count",
+      "dtype": "int64"
+    },
+    {
+      "column": "DEP_complete_obj_rate",
+      "dtype": "float64"
+    },
+    {
+      "column": "DEP_amod_count",
+      "dtype": "int64"
+    },
+    {
+      "column": "DEP_amod_rate",
+      "dtype": "float64"
+    },
+    {
+      "column": "DEP_complete_amod_count",
+      "dtype": "int64"
+    },
+    {
+      "column": "DEP_complete_amod_rate",
+      "dtype": "float64"
+    },
+    {
+      "column": "DEP_advmod_count",
+      "dtype": "int64"
+    },
+    {
+      "column": "DEP_advmod_rate",
+      "dtype": "float64"
+    },
+    {
+      "column": "DEP_complete_advmod_count",
+      "dtype": "int64"
+    },
+    {
+      "column": "DEP_complete_advmod_rate",
+      "dtype": "float64"
+    },
+    {
+      "column": "DEP_ccomp_count",
+      "dtype": "int64"
+    },
+    {
+      "column": "DEP_ccomp_rate",
+      "dtype": "float64"
+    },
+    {
+      "column": "DEP_complete_ccomp_count",
+      "dtype": "int64"
+    },
+    {
+      "column": "DEP_complete_ccomp_rate",
+      "dtype": "float64"
+    },
+    {
+      "column": "DEP_advcl_count",
+      "dtype": "int64"
+    },
+    {
+      "column": "DEP_advcl_rate",
+      "dtype": "float64"
+    },
+    {
+      "column": "DEP_complete_advcl_count",
+      "dtype": "int64"
+    },
+    {
+      "column": "DEP_complete_advcl_rate",
+      "dtype": "float64"
+    }
+  ]
+}

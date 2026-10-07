@@ -1,4 +1,5 @@
-import { LoaderCircle, Radio, Users } from "lucide-react";
+import { LoaderCircle, Users } from "lucide-react";
+import Image from "next/image";
 import * as React from "react";
 
 export default function RoomLoading(): React.ReactElement {
@@ -11,9 +12,14 @@ export default function RoomLoading(): React.ReactElement {
 
       <header className="relative z-10 w-full bg-blue-800/15 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-5xl items-center gap-2.5 px-4 sm:px-6">
-          <span className="flex size-9 items-center justify-center rounded-xl bg-white text-blue-600 shadow-lg shadow-blue-950/20">
-            <Radio className="size-5" aria-hidden="true" />
-          </span>
+          <Image
+            src="/olimpo-logo.svg"
+            alt="Olimpo"
+            width={36}
+            height={36}
+            priority
+            className="size-9 object-contain"
+          />
           <span className="text-lg font-extrabold tracking-tight">Olimpo</span>
         </div>
       </header>

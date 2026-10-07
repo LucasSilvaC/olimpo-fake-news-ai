@@ -1,0 +1,280 @@
+{
+  "date_local": "2026-10-06",
+  "scope": "Baseline integral; NLP em amostra aleatória de 100 notícias do treino; sem experimento enriquecido de mineração.",
+  "environment": {
+    "python": "3.14.4",
+    "spacy": "3.8.16",
+    "packages": {
+      "numpy": "2.5.3",
+      "pandas": "3.0.6",
+      "mlxtend": "0.25.0",
+      "scipy": "1.18.1"
+    },
+    "pt_core_news_sm": "3.8.0",
+    "pipeline": [
+      "tok2vec",
+      "morphologizer",
+      "parser",
+      "lemmatizer",
+      "attribute_ruler",
+      "ner"
+    ]
+  },
+  "source_sha256": {
+    "fp_growth_baseline_com_autoria.ipynb": "2e5469c7a2591b52c6cde287f6b1657c6d25c44055c0a8d3bd3a1498841f101a",
+    "eda-depracated.py": "f08a83402fee2d3ee3884b7b8e52242be5ea1de8dc34268713357083ce59865a",
+    "extracao_false.py": "420ad5cc3af5d42d5f8e47cc1887a9464086799403d4265e9da32ca7c740aa00",
+    "extracao_funcoes.py": "cfda4f91aca38dc7ff99698f9febf30da35701e96538790c97dde1b9404745ec",
+    "extracao_true.py": "5e70a6aa035ce7d348178b52eab88cf0bd0cd6c736dd3ad0a14223bf7a0a26f8"
+  },
+  "corpus": {
+    "name": "Fake.br-Corpus",
+    "revision": "780f5516c4ae070761632d98ac3368f3ded09d35",
+    "url": "https://codeload.github.com/roneysco/Fake.br-Corpus/zip/780f5516c4ae070761632d98ac3368f3ded09d35",
+    "archive_sha256": "be91c188f621424017bd79a0f33528dcc27f8a6151adb2bcb899c17719eb4090",
+    "expected_sha256": "be91c188f621424017bd79a0f33528dcc27f8a6151adb2bcb899c17719eb4090",
+    "record_count": 7200,
+    "labels": {
+      "0": "True",
+      "1": "Fake"
+    }
+  },
+  "baseline": {
+    "total_records": 7200,
+    "train_records": 4320,
+    "frequent_itemsets": 41,
+    "all_rules": 82,
+    "eligible_rules": 28,
+    "patterns": 31,
+    "patterns_with_author": 21,
+    "identity_max_abs_error": 1.1102230246251565e-16,
+    "thresholds": {
+      "typeTokenRatio": {
+        "low": 0.6363636363636364,
+        "high": 0.7307692307692307,
+        "missing": 0
+      },
+      "linkDensity": {
+        "low": 0.0,
+        "high": 0.0,
+        "missing": 0,
+        "omitted": true
+      },
+      "punctuationDensity": {
+        "low": 0.12,
+        "high": 0.1896551724137931,
+        "missing": 0
+      },
+      "uppercaseRatio": {
+        "low": 0.0,
+        "high": 0.038461538461538464,
+        "missing": 0
+      },
+      "diversidade": {
+        "low": 0.7647058823529411,
+        "high": 0.8541666666666666,
+        "missing": 0
+      }
+    },
+    "item_supports": {
+      "com_autor": 0.49930555555555556,
+      "sem_autor": 0.5006944444444444,
+      "typeTokenRatio_baixo": 0.2539351851851852,
+      "typeTokenRatio_alto": 0.2523148148148148,
+      "punctuationDensity_baixo": 0.25324074074074077,
+      "punctuationDensity_alto": 0.2550925925925926,
+      "uppercaseRatio_baixo": 0.4356481481481482,
+      "uppercaseRatio_alto": 0.25462962962962965,
+      "diversidade_baixo": 0.2516203703703704,
+      "diversidade_alto": 0.2569444444444444
+    }
+  },
+  "full_text_lengths": {
+    "fake": {
+      "count": 3600,
+      "median_chars": 956.5,
+      "mean_chars": 1125.0508333333332
+    },
+    "true": {
+      "count": 3600,
+      "median_chars": 5581.0,
+      "mean_chars": 6676.544722222222
+    }
+  },
+  "nlp_sample": {
+    "random_state": 42,
+    "record_ids": [
+      "fake/1692",
+      "fake/1165",
+      "true/1197",
+      "true/1648",
+      "fake/1231",
+      "true/1789",
+      "true/405",
+      "true/2493",
+      "true/2094",
+      "true/1112",
+      "fake/273",
+      "true/3311",
+      "true/118",
+      "true/1199",
+      "true/1757",
+      "true/2178",
+      "true/2671",
+      "fake/1414",
+      "true/554",
+      "fake/29",
+      "true/1718",
+      "true/2776",
+      "fake/3137",
+      "fake/781",
+      "true/3052",
+      "true/872",
+      "true/1823",
+      "fake/1479",
+      "true/3576",
+      "fake/1462",
+      "true/1546",
+      "true/2259",
+      "true/3601",
+      "fake/2335",
+      "fake/3407",
+      "true/1491",
+      "fake/148",
+      "fake/3438",
+      "fake/790",
+      "fake/2529",
+      "fake/1101",
+      "fake/255",
+      "fake/3397",
+      "fake/3425",
+      "true/3212",
+      "fake/603",
+      "fake/3210",
+      "true/3145",
+      "true/2849",
+      "true/643",
+      "true/1270",
+      "true/2168",
+      "true/2202",
+      "true/1654",
+      "true/934",
+      "true/2564",
+      "fake/1028",
+      "fake/2948",
+      "fake/3440",
+      "fake/3104",
+      "fake/2214",
+      "fake/1216",
+      "true/3021",
+      "true/812",
+      "fake/1449",
+      "fake/814",
+      "true/11",
+      "fake/2666",
+      "true/3060",
+      "true/2429",
+      "true/3117",
+      "true/1506",
+      "fake/2546",
+      "true/3173",
+      "fake/3183",
+      "true/338",
+      "fake/905",
+      "fake/366",
+      "fake/1196",
+      "fake/2999",
+      "true/2439",
+      "fake/3515",
+      "fake/3547",
+      "true/810",
+      "true/286",
+      "true/1989",
+      "fake/36",
+      "fake/3118",
+      "fake/464",
+      "fake/1205",
+      "fake/63",
+      "true/983",
+      "fake/1971",
+      "fake/1901",
+      "true/1770",
+      "true/1887",
+      "true/1008",
+      "true/3541",
+      "fake/147",
+      "fake/1897"
+    ],
+    "size": 100,
+    "original_tokens": 77425,
+    "original_csv_rows": 53,
+    "original_csv_columns": [
+      "Tipo",
+      "Tag",
+      "Quantidade",
+      "Porcentagem (%)"
+    ],
+    "percentage_sum_by_type": {
+      "DEP": 99.99,
+      "POS": 99.98
+    },
+    "space_tokens": 575,
+    "noun_macro_rate": 0.2211722419626256,
+    "noun_pooled_rate": 0.2264895475631062,
+    "token_probe": [
+      {
+        "text": "A",
+        "pos": "DET",
+        "dep": "det",
+        "space": false,
+        "punct": false
+      },
+      {
+        "text": "notícia",
+        "pos": "NOUN",
+        "dep": "nsubj",
+        "space": false,
+        "punct": false
+      },
+      {
+        "text": "chegou",
+        "pos": "VERB",
+        "dep": "ROOT",
+        "space": false,
+        "punct": false
+      },
+      {
+        "text": ".",
+        "pos": "PUNCT",
+        "dep": "punct",
+        "space": false,
+        "punct": true
+      },
+      {
+        "text": "\n\n",
+        "pos": "SPACE",
+        "dep": "dep",
+        "space": true,
+        "punct": false
+      },
+      {
+        "text": "2026",
+        "pos": "NUM",
+        "dep": "obj",
+        "space": false,
+        "punct": false
+      },
+      {
+        "text": "!",
+        "pos": "PUNCT",
+        "dep": "punct",
+        "space": false,
+        "punct": true
+      }
+    ]
+  },
+  "eda_errors": {
+    "current_csv_in_eda": "KeyError: 'Metadado'",
+    "morph_mode": "ValueError: O parâmetro 'tipo' deve ser: 'morph', 'pos', 'dep' ou 'all'."
+  }
+}
