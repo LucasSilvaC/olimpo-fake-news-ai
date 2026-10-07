@@ -92,6 +92,17 @@ export function RoomLobbyView({
   const [joinError, setJoinError] = React.useState<string | null>(null);
   const joinAttempted = React.useRef(false);
   const unavailableRoomNoticeShown = React.useRef(false);
+  const [presenceSnapshot, setPresenceSnapshot] = React.useState<{
+    pin: string;
+    userIds: string[];
+  } | null>(null);
+  const visibleMembers =
+    presenceSnapshot?.pin === room.pin
+      ? members.filter(
+          (member) =>
+            member.userId === room.hostId || presenceSnapshot.userIds.includes(member.userId),
+        )
+      : members;
 
   const isHost = room.hostId === currentUserId;
   const isMember = members.some((member) => member.userId === currentUserId);
@@ -175,12 +186,39 @@ export function RoomLobbyView({
       }
       beginLanding();
     };
+    const updatePresence = (event: Event): void => {
+      try {
+        const data = JSON.parse((event as MessageEvent<string>).data) as {
+          pin?: string;
+          payload?: { userIds?: unknown };
+        };
+        const userIds = data.payload?.userIds;
+        if (
+          data.pin !== room.pin ||
+          !Array.isArray(userIds) ||
+          !userIds.every((id): id is string => typeof id === "string")
+        ) {
+          return;
+        }
+        setPresenceSnapshot((previous) =>
+          previous?.pin === room.pin &&
+          previous.userIds.length === userIds.length &&
+          previous.userIds.every((id, index) => id === userIds[index])
+            ? previous
+            : { pin: room.pin, userIds },
+        );
+      } catch {
+        // Keep the last valid snapshot until the next heartbeat or reconnection.
+      }
+    };
 
     source.addEventListener("MEMBER_JOINED", refreshLobby);
+    source.addEventListener("PRESENCE_CHANGED", updatePresence);
     source.addEventListener("ROUND_STARTED", openGame);
 
     return () => {
       source.removeEventListener("MEMBER_JOINED", refreshLobby);
+      source.removeEventListener("PRESENCE_CHANGED", updatePresence);
       source.removeEventListener("ROUND_STARTED", openGame);
       source.close();
     };
@@ -395,7 +433,7 @@ export function RoomLobbyView({
               </span>
               <span className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm">
                 <Users className="size-4 text-blue-600" aria-hidden="true" />
-                {members.length} {members.length === 1 ? "jogador" : "jogadores"}
+                {visibleMembers.length} {visibleMembers.length === 1 ? "jogador" : "jogadores"}
               </span>
             </div>
           </div>
@@ -448,7 +486,7 @@ export function RoomLobbyView({
             </div>
 
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              {members.map((member, index) => {
+              {visibleMembers.map((member, index) => {
                 const isYou = member.userId === currentUserId;
                 const isMemberHost = member.userId === room.hostId;
                 const palette = memberCardColors[index % memberCardColors.length];
@@ -493,7 +531,7 @@ export function RoomLobbyView({
                 );
               })}
 
-              {members.length === 0 ? (
+              {visibleMembers.length === 0 ? (
                 <div className="col-span-full rounded-2xl border border-dashed border-slate-300 px-4 py-8 text-center text-sm font-medium text-slate-500">
                   Os jogadores aparecerão aqui quando entrarem na sala.
                 </div>

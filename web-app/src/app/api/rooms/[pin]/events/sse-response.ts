@@ -1,5 +1,12 @@
 import Redis from "ioredis";
 
+import { getSessionUseCase } from "@/app/api/auth/usecase/get-session.usecase";
+import {
+  createPresenceEvent,
+  type IRoomPresence,
+  PRESENCE_HEARTBEAT_MS,
+  redisRoomPresence,
+} from "@/app/api/realtime-events/repositories/redis-room-presence";
 import { RoomPin } from "@/app/api/rooms/entities/room-pin.vo";
 import { drizzleRoomRepository } from "@/app/api/rooms/repositories/drizzle-room.repository";
 import { redisRoomRepository } from "@/app/api/rooms/repositories/redis-room.repository";
@@ -11,6 +18,8 @@ export interface SSERouteDependencies {
   roomRepository?: IRoomRepository;
   redisRoomRepo?: IRedisRoomRepository;
   createSubscriber?: () => Redis;
+  getUserId?: () => Promise<string>;
+  presence?: IRoomPresence;
 }
 
 export async function createSSEResponse(
@@ -21,8 +30,14 @@ export async function createSSEResponse(
   const roomRepository = deps.roomRepository ?? drizzleRoomRepository;
   const redisRoomRepo = deps.redisRoomRepo ?? redisRoomRepository;
   const createSubscriber = deps.createSubscriber ?? createRedisClient;
+  const presence = deps.presence ?? redisRoomPresence;
 
-  const decodedPin = decodeURIComponent(pinParam);
+  let decodedPin: string;
+  try {
+    decodedPin = decodeURIComponent(pinParam);
+  } catch {
+    return Response.json({ error: "Invalid PIN format" }, { status: 400 });
+  }
   const normalizedPin = RoomPin.normalize(decodedPin);
 
   if (!RoomPin.isValid(normalizedPin)) {
@@ -30,6 +45,13 @@ export async function createSSEResponse(
       status: 400,
       headers: { "Content-Type": "application/json" },
     });
+  }
+
+  let userId: string;
+  try {
+    userId = await (deps.getUserId ?? (async () => (await getSessionUseCase.execute()).id))();
+  } catch {
+    return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   // Check if room exists (Redis first, fallback to DB)
@@ -49,10 +71,20 @@ export async function createSSEResponse(
   const subscriber = createSubscriber();
   const encoder = new TextEncoder();
   let isCleanedUp = false;
+  const connectionId = `${userId}|${crypto.randomUUID()}`;
+  let heartbeat: ReturnType<typeof setInterval> | undefined;
+  let presenceWork: Promise<void> = Promise.resolve();
+  let closeStream: (() => void) | undefined;
 
   const cleanup = async () => {
     if (isCleanedUp) return;
     isCleanedUp = true;
+    clearInterval(heartbeat);
+    request.signal.removeEventListener("abort", onAbort);
+    closeStream?.();
+    await presenceWork.catch(() => {});
+    // A crashed server still expires through the lease even if cleanup cannot run.
+    await presence.disconnect(room.id, normalizedPin, connectionId).catch(() => {});
     try {
       subscriber.removeAllListeners();
       await subscriber.unsubscribe(channel).catch(() => {});
@@ -62,35 +94,73 @@ export async function createSSEResponse(
     }
   };
 
-  request.signal.addEventListener("abort", () => {
+  const onAbort = () => {
     void cleanup();
-  });
+  };
+  request.signal.addEventListener("abort", onAbort);
 
   const stream = new ReadableStream({
     async start(controller) {
+      let streamClosed = false;
+      closeStream = () => {
+        if (streamClosed) return;
+        streamClosed = true;
+        try {
+          controller.close();
+        } catch {
+          // Cancellation may already have closed the stream.
+        }
+      };
+      const send = (message: string) => {
+        if (!isCleanedUp) controller.enqueue(encoder.encode(message));
+      };
+      if (request.signal.aborted) {
+        await cleanup();
+        return;
+      }
       // Send initial connection comment
-      controller.enqueue(encoder.encode(": connected\n\n"));
+      send(": connected\n\n");
 
       subscriber.on("message", (msgChannel, message) => {
         if (msgChannel === channel && !isCleanedUp) {
           try {
             const eventData = JSON.parse(message);
             const eventType = eventData.type || "message";
-            controller.enqueue(encoder.encode(`event: ${eventType}\ndata: ${message}\n\n`));
+            send(`event: ${eventType}\ndata: ${message}\n\n`);
           } catch {
-            controller.enqueue(encoder.encode(`data: ${message}\n\n`));
+            send(`data: ${message}\n\n`);
           }
         }
       });
 
       subscriber.on("error", () => {
-        // Silently handle subscriber errors
+        void cleanup();
       });
 
       try {
         await subscriber.subscribe(channel);
+        if (isCleanedUp) return;
+        const updatePresence = async () => {
+          if (isCleanedUp) return;
+          const userIds = await presence.touch(room.id, normalizedPin, connectionId);
+          // Every connection receives a snapshot, including after missed events/reconnects.
+          const event = createPresenceEvent(room.id, normalizedPin, userIds);
+          send(`event: PRESENCE_CHANGED\ndata: ${JSON.stringify(event)}\n\n`);
+        };
+        presenceWork = updatePresence();
+        await presenceWork;
+        if (isCleanedUp) return;
+        heartbeat = setInterval(() => {
+          send(": heartbeat\n\n");
+          presenceWork = presenceWork.then(updatePresence).catch(() => {
+            void cleanup();
+          });
+        }, PRESENCE_HEARTBEAT_MS);
       } catch (err) {
-        controller.error(err);
+        if (!isCleanedUp) {
+          streamClosed = true;
+          controller.error(err);
+        }
         await cleanup();
       }
     },
