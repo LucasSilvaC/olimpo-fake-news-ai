@@ -82,5 +82,5 @@ Treino no Fake.br, avaliação em títulos do FakeRecogna (base balanceada, text
 
 ## Arquivos
 
-- Notebooks: `05_feature_dim_analysis.ipynb`, `08_reducao_dim.ipynb`, `07_teste_externo_fakerecogna.ipynb`
-- Resultados: `resultados_min_df.csv`, `resultados_reducao_dim.csv`, `resultados_externo_dim.csv`, `resultados_externo_pca.csv`, `resultados_teste_externo.csv`
+- Notebooks: [05 — análise de dimensão](../../history/ajuste-e-validacao/05_feature_dim_analysis.ipynb), [08 — redução de dimensão](../../history/ajuste-e-validacao/08_reducao_dim.ipynb) e [07 — teste externo](../../history/ajuste-e-validacao/07_teste_externo_fakerecogna.ipynb).
+- Resultados: [`resultados_min_df.csv`](../../history/resultados/resultados_min_df.csv), [`resultados_reducao_dim.csv`](../../history/resultados/resultados_reducao_dim.csv), [`resultados_externo_dim.csv`](../../history/resultados/resultados_externo_dim.csv), [`resultados_externo_pca.csv`](../../history/resultados/resultados_externo_pca.csv) e [`resultados_teste_externo.csv`](../../history/resultados/resultados_teste_externo.csv).
