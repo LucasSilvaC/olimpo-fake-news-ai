@@ -67,10 +67,10 @@ describe("lobby landing transition", () => {
       fireEvent.click(screen.getByRole("button", { name: "Iniciar partida" }));
     });
     expect(screen.getByText("Pouso autorizado!")).toBeInTheDocument();
-    expect(mocks.push).not.toHaveBeenCalled();
+    expect(mocks.refresh).not.toHaveBeenCalled();
     act(() => events.dispatchEvent(new Event("ROUND_STARTED")));
     act(() => vi.advanceTimersByTime(2200));
-    expect(mocks.push).toHaveBeenCalledExactlyOnceWith("/olimpo/game");
+    expect(mocks.refresh).toHaveBeenCalledOnce();
   });
 
   it("stays in the lobby when starting fails", async () => {
@@ -80,7 +80,7 @@ describe("lobby landing transition", () => {
       fireEvent.click(screen.getByRole("button", { name: "Iniciar partida" }));
     });
     act(() => vi.advanceTimersByTime(3000));
-    expect(mocks.push).not.toHaveBeenCalled();
+    expect(mocks.refresh).not.toHaveBeenCalled();
     expect(screen.getByRole("button", { name: "Iniciar partida" })).toBeEnabled();
   });
 
@@ -89,7 +89,7 @@ describe("lobby landing transition", () => {
     act(() => events.dispatchEvent(new Event("ROUND_STARTED")));
     view.unmount();
     act(() => vi.advanceTimersByTime(3000));
-    expect(mocks.push).not.toHaveBeenCalled();
+    expect(mocks.refresh).not.toHaveBeenCalled();
   });
 
   it("skips the delay for reduced motion", () => {
@@ -97,6 +97,6 @@ describe("lobby landing transition", () => {
     mount();
     act(() => events.dispatchEvent(new Event("ROUND_STARTED")));
     act(() => vi.advanceTimersByTime(0));
-    expect(mocks.push).toHaveBeenCalledExactlyOnceWith("/olimpo/game");
+    expect(mocks.refresh).toHaveBeenCalledOnce();
   });
 });

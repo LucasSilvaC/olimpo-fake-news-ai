@@ -9,6 +9,7 @@ import { ProfileCustomizer } from "./profile-customizer";
 import { RegistrationField } from "./registration-field";
 
 import { Button } from "@/components/atoms/button";
+
 export function RegisterForm() {
   const vm = useRegisterViewModel();
   const [showPassword, setShowPassword] = useState(false);
