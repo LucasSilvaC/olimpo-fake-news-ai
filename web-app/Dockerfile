@@ -1,6 +1,6 @@
 FROM node:26-alpine AS base
 WORKDIR /app
-RUN corepack enable
+RUN npm install -g pnpm
 
 FROM base AS dependencies
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
