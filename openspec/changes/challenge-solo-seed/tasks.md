@@ -20,5 +20,5 @@
 
 ## 4. Verification and Quality Checks
 
-- [ ] 4.1 Implement unit test for the populate script asserting extraction error resilience, idempotency, and classification distribution.
-- [ ] 4.2 Execute `pnpm check` in `web-app` (format, lint, typecheck, tests) and verify the entire build passes without errors.
+- [x] 4.1 Implement unit test for the populate script asserting extraction error resilience, idempotency, and classification distribution.
+- [x] 4.2 Execute `pnpm check` in `web-app` (format, lint, typecheck, tests) and verify the entire build passes without errors.
