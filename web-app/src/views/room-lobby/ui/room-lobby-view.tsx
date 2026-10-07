@@ -80,7 +80,7 @@ export function RoomLobbyView({
     if (landingTimer.current !== null) return;
     setIsLanding(true);
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    landingTimer.current = setTimeout(() => router.push("/olimpo/game"), reducedMotion ? 0 : 2200);
+    landingTimer.current = setTimeout(() => router.refresh(), reducedMotion ? 0 : 2200);
   }, [router]);
   React.useEffect(
     () => () => {

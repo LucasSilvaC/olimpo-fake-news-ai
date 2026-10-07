@@ -46,6 +46,22 @@ export class RedisVoteRepository implements IRedisVoteRepository {
     const key = this.roundVotesKey(roomId, roundOrder);
     await this.redis.del(key);
   }
+
+  private roundCompletedKey(roomId: string, roundOrder: number): string {
+    return `room:${roomId}:round:${roundOrder}:completed`;
+  }
+
+  async markRoundCompleted(roomId: string, roundOrder: number): Promise<boolean> {
+    const key = this.roundCompletedKey(roomId, roundOrder);
+    const result = await this.redis.set(key, "1", "EX", 86400, "NX");
+    return result === "OK";
+  }
+
+  async isRoundCompleted(roomId: string, roundOrder: number): Promise<boolean> {
+    const key = this.roundCompletedKey(roomId, roundOrder);
+    const result = await this.redis.get(key);
+    return result === "1";
+  }
 }
 
 export const redisVoteRepository = new RedisVoteRepository();

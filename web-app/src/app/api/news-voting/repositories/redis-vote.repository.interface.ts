@@ -9,4 +9,6 @@ export interface IRedisVoteRepository {
   hasUserVoted(roomId: string, roundOrder: number, userId: string): Promise<boolean>;
   getVotedUserIds(roomId: string, roundOrder: number): Promise<string[]>;
   clearRoundVotes(roomId: string, roundOrder: number): Promise<void>;
+  markRoundCompleted(roomId: string, roundOrder: number): Promise<boolean>;
+  isRoundCompleted(roomId: string, roundOrder: number): Promise<boolean>;
 }

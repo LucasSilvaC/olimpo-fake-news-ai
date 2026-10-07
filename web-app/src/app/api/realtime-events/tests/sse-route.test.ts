@@ -1,7 +1,8 @@
 import Redis from "ioredis";
 import { describe, expect, it, vi } from "vitest";
 
-import { createSSEResponse, GET } from "@/app/api/rooms/[pin]/events/route";
+import { GET } from "@/app/api/rooms/[pin]/events/route";
+import { createSSEResponse } from "@/app/api/rooms/[pin]/events/sse-response";
 import { IRedisRoomRepository } from "@/app/api/rooms/repositories/redis-room.repository.interface";
 import { IRoomRepository } from "@/app/api/rooms/repositories/room.repository.interface";
 import { Room } from "@/server/shared/database/schemas";
