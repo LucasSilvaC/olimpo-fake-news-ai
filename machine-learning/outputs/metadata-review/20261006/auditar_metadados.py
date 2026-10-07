@@ -22,7 +22,6 @@ REPO = next(candidate for parent in search_roots
             for candidate in (parent, parent / 'olimpo-fake-news-ai')
             if (candidate / 'machine-learning' / 'unsupervised-learning' /
                 'fp_growth_baseline_com_autoria.ipynb').is_file())
-WORKSPACE = REPO.parent
 ROOT = REPO / 'machine-learning'
 OUT = ROOT / 'outputs' / 'metadata-review' / '20261006'
 OUT.mkdir(parents=True, exist_ok=True)
@@ -53,7 +52,8 @@ with ZipFile(archive) as z:
         lengths[group] = {'count': len(sizes), 'median_chars': statistics.median(sizes),
                           'mean_chars': statistics.mean(sizes)}
 sample = [texts[rid] for rid in selected]
-module_path = WORKSPACE / 'metadados' / 'extracao_funcoes.py'
+LEGACY = ROOT / 'metadados' / 'legacy'
+module_path = LEGACY / 'extracao_funcoes.py'
 spec = importlib.util.spec_from_file_location('team_extraction', module_path)
 team = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(team)
@@ -76,7 +76,7 @@ pooled = np.average(sample_features['POS_NOUN_rate'], weights=denominators)
 probe = team.nlp('A notícia chegou.\n\n2026!')
 token_probe = [{'text': t.text, 'pos': t.pos_, 'dep': t.dep_, 'space': t.is_space,
                 'punct': t.is_punct} for t in probe]
-eda = ast.parse((WORKSPACE / 'metadados' / 'eda-depracated.py').read_text(encoding='utf-8'))
+eda = ast.parse((LEGACY / 'eda-depracated.py').read_text(encoding='utf-8'))
 eda_ns = {'pd': pd, 'POS_TAGS': {'NOUN'}}
 exec(compile(ast.Module(body=[n for n in eda.body if isinstance(n, ast.FunctionDef)],
                         type_ignores=[]), 'eda-functions', 'exec'), eda_ns)
@@ -96,7 +96,7 @@ evidence = {
                     'packages': {name: version(name) for name in ('numpy', 'pandas', 'mlxtend', 'scipy')},
                     'pt_core_news_sm': team.nlp.meta['version'], 'pipeline': team.nlp.pipe_names},
     'source_sha256': {p.name: hashlib.sha256(p.read_bytes()).hexdigest()
-                      for p in [notebook, *sorted((WORKSPACE / 'metadados').glob('*.py'))]},
+                      for p in [notebook, *sorted(LEGACY.glob('*.py'))]},
     'corpus': manifest['corpus'],
     'baseline': {'total_records': len(features), 'train_records': len(train),
                  'frequent_itemsets': len(frequent), 'all_rules': len(rules),

@@ -2,7 +2,7 @@
 
 Análise de 6 de outubro de 2026. **Vale aproveitar a extração de POS e dependências sintáticas, adaptando-a para produzir uma linha por notícia e avaliando-a em um novo notebook. Os arquivos atuais não devem alimentar diretamente a mineração.** O baseline com autoria deve continuar disponível para reprodução; a variante linguística deve ser comparada também ao principal sem autoria.
 
-Foram encontrados quatro scripts em `Eldorado/metadados/`, sem CSVs revisados ou novos textos nessa pasta. Eles constituem uma proposta de extração e análise, não evidência de que o dataset já tenha sido corrigido. Os atributos do spaCy são anotações estimadas por um modelo; acrescentá-los não valida automaticamente a veracidade nem corrige os metadados originais.
+Foram encontrados quatro scripts legados em [`machine-learning/metadados/legacy/`](../../../machine-learning/metadados/legacy/), sem CSVs revisados ou novos textos nessa pasta. Eles constituem uma proposta de extração e análise, não evidência de que o dataset já tenha sido corrigido. Os atributos do spaCy são anotações estimadas por um modelo; acrescentá-los não valida automaticamente a veracidade nem corrige os metadados originais.
 
 ## O que foi executado
 

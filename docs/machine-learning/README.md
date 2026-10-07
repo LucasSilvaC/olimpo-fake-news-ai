@@ -2,6 +2,8 @@
 
 Documentação de dados, experimentos e modelos. Os notebooks e implementações continuam em [`../../machine-learning/`](../../machine-learning/).
 
+Os scripts de extração e análise de atributos linguísticos estão catalogados em [`../../machine-learning/metadados/README.md`](../../machine-learning/metadados/README.md).
+
 ## Planos e protocolos
 
 - [Planos de comparação de modelos](comparacao-modelos/README.md)
@@ -14,7 +16,7 @@ Documentação de dados, experimentos e modelos. Os notebooks e implementações
 - [Fonte LaTeX do relatório](entregaveis/entregavel-final-reestruturado.tex)
 - As figuras usadas pelo relatório estão em [`entregaveis/entregavel-final-img/`](entregaveis/entregavel-final-img/).
 
-O LaTeX encontra as figuras quando compilado da raiz do repositório ou do diretório `entregaveis/`.
+O LaTeX encontra as figuras quando compilado da raiz do repositório ou de `docs/entregaveis/`.
 
 ## Documentação junto aos experimentos
 
