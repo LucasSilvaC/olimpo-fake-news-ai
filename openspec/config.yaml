@@ -1,0 +1,14 @@
+schema: spec-driven
+
+context: |
+  Task Execution Rules:
+  - After completing an entire task group (e.g., all subtasks under task 1: 1.1, 1.2, etc.), always pause and wait for user confirmation before moving on to the next task group. Do not pause between individual subtasks (1.1, 1.2).
+  - When waiting for user confirmation, provide conventional commit suggestions in English, written on a single line that encompasses all changes in the completed group.
+  - Never run git commit directly; only suggest the commit message.
+
+operations:
+  apply:
+    guidance:
+      - "After completing an entire task group (e.g., all subtasks of Task 1), pause and wait for user confirmation before proceeding to the next group. Do not pause after each subtask (e.g., 1.1, 1.2)."
+      - "When waiting for user confirmation, provide conventional commit ideas in English on a single line encompassing everything done in the task group."
+      - "Never execute the git commit command automatically; only suggest the commit message to the user."

@@ -62,7 +62,17 @@ export class NewsVoteEntity {
     this.createdAt = props.createdAt ?? new Date();
   }
 
-  public calculateScore(targetClassification: MLTargetType): ScoreEvaluationResult {
+  public calculateScore(
+    targetClassification: MLTargetType,
+    isTimeout?: boolean,
+  ): ScoreEvaluationResult {
+    if (isTimeout) {
+      return {
+        isCorrect: false,
+        pointsAwarded: 0,
+      };
+    }
+
     if (this.vote === targetClassification) {
       return {
         isCorrect: true,
@@ -86,8 +96,8 @@ export class NewsVoteEntity {
     };
   }
 
-  public evaluate(targetClassification: MLTargetType): NewsVoteEntity {
-    const { isCorrect, pointsAwarded } = this.calculateScore(targetClassification);
+  public evaluate(targetClassification: MLTargetType, isTimeout?: boolean): NewsVoteEntity {
+    const { isCorrect, pointsAwarded } = this.calculateScore(targetClassification, isTimeout);
 
     return new NewsVoteEntity({
       id: this.id,
