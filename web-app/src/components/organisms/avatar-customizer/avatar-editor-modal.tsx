@@ -280,12 +280,7 @@ function EditorSession({ value, onSave, onClose }: AvatarEditorModalProps) {
           </p>
         ) : null}
         <div className="flex gap-3 max-[360px]:flex-col max-[360px]:gap-2 min-[900px]:justify-end">
-          <Button
-            type="button"
-            onClick={saveAvatar}
-            disabled={saving}
-            aria-busy={saving}
-          >
+          <Button type="button" onClick={saveAvatar} disabled={saving} aria-busy={saving}>
             {saving ? "Salvando..." : "Salvar avatar"} <Check size={18} />
           </Button>
           <Button

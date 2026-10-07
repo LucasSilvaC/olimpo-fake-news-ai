@@ -1,5 +1,6 @@
 "use client";
-import { ArrowRight, Eye, LockKeyhole, Mail, UserRound } from "lucide-react";
+import { ArrowRight, Eye, EyeOff, LockKeyhole, Mail, UserRound } from "lucide-react";
+import { useState } from "react";
 
 import { useRegisterViewModel } from "../model/use-register-view-model";
 
@@ -8,8 +9,11 @@ import { ProfileCustomizer } from "./profile-customizer";
 import { RegistrationField } from "./registration-field";
 
 import { Button } from "@/components/atoms/button";
+
 export function RegisterForm() {
   const vm = useRegisterViewModel();
+  const [showPassword, setShowPassword] = useState(false);
+
   return (
     <form onSubmit={vm.submit} className="space-y-5" aria-busy={vm.pending} noValidate>
       <ProfileCustomizer vm={vm} />
@@ -45,7 +49,7 @@ export function RegisterForm() {
       <RegistrationField
         id="register-password"
         name="password"
-        type="password"
+        type={showPassword ? "text" : "password"}
         label="Senha"
         hint="Mínimo de 8 caracteres"
         icon={LockKeyhole}
@@ -58,10 +62,18 @@ export function RegisterForm() {
         onBlur={() => vm.touchField("password")}
         error={vm.fieldErrors.password}
         trailing={
-          <Eye
-            aria-hidden="true"
-            className="pointer-events-none absolute top-1/2 right-4 size-5 -translate-y-1/2 text-slate-500"
-          />
+          <button
+            type="button"
+            onClick={() => setShowPassword((prev) => !prev)}
+            aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
+            className="absolute top-1/2 right-4 -translate-y-1/2 text-slate-500 hover:text-slate-700"
+          >
+            {showPassword ? (
+              <EyeOff aria-hidden="true" className="size-5" />
+            ) : (
+              <Eye aria-hidden="true" className="size-5" />
+            )}
+          </button>
         }
       >
         <PasswordStrength strength={vm.strength} />
