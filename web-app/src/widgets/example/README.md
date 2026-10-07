@@ -6,7 +6,7 @@ Um **Widget** é um bloco grande e autônomo de interface, frequentemente reutil
 
 - Header global ou Sidebar de navegação.
 - Painel complexo de filtros.
-- Painel de orquestração de um fluxo (ex: `NewsExtractor` compondo form e preview do artigo).
+- Painel de orquestração de um fluxo (ex: cabeçalho compondo navegação e perfil).
 - Tabela de dados com paginação e toolbar.
 
 ## Regras de Dependência:

@@ -14,7 +14,6 @@ export const config = {
   matcher: [
     "/",
     "/sala/:path*",
-    "/extrair",
     "/dev/sandbox",
     "/olimpo",
     "/olimpo/game",
