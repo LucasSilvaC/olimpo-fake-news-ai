@@ -15,10 +15,7 @@ export {
   type INewsArticleData,
 } from "./ui/news-check-stage";
 
-export {
-  VerdictWaitingStage,
-  type IVerdictWaitingStageProps,
-} from "./ui/verdict-waiting-stage";
+export { VerdictWaitingStage, type IVerdictWaitingStageProps } from "./ui/verdict-waiting-stage";
 
 export {
   RoundScoreboardStage,
@@ -32,12 +29,6 @@ export {
   type IMatchPlayer,
 } from "./ui/match-scoreboard-stage";
 
-export {
-  VerometroGauge,
-  type IVerometroGaugeProps,
-} from "./ui/verometro-gauge";
+export { VerometroGauge, type IVerometroGaugeProps } from "./ui/verometro-gauge";
 
-export {
-  SocraticReflection,
-  type ISocraticReflectionProps,
-} from "./ui/socratic-reflection";
+export { SocraticReflection, type ISocraticReflectionProps } from "./ui/socratic-reflection";

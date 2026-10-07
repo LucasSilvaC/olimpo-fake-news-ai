@@ -5,18 +5,9 @@ import { useRouter } from "next/navigation";
 import * as React from "react";
 import { toast } from "sonner";
 
-import {
-  MatchScoreboardStage,
-  type IMatchPlayer,
-} from "./match-scoreboard-stage";
-import {
-  NewsCheckStage,
-  type INewsArticleData,
-} from "./news-check-stage";
-import {
-  RoundScoreboardStage,
-  type IScoreboardPlayer,
-} from "./round-scoreboard-stage";
+import { MatchScoreboardStage, type IMatchPlayer } from "./match-scoreboard-stage";
+import { NewsCheckStage, type INewsArticleData } from "./news-check-stage";
+import { RoundScoreboardStage, type IScoreboardPlayer } from "./round-scoreboard-stage";
 import { VerdictWaitingStage } from "./verdict-waiting-stage";
 
 import type { SubmitVoteActionResult } from "@/app/api/news-voting/actions/submit-vote.action";
@@ -28,11 +19,7 @@ import type {
 } from "@/app/api/realtime-events/entities/event.types";
 import type { RoomStatus } from "@/server/shared/database/schemas/enums";
 
-export type GameStage =
-  | "CHECKING"
-  | "WAITING"
-  | "ROUND_SCOREBOARD"
-  | "MATCH_FINALE";
+export type GameStage = "CHECKING" | "WAITING" | "ROUND_SCOREBOARD" | "MATCH_FINALE";
 
 export interface RoomGameMember {
   id: string;
@@ -116,18 +103,12 @@ export function RoomGameView({
   }, [initialStage, initialVote, room.status]);
 
   const [stage, setStage] = React.useState<GameStage>(defaultStage);
-  const [currentRound, setCurrentRound] = React.useState<number>(
-    room.currentRound || 1,
-  );
+  const [currentRound, setCurrentRound] = React.useState<number>(room.currentRound || 1);
   const [timeRemaining, setTimeRemaining] = React.useState<number | null>(
     room.roundDurationSeconds || 30,
   );
-  const [lastVote, setLastVote] = React.useState<IUserVoteState | null>(
-    initialVote,
-  );
-  const [votedCount, setVotedCount] = React.useState<number>(
-    initialVote ? 1 : 0,
-  );
+  const [lastVote, setLastVote] = React.useState<IUserVoteState | null>(initialVote);
+  const [votedCount, setVotedCount] = React.useState<number>(initialVote ? 1 : 0);
   const [isConnected, setIsConnected] = React.useState(true);
 
   // Maintain players scores and streaks
@@ -185,12 +166,8 @@ export function RoomGameView({
 
           // For the current user, prefer our recorded vote details if available
           const isCurrentUser = player.userId === currentUserId;
-          const isCorrect = isCurrentUser
-            ? (lastVote?.isCorrect ?? scored)
-            : scored;
-          const earnedDelta = isCurrentUser
-            ? (lastVote?.pointsAwarded ?? delta)
-            : delta;
+          const isCorrect = isCurrentUser ? (lastVote?.isCorrect ?? scored) : scored;
+          const earnedDelta = isCurrentUser ? (lastVote?.pointsAwarded ?? delta) : delta;
 
           return {
             ...player,
@@ -198,9 +175,7 @@ export function RoomGameView({
             roundDelta: earnedDelta,
             streak: isCorrect ? player.streak + 1 : 0,
             isCorrect,
-            correctCount: isCorrect
-              ? player.correctCount + 1
-              : player.correctCount,
+            correctCount: isCorrect ? player.correctCount + 1 : player.correctCount,
           };
         }),
       );
@@ -244,7 +219,7 @@ export function RoomGameView({
       try {
         const messageEvent = event as MessageEvent<string>;
         const data = JSON.parse(messageEvent.data) as RoomEvent<RoundStartedPayload>;
-        const nextRound = data.payload?.currentRound ?? (currentRound + 1);
+        const nextRound = data.payload?.currentRound ?? currentRound + 1;
 
         setCurrentRound(nextRound);
         setLastVote(null);
@@ -373,9 +348,7 @@ export function RoomGameView({
       .sort((a, b) => b.score - a.score)
       .map((p) => {
         const accuracy =
-          room.totalRounds > 0
-            ? Math.round((p.correctCount / room.totalRounds) * 100)
-            : 0;
+          room.totalRounds > 0 ? Math.round((p.correctCount / room.totalRounds) * 100) : 0;
 
         return {
           userId: p.userId,
@@ -397,7 +370,7 @@ export function RoomGameView({
     <div className="relative min-h-screen bg-[#070b14] text-slate-100 selection:bg-indigo-500/30">
       {/* Offline warning badge if SSE disconnects */}
       {!isConnected && (
-        <div className="fixed bottom-4 right-4 z-50 flex items-center gap-2 rounded-full border border-amber-500/30 bg-amber-500/10 px-3 py-1.5 text-xs font-medium text-amber-300 shadow-lg backdrop-blur-md">
+        <div className="fixed right-4 bottom-4 z-50 flex items-center gap-2 rounded-full border border-amber-500/30 bg-amber-500/10 px-3 py-1.5 text-xs font-medium text-amber-300 shadow-lg backdrop-blur-md">
           <WifiOff className="h-3.5 w-3.5 animate-pulse" />
           <span>Reconectando à sala...</span>
         </div>
