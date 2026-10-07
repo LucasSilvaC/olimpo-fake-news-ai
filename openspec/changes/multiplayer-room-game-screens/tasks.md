@@ -9,8 +9,8 @@
 
 ## 2. Room Orchestrator and Real-Time Sync
 
-- [ ] 2.1 Implement `RoomGameView` (`src/views/room-game/ui/room-game-view.tsx`) with stage state management (`CHECKING`, `WAITING`, `ROUND_SCOREBOARD`, `MATCH_FINALE`) and Server-Sent Events listener on `/api/rooms/[pin]/events` (`ROUND_STARTED`, `ROUND_COMPLETED`, `MATCH_FINISHED`).
-- [ ] 2.2 Export `RoomGameView` through `src/views/room-game/index.ts`.
+- [x] 2.1 Implement `RoomGameView` (`src/views/room-game/ui/room-game-view.tsx`) with stage state management (`CHECKING`, `WAITING`, `ROUND_SCOREBOARD`, `MATCH_FINALE`) and Server-Sent Events listener on `/api/rooms/[pin]/events` (`ROUND_STARTED`, `ROUND_COMPLETED`, `MATCH_FINISHED`).
+- [x] 2.2 Export `RoomGameView` through `src/views/room-game/index.ts`.
 
 ## 3. Room Page Integration and Validation
 
