@@ -32,6 +32,7 @@ export interface INewsCheckStageProps {
     vote: "reliable" | "unreliable" | "uncertain";
     result: SubmitVoteActionResult;
     timeTakenSeconds: number;
+    isTimeout?: boolean;
   }) => void;
 }
 
@@ -49,9 +50,11 @@ export function NewsCheckStage({
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [imageError, setImageError] = React.useState(false);
   const startTimeRef = React.useRef<number>(0);
+  const hasAutoSubmittedRef = React.useRef(false);
 
   React.useEffect(() => {
     startTimeRef.current = Date.now();
+    hasAutoSubmittedRef.current = false;
   }, [article.id]);
 
   // Extract friendly publisher tag or hostname fallback
@@ -99,41 +102,72 @@ export function NewsCheckStage({
     return parts.join(" • ");
   }, [article.authors, article.publishedAt]);
 
-  const handleVote = async (vote: "reliable" | "unreliable" | "uncertain"): Promise<void> => {
-    if (isSubmitting) return;
+  const handleVote = React.useCallback(
+    async (
+      vote: "reliable" | "unreliable" | "uncertain",
+      isTimeout = false,
+    ): Promise<void> => {
+      if (isSubmitting) return;
 
-    setSelectedVote(vote);
-    setIsSubmitting(true);
-    const timeTakenSeconds = Math.max(1, Math.round((Date.now() - startTimeRef.current) / 1000));
+      setSelectedVote(vote);
+      setIsSubmitting(true);
+      const timeTakenSeconds = isTimeout
+        ? 30
+        : Math.max(1, Math.round((Date.now() - startTimeRef.current) / 1000));
 
-    try {
-      const result = await submitVoteAction({
-        roomId,
-        vote,
-      });
+      try {
+        const result = await submitVoteAction({
+          roomId,
+          vote,
+          isTimeout,
+        });
 
-      if (!result.success) {
+        if (!result.success) {
+          toast.error("Erro ao registrar voto", {
+            description: result.error,
+          });
+          setIsSubmitting(false);
+          setSelectedVote(null);
+          return;
+        }
+
+        if (isTimeout) {
+          toast.warning("Tempo esgotado!", {
+            description: "Seu voto foi registrado como tempo esgotado (0 pontos).",
+          });
+        }
+
+        onVoteSubmitted({
+          vote,
+          result,
+          timeTakenSeconds,
+          isTimeout,
+        });
+      } catch {
         toast.error("Erro ao registrar voto", {
-          description: result.error,
+          description: "Falha de conexão. Tente novamente.",
         });
         setIsSubmitting(false);
         setSelectedVote(null);
-        return;
       }
+    },
+    [isSubmitting, onVoteSubmitted, roomId],
+  );
 
-      onVoteSubmitted({
-        vote,
-        result,
-        timeTakenSeconds,
-      });
-    } catch {
-      toast.error("Erro ao registrar voto", {
-        description: "Falha de conexão. Tente novamente.",
-      });
-      setIsSubmitting(false);
-      setSelectedVote(null);
+  // Automatically submit neutral timeout vote when round duration expires
+  React.useEffect(() => {
+    if (
+      timeRemainingSeconds !== undefined &&
+      timeRemainingSeconds !== null &&
+      timeRemainingSeconds <= 0 &&
+      !selectedVote &&
+      !isSubmitting &&
+      !hasAutoSubmittedRef.current
+    ) {
+      hasAutoSubmittedRef.current = true;
+      void handleVote("uncertain", true);
     }
-  };
+  }, [timeRemainingSeconds, selectedVote, isSubmitting, handleVote]);
 
   return (
     <div className="flex w-full flex-col items-center py-2" data-purpose="news-check-stage">
@@ -149,8 +183,19 @@ export function NewsCheckStage({
         </div>
 
         {timeRemainingSeconds !== undefined && timeRemainingSeconds !== null && (
-          <div className="flex items-center gap-1.5 rounded-full border border-white/25 bg-white/20 px-3.5 py-1.5 text-xs font-bold text-white shadow-sm backdrop-blur-md">
-            <Clock className="size-3.5 text-amber-300" aria-hidden="true" />
+          <div
+            className={`flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-xs font-bold shadow-sm backdrop-blur-md transition-all ${
+              timeRemainingSeconds <= 5
+                ? "animate-pulse border-rose-400 bg-rose-500/30 text-rose-200"
+                : "border-white/25 bg-white/20 text-white"
+            }`}
+          >
+            <Clock
+              className={`size-3.5 ${
+                timeRemainingSeconds <= 5 ? "text-rose-300" : "text-amber-300"
+              }`}
+              aria-hidden="true"
+            />
             <span>{timeRemainingSeconds}s</span>
           </div>
         )}
@@ -239,7 +284,7 @@ export function NewsCheckStage({
         {/* Option 1: Verdadeiro (reliable) */}
         <button
           type="button"
-          disabled={isSubmitting}
+          disabled={isSubmitting || (timeRemainingSeconds !== null && timeRemainingSeconds !== undefined && timeRemainingSeconds <= 0)}
           onClick={() => void handleVote("reliable")}
           aria-label="Classificar notícia como Verdadeira"
           className={`flex w-full items-center gap-3.5 rounded-2xl border border-white/60 bg-white p-3.5 text-slate-800 shadow-md transition-all duration-200 hover:-translate-y-0.5 hover:bg-slate-50 hover:shadow-xl focus:ring-4 focus:ring-emerald-300 focus:outline-none active:translate-y-0.5 md:rounded-3xl md:p-4 ${
@@ -264,7 +309,7 @@ export function NewsCheckStage({
         {/* Option 2: Falso (unreliable) */}
         <button
           type="button"
-          disabled={isSubmitting}
+          disabled={isSubmitting || (timeRemainingSeconds !== null && timeRemainingSeconds !== undefined && timeRemainingSeconds <= 0)}
           onClick={() => void handleVote("unreliable")}
           aria-label="Classificar notícia como Falsa"
           className={`flex w-full items-center gap-3.5 rounded-2xl border border-white/60 bg-white p-3.5 text-slate-800 shadow-md transition-all duration-200 hover:-translate-y-0.5 hover:bg-slate-50 hover:shadow-xl focus:ring-4 focus:ring-rose-300 focus:outline-none active:translate-y-0.5 md:rounded-3xl md:p-4 ${
@@ -289,7 +334,7 @@ export function NewsCheckStage({
         {/* Option 3: Incerto (uncertain) */}
         <button
           type="button"
-          disabled={isSubmitting}
+          disabled={isSubmitting || (timeRemainingSeconds !== null && timeRemainingSeconds !== undefined && timeRemainingSeconds <= 0)}
           onClick={() => void handleVote("uncertain")}
           aria-label="Classificar notícia como Incerta"
           className={`flex w-full items-center gap-3.5 rounded-2xl border border-white/60 bg-white p-3.5 text-slate-800 shadow-md transition-all duration-200 hover:-translate-y-0.5 hover:bg-slate-50 hover:shadow-xl focus:ring-4 focus:ring-amber-300 focus:outline-none active:translate-y-0.5 md:rounded-3xl md:p-4 ${

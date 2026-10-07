@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, HelpCircle, Users, X } from "lucide-react";
+import { ArrowRight, Check, Clock, HelpCircle, Sparkles, Users, X } from "lucide-react";
 import * as React from "react";
 
 import { SocraticReflection } from "./socratic-reflection";
@@ -16,6 +16,10 @@ export interface IVerdictWaitingStageProps {
   reliabilityScore: number;
   votedCount: number;
   totalPlayers: number;
+  reasons?: string[];
+  verdictCountdownSeconds?: number | null;
+  onSkipCountdown?: () => void;
+  isTimeout?: boolean;
 }
 
 const VOTE_LABELS: Record<
@@ -69,6 +73,10 @@ export function VerdictWaitingStage({
   reliabilityScore,
   votedCount,
   totalPlayers,
+  reasons,
+  verdictCountdownSeconds,
+  onSkipCountdown,
+  isTimeout = false,
 }: IVerdictWaitingStageProps): React.ReactElement {
   const userVoteConfig = VOTE_LABELS[userVote] || VOTE_LABELS.unreliable;
   const officialConfig = officialAnswer ? VOTE_LABELS[officialAnswer] : null;
@@ -207,11 +215,33 @@ export function VerdictWaitingStage({
 
         {/* Headlines */}
         <h1 className="text-3xl font-black tracking-tight text-white drop-shadow-md md:text-5xl">
-          Veredito registrado!
+          {officialAnswer ? "Veredito Revelado!" : "Veredito registrado!"}
         </h1>
         <p className="mt-2 max-w-lg text-base font-medium text-blue-100/90 md:text-lg">
-          Aguardando os outros checadores concluírem a análise dos fatos...
+          {officialAnswer
+            ? "Confira o gabarito oficial, o Verômetro e as justificativas da IA Olimpo."
+            : "Aguardando os outros checadores concluírem a análise dos fatos..."}
         </p>
+
+        {/* Prominent Countdown Banner when verdict is revealed */}
+        {verdictCountdownSeconds !== null && verdictCountdownSeconds !== undefined && (
+          <div className="mt-4 flex flex-wrap items-center justify-center gap-2.5">
+            <div className="inline-flex items-center gap-2 rounded-full border border-amber-300/40 bg-amber-400/20 px-4 py-1.5 text-xs font-bold text-amber-200 backdrop-blur-md sm:text-sm">
+              <Clock className="size-4 animate-spin text-amber-300" aria-hidden="true" />
+              <span>Avançando para o placar da rodada em {verdictCountdownSeconds}s</span>
+            </div>
+            {onSkipCountdown && (
+              <button
+                type="button"
+                onClick={onSkipCountdown}
+                className="inline-flex cursor-pointer items-center gap-1.5 rounded-full bg-amber-400 px-3.5 py-1.5 text-xs font-extrabold text-amber-950 shadow-md transition-all hover:bg-amber-300 active:scale-95"
+              >
+                <span>Ver placar agora</span>
+                <ArrowRight className="size-3.5 stroke-[2.5]" aria-hidden="true" />
+              </button>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Main Verdict & Analysis Card */}
@@ -244,12 +274,25 @@ export function VerdictWaitingStage({
                 </div>
               </div>
               <div className="pl-2 text-right">
-                <span className="block text-[10px] font-semibold text-slate-500">
-                  {timeTakenSeconds}s
-                </span>
-                <span className="inline-flex items-center rounded bg-amber-100/80 px-1.5 py-0.5 text-[10px] font-bold text-amber-600">
-                  ⚡ +{pointsAwarded} pts
-                </span>
+                {isTimeout ? (
+                  <>
+                    <span className="block text-[10px] font-bold text-rose-500">
+                      Tempo Esgotado
+                    </span>
+                    <span className="inline-flex items-center rounded bg-rose-100 px-1.5 py-0.5 text-[10px] font-bold text-rose-700">
+                      0 pts
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <span className="block text-[10px] font-semibold text-slate-500">
+                      {timeTakenSeconds}s
+                    </span>
+                    <span className="inline-flex items-center rounded bg-amber-100/80 px-1.5 py-0.5 text-[10px] font-bold text-amber-600">
+                      ⚡ +{pointsAwarded} pts
+                    </span>
+                  </>
+                )}
               </div>
             </div>
 
@@ -272,16 +315,23 @@ export function VerdictWaitingStage({
                     </div>
                     <div className="flex items-center gap-1.5 text-sm leading-tight font-black text-slate-900">
                       {officialConfig.name}
-                      {isCorrect !== null && isCorrect !== undefined && (
-                        <span
-                          className={`rounded-full px-1.5 py-0.5 text-[10px] font-bold ${
-                            isCorrect
-                              ? "bg-emerald-100 text-emerald-700"
-                              : "bg-rose-100 text-rose-700"
-                          }`}
-                        >
-                          {isCorrect ? "Você acertou!" : "Incorreto"}
+                      {isTimeout ? (
+                        <span className="rounded-full bg-slate-100 px-1.5 py-0.5 text-[10px] font-bold text-slate-600">
+                          Tempo Esgotado
                         </span>
+                      ) : (
+                        isCorrect !== null &&
+                        isCorrect !== undefined && (
+                          <span
+                            className={`rounded-full px-1.5 py-0.5 text-[10px] font-bold ${
+                              isCorrect
+                                ? "bg-emerald-100 text-emerald-700"
+                                : "bg-rose-100 text-rose-700"
+                            }`}
+                          >
+                            {isCorrect ? "Você acertou!" : "Incorreto"}
+                          </span>
+                        )
                       )}
                     </div>
                   </div>
@@ -318,28 +368,90 @@ export function VerdictWaitingStage({
           <VerometroGauge reliabilityScore={reliabilityScore} />
         </div>
 
-        {/* Live Room Progress Section */}
-        <div className="mb-6" data-purpose="room-progress-tracker">
-          <div className="mb-2 flex items-center justify-between text-sm font-bold text-slate-700">
-            <span className="flex items-center gap-2">
-              <Users className="size-4 text-blue-600" aria-hidden="true" />
-              Progresso da sala
-            </span>
-            <span className="font-extrabold text-blue-600">
-              {votedCount} de {totalPlayers} checadores ({progressPercent}%)
-            </span>
+        {/* AI Explanation & Reasons Card */}
+        {officialAnswer && reasons && reasons.length > 0 && (
+          <div
+            className="mb-6 rounded-2xl border border-blue-200/90 bg-linear-to-br from-blue-50/80 to-indigo-50/50 p-4 sm:p-5"
+            data-purpose="ai-analysis-reasons"
+          >
+            <div className="mb-3.5 flex flex-wrap items-center justify-between gap-2 border-b border-blue-100 pb-2.5">
+              <div className="flex items-center gap-2">
+                <div className="flex size-7 items-center justify-center rounded-lg bg-blue-600 text-white shadow-sm">
+                  <Sparkles className="size-4" aria-hidden="true" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-extrabold text-slate-900 sm:text-base">
+                    Por que a notícia foi classificada como {officialConfig?.name.toLowerCase()}?
+                  </h3>
+                  <p className="text-[11px] font-medium text-slate-500">
+                    Análise factual e checagem de evidências da IA Olimpo
+                  </p>
+                </div>
+              </div>
+              <span className="inline-flex items-center rounded-full bg-blue-600 px-2.5 py-0.5 text-[10px] font-black tracking-wide text-white uppercase shadow-sm">
+                IA Olimpo
+              </span>
+            </div>
+
+            <ul className="space-y-2.5">
+              {reasons.map((reason, idx) => (
+                <li
+                  key={idx}
+                  className="flex items-start gap-2.5 rounded-xl border border-white/80 bg-white/95 p-3 text-xs font-medium leading-relaxed text-slate-700 shadow-sm sm:text-sm"
+                >
+                  <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-blue-100 text-[11px] font-black text-blue-700">
+                    {idx + 1}
+                  </span>
+                  <span className="flex-1">{reason}</span>
+                </li>
+              ))}
+            </ul>
           </div>
-          {/* Progress Bar */}
-          <div className="h-3.5 w-full overflow-hidden rounded-full border border-slate-200 bg-slate-100 p-0.5">
-            <div
-              className="h-full rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 shadow-sm transition-all duration-700 ease-out"
-              style={{ width: `${progressPercent}%` }}
-            />
+        )}
+
+        {/* Live Room Progress Section (displayed while waiting for other players) */}
+        {!officialAnswer && (
+          <div className="mb-6" data-purpose="room-progress-tracker">
+            <div className="mb-2 flex items-center justify-between text-sm font-bold text-slate-700">
+              <span className="flex items-center gap-2">
+                <Users className="size-4 text-blue-600" aria-hidden="true" />
+                Progresso da sala
+              </span>
+              <span className="font-extrabold text-blue-600">
+                {votedCount} de {totalPlayers} checadores ({progressPercent}%)
+              </span>
+            </div>
+            {/* Progress Bar */}
+            <div className="h-3.5 w-full overflow-hidden rounded-full border border-slate-200 bg-slate-100 p-0.5">
+              <div
+                className="h-full rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 shadow-sm transition-all duration-700 ease-out"
+                style={{ width: `${progressPercent}%` }}
+              />
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Socratic Reflection Section */}
         <SocraticReflection />
+
+        {/* Bottom Advance Button to allow players to proceed at their own pace */}
+        {officialAnswer && onSkipCountdown && (
+          <div className="mt-6 flex justify-center border-t border-slate-100 pt-5">
+            <button
+              type="button"
+              onClick={onSkipCountdown}
+              className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-blue-600 px-6 py-3 text-sm font-extrabold text-white shadow-lg shadow-blue-600/30 transition-all hover:bg-blue-700 active:scale-95"
+            >
+              <span>Ir para o Placar da Rodada</span>
+              {verdictCountdownSeconds !== null && verdictCountdownSeconds !== undefined && (
+                <span className="rounded-full bg-white/20 px-2 py-0.5 text-xs font-semibold">
+                  {verdictCountdownSeconds}s
+                </span>
+              )}
+              <ArrowRight className="size-4" aria-hidden="true" />
+            </button>
+          </div>
+        )}
       </section>
     </div>
   );

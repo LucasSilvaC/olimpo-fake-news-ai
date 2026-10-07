@@ -30,6 +30,7 @@ export interface SubmitVoteInput {
   roomId: string;
   userId: string;
   vote: VoteOptionType;
+  isTimeout?: boolean;
 }
 
 export interface SubmitVoteOutput {
@@ -107,7 +108,7 @@ export class SubmitVoteUseCase {
       vote: normalizedVote,
     });
 
-    const evaluatedVote = voteEntity.evaluate(article.targetClassification);
+    const evaluatedVote = voteEntity.evaluate(article.targetClassification, input.isTimeout);
 
     await this.newsVoteRepository.create({
       id: evaluatedVote.id,
@@ -143,22 +144,29 @@ export class SubmitVoteUseCase {
     const roundCompleted = currentVoteCount >= totalParticipants;
 
     if (roundCompleted) {
+      const isFirstToComplete = await this.redisVoteRepository.markRoundCompleted(
+        input.roomId,
+        room.currentRound,
+      );
+
       const analysis = await this.getArticleAnalysisUseCase.execute({
         articleId: currentItem.articleId,
       });
       const leaderboard = await this.redisRoomRepository.getLeaderboard(input.roomId);
 
-      await this.eventPublisher.publish(room.pin, {
-        type: "ROUND_COMPLETED",
-        roomId: room.id,
-        pin: room.pin,
-        payload: {
-          round: room.currentRound,
-          leaderboard,
-          analysis,
-        },
-        timestamp: new Date().toISOString(),
-      });
+      if (isFirstToComplete) {
+        await this.eventPublisher.publish(room.pin, {
+          type: "ROUND_COMPLETED",
+          roomId: room.id,
+          pin: room.pin,
+          payload: {
+            round: room.currentRound,
+            leaderboard,
+            analysis,
+          },
+          timestamp: new Date().toISOString(),
+        });
+      }
 
       return {
         vote: evaluatedVote.toDTO(),

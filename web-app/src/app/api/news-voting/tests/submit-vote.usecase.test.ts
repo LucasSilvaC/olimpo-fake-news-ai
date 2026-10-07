@@ -101,6 +101,8 @@ describe("SubmitVoteUseCase", () => {
       hasUserVoted: vi.fn().mockResolvedValue(false),
       getVotedUserIds: vi.fn().mockResolvedValue(["user-1"]),
       clearRoundVotes: vi.fn(),
+      markRoundCompleted: vi.fn().mockResolvedValue(true),
+      isRoundCompleted: vi.fn().mockResolvedValue(false),
     };
 
     roomRepository = {
@@ -330,5 +332,36 @@ describe("SubmitVoteUseCase", () => {
         },
       }),
     );
+  });
+
+  it("awards 0 points and marks isCorrect false when vote is a timeout submission", async () => {
+    const result = await useCase.execute({
+      roomId: "room-1",
+      userId: "user-1",
+      vote: "reliable",
+      isTimeout: true,
+    });
+
+    expect(result.vote.pointsAwarded).toBe(0);
+    expect(result.vote.isCorrect).toBe(false);
+    expect(roomRepository.updateMemberScore).not.toHaveBeenCalled();
+  });
+
+  it("does not publish duplicate ROUND_COMPLETED event if already marked completed", async () => {
+    vi.mocked(roomRepository.countMembers).mockResolvedValueOnce(2);
+    vi.mocked(redisVoteRepository.recordVoteAtomic).mockResolvedValueOnce({
+      isFirstVote: true,
+      currentVoteCount: 2,
+    });
+    vi.mocked(redisVoteRepository.markRoundCompleted).mockResolvedValueOnce(false);
+
+    const result = await useCase.execute({
+      roomId: "room-1",
+      userId: "user-1",
+      vote: "reliable",
+    });
+
+    expect(result.roundCompleted).toBe(true);
+    expect(mockEventPublisher.publish).not.toHaveBeenCalled();
   });
 });

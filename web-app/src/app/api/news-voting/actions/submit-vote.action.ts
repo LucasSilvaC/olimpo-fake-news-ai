@@ -15,6 +15,7 @@ const submitVoteSchema = z.object({
   vote: z.enum(["reliable", "uncertain", "unreliable"] as const, {
     message: "Vote must be 'reliable', 'uncertain', or 'unreliable'",
   }),
+  isTimeout: z.boolean().optional(),
 });
 
 export type SubmitVoteActionInput = z.infer<typeof submitVoteSchema>;
@@ -43,6 +44,7 @@ export async function submitVoteAction(
         ? {
             roomId: input.get("roomId"),
             vote: input.get("vote"),
+            isTimeout: input.get("isTimeout") === "true",
           }
         : input;
 
@@ -58,6 +60,7 @@ export async function submitVoteAction(
       roomId: parsed.data.roomId,
       userId: session.id,
       vote: parsed.data.vote as VoteOptionType,
+      isTimeout: parsed.data.isTimeout,
     });
 
     return {

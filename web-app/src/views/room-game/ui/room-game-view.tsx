@@ -11,6 +11,7 @@ import { NewsCheckStage, type INewsArticleData } from "./news-check-stage";
 import { RoundScoreboardStage, type IScoreboardPlayer } from "./round-scoreboard-stage";
 import { VerdictWaitingStage } from "./verdict-waiting-stage";
 
+import { concludeRoundAction } from "@/app/api/news-voting/actions/conclude-round.action";
 import type { SubmitVoteActionResult } from "@/app/api/news-voting/actions/submit-vote.action";
 import type {
   MatchFinishedPayload,
@@ -54,6 +55,8 @@ export interface IUserVoteState {
   officialAnswer?: "reliable" | "unreliable" | "uncertain" | null;
   reliabilityScore?: number;
   timeTakenSeconds?: number;
+  reasons?: string[];
+  isTimeout?: boolean;
 }
 
 export interface IRoomPlayerState {
@@ -112,6 +115,14 @@ export function RoomGameView({
   const [lastVote, setLastVote] = React.useState<IUserVoteState | null>(initialVote);
   const [votedCount, setVotedCount] = React.useState<number>(initialVote ? 1 : 0);
   const [isConnected, setIsConnected] = React.useState(true);
+
+  // Verdict reading countdown state and official AI analysis
+  const [verdictCountdown, setVerdictCountdown] = React.useState<number | null>(null);
+  const [roundAnalysis, setRoundAnalysis] = React.useState<{
+    classification: "reliable" | "unreliable" | "uncertain";
+    reasons: string[];
+    confidence: number;
+  } | null>(null);
 
   // Maintain players scores and streaks
   const [players, setPlayers] = React.useState<IRoomPlayerState[]>(() =>
@@ -204,6 +215,50 @@ export function RoomGameView({
     return () => clearInterval(interval);
   }, [stage, timeRemaining]);
 
+  // When round duration expires (timeRemaining === 0), force-conclude the round
+  // (host concludes at 1.2s; participants have a fallback at 3.5s)
+  React.useEffect(() => {
+    if (timeRemaining !== 0 || stage !== "CHECKING") {
+      return;
+    }
+
+    const delay = isHost ? 1200 : 3500;
+    const timeoutId = setTimeout(async () => {
+      try {
+        await concludeRoundAction({ roomId: room.id, round: currentRound });
+      } catch {
+        // Concurrent call or event stream handles conclusion
+      }
+    }, delay);
+
+    return () => clearTimeout(timeoutId);
+  }, [timeRemaining, stage, isHost, room.id, currentRound]);
+
+  // Countdown timer for reading the official verdict (10 seconds)
+  React.useEffect(() => {
+    if (stage !== "WAITING" || verdictCountdown === null || verdictCountdown <= 0) {
+      return;
+    }
+
+    const interval = setInterval(() => {
+      setVerdictCountdown((prev) => {
+        if (prev === null || prev <= 1) {
+          clearInterval(interval);
+          setStage("ROUND_SCOREBOARD");
+          return null;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [stage, verdictCountdown]);
+
+  const handleSkipVerdictCountdown = React.useCallback((): void => {
+    setVerdictCountdown(null);
+    setStage("ROUND_SCOREBOARD");
+  }, []);
+
   // Server-Sent Events listener
   React.useEffect(() => {
     const pin = encodeURIComponent(room.pin);
@@ -225,6 +280,8 @@ export function RoomGameView({
 
         setCurrentRound(nextRound);
         setLastVote(null);
+        setRoundAnalysis(null);
+        setVerdictCountdown(null);
         setVotedCount(0);
         setTimeRemaining(room.roundDurationSeconds || 30);
         setStage("CHECKING");
@@ -244,11 +301,42 @@ export function RoomGameView({
         if (data.payload?.leaderboard) {
           updateLeaderboardFromEntries(data.payload.leaderboard);
         }
+
+        const analysis = data.payload?.analysis;
+        if (analysis) {
+          const confidenceScore =
+            analysis.confidence > 1
+              ? Math.round(analysis.confidence)
+              : Math.round(analysis.confidence * 100);
+
+          setRoundAnalysis({
+            classification: analysis.classification,
+            reasons: analysis.reasons || [],
+            confidence: confidenceScore,
+          });
+
+          setLastVote((prev) => {
+            const isCorrect = prev?.vote ? prev.vote === analysis.classification : false;
+            return {
+              vote: prev?.vote ?? "uncertain",
+              pointsAwarded: prev?.pointsAwarded ?? 0,
+              isCorrect: prev?.isCorrect ?? isCorrect,
+              officialAnswer: analysis.classification,
+              reliabilityScore: confidenceScore,
+              reasons: analysis.reasons || [],
+              timeTakenSeconds: prev?.timeTakenSeconds ?? (room.roundDurationSeconds || 30),
+              isTimeout: prev?.isTimeout ?? (prev === null),
+            };
+          });
+        }
+
         setVotedCount(members.length);
-        setStage("ROUND_SCOREBOARD");
+        // Retain players in WAITING stage for verdict reveal reading period
+        setStage("WAITING");
+        setVerdictCountdown(10);
 
         toast.success("Rodada finalizada!", {
-          description: "Confira o placar parcial e as sequências de acertos.",
+          description: "Confira o gabarito oficial e os argumentos da IA.",
         });
       } catch {
         setStage("ROUND_SCOREBOARD");
@@ -296,30 +384,44 @@ export function RoomGameView({
       vote: "reliable" | "unreliable" | "uncertain";
       result: SubmitVoteActionResult;
       timeTakenSeconds: number;
+      isTimeout?: boolean;
     }): void => {
       if (data.result.success) {
+        const analysis = data.result.analysis;
+        const confidenceScore = analysis
+          ? analysis.confidence > 1
+            ? Math.round(analysis.confidence)
+            : Math.round(analysis.confidence * 100)
+          : 85;
+
         const voteState: IUserVoteState = {
           vote: data.vote,
           pointsAwarded: data.result.vote.pointsAwarded,
           isCorrect: data.result.vote.isCorrect,
-          officialAnswer: data.result.analysis?.classification ?? null,
-          reliabilityScore: data.result.analysis?.confidence ?? 85,
+          officialAnswer: analysis?.classification ?? null,
+          reliabilityScore: confidenceScore,
+          reasons: analysis?.reasons,
           timeTakenSeconds: data.timeTakenSeconds,
+          isTimeout: data.isTimeout,
         };
 
         setLastVote(voteState);
         setStage("WAITING");
         setVotedCount((prev) => Math.min(members.length, prev + 1));
 
-        // If everyone voted and round was completed on this action
-        if (data.result.roundCompleted) {
+        // If everyone voted and round completed on this action
+        if (data.result.roundCompleted && analysis) {
           if (data.result.leaderboard) {
             updateLeaderboardFromEntries(data.result.leaderboard);
           }
-          // Brief delay so player can absorb verdict feedback before advancing to scoreboard
-          setTimeout(() => {
-            setStage((curr) => (curr === "WAITING" ? "ROUND_SCOREBOARD" : curr));
-          }, 2600);
+          setRoundAnalysis({
+            classification: analysis.classification,
+            reasons: analysis.reasons || [],
+            confidence: confidenceScore,
+          });
+          setVotedCount(members.length);
+          // Standardized 10-second countdown for reading the verdict and AI reasons
+          setVerdictCountdown(10);
         }
       } else {
         toast.error(data.result.error || "Não foi possível registrar o seu voto.");
@@ -431,8 +533,12 @@ export function RoomGameView({
             pointsAwarded={lastVote?.pointsAwarded ?? 0}
             timeTakenSeconds={lastVote?.timeTakenSeconds ?? 0}
             isCorrect={lastVote?.isCorrect ?? null}
-            officialAnswer={lastVote?.officialAnswer ?? null}
-            reliabilityScore={lastVote?.reliabilityScore ?? 85}
+            officialAnswer={lastVote?.officialAnswer ?? roundAnalysis?.classification ?? null}
+            reliabilityScore={lastVote?.reliabilityScore ?? roundAnalysis?.confidence ?? 85}
+            reasons={lastVote?.reasons ?? roundAnalysis?.reasons}
+            verdictCountdownSeconds={verdictCountdown}
+            onSkipCountdown={handleSkipVerdictCountdown}
+            isTimeout={lastVote?.isTimeout ?? false}
             votedCount={votedCount}
             totalPlayers={members.length}
           />
