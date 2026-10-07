@@ -1,9 +1,8 @@
 import { expect, test } from "@playwright/test";
 
-test("shows the news parser and health check", async ({ page }) => {
+test("protects the news parser and keeps the health check public", async ({ page }) => {
   await page.goto("/extrair");
-  await expect(page.getByRole("heading", { name: "News Parser" })).toBeVisible();
-  await expect(page.getByRole("button", { name: "Extract" })).toBeVisible();
+  await expect(page).toHaveURL(/\/login$/);
   const healthResponse = await page.request.get("/api/health");
   expect(healthResponse.ok()).toBeTruthy();
   expect(await healthResponse.json()).toEqual({ status: "ok" });
