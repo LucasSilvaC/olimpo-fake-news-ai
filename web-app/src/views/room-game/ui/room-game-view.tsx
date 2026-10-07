@@ -1,6 +1,7 @@
 "use client";
 
-import { WifiOff } from "lucide-react";
+import { ArrowLeft, ShieldCheck, WifiOff } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import * as React from "react";
 import { toast } from "sonner";
@@ -18,6 +19,7 @@ import type {
   RoomEvent,
 } from "@/app/api/realtime-events/entities/event.types";
 import type { RoomStatus } from "@/server/shared/database/schemas/enums";
+import { Header } from "@/widgets/app-header";
 
 export type GameStage = "CHECKING" | "WAITING" | "ROUND_SCOREBOARD" | "MATCH_FINALE";
 
@@ -27,7 +29,7 @@ export interface RoomGameMember {
   name: string;
   role: string;
   score: number;
-  avatar: string;
+  avatar?: string;
 }
 
 export interface RoomGameRoom {
@@ -363,11 +365,44 @@ export function RoomGameView({
   }, [players, room.totalRounds, currentUserId]);
 
   const handleExitGame = React.useCallback((): void => {
-    router.push("/lobby");
+    router.push("/");
   }, [router]);
 
   return (
-    <div className="relative min-h-screen bg-[#070b14] text-slate-100 selection:bg-indigo-500/30">
+    <div className="relative flex min-h-screen flex-col overflow-x-hidden bg-gradient-to-b from-[#3b82f6] via-[#2563eb] to-[#1d4ed8] text-white selection:bg-amber-300 selection:text-slate-900">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -top-32 -left-40 size-[30rem] rounded-full bg-sky-200/20 blur-3xl"
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute right-[-12rem] bottom-1/4 size-[34rem] rounded-full bg-indigo-300/20 blur-3xl"
+      />
+
+      <Header
+        className="relative z-20"
+        logo={
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2.5 text-lg font-extrabold tracking-tight text-white transition-opacity hover:opacity-85 sm:text-xl"
+          >
+            <span className="flex size-9 items-center justify-center rounded-xl bg-white text-blue-600 shadow-lg shadow-blue-950/20">
+              <ShieldCheck className="size-5" aria-hidden="true" />
+            </span>
+            Olimpo
+          </Link>
+        }
+      >
+        <button
+          type="button"
+          onClick={handleExitGame}
+          className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-white/20 bg-white/15 px-4 py-2 text-sm font-semibold text-white shadow-sm backdrop-blur-sm transition-colors hover:border-white/50 hover:bg-white/25 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-300"
+        >
+          <ArrowLeft className="size-4" aria-hidden="true" />
+          Sair da sala
+        </button>
+      </Header>
+
       {/* Offline warning badge if SSE disconnects */}
       {!isConnected && (
         <div className="fixed right-4 bottom-4 z-50 flex items-center gap-2 rounded-full border border-amber-500/30 bg-amber-500/10 px-3 py-1.5 text-xs font-medium text-amber-300 shadow-lg backdrop-blur-md">
@@ -376,50 +411,52 @@ export function RoomGameView({
         </div>
       )}
 
-      {/* Render active stage */}
-      {stage === "CHECKING" && (
-        <NewsCheckStage
-          roomId={room.id}
-          currentRound={currentRound}
-          totalRounds={room.totalRounds}
-          article={activeArticle}
-          timeRemainingSeconds={timeRemaining}
-          onVoteSubmitted={handleVoteSubmitted}
-        />
-      )}
+      <main className="relative z-10 mx-auto flex w-full max-w-5xl flex-1 flex-col items-center px-4 pt-4 pb-12 sm:px-6 sm:pt-6">
+        {/* Render active stage */}
+        {stage === "CHECKING" && (
+          <NewsCheckStage
+            roomId={room.id}
+            currentRound={currentRound}
+            totalRounds={room.totalRounds}
+            article={activeArticle}
+            timeRemainingSeconds={timeRemaining}
+            onVoteSubmitted={handleVoteSubmitted}
+          />
+        )}
 
-      {stage === "WAITING" && (
-        <VerdictWaitingStage
-          userName={currentUserName}
-          userVote={lastVote?.vote ?? "uncertain"}
-          pointsAwarded={lastVote?.pointsAwarded ?? 0}
-          timeTakenSeconds={lastVote?.timeTakenSeconds ?? 0}
-          isCorrect={lastVote?.isCorrect ?? null}
-          officialAnswer={lastVote?.officialAnswer ?? null}
-          reliabilityScore={lastVote?.reliabilityScore ?? 85}
-          votedCount={votedCount}
-          totalPlayers={members.length}
-        />
-      )}
+        {stage === "WAITING" && (
+          <VerdictWaitingStage
+            userName={currentUserName}
+            userVote={lastVote?.vote ?? "uncertain"}
+            pointsAwarded={lastVote?.pointsAwarded ?? 0}
+            timeTakenSeconds={lastVote?.timeTakenSeconds ?? 0}
+            isCorrect={lastVote?.isCorrect ?? null}
+            officialAnswer={lastVote?.officialAnswer ?? null}
+            reliabilityScore={lastVote?.reliabilityScore ?? 85}
+            votedCount={votedCount}
+            totalPlayers={members.length}
+          />
+        )}
 
-      {stage === "ROUND_SCOREBOARD" && (
-        <RoundScoreboardStage
-          roomId={room.id}
-          currentRound={currentRound}
-          totalRounds={room.totalRounds}
-          isHost={isHost}
-          leaderboard={scoreboardPlayers}
-          onLeave={handleExitGame}
-        />
-      )}
+        {stage === "ROUND_SCOREBOARD" && (
+          <RoundScoreboardStage
+            roomId={room.id}
+            currentRound={currentRound}
+            totalRounds={room.totalRounds}
+            isHost={isHost}
+            leaderboard={scoreboardPlayers}
+            onLeave={handleExitGame}
+          />
+        )}
 
-      {stage === "MATCH_FINALE" && (
-        <MatchScoreboardStage
-          totalRounds={room.totalRounds}
-          leaderboard={matchPlayers}
-          onExit={handleExitGame}
-        />
-      )}
+        {stage === "MATCH_FINALE" && (
+          <MatchScoreboardStage
+            totalRounds={room.totalRounds}
+            leaderboard={matchPlayers}
+            onExit={handleExitGame}
+          />
+        )}
+      </main>
     </div>
   );
 }

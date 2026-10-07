@@ -14,6 +14,6 @@
 
 ## 3. Room Page Integration and Validation
 
-- [ ] 3.1 Update `src/views/room-lobby/ui/room-lobby-view.tsx` to remove the legacy redirect `router.push("/olimpo/game")` and trigger in-room game start.
-- [ ] 3.2 Update `src/app/(protected)/sala/[codigo]/page.tsx` to resolve playlist articles and render `RoomGameView` when the room is active (`in_progress` or `finished`).
-- [ ] 3.3 Run `pnpm typecheck` to verify complete TypeScript correctness without any compilation or layer errors.
+- [x] 3.1 Update `src/views/room-lobby/ui/room-lobby-view.tsx` to remove the legacy redirect `router.push("/olimpo/game")` and trigger in-room game start.
+- [x] 3.2 Update `src/app/(protected)/sala/[codigo]/page.tsx` to resolve playlist articles and render `RoomGameView` when the room is active (`in_progress` or `finished`).
+- [x] 3.3 Run `pnpm typecheck` to verify complete TypeScript correctness without any compilation or layer errors.

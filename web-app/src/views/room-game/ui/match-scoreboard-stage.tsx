@@ -1,3 +1,5 @@
+"use client";
+
 import { Home, Share2, Trophy } from "lucide-react";
 import { useRouter } from "next/navigation";
 import * as React from "react";

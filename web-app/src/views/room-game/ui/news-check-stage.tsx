@@ -1,3 +1,5 @@
+"use client";
+
 import { Clock, ExternalLink, Loader2, Newspaper } from "lucide-react";
 import Image from "next/image";
 import * as React from "react";

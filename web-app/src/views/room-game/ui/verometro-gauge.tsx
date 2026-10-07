@@ -1,3 +1,5 @@
+"use client";
+
 import { BarChart3 } from "lucide-react";
 import * as React from "react";
 
