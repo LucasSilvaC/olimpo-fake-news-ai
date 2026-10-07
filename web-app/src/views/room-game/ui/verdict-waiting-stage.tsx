@@ -397,7 +397,7 @@ export function VerdictWaitingStage({
               {reasons.map((reason, idx) => (
                 <li
                   key={idx}
-                  className="flex items-start gap-2.5 rounded-xl border border-white/80 bg-white/95 p-3 text-xs font-medium leading-relaxed text-slate-700 shadow-sm sm:text-sm"
+                  className="flex items-start gap-2.5 rounded-xl border border-white/80 bg-white/95 p-3 text-xs leading-relaxed font-medium text-slate-700 shadow-sm sm:text-sm"
                 >
                   <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-blue-100 text-[11px] font-black text-blue-700">
                     {idx + 1}

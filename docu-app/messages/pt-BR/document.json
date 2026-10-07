@@ -1,0 +1,8 @@
+{
+  "areaLabel": "Área:",
+  "defaultGroup": "Documentação",
+  "onThisPage": "Nesta página",
+  "guideNavigation": "Navegação pelos guias de {group}",
+  "previousGuide": "Guia anterior em {group}",
+  "nextGuide": "Próximo guia em {group}"
+}

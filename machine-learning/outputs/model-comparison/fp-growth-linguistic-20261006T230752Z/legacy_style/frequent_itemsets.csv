@@ -1,0 +1,19 @@
+support,features,itemset_size,pattern_id,max_rule_confidence,max_rule_lift,max_rule_jaccard
+0.43564814814814817,"[""uppercaseRatio_baixo""]",1,8e98244619be,,,
+0.25694444444444442,"[""diversidade_alto""]",1,0dd68855e97c,,,
+0.25509259259259259,"[""punctuationDensity_alto""]",1,a4b9245a55c7,,,
+0.25462962962962965,"[""uppercaseRatio_alto""]",1,2465ed80b599,,,
+0.25393518518518521,"[""typeTokenRatio_baixo""]",1,97a2b1f9bc02,,,
+0.25324074074074077,"[""punctuationDensity_baixo""]",1,7250a9dcad12,,,
+0.25231481481481483,"[""typeTokenRatio_alto""]",1,1bd851a09c7a,,,
+0.25162037037037038,"[""diversidade_baixo""]",1,11e0bf831005,,,
+0.17199074074074075,"[""diversidade_baixo"", ""typeTokenRatio_baixo""]",2,60f27e4b6463,0.68353265869365221,2.6917603332329785,0.51561415683553091
+0.16574074074074074,"[""diversidade_alto"", ""typeTokenRatio_alto""]",2,e4ace79c89fb,0.65688073394495416,2.5565088023803626,0.48247978436657679
+0.13842592592592592,"[""punctuationDensity_alto"", ""typeTokenRatio_baixo""]",2,492d1cc6df52,0.54512306289881485,2.1369615532875499,0.37351655215490315
+0.13819444444444445,"[""punctuationDensity_baixo"", ""typeTokenRatio_alto""]",2,c527c8dcf64c,0.54770642201834863,2.1627895275313218,0.37618147448015127
+0.11874999999999999,"[""typeTokenRatio_alto"", ""uppercaseRatio_baixo""]",2,f88e2cbda465,,,
+0.1162037037037037,"[""punctuationDensity_baixo"", ""uppercaseRatio_baixo""]",2,afa9d3a0b198,,,
+0.11527777777777778,"[""diversidade_alto"", ""uppercaseRatio_baixo""]",2,a06d35073061,,,
+0.10625,"[""typeTokenRatio_baixo"", ""uppercaseRatio_baixo""]",2,15553bd8f401,,,
+0.10532407407407407,"[""diversidade_baixo"", ""uppercaseRatio_baixo""]",2,d6124cde1930,,,
+0.1050925925925926,"[""punctuationDensity_alto"", ""uppercaseRatio_baixo""]",2,45319f3f5de0,,,

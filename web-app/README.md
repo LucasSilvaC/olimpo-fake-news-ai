@@ -269,6 +269,10 @@ Ao implementar novas funcionalidades, siga as seguintes diretrizes:
 
 ## 📚 9. Referências e Documentação Adicional
 
+- [CI/CD, versionamento e deploy do web-app — seção 16 da documentação de arquitetura (PDF)](../docs/arquitetura.pdf)
+- [Acessibilidade, VLibras e WCAG — seção 17 da documentação de arquitetura (PDF)](../docs/arquitetura.pdf)
+- [Medições de contraste e evidências de acessibilidade](../docs/acessibilidade-contrastes.json)
+- [Fonte LaTeX da documentação de arquitetura](../docs/arquitetura.tex)
 - [Documento de Arquitetura de Software](docs/architecture.md)
 - [Relatório de Validação de Rede em Produção](validation/REPORT.md)
 - [Jina Reader: Documentação Oficial](https://github.com/jina-ai/reader#using-request-headers)

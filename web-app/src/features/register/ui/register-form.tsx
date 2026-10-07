@@ -13,7 +13,6 @@ import { Button } from "@/components/atoms/button";
 export function RegisterForm() {
   const vm = useRegisterViewModel();
   const [showPassword, setShowPassword] = useState(false);
-
   return (
     <form onSubmit={vm.submit} className="space-y-5" aria-busy={vm.pending} noValidate>
       <ProfileCustomizer vm={vm} />
@@ -64,9 +63,10 @@ export function RegisterForm() {
         trailing={
           <button
             type="button"
-            onClick={() => setShowPassword((prev) => !prev)}
             aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
-            className="absolute top-1/2 right-4 -translate-y-1/2 text-slate-500 hover:text-slate-700"
+            aria-pressed={showPassword}
+            onClick={() => setShowPassword((visible) => !visible)}
+            className="absolute top-1/2 right-4 -translate-y-1/2 rounded-sm text-slate-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-700"
           >
             {showPassword ? (
               <EyeOff aria-hidden="true" className="size-5" />

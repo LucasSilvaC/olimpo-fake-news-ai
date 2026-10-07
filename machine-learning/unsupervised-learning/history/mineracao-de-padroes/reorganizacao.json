@@ -1,0 +1,24 @@
+{
+  "date_local": "2026-10-06",
+  "legacy": "fp-growth-legado",
+  "linguistic": "fp-growth-linguistico",
+  "checks": {
+    "semantic_tests_passed": 14,
+    "linguistic_notebook_reexecuted": true,
+    "links_verified": true
+  },
+  "note": "Original run manifests preserve historical source hashes; relocation only changes paths and documentation links.",
+  "source_sha256": {
+    "fp-growth-legado\\avaliacao_fp_growth_com_autoria.ipynb": "9c5dbd88e4b9497cec7578144b8129b4df8c0ff080a1e76e172f210f17ea6d57",
+    "fp-growth-legado\\fp_growth_baseline_com_autoria.ipynb": "2e5469c7a2591b52c6cde287f6b1657c6d25c44055c0a8d3bd3a1498841f101a",
+    "fp-growth-legado\\fp_growth_principal_sem_autoria_controles.ipynb": "e84346574b479373cd93a7d0611973d16f9a42bd8d25bdf49584a12049148145",
+    "fp-growth-linguistico\\annotation_preview.py": "8d5c7d08f195f135bfd2d2f8e586f59659f52eca36158ed73243ff7ca29bf8c0",
+    "fp-growth-linguistico\\fp_growth_linguistico_sem_autoria.ipynb": "fe323aca063786547ea9ca716bc6c86dff75c9f57d106dcca86e78044e7ceaea",
+    "fp-growth-linguistico\\linguistic_features.py": "7ccd329258fca25ad3374368ef351863f44073974aae078bff5db9af386262a0",
+    "fp-growth-linguistico\\linguistic_fp_growth.py": "29b186e9ccb7ab1820d19521a25e02518cb381019684754fed17819218f95e38",
+    "fp-growth-linguistico\\linguistic_posthoc.py": "0c6260c345a2bad40202c64213e1b7c8779d3ad337616c6eb896f5b058ff28bb",
+    "fp-growth-linguistico\\linguistic_stability.py": "cdc44845cdcb9e5937b39986dfb31b713388edf94004d015c5714fae74a364ae",
+    "fp-growth-linguistico\\tests\\test_linguistic_features_additional.py": "808b06e7a809378e80b407c988e06f2e1dd76e86bcdb64c9d2bd534068d8084f",
+    "fp-growth-linguistico\\tests\\test_linguistic_fp_growth.py": "4e153c925567b220a1721c3e4b90bc6b87b5980fd0f2259a0dbb49776782978d"
+  }
+}

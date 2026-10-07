@@ -1,0 +1,11 @@
+pattern_id_a,pattern_id_b,features_a,features_b,coverage_jaccard
+10d47c724158,42af3e872bff,"[""DEP_complete_advcl_rate_baixo"", ""POS_ADV_rate_baixo""]","[""DEP_complete_advcl_rate_baixo"", ""DEP_complete_advmod_rate_baixo"", ""POS_ADV_rate_baixo""]",0.9780092592592593
+6b91d87df631,54483f415ed6,"[""DEP_complete_ccomp_rate_baixo"", ""POS_ADV_rate_baixo""]","[""DEP_complete_advmod_rate_baixo"", ""DEP_complete_ccomp_rate_baixo"", ""POS_ADV_rate_baixo""]",0.96829268292682924
+0c201f82791a,432397db65dd,"[""POS_ADV_rate_baixo"", ""POS_PRON_rate_baixo""]","[""DEP_complete_advmod_rate_baixo"", ""POS_ADV_rate_baixo"", ""POS_PRON_rate_baixo""]",0.9452054794520548
+60657c67152a,caf9746e4703,"[""POS_ADV_rate_baixo"", ""uppercaseRatio_baixo""]","[""DEP_complete_advmod_rate_baixo"", ""POS_ADV_rate_baixo"", ""uppercaseRatio_baixo""]",0.93595041322314054
+4394f450e00d,b4538c62c388,"[""POS_ADV_rate_baixo"", ""POS_PROPN_rate_alto""]","[""DEP_complete_advmod_rate_baixo"", ""POS_ADV_rate_baixo"", ""POS_PROPN_rate_alto""]",0.91880341880341876
+d75640de6fce,b1134acc38e7,"[""DEP_complete_nsubj_rate_baixo"", ""POS_VERB_rate_baixo""]","[""DEP_complete_ccomp_rate_baixo"", ""DEP_complete_nsubj_rate_baixo"", ""POS_VERB_rate_baixo""]",0.91818181818181821
+b0eda8aa0dd4,f4d7d942f5b9,"[""POS_ADV_rate_baixo"", ""POS_NOUN_rate_alto""]","[""DEP_complete_advmod_rate_baixo"", ""POS_ADV_rate_baixo"", ""POS_NOUN_rate_alto""]",0.96332518337408313
+10d3db406965,5b2d95cb7042,"[""POS_ADV_rate_baixo"", ""diversidade_baixo""]","[""DEP_complete_advmod_rate_baixo"", ""POS_ADV_rate_baixo"", ""diversidade_baixo""]",0.95767195767195767
+4a060782afa6,66da8bd24b0a,"[""POS_ADV_rate_baixo"", ""uppercaseRatio_alto""]","[""DEP_complete_advmod_rate_baixo"", ""POS_ADV_rate_baixo"", ""uppercaseRatio_alto""]",0.95478723404255317
+1006c4b10c4f,9b67e91ef8ab,"[""POS_ADV_rate_baixo"", ""punctuationDensity_spacy_baixo""]","[""DEP_complete_advmod_rate_baixo"", ""POS_ADV_rate_baixo"", ""punctuationDensity_spacy_baixo""]",0.94385026737967914

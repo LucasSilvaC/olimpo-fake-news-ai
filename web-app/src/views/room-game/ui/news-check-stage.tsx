@@ -103,10 +103,7 @@ export function NewsCheckStage({
   }, [article.authors, article.publishedAt]);
 
   const handleVote = React.useCallback(
-    async (
-      vote: "reliable" | "unreliable" | "uncertain",
-      isTimeout = false,
-    ): Promise<void> => {
+    async (vote: "reliable" | "unreliable" | "uncertain", isTimeout = false): Promise<void> => {
       if (isSubmitting) return;
 
       setSelectedVote(vote);
@@ -284,7 +281,12 @@ export function NewsCheckStage({
         {/* Option 1: Verdadeiro (reliable) */}
         <button
           type="button"
-          disabled={isSubmitting || (timeRemainingSeconds !== null && timeRemainingSeconds !== undefined && timeRemainingSeconds <= 0)}
+          disabled={
+            isSubmitting ||
+            (timeRemainingSeconds !== null &&
+              timeRemainingSeconds !== undefined &&
+              timeRemainingSeconds <= 0)
+          }
           onClick={() => void handleVote("reliable")}
           aria-label="Classificar notícia como Verdadeira"
           className={`flex w-full items-center gap-3.5 rounded-2xl border border-white/60 bg-white p-3.5 text-slate-800 shadow-md transition-all duration-200 hover:-translate-y-0.5 hover:bg-slate-50 hover:shadow-xl focus:ring-4 focus:ring-emerald-300 focus:outline-none active:translate-y-0.5 md:rounded-3xl md:p-4 ${
@@ -309,7 +311,12 @@ export function NewsCheckStage({
         {/* Option 2: Falso (unreliable) */}
         <button
           type="button"
-          disabled={isSubmitting || (timeRemainingSeconds !== null && timeRemainingSeconds !== undefined && timeRemainingSeconds <= 0)}
+          disabled={
+            isSubmitting ||
+            (timeRemainingSeconds !== null &&
+              timeRemainingSeconds !== undefined &&
+              timeRemainingSeconds <= 0)
+          }
           onClick={() => void handleVote("unreliable")}
           aria-label="Classificar notícia como Falsa"
           className={`flex w-full items-center gap-3.5 rounded-2xl border border-white/60 bg-white p-3.5 text-slate-800 shadow-md transition-all duration-200 hover:-translate-y-0.5 hover:bg-slate-50 hover:shadow-xl focus:ring-4 focus:ring-rose-300 focus:outline-none active:translate-y-0.5 md:rounded-3xl md:p-4 ${
@@ -334,7 +341,12 @@ export function NewsCheckStage({
         {/* Option 3: Incerto (uncertain) */}
         <button
           type="button"
-          disabled={isSubmitting || (timeRemainingSeconds !== null && timeRemainingSeconds !== undefined && timeRemainingSeconds <= 0)}
+          disabled={
+            isSubmitting ||
+            (timeRemainingSeconds !== null &&
+              timeRemainingSeconds !== undefined &&
+              timeRemainingSeconds <= 0)
+          }
           onClick={() => void handleVote("uncertain")}
           aria-label="Classificar notícia como Incerta"
           className={`flex w-full items-center gap-3.5 rounded-2xl border border-white/60 bg-white p-3.5 text-slate-800 shadow-md transition-all duration-200 hover:-translate-y-0.5 hover:bg-slate-50 hover:shadow-xl focus:ring-4 focus:ring-amber-300 focus:outline-none active:translate-y-0.5 md:rounded-3xl md:p-4 ${

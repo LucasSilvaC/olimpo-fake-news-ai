@@ -325,7 +325,7 @@ export function RoomGameView({
               reliabilityScore: confidenceScore,
               reasons: analysis.reasons || [],
               timeTakenSeconds: prev?.timeTakenSeconds ?? (room.roundDurationSeconds || 30),
-              isTimeout: prev?.isTimeout ?? (prev === null),
+              isTimeout: prev?.isTimeout ?? prev === null,
             };
           });
         }

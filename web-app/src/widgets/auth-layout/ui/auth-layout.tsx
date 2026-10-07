@@ -49,7 +49,7 @@ export function AuthLayout({ children }: { children: ReactNode }) {
         <div
           className={cn(
             styles.intro,
-            "min-w-0 transition-transform duration-[850ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none",
+            "min-w-0 transition-transform duration-[850ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none motion-reduce:duration-0",
           )}
         >
           <AuthIntro isLogin={isLogin} />
@@ -57,7 +57,7 @@ export function AuthLayout({ children }: { children: ReactNode }) {
         <div
           className={cn(
             styles.form,
-            "relative z-[1] min-w-0 transition-transform duration-[850ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none",
+            "relative z-[1] min-w-0 transition-transform duration-[850ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none motion-reduce:duration-0",
           )}
         >
           {children}

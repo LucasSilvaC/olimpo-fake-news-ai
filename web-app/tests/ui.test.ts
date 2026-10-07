@@ -11,8 +11,10 @@ test("formulário exibe loading, recupera erro e mostra artigo e JSON sem execut
   const dom = new JSDOM('<div id="root"></div>', { url: "http://localhost/" });
   const previousWindow = Object.getOwnPropertyDescriptor(globalThis, "window");
   const previousDocument = Object.getOwnPropertyDescriptor(globalThis, "document");
+  const previousSelf = Object.getOwnPropertyDescriptor(globalThis, "self");
   Object.defineProperty(globalThis, "window", { configurable: true, value: dom.window });
   Object.defineProperty(globalThis, "document", { configurable: true, value: dom.window.document });
+  Object.defineProperty(globalThis, "self", { configurable: true, value: dom.window });
   Reflect.set(globalThis, "IS_REACT_ACT_ENVIRONMENT", true);
   const { createRoot } = await import("react-dom/client");
   const container = dom.window.document.getElementById("root")!;
@@ -90,6 +92,8 @@ test("formulário exibe loading, recupera erro e mostra artigo e JSON sem execut
     else Reflect.deleteProperty(globalThis, "window");
     if (previousDocument) Object.defineProperty(globalThis, "document", previousDocument);
     else Reflect.deleteProperty(globalThis, "document");
+    if (previousSelf) Object.defineProperty(globalThis, "self", previousSelf);
+    else Reflect.deleteProperty(globalThis, "self");
     Reflect.deleteProperty(globalThis, "IS_REACT_ACT_ENVIRONMENT");
   }
 });

@@ -1,0 +1,10 @@
+{
+  "searchTitle": "Pesquisar",
+  "searchLabel": "Buscar na documentação",
+  "searchPlaceholder": "Buscar um guia...",
+  "navigationLabel": "Navegação da documentação",
+  "areasTitle": "Áreas da documentação",
+  "noResults": "Nenhum guia encontrado.",
+  "repoGuidesTitle": "Guias baseados no repositório",
+  "repoGuidesDescription": "Produto, engenharia e desenvolvimento em três áreas. Cada artigo inclui as fontes usadas."
+}

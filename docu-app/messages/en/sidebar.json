@@ -1,0 +1,10 @@
+{
+  "searchTitle": "Search",
+  "searchLabel": "Search the documentation",
+  "searchPlaceholder": "Find a guide...",
+  "navigationLabel": "Documentation navigation",
+  "areasTitle": "Documentation areas",
+  "noResults": "No guides found.",
+  "repoGuidesTitle": "Repository-based guides",
+  "repoGuidesDescription": "Product, engineering, and development across three areas. Every article lists its sources."
+}

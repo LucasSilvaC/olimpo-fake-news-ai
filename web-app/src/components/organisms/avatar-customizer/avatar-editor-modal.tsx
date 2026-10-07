@@ -121,7 +121,10 @@ function EditorSession({ value, onSave, onClose }: AvatarEditorModalProps) {
         </button>
       </header>
       <div className="px-7 pt-6 max-[640px]:px-5 max-[640px]:pt-5 min-[900px]:grid min-[900px]:grid-cols-[minmax(230px,0.9fr)_minmax(0,1.9fr)] min-[900px]:items-stretch min-[900px]:gap-7 min-[900px]:pb-6 [@media(min-width:900px)_and_(max-height:800px)]:py-4">
-        <section className="grid grid-cols-[154px_minmax(0,1fr)] gap-x-[18px] rounded-[20px] border border-slate-200/70 bg-slate-50/80 p-4 max-[640px]:grid-cols-[116px_minmax(0,1fr)] max-[640px]:gap-x-3 max-[640px]:p-3 max-[360px]:grid-cols-[100px_minmax(0,1fr)] max-[360px]:gap-x-2 min-[900px]:flex min-[900px]:flex-col min-[900px]:items-center">
+        <section
+          aria-label="Prévia do personagem"
+          className="grid grid-cols-[154px_minmax(0,1fr)] gap-x-[18px] rounded-[20px] border border-slate-200/70 bg-slate-50/80 p-4 max-[640px]:grid-cols-[116px_minmax(0,1fr)] max-[640px]:gap-x-3 max-[640px]:p-3 max-[360px]:grid-cols-[100px_minmax(0,1fr)] max-[360px]:gap-x-2 min-[900px]:flex min-[900px]:flex-col min-[900px]:items-center"
+        >
           <div className="col-span-full flex w-full items-center justify-between text-[10px] font-extrabold tracking-[0.09em] text-slate-500 [&>span]:flex [&>span]:items-center [&>span]:gap-[7px] [&>span]:before:size-1.5 [&>span]:before:rounded-full [&>span]:before:bg-emerald-500 [&>span]:before:content-['']">
             <span>PRÉVIA AO VIVO</span>
             <button
@@ -171,7 +174,10 @@ function EditorSession({ value, onSave, onClose }: AvatarEditorModalProps) {
             <span>Seu avatar durante o jogo</span>
           </div>
         </section>
-        <section className="pt-6 max-[640px]:pt-[22px] min-[900px]:grid min-[900px]:grid-cols-2 min-[900px]:content-center min-[900px]:gap-6 min-[900px]:p-0">
+        <section
+          aria-label="Personalizar avatar"
+          className="pt-6 max-[640px]:pt-[22px] min-[900px]:grid min-[900px]:grid-cols-2 min-[900px]:content-center min-[900px]:gap-6 min-[900px]:p-0"
+        >
           <fieldset disabled={saving} className="mb-6 min-w-0 border-0 p-0 min-[900px]:m-0">
             <legend className="mb-2.5 text-xs font-bold text-slate-700">Gênero</legend>
             <div className="grid grid-cols-2 gap-3 min-[900px]:gap-2">

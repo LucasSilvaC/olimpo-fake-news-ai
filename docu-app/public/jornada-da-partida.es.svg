@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 420" fill="none" role="img" aria-labelledby="title description">
+  <title id="title">Recorrido de una partida de Olimpo</title>
+  <desc id="description">Cuatro pasos conectados: preparar la sala, responder la ronda, revelar el resultado y cerrar la puntuación.</desc>
+  <defs>
+    <linearGradient id="line" x1="147" y1="210" x2="1052" y2="210" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#60A5FA"/><stop offset="1" stop-color="#FBBF24"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="420" rx="28" fill="#F8FAFC"/>
+  <g>
+    <rect x="36" y="66" width="246" height="272" rx="24" fill="white" stroke="#E2E8F0" stroke-width="2"/>
+    <rect x="334" y="66" width="246" height="272" rx="24" fill="white" stroke="#E2E8F0" stroke-width="2"/>
+    <rect x="632" y="66" width="246" height="272" rx="24" fill="white" stroke="#E2E8F0" stroke-width="2"/>
+    <rect x="930" y="66" width="234" height="272" rx="24" fill="white" stroke="#E2E8F0" stroke-width="2"/>
+  </g>
+  <path d="M201 145H415M499 145H713M797 145H1005" stroke="url(#line)" stroke-width="6" stroke-linecap="round" stroke-dasharray="2 18"/>
+  <g font-family="Arial, sans-serif" text-anchor="middle">
+    <circle cx="159" cy="145" r="42" fill="#DBEAFE"/><text x="159" y="158" fill="#2563EB" font-size="38" font-weight="700">01</text>
+    <text x="159" y="229" fill="#0F172A" font-size="22" font-weight="700">Preparar</text><text x="159" y="263" fill="#64748B" font-size="16">sala + noticias</text>
+    <circle cx="457" cy="145" r="42" fill="#DBEAFE"/><text x="457" y="158" fill="#2563EB" font-size="38" font-weight="700">02</text>
+    <text x="457" y="229" fill="#0F172A" font-size="22" font-weight="700">Investigar</text><text x="457" y="263" fill="#64748B" font-size="16">fuente + pruebas</text>
+    <circle cx="755" cy="145" r="42" fill="#FEF3C7"/><text x="755" y="158" fill="#B45309" font-size="38" font-weight="700">03</text>
+    <text x="755" y="229" fill="#0F172A" font-size="22" font-weight="700">Responder</text><text x="755" y="263" fill="#64748B" font-size="16">hecho · duda · falsa</text>
+    <circle cx="1047" cy="145" r="42" fill="#FEF3C7"/><text x="1047" y="158" fill="#B45309" font-size="38" font-weight="700">04</text>
+    <text x="1047" y="229" fill="#0F172A" font-size="22" font-weight="700">Revelar</text><text x="1047" y="263" fill="#64748B" font-size="16">solución + puntuación</text>
+  </g>
+</svg>

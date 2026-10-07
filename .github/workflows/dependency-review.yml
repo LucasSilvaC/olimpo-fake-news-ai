@@ -23,3 +23,5 @@ jobs:
         uses: actions/dependency-review-action@v5
         with:
           fail-on-severity: high
+          # GHSA-vfj7-8cjw-p6xm has no upstream fix; it only affects an ESLint glob dependency.
+          allow-ghsas: GHSA-vfj7-8cjw-p6xm

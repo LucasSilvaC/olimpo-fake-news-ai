@@ -1,6 +1,7 @@
 "use client";
 
 import { Home, PlusCircle, Trophy, Zap } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import * as React from "react";
@@ -38,12 +39,20 @@ export function OlimpoNav(): React.ReactElement {
       <header className="border-border bg-card sticky top-0 z-30 border-b shadow-xs">
         <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-3 px-4 py-2.5 sm:px-6">
           {/* Brand */}
-          <div className="flex items-center gap-2.5">
+          <Link href="/" aria-label="Olimpo — página inicial" className="flex items-center gap-2.5">
+            <Image
+              src="/olimpo-logo.svg"
+              alt="Olimpo"
+              width={36}
+              height={36}
+              priority
+              className="size-9 object-contain"
+            />
             <Badge variant="tag">OLIMPO v1.0</Badge>
             <span className="text-xs font-black tracking-tight uppercase sm:text-sm">
               Fake-or-Fact // Kahoot
             </span>
-          </div>
+          </Link>
 
           {/* Screen Navigation Links */}
           <nav
