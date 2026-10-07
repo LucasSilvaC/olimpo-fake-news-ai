@@ -6,6 +6,7 @@ import { extractNews } from "../src/lib/news/extract-news";
 import type { INewsArticle } from "../src/lib/news/types";
 import {
   globalChallenges,
+  newsAnalyses,
   newsArticles,
   type MLTargetType,
 } from "../src/server/shared/database/schemas";
@@ -216,15 +217,62 @@ export async function populateChallenges(
       isActive: true,
     });
 
+    // 3. Persist mock news_analyses record
+    const mockAnalysis = getMockAnalysis(item);
+    await dbClient.insert(newsAnalyses).values({
+      id: crypto.randomUUID(),
+      articleId,
+      classification: item.targetClassification,
+      reasons: mockAnalysis.reasons,
+      confidence: mockAnalysis.confidence,
+      modelVersion: "mock-v1",
+      createdAt: new Date(),
+    });
+
     insertedCount += 1;
     existingArticleUrls.add(item.url);
     existingChallengeTitles.add(item.title);
     console.log(
-      `[Seed] Inserted challenge "${item.title}" [${item.targetClassification}] (ID: ${challengeId})`,
+      `[Seed] Inserted challenge "${item.title}" [${item.targetClassification}] (ID: ${challengeId}) with AI analysis`,
     );
   }
 
   return { insertedCount, skippedCount, totalProcessed: challenges.length };
+}
+
+function getMockAnalysis(item: SeedChallengeDefinition): {
+  reasons: string[];
+  confidence: string;
+} {
+  switch (item.targetClassification) {
+    case "reliable":
+      return {
+        confidence: "0.95",
+        reasons: [
+          "Fonte primária verificada e publicação em veículo de jornalismo profissional com editoria reconhecida.",
+          "Dados factuais respaldados por entidades oficiais, pesquisas ou dados estatísticos confirmáveis.",
+          "Texto informativo com atribuição clara de fontes e ausência de títulos apelativos ou enganosos.",
+        ],
+      };
+    case "unreliable":
+      return {
+        confidence: "0.98",
+        reasons: [
+          "Alegações factuais inconsistentes previamente desmentidas por agências de checagem de fatos.",
+          "Ausência de fontes primárias, evidências científicas ou confirmação oficial nos órgãos competentes.",
+          "Estrutura com apelo emocional ou sensacionalista típica de desinformação viral.",
+        ],
+      };
+    case "uncertain":
+      return {
+        confidence: "0.60",
+        reasons: [
+          "Tema com divergência técnica entre analistas ou pesquisas com conclusões preliminares.",
+          "Cenário em evolução com eventos ainda em andamento e dados sujeitos a revisão futura.",
+          "Informações demandam acompanhamento de desdobramentos para conclusões definitivas.",
+        ],
+      };
+  }
 }
 
 async function main() {
@@ -236,6 +284,7 @@ async function main() {
     schema: {
       globalChallenges,
       newsArticles,
+      newsAnalyses,
     },
   });
 
