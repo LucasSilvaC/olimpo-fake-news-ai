@@ -11,7 +11,7 @@ All prototype screens under `/olimpo/*` are discarded; all multiplayer game mech
 ## Goals / Non-Goals
 
 **Goals:**
-- Implement the 4 reference screens from `/references` as production-ready React components with Tailwind CSS.
+- Implement the 4 reference screens from Stitch MCP project `projects/9030925616201935052` as production-ready React components with Tailwind CSS.
 - Provide a zero-mock experience: news article content, user verdicts, AI Verômetro confidence, scores, streaks, and leaderboards are 100% sourced from the database and Server Actions.
 - Ensure that only the room host (leader) can advance the round from the round scoreboard.
 - Synchronize all connected clients in real time when the host advances via the existing SSE endpoint.
@@ -24,13 +24,15 @@ All prototype screens under `/olimpo/*` are discarded; all multiplayer game mech
 ## Decisions
 
 ### 1. View Architecture under `src/views/room-game/`
-Create a modular view structure:
+Create a modular view structure based on Stitch project `projects/9030925616201935052` (accessed via Stitch MCP `get_screen`):
 - `room-game-view.tsx`: Main client orchestrator managing the active stage (`CHECKING`, `WAITING`, `ROUND_SCOREBOARD`, `MATCH_FINALE`), room timer, and SSE event listener.
-- `news-check-stage.tsx`: Renders current article headline, publisher tag, snippet, image, and the 3 decision buttons (`reliable`, `unreliable`, `uncertain`).
-- `verdict-waiting-stage.tsx`: Renders the animated floating rocket, user verdict breakdown, official answer, the Verômetro Olimpo gauge, room completion progress bar, Socratic reflection cards, and fact-checking tip.
-- `round-scoreboard-stage.tsx`: Renders inter-round standings, streak highlights, round points delta (`+340 nesta`), and the host-exclusive "Avançar" button.
-- `match-scoreboard-stage.tsx`: Renders the final 3D podium (1st, 2nd, 3rd) with accuracy percentages, list of other participants, and exit navigation.
-- `verometro-gauge.tsx`: Standalone reusable component rendering the 0-100% authenticity gradient, floating marker pin, and 3 credibility zones.
+- `news-check-stage.tsx`: Renders current article headline, publisher tag, snippet, image, and the 3 decision buttons (`reliable`, `unreliable`, `uncertain`). Based on Stitch screen `projects/9030925616201935052/screens/4dcb0041d5e54be1957c83e95f7216f3` (*Olimpo - Checagem de Notícias*).
+- `verdict-waiting-stage.tsx`: Renders the animated floating rocket, user verdict breakdown, official answer, the Verômetro Olimpo gauge, room completion progress bar, Socratic reflection cards, and fact-checking tip. Based on Stitch screen `projects/9030925616201935052/screens/ea97b5c9e6ba47f59042e5351af78d53` (*Olimpo - Aguardando Outros Jogadores*).
+- `round-scoreboard-stage.tsx`: Renders inter-round standings, streak highlights, round points delta (`+340 nesta`), and the host-exclusive "Avançar" button. Based on Stitch screen `projects/9030925616201935052/screens/b40c8bc9b29e4226adb7ead197db629d` (*Olimpo - Placar da Rodada*).
+- `match-scoreboard-stage.tsx`: Renders the final 3D podium (1st, 2nd, 3rd) with accuracy percentages, list of other participants, and exit navigation. Based on Stitch screen `projects/9030925616201935052/screens/0a69d2a233a542f48924199d99f552eb` (*Olimpo - Placar da Partida*).
+- `verometro-gauge.tsx`: Standalone reusable component rendering the 0-100% authenticity gradient, floating marker pin, and 3 credibility zones (from screen `ea97b5c9e6ba47f59042e5351af78d53`).
+
+*Design Retrieval Note:* All visual specs, HTML layout tokens, and UI structures are inspected directly via Stitch MCP (`get_screen`) rather than local static files.
 
 *Alternative considered:* Separate page routes per stage (e.g., `/sala/[codigo]/votacao`, `/sala/[codigo]/placar`). Rejected to avoid unnecessary navigation latency, maintain persistent SSE connections, and prevent routing desync among players.
 
