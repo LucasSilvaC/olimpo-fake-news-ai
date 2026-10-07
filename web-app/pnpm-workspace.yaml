@@ -2,3 +2,17 @@ allowBuilds:
   esbuild: true
   sharp: true
   unrs-resolver: true
+minimumReleaseAgeExclude:
+  - vitest@4.1.11
+  - '@vitest/mocker@4.1.11'
+  - brace-expansion@1.1.19 || 1.1.20 || 1.1.21
+  - source-map-js@1.2.2
+  - sharp@0.35.5
+overrides:
+  source-map-js@>=1.0.0 <1.2.2: ^1.2.2
+
+# GHSA-vfj7-8cjw-p6xm has no upstream patched release as of 2026-10-07.
+# The affected braces dependency is used only by ESLint glob configuration.
+auditConfig:
+  ignoreGhsas:
+    - GHSA-vfj7-8cjw-p6xm
