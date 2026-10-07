@@ -1,0 +1,46 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" width="320" height="320" viewBox="0 0 320 320" fill="none" role="img" aria-labelledby="olimpo-title olimpo-desc">
+  <title id="olimpo-title">Olimpo</title>
+  <desc id="olimpo-desc">Templo grego cartoon em areia e marfim, com quatro colunas caneladas, capiteis com volutas, frontao simples e degraus. Fundo transparente.</desc>
+  <defs>
+    <g id="column">
+      <path d="M-13 145h26l3 107h-32z" fill="#E8D2AC"/>
+      <path d="M8 145h5l3 107h-6z" fill="#CCAB7C"/>
+      <g stroke="#C5A273" stroke-width="3" stroke-linecap="round">
+        <path d="M-5 153-6 244M5 153l1 91"/>
+      </g>
+      <rect x="-15" y="140" width="30" height="7" rx="3" fill="#C9A678"/>
+      <rect x="-19" y="130" width="38" height="13" rx="6.5" fill="#E8D2AC"/>
+      <g fill="#FAEED8" stroke="#C9A678" stroke-width="1.5">
+        <circle cx="-14" cy="138" r="6"/>
+        <circle cx="14" cy="138" r="6"/>
+      </g>
+      <g stroke="#C9A678" stroke-width="1.5" stroke-linecap="round">
+        <path d="M-12 140c-4 2-6-4-2-5 3-1 4 3 2 3"/>
+        <path d="M12 140c4 2 6-4 2-5-3-1-4 3-2 3"/>
+      </g>
+      <rect x="-20" y="125" width="40" height="6" rx="2.5" fill="#F9EED8"/>
+      <rect x="-16" y="249" width="32" height="5" rx="2.5" fill="#F9EED8"/>
+      <path d="M-15 254h30l4 7h-38z" fill="#D9BC90"/>
+      <rect x="-21" y="260" width="42" height="6" rx="2.5" fill="#ECD9B9"/>
+    </g>
+  </defs>
+  <use href="#column" x="64"/>
+  <use href="#column" x="128"/>
+  <use href="#column" x="192"/>
+  <use href="#column" x="256"/>
+  <rect x="35" y="106" width="250" height="19" rx="3" fill="#D6B68A"/>
+  <rect x="30" y="119" width="260" height="7" rx="2.5" fill="#F5E6CC"/>
+  <path d="M35 126h250l-4 5H39z" fill="#C6A174"/>
+  <path d="M157 35a7 7 0 0 1 6 0l137 63c4 2 3 8-2 8H22c-5 0-6-6-2-8z" fill="#DFC39B"/>
+  <path d="m35 98 125-57 125 57z" fill="#F7E9D0"/>
+  <path d="m77 88 83-36 83 36" stroke="#FFF3DE" stroke-width="3" stroke-linejoin="round"/>
+  <path d="m21 97 139-63 139 63" stroke="#F5E7D0" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="29" y="102" width="262" height="6" rx="2.5" fill="#FFF2DB"/>
+  <rect x="34" y="265" width="252" height="8" rx="3" fill="#F2E2C6"/>
+  <path d="M39 267h242" stroke="#FFF6E5" stroke-width="2" stroke-linecap="round"/>
+  <rect x="26" y="273" width="268" height="8" rx="3" fill="#E3C9A2"/>
+  <path d="M31 275h258" stroke="#F9ECD5" stroke-width="2" stroke-linecap="round"/>
+  <rect x="18" y="281" width="284" height="9" rx="3" fill="#C9A679"/>
+  <path d="M23 283h274" stroke="#EFDCBC" stroke-width="2" stroke-linecap="round"/>
+</svg>
+
