@@ -1,6 +1,6 @@
 # FP-Growth: padrões frequentes de estilo
 
-Execute o [notebook do baseline com autoria](../../history/mineracao-de-padroes/fp-growth-legado/fp_growth_baseline_com_autoria.ipynb) em um kernel Python 3, a partir de uma pasta do repositório.
+Execute o [notebook do baseline com autoria](../../fp_growth_baseline_com_autoria.ipynb) em um kernel Python 3, a partir de uma pasta do repositório.
 
 O notebook usa o ZIP Fake.br identificado e validado pelo SHA-256 do manifesto DBSCAN, e somente os `record_id` do treino canônico. Altere `RUN_ARGS` para `--protocol temporal` se desejar o treino temporal. A pasta de saída segue `machine-learning/outputs/model-comparison/fp-growth-<UTC>/`. Não há leitura dos rótulos, classificação ou comparação Fake/True.
 

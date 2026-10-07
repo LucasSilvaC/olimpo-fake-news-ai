@@ -1,6 +1,6 @@
 # Avaliação externa dos padrões FP-Growth
 
-Execute o [notebook histórico de avaliação](../../history/mineracao-de-padroes/fp-growth-legado/avaliacao_fp_growth_com_autoria.ipynb) em um kernel Python 3, a partir de uma pasta do repositório.
+Execute o [notebook histórico de avaliação](../../history/mineracao-de-padroes/avaliacao_fp_growth_com_autoria.ipynb) em um kernel Python 3, a partir de uma pasta do repositório.
 
 O padrão de entrada é o run congelado `fp-growth-20260929T212058Z`. Para avaliar outro run que contenha os mesmos artefatos, altere `DISCOVERY_RUN` no notebook. O notebook **não executa FP-Growth**, não recalcula quantis e não escolhe padrões com base nos rótulos. Ele lê `consolidated_patterns.csv` e `discretization.csv` da descoberta, aplica cada condição a todas as notícias do mesmo ZIP validado por SHA-256 e compara os pares `record_id`/`pattern_id` do treino com `pattern_membership.csv`. Uma divergência interrompe a execução.
 

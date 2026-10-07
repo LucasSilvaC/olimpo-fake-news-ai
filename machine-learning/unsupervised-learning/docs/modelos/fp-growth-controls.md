@@ -1,6 +1,6 @@
 # Controles de autoria do FP-Growth
 
-Execute o [notebook principal sem autoria e com controles](../../history/mineracao-de-padroes/fp-growth-legado/fp_growth_principal_sem_autoria_controles.ipynb) em um kernel Python 3, a partir de uma pasta do repositório.
+Execute o [notebook principal sem autoria e com controles](../../fp_growth_principal_sem_autoria_controles.ipynb) em um kernel Python 3, a partir de uma pasta do repositório.
 
 O baseline de descoberta `fp-growth-20260929T212058Z` e sua avaliação `fp-growth-evaluation-20260929T213741Z` são lidos e conferidos por hash; não são alterados. O corpus é o mesmo ZIP validado por SHA-256. A saída segue `machine-learning/outputs/model-comparison/fp-growth-controls-<UTC>/`, com `run_manifest.json` e `comparison_summary.md`.
 

@@ -2,7 +2,7 @@
 
 O [notebook linguístico](../../history/mineracao-de-padroes/fp-growth-linguistico/fp_growth_linguistico_sem_autoria.ipynb) incorpora a proposta dos scripts da equipe em uma extração por notícia. Cada transação corresponde a um `record_id` canônico, com contagens, denominadores e taxas POS/DEP. Essa unidade permite medir coocorrências reais entre atributos do mesmo texto; os totais agregados por classe dos scripts originais não são usados como transações.
 
-Os notebooks [baseline com autoria](../../history/mineracao-de-padroes/fp-growth-legado/fp_growth_baseline_com_autoria.ipynb) e [principal sem autoria](../../history/mineracao-de-padroes/fp-growth-legado/fp_growth_principal_sem_autoria_controles.ipynb) permanecem preservados. O novo experimento compara representações nos mesmos IDs e produz regras direcionais e padrões consolidados como unidades diferentes.
+Os notebooks [baseline com autoria](../../fp_growth_baseline_com_autoria.ipynb) e [principal sem autoria](../../fp_growth_principal_sem_autoria_controles.ipynb) permanecem preservados. O novo experimento compara representações nos mesmos IDs e produz regras direcionais e padrões consolidados como unidades diferentes.
 
 ## Resultados executados em 6 de outubro de 2026
 

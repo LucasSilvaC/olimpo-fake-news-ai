@@ -23,7 +23,7 @@ import linguistic_features as extraction
 
 ROOT = next(parent for parent in Path(__file__).resolve().parents
             if (parent / 'unsupervised-learning/README.md').is_file())
-BASELINE_NOTEBOOK = ROOT / 'unsupervised-learning/history/mineracao-de-padroes/fp-growth-legado/fp_growth_baseline_com_autoria.ipynb'
+BASELINE_NOTEBOOK = ROOT / 'unsupervised-learning/fp_growth_baseline_com_autoria.ipynb'
 BASELINE_MANIFEST = ROOT / 'outputs/model-comparison/dbscan-20260924T141332Z/run_manifest.json'
 LEGACY = ['typeTokenRatio', 'linkDensity', 'punctuationDensity', 'uppercaseRatio', 'diversidade']
 CORRECTED = ['diversidade', 'linkDensity', 'uppercaseRatio', 'punctuationDensity_spacy']
