@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { advanceRoundAction } from "../actions/advance-round.action";
+import { concludeRoundAction } from "../actions/conclude-round.action";
 import { submitVoteAction } from "../actions/submit-vote.action";
 
 // Mock session
@@ -94,6 +95,28 @@ vi.mock("../usecase/advance-round.usecase", () => ({
         currentRound: 2,
         totalRounds: 3,
         isMatchFinished: false,
+      };
+    }),
+  },
+}));
+
+vi.mock("../usecase/conclude-round.usecase", () => ({
+  concludeRoundUseCase: {
+    execute: vi.fn(async (input: { roomId: string; round: number }) => {
+      if (input.roomId === "not-found") {
+        throw new Error('Room with id "not-found" not found');
+      }
+      return {
+        roundCompleted: true,
+        analysis: {
+          id: "analysis-1",
+          articleId: "art-1",
+          classification: "reliable" as const,
+          confidence: 0.95,
+          reasons: ["Fact-checked"],
+          modelVersion: "mock-ai-v1",
+        },
+        leaderboard: [{ userId: "user-1", score: 100 }],
       };
     }),
   },
@@ -246,6 +269,58 @@ describe("News Voting Server Actions", () => {
       if (!result.success) {
         expect(result.error).toContain("Room ID is required");
       }
+    });
+  });
+
+  describe("concludeRoundAction", () => {
+    it("should conclude round successfully with object input", async () => {
+      const result = await concludeRoundAction({
+        roomId: "room-1",
+        round: 1,
+      });
+
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.roundCompleted).toBe(true);
+        expect(result.analysis).toBeDefined();
+        expect(result.leaderboard).toBeDefined();
+      }
+    });
+
+    it("should conclude round successfully with FormData input", async () => {
+      const formData = new FormData();
+      formData.append("roomId", "room-1");
+      formData.append("round", "1");
+
+      const result = await concludeRoundAction(formData);
+
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.roundCompleted).toBe(true);
+      }
+    });
+
+    it("should reject when unauthenticated", async () => {
+      isAuthenticated = false;
+
+      const result = await concludeRoundAction({
+        roomId: "room-1",
+        round: 1,
+      });
+
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error).toContain("Unauthorized");
+      }
+    });
+
+    it("should validate input schema", async () => {
+      const result = await concludeRoundAction({
+        roomId: "",
+        round: 0,
+      });
+
+      expect(result.success).toBe(false);
     });
   });
 });

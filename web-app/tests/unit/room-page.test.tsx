@@ -1,9 +1,19 @@
+import type * as React from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+
+interface MockPlaylistItem {
+  id: string;
+  roomId: string;
+  articleId: string;
+  roundOrder: number;
+}
 
 const mocks = vi.hoisted(() => ({
   findByPin: vi.fn(),
   listMembers: vi.fn(async () => []),
-  getPlaylistItems: vi.fn(async () => []),
+  getPlaylistItems: vi.fn(async (): Promise<MockPlaylistItem[]> => []),
+  findArticleById: vi.fn(),
+  findVote: vi.fn(async () => null),
 }));
 
 vi.mock("next/navigation", () => ({
@@ -15,22 +25,46 @@ vi.mock("@/app/api/auth/usecase/get-session.usecase", () => ({
   getSessionUseCase: { execute: vi.fn(async () => ({ id: "host-1" })) },
 }));
 vi.mock("@/app/api/auth/repositories/drizzle-user.repository", () => ({
-  drizzleUserRepository: {},
+  drizzleUserRepository: {
+    findById: vi.fn(async () => ({ name: "Host Player" })),
+    findAvatarByUserId: vi.fn(async () => null),
+  },
 }));
 vi.mock("@/app/api/rooms/repositories/drizzle-room.repository", () => ({
   drizzleRoomRepository: mocks,
 }));
 vi.mock("@/app/api/ai-feedback/repositories/drizzle-news-article.repository", () => ({
-  drizzleNewsArticleRepository: { findById: vi.fn() },
+  drizzleNewsArticleRepository: { findById: mocks.findArticleById },
 }));
-vi.mock("@/views/room-lobby", () => ({ RoomLobbyView: () => null }));
+vi.mock("@/app/api/news-voting/repositories/drizzle-news-vote.repository", () => ({
+  drizzleNewsVoteRepository: { findByParticipantAndPlaylistItem: mocks.findVote },
+}));
+vi.mock("@/views/room-lobby", () => ({
+  RoomLobbyView: function MockRoomLobbyView() {
+    return null;
+  },
+}));
+vi.mock("@/views/room-game", () => ({
+  RoomGameView: function MockRoomGameView() {
+    return null;
+  },
+}));
 
 import RoomPage from "@/app/(protected)/sala/[codigo]/page";
 
 describe("Room page PIN routing", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mocks.findByPin.mockResolvedValue({ id: "room-1", pin: "709 707" });
+    mocks.findByPin.mockResolvedValue({
+      id: "room-1",
+      pin: "709 707",
+      name: "Sala de Teste",
+      hostId: "host-1",
+      status: "waiting",
+      roundDurationSeconds: 30,
+      currentRound: 0,
+      totalRounds: 1,
+    });
   });
 
   it.each(["709%20707", "709 707", "709707"])("loads the room for %s", async (codigo) => {
@@ -51,5 +85,61 @@ describe("Room page PIN routing", () => {
     await expect(RoomPage({ params: Promise.resolve({ codigo: "709%20707" }) })).rejects.toThrow(
       "NEXT_NOT_FOUND",
     );
+  });
+
+  it("renders RoomGameView when room status is in_progress", async () => {
+    mocks.findByPin.mockResolvedValue({
+      id: "room-1",
+      pin: "709 707",
+      name: "Sala em Jogo",
+      hostId: "host-1",
+      status: "in_progress",
+      roundDurationSeconds: 30,
+      currentRound: 1,
+      totalRounds: 2,
+    });
+    mocks.getPlaylistItems.mockResolvedValue([
+      { id: "item-1", roomId: "room-1", articleId: "art-1", roundOrder: 1 },
+      { id: "item-2", roomId: "room-1", articleId: "art-2", roundOrder: 2 },
+    ]);
+    mocks.findArticleById.mockImplementation(async (id: string) => ({
+      id,
+      article: {
+        title: `Artigo ${id}`,
+        description: "Desc",
+        publisher: "Folha",
+        url: "https://example.com",
+      },
+      targetClassification: "reliable",
+    }));
+
+    const page = await RoomPage({ params: Promise.resolve({ codigo: "709 707" }) });
+    const element = page as React.ReactElement<{ playlistArticles: unknown[] }>;
+    const componentType = element.type as React.FC;
+    expect(componentType.name).toBe("MockRoomGameView");
+    expect(element.props.playlistArticles).toHaveLength(2);
+    expect(element.props.playlistArticles[0]).toMatchObject({
+      id: "item-1",
+      roundOrder: 1,
+      title: "Artigo art-1",
+    });
+  });
+
+  it("renders RoomGameView when room status is finished", async () => {
+    mocks.findByPin.mockResolvedValue({
+      id: "room-1",
+      pin: "709 707",
+      name: "Sala Finalizada",
+      hostId: "host-1",
+      status: "finished",
+      roundDurationSeconds: 30,
+      currentRound: 2,
+      totalRounds: 2,
+    });
+
+    const page = await RoomPage({ params: Promise.resolve({ codigo: "709 707" }) });
+    const element = page as React.ReactElement;
+    const componentType = element.type as React.FC;
+    expect(componentType.name).toBe("MockRoomGameView");
   });
 });

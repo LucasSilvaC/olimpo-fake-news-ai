@@ -27,3 +27,7 @@ The system SHALL automatically detect when all active participants of the room h
 #### Scenario: All participants have voted
 - **WHEN** the last pending participant in the room submits their vote for the active round
 - **THEN** the system marks the round as completed, evaluates scores, and triggers the AI analysis reveal
+
+#### Scenario: Round duration expires
+- **WHEN** the round duration expires before all participants have submitted votes
+- **THEN** the system marks pending participants as timed-out (neutral vote with 0 points awarded), concludes the round atomically, and triggers the AI analysis reveal
