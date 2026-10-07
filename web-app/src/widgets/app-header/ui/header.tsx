@@ -20,7 +20,11 @@ export function Header({
       <div className="flex w-full items-center justify-between px-4 sm:px-6">
         <div className="flex shrink-0 items-center">
           {logo ?? (
-            <Link href="/" aria-label="Olimpo — página inicial" className="inline-flex items-center">
+            <Link
+              href="/"
+              aria-label="Olimpo — página inicial"
+              className="inline-flex items-center"
+            >
               <Image
                 src="/olimpo-logo.svg"
                 alt="Olimpo"

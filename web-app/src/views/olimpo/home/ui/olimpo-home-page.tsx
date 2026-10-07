@@ -24,9 +24,7 @@ export async function OlimpoHomePage(): Promise<React.ReactElement> {
         className="pointer-events-none absolute right-[-8rem] bottom-1/4 -z-10 size-96 rounded-full bg-indigo-400/20 blur-3xl"
       />
 
-      <Header
-        className="relative z-20"
-      >
+      <Header className="relative z-20">
         <ProfileProgress name={user.name} xp={user.xp} avatar={user.avatar} />
       </Header>
 

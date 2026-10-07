@@ -28,7 +28,10 @@ export function VlibrasWidget(): React.ReactElement {
 
   return (
     <>
-      <div aria-label="Widget de acessibilidade VLibras" dangerouslySetInnerHTML={{ __html: vlibrasMarkup }} />
+      <div
+        aria-label="Widget de acessibilidade VLibras"
+        dangerouslySetInnerHTML={{ __html: vlibrasMarkup }}
+      />
       <Script
         src="https://vlibras.gov.br/app/vlibras-plugin.js"
         strategy="afterInteractive"

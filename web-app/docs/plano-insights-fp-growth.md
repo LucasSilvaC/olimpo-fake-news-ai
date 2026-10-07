@@ -23,11 +23,11 @@ Fonte principal: `machine-learning/outputs/model-comparison/fp-growth-linguistic
 
 ### Exemplos concretos da validação
 
-| Padrão | Descrição observável | Fake / True com padrão | Composição entre ocorrências | Frequência em cada classe | Redescoberta da direção no treino |
-|---|---|---:|---|---|---:|
-| R05 | Maior proporção de substantivos e nenhuma palavra inteiramente em maiúsculas segundo a medida do experimento | 48 / 134 | 26,4% Fake; 73,6% True | 6,7% das Fake; 18,6% das True | 97% |
-| R21 | Proporções altas de advérbios, modificadores adverbiais e pontuação | 97 / 9 | 91,5% Fake; 8,5% True | 13,5% das Fake; 1,3% das True | 37% |
-| R22 | Proporções altas de advérbios e modificadores adverbiais | 206 / 125 | 62,2% Fake; 37,8% True | 28,6% das Fake; 17,4% das True | 100% |
+| Padrão | Descrição observável                                                                                         | Fake / True com padrão | Composição entre ocorrências | Frequência em cada classe      | Redescoberta da direção no treino |
+| ------ | ------------------------------------------------------------------------------------------------------------ | ---------------------: | ---------------------------- | ------------------------------ | --------------------------------: |
+| R05    | Maior proporção de substantivos e nenhuma palavra inteiramente em maiúsculas segundo a medida do experimento |               48 / 134 | 26,4% Fake; 73,6% True       | 6,7% das Fake; 18,6% das True  |                               97% |
+| R21    | Proporções altas de advérbios, modificadores adverbiais e pontuação                                          |                 97 / 9 | 91,5% Fake; 8,5% True        | 13,5% das Fake; 1,3% das True  |                               37% |
+| R22    | Proporções altas de advérbios e modificadores adverbiais                                                     |              206 / 125 | 62,2% Fake; 37,8% True       | 28,6% das Fake; 17,4% das True |                              100% |
 
 “Alto” e “baixo” são limites aprendidos no treino, não juízos de qualidade. Na R05, `uppercaseRatio_baixo` tem limite zero; a medida considera palavras inteiramente em maiúsculas com mais de uma letra. Ela não mede a quantidade de letras maiúsculas.
 
@@ -55,17 +55,17 @@ Catalogar os 93 padrões para pesquisa e auditoria. Separar esse catálogo da li
 
 Começar com um JSON gerado offline, validado e versionado. O volume atual não exige CRUD de regras nem tabelas adicionais para cada item.
 
-| Campo | Finalidade |
-|---|---|
-| `catalogVersion`, `sourceRun`, `variant`, hashes | Identificar exatamente os artefatos utilizados |
-| `patternId`, `directedRuleIds` | Identidade estável e rastreabilidade; R01…R25 são apenas IDs de apresentação |
-| `items[]` | Feature, operador, limiar com precisão original e denominador |
-| `observationTitle`, `observationTemplate` | Tradução humana fiel ao atributo |
-| `reflectionQuestions[]` | Perguntas editoriais revisadas, sem afirmações sobre fatos não examinados |
-| `train`, `validation`, `test`, `all` | Contagens, denominadores, composição, cobertura e baselines, separados por partição |
+| Campo                                               | Finalidade                                                                                   |
+| --------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| `catalogVersion`, `sourceRun`, `variant`, hashes    | Identificar exatamente os artefatos utilizados                                               |
+| `patternId`, `directedRuleIds`                      | Identidade estável e rastreabilidade; R01…R25 são apenas IDs de apresentação                 |
+| `items[]`                                           | Feature, operador, limiar com precisão original e denominador                                |
+| `observationTitle`, `observationTemplate`           | Tradução humana fiel ao atributo                                                             |
+| `reflectionQuestions[]`                             | Perguntas editoriais revisadas, sem afirmações sobre fatos não examinados                    |
+| `train`, `validation`, `test`, `all`                | Contagens, denominadores, composição, cobertura e baselines, separados por partição          |
 | `grammarMetrics`, `rediscovery`, `classAssociation` | Separar coocorrência linguística, estabilidade da descoberta e associação posterior à classe |
-| `uncertainty`, `authorControl`, `selectionRole` | Intervalos e suas limitações, controles e papel no ranking |
-| `redundancyFamily`, `displayStatus`, `reviewNotes` | Evitar repetições e registrar aprovação editorial ou motivo de restrição |
+| `uncertainty`, `authorControl`, `selectionRole`     | Intervalos e suas limitações, controles e papel no ranking                                   |
+| `redundancyFamily`, `displayStatus`, `reviewNotes`  | Evitar repetições e registrar aprovação editorial ou motivo de restrição                     |
 
 `displayStatus` pode ser `research_only`, `observation_only` ou `comparison_available`. A classe predominante é metadata da comparação no corpus; não é a classe atribuída à notícia nova.
 
@@ -157,13 +157,13 @@ Perguntas e descrições começam como templates revisados. Um LLM não é neces
 
 ## 5. Etapas e critérios de conclusão
 
-| Etapa | Entrega | Critério verificável |
-|---|---|---|
-| 1. Catálogo | Exportador offline, JSON e revisão editorial inicial | 93 padrões rastreáveis; partições e denominadores íntegros; papéis global/contraste preservados; limites e versões coerentes |
-| 2. Motor | Serviço Python e correspondência determinística | Reproduz itens e ocorrências de registros congelados; trata limites exatos, ausências e textos inadequados; não utiliza gabarito |
-| 3. Fluxo individual | URL/texto, confirmação, observações, perguntas e comparação opcional | Até três famílias distintas; exemplos reais explicáveis; estados sem padrão/erro claros; nenhuma classificação criada |
-| 4. Jogo | Observações antes do voto e comparação após a rodada | Servidor impede acesso antecipado à comparação por classe; insights separados do gabarito e da pontuação |
-| 5. Avaliação | Estudo de compreensão e nova base externa | Usuários distinguem frequência/composição e não tratam estilo como prova; generalização examinada fora do corpus atual |
+| Etapa               | Entrega                                                              | Critério verificável                                                                                                             |
+| ------------------- | -------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| 1. Catálogo         | Exportador offline, JSON e revisão editorial inicial                 | 93 padrões rastreáveis; partições e denominadores íntegros; papéis global/contraste preservados; limites e versões coerentes     |
+| 2. Motor            | Serviço Python e correspondência determinística                      | Reproduz itens e ocorrências de registros congelados; trata limites exatos, ausências e textos inadequados; não utiliza gabarito |
+| 3. Fluxo individual | URL/texto, confirmação, observações, perguntas e comparação opcional | Até três famílias distintas; exemplos reais explicáveis; estados sem padrão/erro claros; nenhuma classificação criada            |
+| 4. Jogo             | Observações antes do voto e comparação após a rodada                 | Servidor impede acesso antecipado à comparação por classe; insights separados do gabarito e da pontuação                         |
+| 5. Avaliação        | Estudo de compreensão e nova base externa                            | Usuários distinguem frequência/composição e não tratam estilo como prova; generalização examinada fora do corpus atual           |
 
 Testes centrais: reprodução dos itens da `discretization.csv` e da matriz `news_rule_matrix.csv`, cálculo dos dois denominadores, união completa dos itens, deduplicação de setas inversas, invalidação de cache e proteção da fase da rodada. Checar amostras do extrator antes de testar o caminho inteiro.
 

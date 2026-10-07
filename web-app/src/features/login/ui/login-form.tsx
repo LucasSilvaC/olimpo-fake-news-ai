@@ -68,7 +68,7 @@ export function LoginForm() {
           </p>
         )}
 
-      <Button type="submit" disabled={vm.pending}>
+        <Button type="submit" disabled={vm.pending}>
           {vm.pending ? "Entrando..." : "Entrar"}
           <ArrowRight aria-hidden="true" className="size-5" />
         </Button>

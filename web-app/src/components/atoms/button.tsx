@@ -31,13 +31,5 @@ export function Button({
   variant,
   ...properties
 }: IButtonProps): React.ReactElement {
-  return (
-    <button
-      className={cn(
-        buttonVariants({ size, variant }),
-        className,
-      )}
-      {...properties}
-    />
-  );
+  return <button className={cn(buttonVariants({ size, variant }), className)} {...properties} />;
 }

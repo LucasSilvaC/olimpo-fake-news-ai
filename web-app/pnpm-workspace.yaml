@@ -4,7 +4,7 @@ allowBuilds:
   unrs-resolver: true
 minimumReleaseAgeExclude:
   - vitest@4.1.11
-  - '@vitest/mocker@4.1.11'
+  - "@vitest/mocker@4.1.11"
   - brace-expansion@1.1.19 || 1.1.20 || 1.1.21
   - source-map-js@1.2.2
   - sharp@0.35.5

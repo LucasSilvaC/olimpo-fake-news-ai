@@ -66,7 +66,7 @@ export function NotFoundPage() {
             <span
               className={`${styles.float} flex items-center gap-1 text-[clamp(6rem,20vw,9rem)] leading-none font-black [text-shadow:0_15px_40px_#17255440]`}
             >
-              4<Compass className="size-[0.75em] text-amber-300 [stroke-width:1.5]" />4
+              4<Compass className="size-[0.75em] [stroke-width:1.5] text-amber-300" />4
             </span>
             <span className="absolute bottom-0 flex -rotate-4 items-center gap-2 rounded-2xl border border-white/25 bg-white px-4 py-[0.8rem] text-xs font-bold text-blue-700 shadow-[0_12px_30px_#17255420]">
               <Search className="size-5" /> Página não encontrada
