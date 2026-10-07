@@ -5,7 +5,8 @@ normalização + truncamento (iguais ao 01_Data_Prep) → metadados spaCy →
 TF-IDF word+char → SelectKBest(χ², 10 mil) → TruncatedSVD(500) → Normalizer,
 + bloco spaCy padronizado com peso w → LinearSVC(C=1) → calibração sigmoide.
 
-Escolhas e evidências: notebooks 10–12 e METADADOS_SPACY.md.
+Escolhas e evidências: `history/modelo-final/` e `docs/modelos/modelo-olimpo.md`.
+As features linguísticas estão descritas em `docs/modelos/metadados-spacy.md`.
 
 ATENÇÃO: o artefato .joblib referencia as classes e funções deste módulo pelo
 nome (`modelo_olimpo.*`). Quem carrega precisa ter este arquivo importável e as

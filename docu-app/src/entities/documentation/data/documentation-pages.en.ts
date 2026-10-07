@@ -422,7 +422,7 @@ export const documentationPagesEn: IDocumentationPage[] = [
             items: [
               {
                 label: "Architecture document (PDF)",
-                href: `${repository}/docs/arquitetura.pdf`,
+                href: `${repository}/docs/codigo/arquitetura.pdf`,
                 description: "Technical decisions and operational limits of the project.",
               },
               {
@@ -496,7 +496,7 @@ export const documentationPagesEn: IDocumentationPage[] = [
             items: [
               {
                 label: "Architecture document (PDF)",
-                href: `${repository}/docs/arquitetura.pdf`,
+                href: `${repository}/docs/codigo/arquitetura.pdf`,
                 description: "Hybrid persistence, Pub/Sub, and SSE implementation.",
               },
               {
@@ -665,12 +665,12 @@ export const documentationPagesEn: IDocumentationPage[] = [
             items: [
               {
                 label: "Architecture and accessibility report",
-                href: `${repository}/docs/arquitetura.pdf`,
+                href: `${repository}/docs/codigo/arquitetura.pdf`,
                 description: "Quality strategy and accessibility evidence.",
               },
               {
                 label: "Contrast measurements",
-                href: `${repository}/docs/acessibilidade-contrastes.json`,
+                href: `${repository}/docs/codigo/acessibilidade-contrastes.json`,
                 description: "Measured pairs, contrast ratios, and audit scope.",
               },
             ],

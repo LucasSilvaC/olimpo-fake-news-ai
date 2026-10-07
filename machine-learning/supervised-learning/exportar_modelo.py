@@ -4,7 +4,8 @@ Uso (dentro de machine-learning/supervised-learning):
     python exportar_modelo.py                   # exporta treinado em treino+teste (7.200 notícias)
     python exportar_modelo.py --somente-treino  # exporta o modelo treinado só no X_tr
 
-Pré-requisitos: dados_preparados.pkl e Fake.br-Corpus-master/ (gerados pelo 01_Data_Prep)
+Pré-requisitos: data/dados_preparados.pkl e data/Fake.br-Corpus-master/ (gerados pelo notebook
+history/baselines/01_Data_Prep.ipynb)
 e `python -m spacy download pt_core_news_sm`.
 
 Etapas:
@@ -54,8 +55,8 @@ def carregar_textos(pasta, label):
 
 
 def carregar_dados():
-    X_tr, X_te, y_tr, y_te = joblib.load("./dados_preparados.pkl")
-    base = "Fake.br-Corpus-master/full_texts"
+    X_tr, X_te, y_tr, y_te = joblib.load("./data/dados_preparados.pkl")
+    base = "data/Fake.br-Corpus-master/full_texts"
     df = pd.concat([carregar_textos(f"{base}/fake", 1), carregar_textos(f"{base}/true", 0)], ignore_index=True)
     trunc = df["texto"].map(mo.normalizar).map(mo.truncar)
     for X, y in ((X_tr, y_tr), (X_te, y_te)):

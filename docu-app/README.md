@@ -17,7 +17,7 @@ Abra <http://127.0.0.1:3000>. A documentação não precisa de PostgreSQL, Redis
 
 Os guias descrevem o produto, o fluxo de salas e partidas, o extrator de notícias, a arquitetura técnica e a manutenção do projeto. A navegação reúne os artigos em três áreas macro: **Produto**, **Engenharia** e **Desenvolvimento**.
 
-O conteúdo usa como fontes o README principal, as especificações OpenSpec, o documento de arquitetura em `../docs/arquitetura.pdf`, o README do `web-app` e este próprio README. Os artigos apontam para suas fontes. Regras de produto são descritas a partir das especificações; telas com valores e nomes de exemplo não são tratadas como dados reais.
+O conteúdo usa como fontes o README principal, as especificações OpenSpec, o documento de arquitetura em `../docs/codigo/arquitetura.pdf`, o README do `web-app` e este próprio README. Os artigos apontam para suas fontes. Regras de produto são descritas a partir das especificações; telas com valores e nomes de exemplo não são tratadas como dados reais.
 
 ## Como manter os artigos
 
