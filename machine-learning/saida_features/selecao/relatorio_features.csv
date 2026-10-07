@@ -1,0 +1,55 @@
+feature,auc,relevancia,direcao,p_valor,p_ajustado_bh,status,motivo
+POS_SPACE,0.930681,0.861362,maior em falsas,0.0,0.0,mantida,
+DEP_dep,0.898938,0.797877,maior em falsas,0.0,0.0,removida,|r|=0.92 com POS_SPACE (mais relevante)
+DEP_ROOT,0.748135,0.496269,maior em falsas,0.0,0.0,mantida,
+POS_ADP,0.273702,0.452596,maior em verdadeiras,0.0,0.0,mantida,
+DEP_case,0.276712,0.446576,maior em verdadeiras,0.0,0.0,removida,|r|=0.99 com POS_ADP (mais relevante)
+POS_NOUN,0.318444,0.363111,maior em verdadeiras,0.0,0.0,mantida,
+DEP_nmod,0.319835,0.360331,maior em verdadeiras,0.0,0.0,removida,|r|=0.85 com POS_ADP (mais relevante)
+DEP_obl,0.334167,0.331665,maior em verdadeiras,0.0,0.0,mantida,
+DEP_iobj,0.335,0.329999,maior em verdadeiras,0.0,0.0,mantida,
+POS_SYM,0.344814,0.310372,maior em verdadeiras,0.0,0.0,mantida,
+DEP_csubj,0.34486,0.31028,maior em verdadeiras,0.0,0.0,mantida,
+DEP_parataxis,0.349355,0.301291,maior em verdadeiras,0.0,0.0,mantida,
+DEP_fixed,0.361679,0.276643,maior em verdadeiras,0.0,0.0,mantida,
+DEP_flat,0.364687,0.270626,maior em verdadeiras,0.0,0.0,mantida,
+DEP_obl:agent,0.383681,0.232638,maior em verdadeiras,0.0,0.0,mantida,
+DEP_cc,0.384614,0.230771,maior em verdadeiras,0.0,0.0,mantida,
+DEP_acl:relcl,0.387719,0.224563,maior em verdadeiras,0.0,0.0,mantida,
+POS_CCONJ,0.395348,0.209304,maior em verdadeiras,0.0,0.0,removida,|r|=0.99 com DEP_cc (mais relevante)
+DEP_nsubj,0.602749,0.205499,maior em falsas,0.0,0.0,mantida,
+DEP_acl,0.399244,0.201511,maior em verdadeiras,0.0,0.0,mantida,
+POS_VERB,0.586345,0.172691,maior em falsas,0.0,0.0,mantida,
+DEP_obj,0.583943,0.167885,maior em falsas,0.0,0.0,mantida,
+DEP_advcl,0.422047,0.155906,maior em verdadeiras,0.0,0.0,mantida,
+POS_PROPN,0.575501,0.151002,maior em falsas,0.0,0.0,mantida,
+DEP_compound,0.426277,0.147446,maior em verdadeiras,0.0,0.0,mantida,
+DEP_appos,0.56488,0.12976,maior em falsas,0.0,0.0,mantida,
+DEP_amod,0.437916,0.124169,maior em verdadeiras,0.0,0.0,mantida,
+DEP_expl,0.439038,0.121924,maior em verdadeiras,0.0,0.0,mantida,
+DEP_conj,0.440138,0.119725,maior em verdadeiras,0.0,0.0,removida,|r|=0.82 com DEP_cc (mais relevante)
+DEP_nummod,0.44297,0.114059,maior em verdadeiras,0.0,0.0,mantida,
+DEP_nsubj:pass,0.444552,0.110896,maior em verdadeiras,0.0,0.0,mantida,
+POS_PRON,0.444598,0.110804,maior em verdadeiras,0.0,0.0,mantida,
+DEP_mark,0.448397,0.103206,maior em verdadeiras,0.0,0.0,mantida,
+POS_AUX,0.549539,0.099078,maior em falsas,0.0,0.0,mantida,
+DEP_aux:pass,0.454557,0.090885,maior em verdadeiras,0.0,0.0,removida,|r|=0.87 com DEP_nsubj:pass (mais relevante)
+POS_SCONJ,0.455754,0.088491,maior em verdadeiras,0.0,0.0,removida,|r|=0.96 com DEP_mark (mais relevante)
+POS_NUM,0.457142,0.085715,maior em verdadeiras,0.0,0.0,mantida,
+POS_ADJ,0.457209,0.085583,maior em verdadeiras,0.0,0.0,removida,|r|=0.89 com DEP_amod (mais relevante)
+DEP_discourse,0.466979,0.066042,maior em verdadeiras,0.0,0.0,mantida,
+POS_INTJ,0.477303,0.045395,maior em verdadeiras,0.0,0.0,removida,relevância 0.045 < mínimo 0.05
+POS_X,0.48203,0.035941,maior em verdadeiras,0.0,0.0,removida,relevância 0.036 < mínimo 0.05
+DEP_flat:name,0.48505,0.0299,maior em verdadeiras,0.049406,0.062045,removida,sem diferença significativa entre as classes (p ajustado > alpha)
+DEP_aux,0.512422,0.024844,maior em falsas,0.101471,0.121765,removida,sem diferença significativa entre as classes (p ajustado > alpha)
+DEP_ccomp,0.487793,0.024414,maior em verdadeiras,0.108446,0.127307,removida,sem diferença significativa entre as classes (p ajustado > alpha)
+POS_PUNCT,0.4879,0.0242,maior em verdadeiras,0.111734,0.128376,removida,sem diferença significativa entre as classes (p ajustado > alpha)
+DEP_xcomp,0.511998,0.023996,maior em falsas,0.114745,0.129088,removida,sem diferença significativa entre as classes (p ajustado > alpha)
+DEP_flat:foreign,0.4933,0.0134,maior em verdadeiras,1.6e-05,2e-05,removida,relevância 0.013 < mínimo 0.05
+DEP_advmod,0.505484,0.010969,maior em falsas,0.470985,0.519044,removida,sem diferença significativa entre as classes (p ajustado > alpha)
+POS_ADV,0.503001,0.006001,maior em falsas,0.693295,0.748759,removida,sem diferença significativa entre as classes (p ajustado > alpha)
+POS_DET,0.498207,0.003587,maior em verdadeiras,0.813664,0.861527,removida,sem diferença significativa entre as classes (p ajustado > alpha)
+DEP_punct,0.501023,0.002047,maior em falsas,0.892993,0.914823,removida,sem diferença significativa entre as classes (p ajustado > alpha)
+DEP_det,0.500976,0.001953,maior em falsas,0.897882,0.914823,removida,sem diferença significativa entre as classes (p ajustado > alpha)
+POS_PART,0.499479,0.001042,maior em verdadeiras,0.083247,0.102166,removida,sem diferença significativa entre as classes (p ajustado > alpha)
+DEP_cop,0.500107,0.000214,maior em falsas,0.988758,0.988758,removida,sem diferença significativa entre as classes (p ajustado > alpha)
