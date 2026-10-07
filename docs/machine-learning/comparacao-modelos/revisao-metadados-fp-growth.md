@@ -13,7 +13,7 @@ Foram encontrados quatro scripts em `Eldorado/metadados/`, sem CSVs revisados ou
 
 Os scripts `extracao_true.py` e `extracao_false.py` não foram executados de ponta a ponta: ambos baixam `master`, enquanto a auditoria reutilizou o corpus congelado do experimento. Nenhum notebook ou script original foi alterado. **Não foi minerada uma variante enriquecida com POS/DEP**; portanto, ainda não existe demonstração de ganho de estabilidade, utilidade ou generalização das regras.
 
-As evidências, os CSVs da amostra e uma cópia do script de auditoria estão em [`../outputs/metadata-review/20261006/`](../outputs/metadata-review/20261006/). O ambiente usado está em `Eldorado/.codex-analysis/metadados-venv/`.
+As evidências, os CSVs da amostra e uma cópia do script de auditoria estão em [`../../../machine-learning/outputs/metadata-review/20261006/`](../../../machine-learning/outputs/metadata-review/20261006/). O ambiente usado está em `Eldorado/.codex-analysis/metadados-venv/`.
 
 ## Decisão por arquivo
 
@@ -73,7 +73,7 @@ A identidade foi confirmada nos 4.320 registros, com erro máximo de `1,11 × 10
 
 Além disso, `T-W` inclui números, e não apenas pontuação. O nome `punctuationDensity` é mais restrito que sua implementação. Usar `token.is_punct` pode melhorar a definição em uma variante, mas muda o atributo e precisa de nova versão. Para a nova experiência, testar uma representação que conserve diversidade lexical e pontuação diretamente medida e retire o TTR redundante, registrando essa ablação separadamente da adição de POS.
 
-Autoria também merece controle: os resultados históricos mostram Cramér V de aproximadamente 0,960 com a classe. Isso explica a relevância de comparar com o [principal sem autoria](../unsupervised-learning/history/mineracao-de-padroes/fp-growth-legado/fp_growth_principal_sem_autoria_controles.ipynb), mantendo a estratificação posterior. `linkDensity` já é omitida no treino porque os dois quantis são zero; `uppercaseRatio_baixo` cobre 43,56%, devido aos empates. A discretização linguística deve registrar cobertura real, zeros e faixas omitidas, em vez de assumir que todo quartil representa 25% das notícias.
+Autoria também merece controle: os resultados históricos mostram Cramér V de aproximadamente 0,960 com a classe. Isso explica a relevância de comparar com o [principal sem autoria](../../../machine-learning/unsupervised-learning/history/mineracao-de-padroes/fp-growth-legado/fp_growth_principal_sem_autoria_controles.ipynb), mantendo a estratificação posterior. `linkDensity` já é omitida no treino porque os dois quantis são zero; `uppercaseRatio_baixo` cobre 43,56%, devido aos empates. A discretização linguística deve registrar cobertura real, zeros e faixas omitidas, em vez de assumir que todo quartil representa 25% das notícias.
 
 ## Integração recomendada em Jupyter
 
