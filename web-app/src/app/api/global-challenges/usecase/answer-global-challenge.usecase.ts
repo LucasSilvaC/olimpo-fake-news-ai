@@ -6,6 +6,10 @@ import { drizzleGlobalChallengeRepository as defaultChallengeRepository } from "
 import { IGlobalChallengeAnswerRepository } from "../repositories/global-challenge-answer.repository.interface";
 import { IGlobalChallengeRepository } from "../repositories/global-challenge.repository.interface";
 
+import { getDefaultAnalysis } from "./list-global-challenges.usecase";
+
+import { drizzleNewsAnalysisRepository as defaultAnalysisRepository } from "@/app/api/ai-feedback/repositories/drizzle-news-analysis.repository";
+import { INewsAnalysisRepository } from "@/app/api/ai-feedback/repositories/news-analysis.repository.interface";
 import { drizzleUserRepository as defaultUserRepository } from "@/app/api/auth/repositories/drizzle-user.repository";
 import { IUserRepository } from "@/app/api/auth/repositories/user.repository.interface";
 import { VoteOption } from "@/app/api/news-voting/entities";
@@ -22,6 +26,11 @@ export interface AnswerGlobalChallengeOutput {
   isCorrect: boolean;
   xpAwarded: number;
   targetClassification: MLTargetType;
+  analysis: {
+    classification: MLTargetType;
+    reasons: string[];
+    confidence: number;
+  };
 }
 
 export class AnswerGlobalChallengeUseCase {
@@ -29,6 +38,7 @@ export class AnswerGlobalChallengeUseCase {
     private readonly challengeRepository: IGlobalChallengeRepository = defaultChallengeRepository,
     private readonly answerRepository: IGlobalChallengeAnswerRepository = defaultAnswerRepository,
     private readonly userRepository: IUserRepository = defaultUserRepository,
+    private readonly analysisRepository: INewsAnalysisRepository = defaultAnalysisRepository,
   ) {}
 
   async execute(input: AnswerGlobalChallengeInput): Promise<AnswerGlobalChallengeOutput> {
@@ -82,11 +92,28 @@ export class AnswerGlobalChallengeUseCase {
       await this.userRepository.updateXp(input.userId, xpAwarded);
     }
 
+    let analysis = getDefaultAnalysis(challengeWithArticle.article.targetClassification);
+    try {
+      const rec = await this.analysisRepository.findByArticleId(challengeWithArticle.articleId);
+      if (rec) {
+        const raw = Number(rec.confidence);
+        const confidence = raw <= 1 ? Math.round(raw * 100) : Math.round(raw);
+        analysis = {
+          classification: rec.classification,
+          reasons: rec.reasons,
+          confidence,
+        };
+      }
+    } catch {
+      // fallback to default
+    }
+
     return {
       answer: evaluated.toDTO(),
       isCorrect,
       xpAwarded,
       targetClassification: challengeWithArticle.article.targetClassification,
+      analysis,
     };
   }
 }

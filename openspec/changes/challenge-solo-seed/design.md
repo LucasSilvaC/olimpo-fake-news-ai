@@ -27,11 +27,12 @@ See `proposal.md` for overall motivation.
   - *Fake room creation for solo players*: Rejected because it introduces unnecessary database entities, Redis connections, and latency.
 
 ### 2. Client-Side Solo Game Engine (`ChallengeGameView`)
-- **Decision**: Implement `ChallengeGameView` as a client component managing a local state machine (`CHECKING` -> `ROUND_SCOREBOARD` -> `CHECKING` ... -> `MATCH_FINALE`). 
+- **Decision**: Implement `ChallengeGameView` as a client component managing a local state machine (`CHECKING` -> `WAITING` -> `ROUND_SCOREBOARD` -> `CHECKING` ... -> `MATCH_FINALE`). 
 - **Transitions**:
   1. On vote: Dispatches `answerGlobalChallengeAction({ challengeId, answer })`.
-  2. Immediate feedback: Transitions to `RoundScoreboardStage` showing points (+50 XP), streak bonus, and correct/incorrect verdict.
-  3. On advance: If `currentRound < totalChallenges`, increments round and returns to `NewsCheckStage`. Otherwise, transitions to `MatchScoreboardStage` presenting accuracy and total XP.
+  2. Immediate verdict feedback (`WAITING` stage): Renders `VerdictWaitingStage` presenting the user's vote alongside the official classification, an explicit correct/incorrect evaluation, the Verômetro reliability score gauge, and the model's factual justifications explaining the verdict.
+  3. On proceed: Transitions to `RoundScoreboardStage` displaying points earned (+50 XP), streak bonus, and session standings.
+  4. On advance: If `currentRound < totalChallenges`, increments round and returns to `NewsCheckStage`. Otherwise, transitions to `MatchScoreboardStage` presenting accuracy and total XP.
 - **Alternatives Considered**: Full server-side page navigation per round. Rejected because client state transition provides instant feedback and avoids re-fetching unchanged assets.
 
 ### 3. Population Script Architecture (`populate-challenges.ts`)

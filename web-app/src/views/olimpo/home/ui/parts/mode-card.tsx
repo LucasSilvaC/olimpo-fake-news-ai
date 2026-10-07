@@ -1,4 +1,6 @@
 import { ArrowRight, Plus, ShieldCheck } from "lucide-react";
+import Link from "next/link";
+import * as React from "react";
 
 type Accent = "amber" | "emerald";
 
@@ -8,6 +10,7 @@ interface IModeCardProps {
   description: string;
   footer: string;
   title: string;
+  href?: string;
 }
 
 const accentStyles: Record<
@@ -38,13 +41,14 @@ export function ModeCard({
   description,
   footer,
   title,
+  href,
 }: IModeCardProps): React.ReactElement {
   const styles = accentStyles[accent];
   const Icon = accent === "amber" ? Plus : ShieldCheck;
 
-  return (
-    <article className="group relative flex min-h-[355px] w-full max-w-[420px] cursor-pointer flex-col justify-between overflow-hidden rounded-3xl border border-white bg-white p-6 text-slate-800 shadow-xl shadow-blue-950/20 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-blue-950/30 sm:p-7">
-      <span className={`absolute inset-x-0 top-0 h-2 bg-gradient-to-r ${styles.bar}`} />
+  const cardContent = (
+    <>
+      <span className={`absolute inset-x-0 top-0 h-2 bg-linear-to-r ${styles.bar}`} />
 
       <div>
         <span
@@ -74,6 +78,19 @@ export function ModeCard({
           <ArrowRight className="size-5" strokeWidth={2.5} />
         </span>
       </div>
-    </article>
+    </>
   );
+
+  const containerClassName =
+    "group relative flex min-h-88.75 w-full max-w-105 cursor-pointer flex-col justify-between overflow-hidden rounded-3xl border border-white bg-white p-6 text-slate-800 shadow-xl shadow-blue-950/20 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-blue-950/30 sm:p-7";
+
+  if (href) {
+    return (
+      <Link href={href} className={containerClassName}>
+        {cardContent}
+      </Link>
+    );
+  }
+
+  return <article className={containerClassName}>{cardContent}</article>;
 }

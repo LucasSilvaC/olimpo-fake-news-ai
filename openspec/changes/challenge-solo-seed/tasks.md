@@ -14,9 +14,9 @@
 
 ## 3. Solo Challenge Game View and Route Integration
 
-- [ ] 3.1 Implement `ChallengeGameView` in `src/views/challenge/ui/challenge-game-view.tsx` managing the solo round lifecycle (Voting -> Round Scoreboard -> Next Round / Match Scoreboard) and dispatching `answerGlobalChallengeAction`.
-- [ ] 3.2 Implement the protected Next.js App Router page in `src/app/(protected)/challenge/page.tsx` that fetches active challenges via `listGlobalChallengesAction` and renders `ChallengeGameView`.
-- [ ] 3.3 Update `ModeCard` and `OlimpoHomePage` (`src/views/olimpo/home/ui/olimpo-home-page.tsx`) so that the "Fazer desafios" card links to `/challenge`.
+- [x] 3.1 Implement `ChallengeGameView` in `src/views/challenge/ui/challenge-game-view.tsx` managing the solo round lifecycle (Voting -> Verdict Reveal / ML Analysis -> Round Scoreboard -> Next Round / Match Scoreboard) and dispatching `answerGlobalChallengeAction`.
+- [x] 3.2 Implement the protected Next.js App Router page in `src/app/(protected)/challenge/page.tsx` that fetches active challenges via `listGlobalChallengesAction` and renders `ChallengeGameView`.
+- [x] 3.3 Update `ModeCard` and `OlimpoHomePage` (`src/views/olimpo/home/ui/olimpo-home-page.tsx`) so that the "Fazer desafios" card links to `/challenge`.
 
 ## 4. Verification and Quality Checks
 
