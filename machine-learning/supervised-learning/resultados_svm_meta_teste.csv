@@ -1,0 +1,6 @@
+conjunto,config,C,w_meta,n,f1_macro,roc_auc,pct_prev_fake,tn,fp,fn,tp,erro_real_como_fake,erro_fake_como_real
+interno (Fake.br X_te),B0,1.0,,1440,0.922222,0.982984,0.497222,666,54,58,662,0.075,0.080556
+interno (Fake.br X_te),M2,1.0,0.03,1440,0.92361,0.984599,0.495833,668,52,58,662,0.072222,0.080556
+externo (FakeRecogna títulos),B0,1.0,,4968,0.611909,0.707221,0.707528,1046,1438,407,2077,0.578905,0.163849
+externo (FakeRecogna títulos),M2,1.0,0.03,4968,0.613375,0.662182,0.593398,1300,1184,720,1764,0.476651,0.289855
+externo (FakeRecogna títulos),S1,0.1,,4968,0.55766,0.58445,0.578502,1197,1287,897,1587,0.518116,0.361111
