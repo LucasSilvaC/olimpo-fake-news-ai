@@ -27,7 +27,7 @@ export interface IScoreboardPlayer {
 }
 
 export interface IRoundScoreboardStageProps {
-  roomId: string;
+  roomId?: string;
   currentRound: number;
   totalRounds: number;
   isHost: boolean;
@@ -56,6 +56,12 @@ export function RoundScoreboardStage({
 
   const handleAdvance = async (): Promise<void> => {
     if (isAdvancing) return;
+
+    if (!roomId) {
+      onAdvance?.();
+      return;
+    }
+
     setIsAdvancing(true);
 
     try {

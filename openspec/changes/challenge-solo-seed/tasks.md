@@ -8,9 +8,9 @@
 
 ## 2. Decouple Game Stage Views for Solo Play
 
-- [ ] 2.1 Update `NewsCheckStage` (`src/views/room-game/ui/news-check-stage.tsx`) to accept an optional `onCustomVote` callback and make `roomId` optional when custom voting is used.
-- [ ] 2.2 Update `RoundScoreboardStage` (`src/views/room-game/ui/round-scoreboard-stage.tsx`) to make `roomId` optional when `onAdvance` is provided.
-- [ ] 2.3 Verify that `MatchScoreboardStage` operates cleanly with single-player summary statistics without room context.
+- [x] 2.1 Update `NewsCheckStage` (`src/views/room-game/ui/news-check-stage.tsx`) to accept an optional `onCustomVote` callback and make `roomId` optional when custom voting is used.
+- [x] 2.2 Update `RoundScoreboardStage` (`src/views/room-game/ui/round-scoreboard-stage.tsx`) to make `roomId` optional when `onAdvance` is provided.
+- [x] 2.3 Verify that `MatchScoreboardStage` operates cleanly with single-player summary statistics without room context.
 
 ## 3. Solo Challenge Game View and Route Integration
 

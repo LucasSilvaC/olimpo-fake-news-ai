@@ -118,8 +118,9 @@ export function MatchScoreboardStage({
           Classificação da Partida
         </h1>
         <p className="mt-2 text-xs text-blue-100/90 sm:text-sm">
-          Verificação concluída entre {leaderboard.length} participantes. Precisão editorial média
-          de {averageAccuracy}%.
+          Verificação concluída entre {leaderboard.length}{" "}
+          {leaderboard.length === 1 ? "participante" : "participantes"}. Precisão editorial média de{" "}
+          {averageAccuracy}%.
         </p>
       </div>
 
