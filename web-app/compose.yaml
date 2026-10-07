@@ -33,6 +33,7 @@ services:
     build:
       context: .
       target: migrator
+      network: host
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-root}@postgres:5432/${POSTGRES_DB:-olimpo}
     depends_on:
@@ -40,11 +41,25 @@ services:
         condition: service_healthy
     restart: "no"
 
+  seed:
+    build:
+      context: .
+      target: migrator
+      network: host
+    command: ["pnpm", "db:seed"]
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-root}@postgres:5432/${POSTGRES_DB:-olimpo}
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    restart: "no"
+
   app:
     container_name: olimpo
     build:
       context: .
       target: development
+      network: host
     environment:
       NODE_ENV: development
       WATCHPACK_POLLING: "true"
@@ -67,7 +82,7 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-      migrate:
+      seed:
         condition: service_completed_successfully
     healthcheck:
       test:

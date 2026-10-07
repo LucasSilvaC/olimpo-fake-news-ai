@@ -2,9 +2,9 @@
 
 ## 1. G1 News Populate Script and Docker Compose Integration
 
-- [ ] 1.1 Implement `scripts/populate-challenges.ts` defining 10 real G1 news URLs, extracting content via `extractNews`, assigning mocked `targetClassification` (`reliable`, `unreliable`, `uncertain`), and saving records idempotently to `news_articles` and `global_challenges`.
-- [ ] 1.2 Update `web-app/package.json` to point `"db:seed"` to `"tsx scripts/populate-challenges.ts"`.
-- [ ] 1.3 Update `web-app/compose.yaml` to add the `seed` service that executes `pnpm db:seed` after `migrate` completes successfully, and configure `app` to depend on `seed`.
+- [x] 1.1 Implement `scripts/populate-challenges.ts` defining 10 real G1 news URLs, extracting content via `extractNews`, assigning mocked `targetClassification` (`reliable`, `unreliable`, `uncertain`), and saving records idempotently to `news_articles` and `global_challenges`.
+- [x] 1.2 Update `web-app/package.json` to point `"db:seed"` to `"tsx scripts/populate-challenges.ts"`.
+- [x] 1.3 Update `web-app/compose.yaml` to add the `seed` service that executes `pnpm db:seed` after `migrate` completes successfully, and configure `app` to depend on `seed`.
 
 ## 2. Decouple Game Stage Views for Solo Play
 
