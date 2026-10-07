@@ -1,0 +1,20 @@
+conjunto,config,k_chi2,d_svd,f1_macro,roc_auc,pct_prev_fake,tn,fp,fn,tp
+interno (Fake.br X_te),B0,completo,completo,0.922222,0.982984,0.497222,666,54,58,662
+interno (Fake.br X_te),M2,completo,completo,0.92361,0.984599,0.495833,668,52,58,662
+interno (Fake.br X_te),M2,10000,500,0.924304,0.978937,0.495139,669,51,58,662
+"externo (FakeRecogna títulos, espiada)",B0,completo,completo,0.611909,0.707221,0.707528,1046,1438,407,2077
+"externo (FakeRecogna títulos, espiada)",B0,1000,500,0.593788,0.656503,0.594605,1249,1235,765,1719
+"externo (FakeRecogna títulos, espiada)",B0,2000,500,0.61742,0.651602,0.574879,1353,1131,759,1725
+"externo (FakeRecogna títulos, espiada)",B0,5000,500,0.608602,0.664234,0.607488,1256,1228,694,1790
+"externo (FakeRecogna títulos, espiada)",B0,10000,500,0.632965,0.686015,0.55938,1428,1056,761,1723
+"externo (FakeRecogna títulos, espiada)",B0,20000,500,0.635282,0.685451,0.561795,1428,1056,749,1735
+"externo (FakeRecogna títulos, espiada)",B0,50000,500,0.638361,0.691319,0.550725,1462,1022,770,1714
+"externo (FakeRecogna títulos, espiada)",B0,all,500,0.651757,0.706866,0.554147,1487,997,728,1756
+"externo (FakeRecogna títulos, espiada)",M2,completo,completo,0.613375,0.662182,0.593398,1300,1184,720,1764
+"externo (FakeRecogna títulos, espiada)",M2,1000,500,0.602913,0.649122,0.618559,1217,1267,678,1806
+"externo (FakeRecogna títulos, espiada)",M2,2000,500,0.611549,0.656465,0.611111,1255,1229,677,1807
+"externo (FakeRecogna títulos, espiada)",M2,5000,500,0.613382,0.66217,0.603865,1276,1208,692,1792
+"externo (FakeRecogna títulos, espiada)",M2,10000,500,0.637803,0.677441,0.55475,1451,1033,761,1723
+"externo (FakeRecogna títulos, espiada)",M2,20000,500,0.640213,0.681403,0.52818,1521,963,823,1661
+"externo (FakeRecogna títulos, espiada)",M2,50000,500,0.64028,0.684459,0.507045,1573,911,876,1608
+"externo (FakeRecogna títulos, espiada)",M2,all,500,0.629927,0.673763,0.528784,1494,990,847,1637
