@@ -963,7 +963,7 @@ O teste E2E do editor de avatar verifica ausência de overflow horizontal em vie
 
 \subsection{Contrastes: método e resultados}
 \subsubsection{Método reproduzível}
-O levantamento utiliza as cores reais de \path{web-app/src/app/globals.css} e os tokens Tailwind da dependência instalada em \path{web-app/node_modules/tailwindcss/theme.css}. O script \path{docs/scripts/medir_contraste.py} lê esses arquivos e grava \path{docs/acessibilidade-contrastes.json}. Execute da raiz do repositório, após instalar as dependências:
+O levantamento utiliza as cores reais de \path{web-app/src/app/globals.css} e os tokens Tailwind da dependência instalada em \path{web-app/node_modules/tailwindcss/theme.css}. O script \path{docs/scripts/medir_contraste.py} lê esses arquivos e grava \path{docs/codigo/acessibilidade-contrastes.json}. Execute da raiz do repositório, após instalar as dependências:
 \begin{verbatim}
 python docs/scripts/medir_contraste.py
 \end{verbatim}
@@ -1034,7 +1034,7 @@ O estado documentado permite afirmar que \textbf{o Olimpo implementa recursos re
 
 A avaliação deve abranger teclado e leitores de tela, contraste renderizado em ambos os temas e estados, reflow a 320 pixels CSS, zoom, espaçamento de texto, nomes e alternativas de imagens, foco não encoberto pelo widget ou notificações e tamanho dos alvos de interação. Como o jogo tem rodadas cronometradas, também é necessário avaliar os limites de tempo segundo 2.2.1 (A), incluindo eventual justificativa de exceção aplicável. A preferência de movimento reduzido do lobby não é uma adaptação do tempo para responder à rodada.
 
-As evidências quantitativas ficam preservadas em \path{docs/acessibilidade-contrastes.json}, com cores de origem, razão, limiar e resultado por par. As fontes normativas e de VLibras estão vinculadas nos tópicos correspondentes, permitindo revisar esta seção quando o código e os testes evoluírem.
+As evidências quantitativas ficam preservadas em \path{docs/codigo/acessibilidade-contrastes.json}, com cores de origem, razão, limiar e resultado por par. As fontes normativas e de VLibras estão vinculadas nos tópicos correspondentes, permitindo revisar esta seção quando o código e os testes evoluírem.
 \par
 \endgroup
 
