@@ -1,7 +1,11 @@
 import type { AIAnalysisDTO } from "@/app/api/ai-feedback";
 
 export type RoomEventType =
-  "MEMBER_JOINED" | "ROUND_STARTED" | "ROUND_COMPLETED" | "MATCH_FINISHED";
+  "MEMBER_JOINED" | "PRESENCE_CHANGED" | "ROUND_STARTED" | "ROUND_COMPLETED" | "MATCH_FINISHED";
+
+export interface PresenceChangedPayload {
+  userIds: string[];
+}
 
 export interface RoomEvent<T = unknown> {
   type: RoomEventType;

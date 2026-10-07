@@ -104,10 +104,9 @@ A aplicação web foi construída sobre uma base técnica moderna e escalável:
 web-app/
 ├── src/
 │   ├── app/                  # Next.js App Router
-│   │   ├── api/news/extract/ # Endpoint POST /api/news/extract
 │   │   ├── globals.css       # Tema e estilos globais
 │   │   ├── layout.tsx        # Shell da aplicação
-│   │   └── page.tsx          # Página principal (atualmente renderiza o Extrator)
+│   │   └── (protected)/page.tsx # Página principal do Olimpo
 │   ├── lib/
 │   │   └── news/             # 🧩 Motor do Extrator de Notícias (SSRF, JSON-LD, Readability, Jina)
 │   │       ├── types.ts          # Contrato INewsArticle
@@ -126,8 +125,8 @@ web-app/
 │   │   ├── infrastructure/   # Implementação Drizzle e conexões de infraestrutura
 │   │   ├── presentation/     # Controllers e adaptadores de entrada
 │   │   └── composition-root.ts # Injeção de dependências
-│   ├── views/                # Telas completas da aplicação (ex: HomePage)
-│   ├── widgets/              # Componentes complexos (ex: NewsExtractor)
+│   ├── views/                # Telas completas da aplicação (ex: RoomLobbyView)
+│   ├── widgets/              # Componentes complexos (ex: AppHeader)
 │   ├── features/             # Ações e fluxos de negócio do frontend
 │   ├── entities/             # Modelos e tipos do frontend
 │   └── components/           # Componentes atômicos e primitivas de UI
@@ -139,50 +138,16 @@ web-app/
 
 ---
 
-## 🔌 6. Contrato da API (`/api/news/extract`)
+## 🔌 6. Extração de notícias na sala
 
-O endpoint recebe uma requisição `POST` com a URL que se deseja extrair:
+O anfitrião adiciona URLs públicas à playlist em `/sala/[codigo]`. A ação
+`addPlaylistNewsAction` chama `AddPlaylistNewsUseCase`, que utiliza o parser
+compartilhado `extractNews` de `src/lib/news/extract-news.ts`, persiste o artigo
+e o associa à playlist da sala.
 
-### Requisição
-
-```http
-POST /api/news/extract
-Content-Type: application/json
-
-{
-  "url": "https://g1.globo.com/politica/noticia/exemplo.ghtml"
-}
-```
-
-### Resposta de Sucesso (200 OK)
-
-```json
-{
-  "url": "https://g1.globo.com/politica/noticia/exemplo.ghtml",
-  "canonicalUrl": "https://g1.globo.com/politica/noticia/exemplo.ghtml",
-  "title": "Manchete da Notícia Extraída",
-  "description": "Subtítulo ou resumo da matéria.",
-  "authors": ["Nome do Jornalista"],
-  "publishedAt": "2026-09-08T14:30:00-03:00",
-  "modifiedAt": null,
-  "content": "Texto integral da matéria limpo de menus e scripts...",
-  "imageUrl": "https://s2.glbimg.com/imagem.jpg",
-  "publisher": "g1",
-  "language": "pt-BR",
-  "extractionMethod": "local",
-  "usedFallback": false
-}
-```
-
-_Caso o fallback remoto tenha sido acionado, `extractionMethod` será `"jina"` e `usedFallback` será `true`._
-
-### Códigos de Erro Padronizados
-
-- `400 INVALID_URL`: Formato de URL inválido ou não pertencente aos protocolos `http`/`https`.
-- `400 UNSAFE_URL`: Destino perigoso bloqueado por SSRF (localhost, IP privado, link-local ou metadata).
-- `404 NOT_FOUND`: O servidor de origem retornou status 404/410.
-- `422 EXTRACTION_FAILED`: A página foi baixada com sucesso, mas não continha texto jornalístico suficiente (menos de 300 caracteres) mesmo após tentativa de fallback.
-- `500 INTERNAL_ERROR`: Erro inesperado de execução no servidor (stack traces são omitidos por segurança).
+O pipeline mantém a extração local, o fallback pelo Jina Reader, os metadados e
+as validações de URL e SSRF. A interface isolada `/extrair` e seu endpoint
+`/api/news/extract` foram removidos; a extração acontece pelo fluxo da sala.
 
 ---
 
@@ -255,15 +220,15 @@ Ao implementar novas funcionalidades, siga as seguintes diretrizes:
    - Desenvolva os componentes para as 5 telas mapeadas na arquitetura de telas (Lobby, Gameplay/HUD, Placar, Tutorial e Criador de Desafios).
 2. **Integre o News Parser ao Criador de Desafios**:
    - Na Tela 5 (_Enviar Notícia_), em vez de obrigar o usuário a digitar tudo manualmente, permita que ele cole uma URL pública.
-   - Utilize a rota `POST /api/news/extract` para preencher automaticamente a manchete, fonte sugerida, resumo e imagem. O usuário precisará apenas definir o gabarito secreto (Fato ou Fake) e a explicação.
+   - Utilize o parser compartilhado `extractNews` no caso de uso da sala para preencher automaticamente a manchete, fonte sugerida, resumo e imagem. O usuário precisará apenas definir o gabarito secreto (Fato ou Fake) e a explicação.
 3. **Respeite a Separação em Camadas**:
    - Mantenha as regras de negócio de salas, pontuação de blefe e rodadas dentro de `src/server/domain/` e `src/server/application/`.
    - Utilize o Drizzle ORM já configurado em `src/server/infrastructure/database/drizzle/` para persistir partidas, rodadas, votos e estatísticas de jogadores.
    - Não acesse bancos de dados nem bibliotecas de servidor diretamente dentro de componentes cliente (`src/features`, `src/widgets`).
 4. **Comunicação em Tempo Real**:
    - Para o multiplayer (sincronização do lobby, votos e cronômetro coletivo), utilize WebSockets, Server-Sent Events (SSE) ou bibliotecas de presença em tempo real.
-5. **A Preservação da PoC**:
-   - Mantenha o widget `NewsExtractor` acessível em uma rota dedicada (ex: `/admin/parser` ou `/tools/extractor`) para testes isolados do motor de scraping.
+5. **Extração compartilhada**:
+   - Mantenha o parser em `src/lib/news/` e seus testes para sustentar a extração de notícias na sala.
 
 ---
 

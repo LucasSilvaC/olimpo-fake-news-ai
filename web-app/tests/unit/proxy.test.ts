@@ -21,7 +21,7 @@ describe("authentication proxy", () => {
     "/olimpo/game",
     "/olimpo/submit",
     "/olimpo/ranking",
-    "/extrair",
+    "/sala/123456",
     "/dev/sandbox",
   ])("protects %s", (url) => {
     expect(unstable_doesMiddlewareMatch({ config, nextConfig: {}, url })).toBe(true);
@@ -38,6 +38,8 @@ describe("authentication proxy", () => {
     "/teste/avatar",
     "/teste/avatar/",
     "/nova-rota",
+    "/extrair",
+    "/api/news/extract",
     "/registrar-extra",
     "/olimpo/nao-existe",
     "/login/nao-existe",
