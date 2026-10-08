@@ -9,7 +9,7 @@ type LoadingProps = {
 };
 
 const rootClasses = {
-  page: "grid min-h-[100svh] place-items-center bg-[radial-gradient(120%_120%_at_50%_20%,#1e40af_0%,#1d4ed8_45%,#1e40af_100%)] px-5 py-8 text-white",
+  page: "grid min-h-[100svh] place-items-center bg-[#2563eb] px-5 py-8 text-white",
   login:
     "absolute inset-0 z-10 grid place-items-center rounded-[20px] bg-[rgb(255_255_255_/_97%)] text-[#0f172a]",
 };

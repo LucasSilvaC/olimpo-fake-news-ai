@@ -23,6 +23,21 @@ conferiu a execução real com serviços descartáveis.
 - `/analyze`, `/health` e observações do não supervisionado preservados, com saúde
   específica de cada modelo e falhas independentes.
 
+## Integração posterior da interface e do pitch
+
+A integração de `fix/ui-improvements` mantém o contrato supervisionado e a rota
+`/pitch`. O veredito usa o gabarito cadastrado; o score `100 × P(Fake)` permanece
+no painel de previsão após o encerramento. O painel linguístico continua usando
+as perguntas gerais de `SocraticReflection`, removidas apenas do veredito.
+
+`ROUND_COMPLETED` e respostas de ações incluem `roundDelta` e `isCorrect` nas
+entradas do placar. O cliente aplica cada encerramento uma vez, mesmo recebendo
+ação e SSE, e ignora eventos antigos ou já restaurados. A conclusão da partida
+e o recarregamento usam os acertos persistidos, sem converter pontos parciais
+em acertos. Os resultados de validação abaixo registram a implementação original;
+os testes de integração da interface estão em
+`web-app/tests/components/room-game-prediction.test.tsx`.
+
 ## Ambiente e identidade
 
 Motor Linux Docker: Python 3.14.2, scikit-learn 1.9.1, NumPy 2.5.3, SciPy 1.18.1,

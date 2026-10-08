@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import { INewsVoteRepository } from "../repositories/news-vote.repository.interface";
 import { AdvanceRoundUseCase } from "../usecase/advance-round.usecase";
 import { FinishMatchUseCase } from "../usecase/finish-match.usecase";
 
@@ -12,6 +13,7 @@ describe("AdvanceRoundUseCase", () => {
   let roomRepository: IRoomRepository;
   let redisRoomRepository: IRedisRoomRepository;
   let userRepository: IUserRepository;
+  let newsVoteRepository: INewsVoteRepository;
   let finishMatchUseCase: FinishMatchUseCase;
   let mockEventPublisher: IEventPublisher;
   let useCase: AdvanceRoundUseCase;
@@ -96,11 +98,22 @@ describe("AdvanceRoundUseCase", () => {
       publish: vi.fn(async () => 1),
     };
 
+    newsVoteRepository = {
+      create: vi.fn(),
+      findById: vi.fn(),
+      findByParticipantAndPlaylistItem: vi.fn(),
+      listByPlaylistItem: vi.fn(),
+      listByRoomId: vi.fn().mockResolvedValue([]),
+      countByPlaylistItem: vi.fn(),
+      updateEvaluation: vi.fn(),
+    };
+
     finishMatchUseCase = new FinishMatchUseCase(
       roomRepository,
       redisRoomRepository,
       userRepository,
       mockEventPublisher,
+      newsVoteRepository,
     );
 
     useCase = new AdvanceRoundUseCase(roomRepository, finishMatchUseCase, mockEventPublisher, {

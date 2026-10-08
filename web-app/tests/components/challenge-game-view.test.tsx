@@ -88,7 +88,9 @@ describe("solo compatibility with supervised room feedback", () => {
     );
     fireEvent.click(screen.getByRole("button", { name: "Classificar notícia como Falsa" }));
     expect(await screen.findByText("Gabarito Oficial")).toBeVisible();
-    expect(screen.getByText("Gabarito Oficial").parentElement).toHaveTextContent("FALSO");
+    expect(screen.getByRole("region", { name: "Gabarito oficial da rodada" })).toHaveTextContent(
+      "FALSO",
+    );
     expect(screen.getByText("50 XP ganhos")).toBeVisible();
     expect(screen.queryByText("Legacy simulated reason")).toBeNull();
     expect(document.body.textContent).not.toMatch(/99%|85%|Análise do modelo/);

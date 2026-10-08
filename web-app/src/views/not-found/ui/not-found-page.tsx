@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 
 import styles from "./not-found-page.module.css";
 
+import { PageShell } from "@/components/molecules/page-shell";
 import { Header } from "@/widgets/app-header";
 
 const REDIRECT_SECONDS = 8;
@@ -29,7 +30,7 @@ export function NotFoundPage() {
   }, [router]);
 
   return (
-    <div className="flex min-h-svh flex-col overflow-x-clip bg-[radial-gradient(120%_120%_at_50%_20%,#1e40af_0%,#1d4ed8_45%,#1e40af_100%)] text-white">
+    <PageShell className="min-h-svh overflow-x-clip">
       <Header>
         <Link
           href="/"
@@ -113,6 +114,6 @@ export function NotFoundPage() {
           </div>
         </section>
       </main>
-    </div>
+    </PageShell>
   );
 }

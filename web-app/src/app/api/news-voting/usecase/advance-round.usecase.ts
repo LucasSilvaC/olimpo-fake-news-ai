@@ -10,8 +10,8 @@ import {
   IEventPublisher,
   redisEventPublisher as defaultRedisEventPublisher,
 } from "@/app/api/realtime-events";
+import { MatchFinishedLeaderboardEntry } from "@/app/api/realtime-events/entities/event.types";
 import { drizzleRoomRepository as defaultRoomRepository } from "@/app/api/rooms/repositories/drizzle-room.repository";
-import { LeaderboardEntry } from "@/app/api/rooms/repositories/redis-room.repository.interface";
 import { IRoomRepository } from "@/app/api/rooms/repositories/room.repository.interface";
 import { RoomStatus } from "@/server/shared/database/schemas/enums";
 
@@ -26,7 +26,7 @@ export interface AdvanceRoundOutput {
   currentRound: number;
   totalRounds: number;
   isMatchFinished: boolean;
-  leaderboard?: LeaderboardEntry[];
+  leaderboard?: MatchFinishedLeaderboardEntry[];
 }
 
 export class AdvanceRoundUseCase {

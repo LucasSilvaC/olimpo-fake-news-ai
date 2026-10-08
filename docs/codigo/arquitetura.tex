@@ -142,7 +142,7 @@
 \section{OpenSpec}
 
 \subsection{O que é?}
-O \textbf{OpenSpec} é um padrão e framework de governança técnica para especificação viva de software baseada em capacidades (\textit{Capability-Based Specifications}) e gestão estruturada de mudanças evolutivas (\textit{Spec-Driven Development}). Em vez de documentações estáticas ou isoladas em wikis externas que rapidamente se tornam obsoletas, o OpenSpec reside diretamente dentro do repositório de código, na pasta raiz \texttt{/openspec}. Ele divide as definições do projeto em duas frentes complementares: especificações canônicas de capacidades permanentes da aplicação (\texttt{openspec/specs/}) e propostas de alteração incrementais e versionadas (\texttt{openspec/changes/}).
+O \textbf{OpenSpec} é um padrão e framework de governança técnica para especificação viva de software baseada em capacidades (\textit{Capability-Based Specifications}) e gestão estruturada de mudanças evolutivas (\textit{Spec-Driven Development}). Em vez de documentações estáticas ou isoladas em wikis externas que rapidamente se tornam obsoletas, o OpenSpec reside diretamente dentro do repositório de código, na pasta de documentação \texttt{docs/openspec/}. Ele divide as definições do projeto em duas frentes complementares: especificações canônicas de capacidades permanentes da aplicação (\texttt{docs/openspec/specs/}) e propostas de alteração incrementais e versionadas (\texttt{docs/openspec/changes/}).
 
 Cada especificação segue um modelo orientado ao comportamento (Behavior-Driven Development -- BDD) e aos contratos de domínio, formalizando propósitos claros, requisitos inequívocos e cenários compostos pelas diretivas \texttt{WHEN} (quando) e \texttt{THEN} (então).
 
@@ -155,9 +155,9 @@ A adoção do OpenSpec no projeto Olimpo visa solucionar três desafios crítico
 \end{enumerate}
 
 \subsection{Como?}
-No Olimpo, o OpenSpec é estruturado no diretório raiz conforme a árvore abaixo:
+No Olimpo, o OpenSpec é estruturado em \texttt{docs/openspec/} conforme a árvore abaixo:
 \begin{itemize}
-  \item \texttt{openspec/specs/}: Contém as capacidades estáveis consolidadas do sistema:
+  \item \texttt{docs/openspec/specs/}: Contém as capacidades estáveis consolidadas do sistema:
   \begin{itemize}
     \item \texttt{auth/spec.md}: Especificação de cadastro, login com hash e emissão de JWT.
     \item \texttt{rooms/spec.md}: Ciclo de vida de salas, código PIN (\texttt{XXX XXX}), lobbies e playlists.
@@ -166,7 +166,7 @@ No Olimpo, o OpenSpec é estruturado no diretório raiz conforme a árvore abaix
     \item \texttt{ai-feedback/spec.md}: Análise explicativa pedagógica da veracidade das manchetes.
     \item \texttt{gamification/spec.md}: Mecânicas de pontuação, bônus de blefe e ranking.
   \end{itemize}
-  \item \texttt{openspec/changes/}: Contém os deltas de mudanças em andamento e o histórico de mudanças arquivadas (\texttt{archive/}).
+  \item \texttt{docs/openspec/changes/}: Contém os deltas de mudanças em andamento e o histórico de mudanças arquivadas (\texttt{archive/}).
   \item \textbf{Fluxo de Trabalho Operacional:}
   \begin{enumerate}
     \item \textbf{Proposta:} O desenvolvedor inicia uma mudança com proposta de escopo e análise de impacto.

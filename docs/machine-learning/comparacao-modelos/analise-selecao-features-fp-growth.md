@@ -61,7 +61,7 @@ Assim, 2.306 notícias que pertenciam à validação/teste canônicos participar
 
 Reextraí 16 notícias, oito por classe, com spaCy 3.8.16 e modelo português 3.8.0. As 31 features originais foram reproduzidas com erro máximo inferior a 1×10⁻¹⁶. Ao substituir sequências de whitespace por um espaço comum e remover espaços das extremidades, `POS_SPACE` ficou zero nas 16 notícias. A taxa de ROOT também mudou em todas elas. Isso demonstra sensibilidade à transformação da entrada nessa amostra, sem estabelecer a causa de todas as diferenças de classe.
 
-Recomendação: manter `POS_SPACE` como diagnóstico de entrada/formatação e excluí-la da descoberta principal de insights. Auditar também `DEP_dep` e `POS_SYM`. A implementação supervisionada existente, [`metadados_spacy.py`](../../../machine-learning/supervised-learning/metadados_spacy.py), já separa SPACE e `dep` como diagnósticos.
+Recomendação: manter `POS_SPACE` como diagnóstico de entrada/formatação e excluí-la da descoberta principal de insights. Auditar também `DEP_dep` e `POS_SYM`. A implementação supervisionada existente, [`metadados_spacy.py`](../../../machine-learning/supervised-learning/support/metadados_spacy.py), já separa SPACE e `dep` como diagnósticos.
 
 ### Seleção individual não escolhe as melhores combinações
 

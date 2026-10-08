@@ -106,12 +106,24 @@ export default async function RoomPage({
       }
     }
 
+    const roomVotes =
+      typeof drizzleNewsVoteRepository?.listByRoomId === "function"
+        ? ((await drizzleNewsVoteRepository.listByRoomId(room.id)) ?? [])
+        : [];
+    const correctCountMap = new Map<string, number>();
+    for (const v of roomVotes) {
+      if (v.isCorrect) {
+        correctCountMap.set(v.userId, (correctCountMap.get(v.userId) ?? 0) + 1);
+      }
+    }
+
     const gameMembers: RoomGameMember[] = members.map((m) => ({
       id: m.id,
       userId: m.userId,
       name: m.name,
       role: m.role,
       score: m.score,
+      correctCount: correctCountMap.get(m.userId) ?? 0,
     }));
 
     return (

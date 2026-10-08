@@ -1,8 +1,8 @@
 """Treina e exporta o classificador Olimpo (M2 + χ² 10 mil + SVD 500) para .joblib.
 
-Uso (dentro de machine-learning/supervised-learning):
-    python exportar_modelo.py                   # exporta treinado em treino+teste (7.200 notícias)
-    python exportar_modelo.py --somente-treino  # exporta o modelo treinado só no X_tr
+Uso (a partir da raiz do repositório):
+    python machine-learning/supervised-learning/support/exportar_modelo.py
+    python machine-learning/supervised-learning/support/exportar_modelo.py --somente-treino
 
 Pré-requisitos: data/dados_preparados.pkl e data/Fake.br-Corpus-master/ (gerados pelo notebook
 history/baselines/01_Data_Prep.ipynb)
@@ -39,10 +39,14 @@ import spacy
 from sklearn.metrics import brier_score_loss, f1_score, roc_auc_score
 from sklearn.model_selection import StratifiedKFold
 
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+
 import modelo_olimpo as mo
 
 F1_TESTE_NB12 = 0.9243
-SAIDA = Path("./modelos")
+DATA = ROOT / "data"
+SAIDA = ROOT / "modelos"
 
 
 def carregar_textos(pasta, label):
@@ -55,8 +59,8 @@ def carregar_textos(pasta, label):
 
 
 def carregar_dados():
-    X_tr, X_te, y_tr, y_te = joblib.load("./data/dados_preparados.pkl")
-    base = "data/Fake.br-Corpus-master/full_texts"
+    X_tr, X_te, y_tr, y_te = joblib.load(DATA / "dados_preparados.pkl")
+    base = DATA / "Fake.br-Corpus-master/full_texts"
     df = pd.concat([carregar_textos(f"{base}/fake", 1), carregar_textos(f"{base}/true", 0)], ignore_index=True)
     trunc = df["texto"].map(mo.normalizar).map(mo.truncar)
     for X, y in ((X_tr, y_tr), (X_te, y_te)):

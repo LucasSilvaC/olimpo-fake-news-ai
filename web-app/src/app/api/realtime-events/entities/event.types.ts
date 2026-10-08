@@ -33,13 +33,28 @@ export interface RoundStartedPayload {
   totalRounds: number;
 }
 
+export interface RoundCompletedLeaderboardEntry {
+  userId: string;
+  score: number;
+  roundDelta?: number;
+  isCorrect?: boolean;
+}
+
 export interface RoundCompletedPayload {
   round: number;
-  leaderboard?: Array<{ userId: string; score: number }>;
+  leaderboard?: RoundCompletedLeaderboardEntry[];
   officialAnswer: MLTargetType;
   modelAnalysis: AIAnalysisDTO | null;
 }
 
+export interface MatchFinishedLeaderboardEntry {
+  userId: string;
+  score: number;
+  correctCount?: number;
+  totalAnswered?: number;
+  accuracy?: number;
+}
+
 export interface MatchFinishedPayload {
-  leaderboard: Array<{ userId: string; score: number }>;
+  leaderboard: MatchFinishedLeaderboardEntry[];
 }

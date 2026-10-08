@@ -97,7 +97,7 @@ export const documentationPages: IDocumentationPage[] = [
               },
               {
                 label: "Especificações OpenSpec",
-                href: "https://github.com/LucasSilvaC/olimpo-fake-news-ai/tree/feat/linguistic-rules/openspec/specs",
+                href: "https://github.com/LucasSilvaC/olimpo-fake-news-ai/tree/dev/docs/openspec/specs",
                 description: "Contratos de domínio para salas, votação e pontuação.",
               },
             ],
@@ -182,12 +182,12 @@ export const documentationPages: IDocumentationPage[] = [
             items: [
               {
                 label: "Especificação de salas",
-                href: `${repository}/openspec/specs/rooms/spec.md`,
+                href: `https://github.com/LucasSilvaC/olimpo-fake-news-ai/blob/dev/docs/openspec/specs/rooms/spec.md`,
                 description: "PIN, acesso, playlist e início da partida.",
               },
               {
                 label: "Especificação de eventos em tempo real",
-                href: `${repository}/openspec/specs/realtime-events/spec.md`,
+                href: `https://github.com/LucasSilvaC/olimpo-fake-news-ai/blob/dev/docs/openspec/specs/realtime-events/spec.md`,
                 description: "Eventos usados para atualizar o estado da sala.",
               },
             ],
@@ -267,12 +267,12 @@ export const documentationPages: IDocumentationPage[] = [
             items: [
               {
                 label: "Especificação de votação",
-                href: `${repository}/openspec/specs/news-voting/spec.md`,
+                href: `https://github.com/LucasSilvaC/olimpo-fake-news-ai/blob/dev/docs/openspec/specs/news-voting/spec.md`,
                 description: "Opções permitidas, voto único e fechamento da rodada.",
               },
               {
                 label: "Especificação de gamificação",
-                href: `${repository}/openspec/specs/gamification/spec.md`,
+                href: `https://github.com/LucasSilvaC/olimpo-fake-news-ai/blob/dev/docs/openspec/specs/gamification/spec.md`,
                 description: "Pontuação por rodada, ranking e XP ao final da partida.",
               },
             ],
@@ -516,7 +516,7 @@ export const documentationPages: IDocumentationPage[] = [
               },
               {
                 label: "Especificação de eventos em tempo real",
-                href: `${repository}/openspec/specs/realtime-events/spec.md`,
+                href: `https://github.com/LucasSilvaC/olimpo-fake-news-ai/blob/dev/docs/openspec/specs/realtime-events/spec.md`,
                 description: "Eventos de domínio publicados pelas salas.",
               },
             ],

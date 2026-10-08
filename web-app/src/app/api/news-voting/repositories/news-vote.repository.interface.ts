@@ -8,6 +8,7 @@ export interface INewsVoteRepository {
     userId: string,
   ): Promise<NewsVote | null>;
   listByPlaylistItem(playlistItemId: string): Promise<NewsVote[]>;
+  listByRoomId(roomId: string): Promise<NewsVote[]>;
   countByPlaylistItem(playlistItemId: string): Promise<number>;
   updateEvaluation(id: string, isCorrect: boolean, pointsAwarded: number): Promise<NewsVote>;
 }

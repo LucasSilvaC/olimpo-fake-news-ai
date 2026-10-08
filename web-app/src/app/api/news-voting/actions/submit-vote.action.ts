@@ -7,7 +7,7 @@ import { submitVoteUseCase } from "../usecase/submit-vote.usecase";
 
 import type { AIAnalysisDTO } from "@/app/api/ai-feedback/entities/ai-analysis.entity";
 import { getSessionUseCase } from "@/app/api/auth/usecase/get-session.usecase";
-import { LeaderboardEntry } from "@/app/api/rooms/repositories";
+import type { RoundCompletedLeaderboardEntry } from "@/app/api/realtime-events/entities/event.types";
 import type { MLTargetType } from "@/server/shared/database/schemas/enums";
 import { VoteOptionType } from "@/server/shared/database/schemas/enums";
 
@@ -28,7 +28,7 @@ export type SubmitVoteActionResult =
       roundCompleted: boolean;
       officialAnswer?: MLTargetType;
       modelAnalysis?: AIAnalysisDTO | null;
-      leaderboard?: LeaderboardEntry[];
+      leaderboard?: RoundCompletedLeaderboardEntry[];
     }
   | {
       success: false;

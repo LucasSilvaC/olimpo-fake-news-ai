@@ -41,6 +41,10 @@ export class DrizzleNewsVoteRepository implements INewsVoteRepository {
     return this.db.select().from(newsVotes).where(eq(newsVotes.playlistItemId, playlistItemId));
   }
 
+  async listByRoomId(roomId: string): Promise<NewsVote[]> {
+    return this.db.select().from(newsVotes).where(eq(newsVotes.roomId, roomId));
+  }
+
   async countByPlaylistItem(playlistItemId: string): Promise<number> {
     const [result] = await this.db
       .select({ value: count() })

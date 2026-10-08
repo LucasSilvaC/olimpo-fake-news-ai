@@ -1,9 +1,7 @@
 "use client";
 
-import { ArrowRight, Check, Clock, HelpCircle, Users, X } from "lucide-react";
+import { ArrowRight, Check, Clock, HelpCircle, X } from "lucide-react";
 import * as React from "react";
-
-import { SocraticReflection } from "./socratic-reflection";
 
 export interface IVerdictWaitingStageProps {
   userName: string;
@@ -19,49 +17,44 @@ export interface IVerdictWaitingStageProps {
   isTimeout?: boolean;
 }
 
-const VOTE_LABELS: Record<
+const VOTE_CONFIGS: Record<
   "reliable" | "unreliable" | "uncertain",
   {
     name: string;
-    sublabel: string;
-    bgClass: string;
-    borderClass: string;
-    iconBg: string;
-    textColor: string;
     Icon: React.ComponentType<{ className?: string }>;
+    userIconBox: string;
+    officialIconBox: string;
+    officialCardClass: string;
+    officialSubtext: string;
   }
 > = {
   reliable: {
     name: "VERDADEIRO",
-    sublabel: "Fato Verificado",
-    bgClass: "bg-emerald-50/90",
-    borderClass: "border-emerald-200/80",
-    iconBg: "bg-emerald-600",
-    textColor: "text-emerald-700",
     Icon: Check,
+    userIconBox: "bg-emerald-100 text-emerald-600",
+    officialIconBox: "bg-emerald-500 text-white",
+    officialCardClass: "bg-emerald-50/70 border-emerald-200/80",
+    officialSubtext: "text-emerald-700",
   },
   unreliable: {
     name: "FALSO",
-    sublabel: "Fake News",
-    bgClass: "bg-rose-50/90",
-    borderClass: "border-rose-200/80",
-    iconBg: "bg-rose-600",
-    textColor: "text-rose-600",
     Icon: X,
+    userIconBox: "bg-rose-100 text-rose-600",
+    officialIconBox: "bg-rose-500 text-white",
+    officialCardClass: "bg-rose-50/70 border-rose-200/80",
+    officialSubtext: "text-rose-700",
   },
   uncertain: {
     name: "INCERTO",
-    sublabel: "Sem Dados",
-    bgClass: "bg-amber-50/90",
-    borderClass: "border-amber-200/80",
-    iconBg: "bg-amber-500",
-    textColor: "text-amber-700",
     Icon: HelpCircle,
+    userIconBox: "bg-amber-100 text-amber-700",
+    officialIconBox: "bg-amber-500 text-white",
+    officialCardClass: "bg-amber-50/70 border-amber-200/80",
+    officialSubtext: "text-amber-700",
   },
 };
 
 export function VerdictWaitingStage({
-  userName,
   userVote,
   pointsAwarded = 0,
   timeTakenSeconds = 3,
@@ -73,26 +66,26 @@ export function VerdictWaitingStage({
   onSkipCountdown,
   isTimeout = false,
 }: IVerdictWaitingStageProps): React.ReactElement {
-  const userVoteConfig = VOTE_LABELS[userVote] || VOTE_LABELS.unreliable;
-  const officialConfig = officialAnswer ? VOTE_LABELS[officialAnswer] : null;
+  const userVoteConfig = VOTE_CONFIGS[userVote] || VOTE_CONFIGS.unreliable;
+  const officialConfig = officialAnswer ? VOTE_CONFIGS[officialAnswer] : null;
 
   const progressPercent = totalPlayers > 0 ? Math.round((votedCount / totalPlayers) * 100) : 0;
 
   return (
     <div
-      className="flex w-full flex-col items-center justify-center py-4 text-slate-100 md:py-6"
+      className="relative z-10 flex w-full flex-1 flex-col items-center justify-center py-4 text-slate-100 md:py-6"
       data-purpose="waiting-state-container"
     >
-      {/* Floating Rocket Graphic & Hero Banner */}
-      <div className="mb-6 flex flex-col items-center text-center">
-        {/* Animated Olimpo Rocket Graphic */}
-        <div className="relative mb-3 flex size-36 animate-[bounce_4s_infinite_ease-in-out] items-center justify-center md:size-44">
+      {/* Rocket Graphic & Header */}
+      <div className="mb-5 flex flex-col items-center text-center">
+        {/* Animated Rocket Artwork */}
+        <div className="animate-float relative mb-2 flex size-28 items-center justify-center md:size-32">
           {/* Radial soft glow */}
           <div className="absolute inset-0 scale-90 rounded-full bg-blue-400/25 blur-2xl" />
 
-          {/* Animated Rocket Vector SVG */}
+          {/* Animated Rocket Vector Artwork */}
           <svg
-            className="relative z-10 size-full drop-shadow-[0_15px_25px_rgba(0,0,0,0.35)] select-none"
+            className="relative z-10 size-full drop-shadow-[0_15px_25px_rgba(0,0,0,0.3)] select-none"
             viewBox="0 0 160 160"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
@@ -122,40 +115,31 @@ export function VerdictWaitingStage({
                 <stop offset="70%" stopColor="#2563eb" />
                 <stop offset="100%" stopColor="#1e3a8a" />
               </radialGradient>
-              <filter id="flameGlow" x="-30%" y="-30%" width="160%" height="160%">
-                <feGaussianBlur stdDeviation="4" result="blur" />
-                <feMerge>
-                  <feMergeNode in="blur" />
-                  <feMergeNode in="SourceGraphic" />
-                </feMerge>
-              </filter>
             </defs>
 
-            {/* Flame Trail */}
+            {/* Propulsion Flame */}
             <g className="animate-pulse" transform="rotate(45 80 80)">
               <path
                 d="M80 102 C70 125 72 146 80 156 C88 146 90 125 80 102 Z"
                 fill="url(#fireInnerGrad)"
-                opacity="0.7"
-                filter="url(#flameGlow)"
+                opacity="0.8"
               />
               <path d="M80 102 C74 116 75 130 80 138 C85 130 86 116 80 102 Z" fill="#fef08a" />
             </g>
 
-            {/* Stars & Dust */}
-            <g opacity="0.85">
-              <circle cx="32" cy="42" r="2.5" fill="#93c5fd" className="animate-ping" />
+            {/* Stars */}
+            <g opacity="0.8">
+              <circle cx="32" cy="42" r="2.5" fill="#93c5fd" />
               <circle cx="134" cy="52" r="2" fill="#fde047" />
-              <circle cx="126" cy="118" r="2.5" fill="#67e8f9" className="animate-pulse" />
-              <circle cx="28" cy="124" r="1.5" fill="#ffffff" opacity="0.6" />
+              <circle cx="126" cy="118" r="2.5" fill="#67e8f9" />
               <path
                 d="M138 34 L140 39 L145 41 L140 43 L138 48 L136 43 L131 41 L136 39 Z"
                 fill="#ffffff"
-                opacity="0.8"
+                opacity="0.85"
               />
             </g>
 
-            {/* Rocket Angled at 45deg */}
+            {/* Main Rocket angled 45 degrees */}
             <g transform="rotate(45 80 80)">
               <path d="M73 98 L87 98 L85 104 L75 104 Z" fill="#475569" />
               <ellipse cx="80" cy="104" rx="5" ry="1.5" fill="#334155" />
@@ -164,14 +148,12 @@ export function VerdictWaitingStage({
                 fill="url(#rocketFinGrad)"
                 stroke="#9f1239"
                 strokeWidth="1.5"
-                strokeLinejoin="round"
               />
               <path
                 d="M94 84 C98 88 107 100 108 106 C102 105 93 101 90 96 Z"
                 fill="url(#rocketFinGrad)"
                 stroke="#9f1239"
                 strokeWidth="1.5"
-                strokeLinejoin="round"
               />
               <path
                 d="M80 24 C67 44 65 76 66 98 C72 101 88 101 94 98 C95 76 93 44 80 24 Z"
@@ -183,224 +165,172 @@ export function VerdictWaitingStage({
                 d="M80 24 C74 34 71 45 70 52 C76 53.5 84 53.5 90 52 C89 45 86 34 80 24 Z"
                 fill="url(#rocketNoseGrad)"
               />
-              <path d="M79 84 L81 84 L81.5 100 L78.5 100 Z" fill="url(#rocketFinGrad)" />
               <circle cx="80" cy="65" r="11" fill="#e2e8f0" stroke="#64748b" strokeWidth="2" />
               <circle cx="80" cy="65" r="8.5" fill="url(#windowGlass)" />
-              <ellipse
-                cx="78"
-                cy="62"
-                rx="4"
-                ry="2"
-                transform="rotate(-35 78 62)"
-                fill="#ffffff"
-                opacity="0.75"
-              />
             </g>
           </svg>
         </div>
 
-        {/* Current Player Pill */}
-        <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/15 px-4 py-1.5 text-sm font-bold text-white shadow-sm backdrop-blur-md md:text-base">
-          <span className="relative flex size-2.5">
-            <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-            <span className="relative inline-flex size-2.5 rounded-full bg-emerald-400" />
-          </span>
-          <span>{userName} (Você)</span>
-        </div>
-
-        {/* Headlines */}
-        <h1 className="text-3xl font-black tracking-tight text-white drop-shadow-md md:text-5xl">
+        {/* Main Headline */}
+        <h1 className="text-3xl font-black tracking-tight text-white drop-shadow-md md:text-4xl">
           {officialAnswer ? "Veredito Revelado!" : "Veredito registrado!"}
         </h1>
-        <p className="mt-2 max-w-lg text-base font-medium text-blue-100/90 md:text-lg">
+
+        {/* Subheadline */}
+        <p className="mt-1 text-sm font-medium text-blue-100/90 md:text-base">
           {officialAnswer
-            ? "Confira o gabarito cadastrado da rodada e reflita sobre sua resposta."
-            : "Aguardando os outros checadores concluírem a análise dos fatos..."}
+            ? "Confira o gabarito oficial da rodada e os pontos recebidos."
+            : "Aguardando os outros jogadores..."}
         </p>
 
         {/* Prominent Countdown Banner when verdict is revealed */}
         {verdictCountdownSeconds !== null && verdictCountdownSeconds !== undefined && (
-          <div className="mt-4 flex flex-wrap items-center justify-center gap-2.5">
-            <div className="inline-flex items-center gap-2 rounded-full border border-amber-300/40 bg-amber-400/20 px-4 py-1.5 text-xs font-bold text-amber-200 backdrop-blur-md sm:text-sm">
-              <Clock className="size-4 animate-spin text-amber-300" aria-hidden="true" />
+          <div className="mt-3.5 flex flex-wrap items-center justify-center gap-2.5">
+            <div className="inline-flex items-center gap-2 rounded-full border border-amber-300/40 bg-amber-400/20 px-3.5 py-1 text-xs font-bold text-amber-200 backdrop-blur-md">
+              <Clock className="size-3.5 animate-spin text-amber-300" aria-hidden="true" />
               <span>Avançando para o placar da rodada em {verdictCountdownSeconds}s</span>
             </div>
             {onSkipCountdown && (
               <button
                 type="button"
                 onClick={onSkipCountdown}
-                className="inline-flex cursor-pointer items-center gap-1.5 rounded-full bg-amber-400 px-3.5 py-1.5 text-xs font-extrabold text-amber-950 shadow-md transition-all hover:bg-amber-300 active:scale-95"
+                className="inline-flex cursor-pointer items-center gap-1.5 rounded-full bg-amber-400 px-3 py-1 text-xs font-extrabold text-amber-950 shadow-md transition-all hover:bg-amber-300 active:scale-95"
               >
                 <span>Ver placar agora</span>
-                <ArrowRight className="size-3.5 stroke-[2.5]" aria-hidden="true" />
+                <ArrowRight className="size-3 stroke-[2.5]" aria-hidden="true" />
               </button>
             )}
           </div>
         )}
       </div>
 
-      {/* Main Verdict & Analysis Card */}
+      {/* Clean Unified Card */}
       <section
-        className="w-full max-w-2xl rounded-3xl border border-white/40 bg-white p-6 text-slate-800 shadow-2xl shadow-blue-950/40 md:p-8"
+        className="flex w-full max-w-3xl flex-col gap-5 rounded-3xl border border-white/60 bg-white p-6 text-slate-800 shadow-2xl shadow-blue-950/25 md:p-7"
         data-purpose="verdict-summary-card"
       >
-        {/* User Verdict vs Official Answer Box */}
-        <div className="mb-6 flex flex-col gap-3 rounded-2xl border border-slate-200/90 bg-slate-50 p-4">
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            {/* User Recorded Verdict */}
-            <div
-              className={`flex items-center justify-between rounded-xl border p-3 ${userVoteConfig.bgClass} ${userVoteConfig.borderClass}`}
-            >
-              <div className="flex items-center gap-2.5">
-                <div
-                  className={`flex size-9 shrink-0 items-center justify-center rounded-lg text-base font-black text-white shadow-sm ${userVoteConfig.iconBg}`}
-                >
-                  <userVoteConfig.Icon className="size-5 stroke-[2.5]" />
-                </div>
-                <div>
-                  <div
-                    className={`text-[10px] font-extrabold tracking-wider uppercase ${userVoteConfig.textColor}`}
-                  >
-                    Seu Veredito
-                  </div>
-                  <div className="text-sm leading-tight font-black text-slate-900">
-                    {userVoteConfig.name} ({userVoteConfig.sublabel})
-                  </div>
-                </div>
+        {/* Verdict & Result Feedback Grid */}
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          {/* Seu Veredito */}
+          <div className="flex items-center justify-between rounded-2xl border border-slate-200/80 bg-slate-50 p-3.5 shadow-xs">
+            <div className="flex items-center gap-3">
+              <div
+                className={`flex size-9 shrink-0 items-center justify-center rounded-xl text-sm font-black ${userVoteConfig.userIconBox}`}
+              >
+                <userVoteConfig.Icon className="size-4 stroke-[3]" />
               </div>
-              <div className="pl-2 text-right">
-                {isTimeout ? (
-                  <>
-                    <span className="block text-[10px] font-bold text-rose-500">
-                      Tempo Esgotado
-                    </span>
-                    {officialAnswer && (
-                      <span className="inline-flex items-center rounded bg-rose-100 px-1.5 py-0.5 text-[10px] font-bold text-rose-700">
-                        0 pts
-                      </span>
-                    )}
-                  </>
-                ) : (
-                  <>
-                    <span className="block text-[10px] font-semibold text-slate-500">
-                      {timeTakenSeconds}s
-                    </span>
-                    {officialAnswer && (
-                      <span className="inline-flex items-center rounded bg-amber-100/80 px-1.5 py-0.5 text-[10px] font-bold text-amber-600">
-                        ⚡ +{pointsAwarded} pts
-                      </span>
-                    )}
-                  </>
-                )}
+              <div>
+                <span className="block text-[10px] font-extrabold tracking-wider text-slate-400 uppercase">
+                  Seu Veredito
+                </span>
+                <span className="text-sm font-extrabold text-slate-800">{userVoteConfig.name}</span>
               </div>
             </div>
-
-            {/* Official Answer */}
-            {officialConfig ? (
-              <div
-                className={`flex items-center justify-between rounded-xl border p-3 ${officialConfig.bgClass} ${officialConfig.borderClass}`}
-              >
-                <div className="flex items-center gap-2.5">
-                  <div
-                    className={`flex size-9 shrink-0 items-center justify-center rounded-lg text-base font-black text-white shadow-sm ${officialConfig.iconBg}`}
-                  >
-                    <officialConfig.Icon className="size-5 stroke-[2.5]" />
-                  </div>
-                  <div>
-                    <div
-                      className={`text-[10px] font-extrabold tracking-wider uppercase ${officialConfig.textColor}`}
-                    >
-                      Gabarito Oficial
-                    </div>
-                    <div className="flex items-center gap-1.5 text-sm leading-tight font-black text-slate-900">
-                      {officialConfig.name}
-                      {isTimeout ? (
-                        <span className="rounded-full bg-slate-100 px-1.5 py-0.5 text-[10px] font-bold text-slate-600">
-                          Tempo Esgotado
-                        </span>
-                      ) : (
-                        isCorrect !== null &&
-                        isCorrect !== undefined && (
-                          <span
-                            className={`rounded-full px-1.5 py-0.5 text-[10px] font-bold ${
-                              isCorrect
-                                ? "bg-emerald-100 text-emerald-700"
-                                : "bg-rose-100 text-rose-700"
-                            }`}
-                          >
-                            {isCorrect ? "Você acertou!" : "Incorreto"}
-                          </span>
-                        )
-                      )}
-                    </div>
-                  </div>
-                </div>
-                <div className="pl-2 text-right">
-                  <span className="block rounded-md border border-slate-200 bg-white px-2 py-1 text-[10px] font-bold tracking-wider text-slate-700 uppercase">
-                    Confirmado
-                  </span>
-                </div>
-              </div>
+            {isTimeout ? (
+              <span className="rounded bg-rose-100 px-1.5 py-0.5 text-[10px] font-bold text-rose-700">
+                Tempo Esgotado
+              </span>
             ) : (
-              <div className="flex items-center justify-between rounded-xl border border-blue-200 bg-blue-50/70 p-3">
-                <div className="flex items-center gap-2.5">
-                  <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-blue-600 text-white shadow-sm">
-                    <Check className="size-5 stroke-[2.5]" />
-                  </div>
-                  <div>
-                    <div className="text-[10px] font-extrabold tracking-wider text-blue-700 uppercase">
-                      Gabarito Oficial
-                    </div>
-                    <div className="text-sm font-bold text-slate-800">Aguardando Revelação</div>
-                  </div>
-                </div>
-                <div className="pl-2 text-right">
-                  <span className="block rounded-md bg-blue-100 px-2 py-1 text-[10px] font-bold tracking-wider text-blue-800 uppercase">
-                    Ao Concluir
-                  </span>
-                </div>
-              </div>
+              <span className="text-xs font-semibold text-slate-400">{timeTakenSeconds}s</span>
             )}
           </div>
 
-          <p className="mt-4 text-xs leading-relaxed text-slate-600">
-            O gabarito pertence à rodada. As observações linguísticas ajudam a formular perguntas; a
-            verificação da notícia exige evidências sobre suas afirmações.
-          </p>
+          {/* Gabarito Oficial */}
+          {officialConfig ? (
+            <div
+              role="region"
+              aria-label="Gabarito oficial da rodada"
+              className={`flex items-center justify-between rounded-2xl border p-3.5 shadow-xs ${officialConfig.officialCardClass}`}
+            >
+              <div className="flex items-center gap-3">
+                <div
+                  className={`flex size-9 shrink-0 items-center justify-center rounded-xl text-sm font-black shadow-xs ${officialConfig.officialIconBox}`}
+                >
+                  <officialConfig.Icon className="size-4 stroke-[3]" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-1.5">
+                    <span
+                      className={`text-[10px] font-extrabold tracking-wider uppercase ${officialConfig.officialSubtext}`}
+                    >
+                      Gabarito Oficial
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1.5 text-sm font-extrabold text-slate-900">
+                    {officialConfig.name}
+                    {isTimeout ? (
+                      <span className="rounded-full bg-slate-100 px-1.5 py-0.5 text-[10px] font-bold text-slate-600">
+                        Tempo Esgotado
+                      </span>
+                    ) : (
+                      isCorrect !== null &&
+                      isCorrect !== undefined && (
+                        <span
+                          className={`rounded-full px-1.5 py-0.5 text-[10px] font-bold ${
+                            isCorrect
+                              ? "bg-emerald-100/90 text-emerald-700"
+                              : "bg-rose-100/90 text-rose-700"
+                          }`}
+                        >
+                          {isCorrect ? "Você acertou!" : "Incorreto"}
+                        </span>
+                      )
+                    )}
+                  </div>
+                </div>
+              </div>
+              <span className="inline-flex shrink-0 items-center rounded-lg border border-amber-200 bg-amber-100/90 px-2 py-0.5 text-[11px] font-extrabold text-amber-600 shadow-xs">
+                {isTimeout ? "0 pts" : `⚡ +${pointsAwarded} pts`}
+              </span>
+            </div>
+          ) : (
+            <div className="flex items-center justify-between rounded-2xl border border-slate-200/80 bg-slate-50 p-3.5 shadow-xs">
+              <div className="flex items-center gap-3">
+                <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-blue-100 text-sm font-bold text-blue-600">
+                  <Clock className="size-4 stroke-[2.5]" />
+                </div>
+                <div>
+                  <span className="block text-[10px] font-extrabold tracking-wider text-slate-400 uppercase">
+                    Gabarito Oficial
+                  </span>
+                  <span className="text-sm font-bold text-slate-600">Aguardando Revelação</span>
+                </div>
+              </div>
+              <span className="rounded-md bg-blue-100/80 px-2 py-1 text-[10px] font-bold tracking-wider text-blue-800 uppercase">
+                Ao Concluir
+              </span>
+            </div>
+          )}
         </div>
 
-        {/* Live Room Progress Section (displayed while waiting for other players) */}
+        {/* Clean Room Progress Tracker (while waiting for other players) */}
         {!officialAnswer && (
-          <div className="mb-6" data-purpose="room-progress-tracker">
-            <div className="mb-2 flex items-center justify-between text-sm font-bold text-slate-700">
-              <span className="flex items-center gap-2">
-                <Users className="size-4 text-blue-600" aria-hidden="true" />
+          <div className="pt-0.5" data-purpose="room-progress-tracker">
+            <div className="mb-2 flex items-center justify-between text-xs font-bold text-slate-600">
+              <span className="flex items-center gap-1.5">
+                <span className="inline-block size-2 animate-pulse rounded-full bg-blue-600" />
                 Progresso da sala
               </span>
               <span className="font-extrabold text-blue-600">
-                {votedCount} de {totalPlayers} checadores ({progressPercent}%)
+                {votedCount} de {totalPlayers} checadores concluíram ({progressPercent}%)
               </span>
             </div>
-            {/* Progress Bar */}
-            <div className="h-3.5 w-full overflow-hidden rounded-full border border-slate-200 bg-slate-100 p-0.5">
+            <div className="h-2.5 w-full overflow-hidden rounded-full border border-slate-200/80 bg-slate-100 p-0.5">
               <div
-                className="h-full rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 shadow-sm transition-all duration-700 ease-out"
+                className="h-full rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 transition-all duration-700 ease-out"
                 style={{ width: `${progressPercent}%` }}
               />
             </div>
           </div>
         )}
 
-        {/* Socratic Reflection Section */}
-        <SocraticReflection />
-
         {/* Bottom Advance Button to allow players to proceed at their own pace */}
         {officialAnswer && onSkipCountdown && (
-          <div className="mt-6 flex justify-center border-t border-slate-100 pt-5">
+          <div className="mt-1 flex justify-center border-t border-slate-100 pt-4">
             <button
               type="button"
               onClick={onSkipCountdown}
-              className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-blue-600 px-6 py-3 text-sm font-extrabold text-white shadow-lg shadow-blue-600/30 transition-all hover:bg-blue-700 active:scale-95"
+              className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-full bg-amber-400 px-8 py-3.5 text-base font-extrabold text-amber-950 shadow-xl transition-all duration-200 hover:bg-amber-300 hover:shadow-2xl active:scale-95 disabled:opacity-60 sm:w-auto"
             >
               <span>Ir para o Placar da Rodada</span>
               {verdictCountdownSeconds !== null && verdictCountdownSeconds !== undefined && (

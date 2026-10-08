@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import { INewsVoteRepository } from "../repositories/news-vote.repository.interface";
 import { FinishMatchUseCase } from "../usecase/finish-match.usecase";
 
 import { IUserRepository } from "@/app/api/auth/repositories/user.repository.interface";
@@ -11,6 +12,7 @@ describe("FinishMatchUseCase", () => {
   let roomRepository: IRoomRepository;
   let redisRoomRepository: IRedisRoomRepository;
   let userRepository: IUserRepository;
+  let newsVoteRepository: INewsVoteRepository;
   let mockEventPublisher: IEventPublisher;
   let useCase: FinishMatchUseCase;
 
@@ -101,11 +103,27 @@ describe("FinishMatchUseCase", () => {
       publish: vi.fn(async () => 1),
     };
 
+    newsVoteRepository = {
+      create: vi.fn(),
+      findById: vi.fn(),
+      findByParticipantAndPlaylistItem: vi.fn(),
+      listByPlaylistItem: vi.fn(),
+      listByRoomId: vi.fn().mockResolvedValue([
+        { userId: "user-1", isCorrect: true },
+        { userId: "user-1", isCorrect: true },
+        { userId: "user-2", isCorrect: true },
+        { userId: "user-3", isCorrect: false },
+      ]),
+      countByPlaylistItem: vi.fn(),
+      updateEvaluation: vi.fn(),
+    };
+
     useCase = new FinishMatchUseCase(
       roomRepository,
       redisRoomRepository,
       userRepository,
       mockEventPublisher,
+      newsVoteRepository,
     );
   });
 
@@ -133,9 +151,9 @@ describe("FinishMatchUseCase", () => {
         pin: "123 456",
         payload: {
           leaderboard: expect.arrayContaining([
-            { userId: "user-1", score: 200 },
-            { userId: "user-2", score: 125 },
-            { userId: "user-3", score: 0 },
+            expect.objectContaining({ userId: "user-1", score: 200 }),
+            expect.objectContaining({ userId: "user-2", score: 125 }),
+            expect.objectContaining({ userId: "user-3", score: 0 }),
           ]),
         },
       }),

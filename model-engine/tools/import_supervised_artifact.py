@@ -13,6 +13,15 @@ sys.path.insert(0, str(ROOT))
 from models.supervised.engine import POLICY, inference_version, sha256
 
 
+def frozen_source(path):
+    """Keep the standalone artifact's legacy import while research uses support/."""
+    source = Path(path).read_bytes().replace(b'\r\n', b'\n')
+    if Path(path).name == 'modelo_olimpo.py':
+        source = source.replace(b'from support import metadados_spacy as ms',
+                                b'import metadados_spacy as ms')
+    return source
+
+
 def import_artifact(source, verify_load=True):
     source = Path(source)
     assets = ROOT / 'models/supervised/assets'
@@ -28,8 +37,8 @@ def import_artifact(source, verify_load=True):
     # on Linux/Windows preserves the hashes used before artifact loading.
     for original, destination in [(metadata_path, assets / metadata_path.name),
                                   (source / 'modelo_olimpo.py', ROOT / 'models/supervised/pipeline.py'),
-                                  (source / 'metadados_spacy.py', ROOT / 'models/supervised/linguistic_features.py')]:
-        destination.write_bytes(original.read_bytes().replace(b'\r\n', b'\n'))
+                                  (source / 'support/metadados_spacy.py', ROOT / 'models/supervised/linguistic_features.py')]:
+        destination.write_bytes(frozen_source(original))
     sources = ['models/supervised/pipeline.py', 'models/supervised/linguistic_features.py',
                'models/supervised/engine.py', 'modelo_olimpo.py', 'metadados_spacy.py']
     manifest = {'schemaVersion': 1, 'artifact': artifact.name, 'artifactSha256': metadata['sha256'],
