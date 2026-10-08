@@ -1,8 +1,9 @@
-"""Apply frozen principal patterns to a new text; no online mining or labels."""
+"""Apply frozen patterns and expose descriptive reference frequencies, never a verdict."""
 from __future__ import annotations
 
 import hashlib
 import json
+import math
 from pathlib import Path
 import threading
 import unicodedata
@@ -26,7 +27,9 @@ class NewsInsightsEngine:
 
     def __init__(self, catalog_path=CATALOG_PATH, nlp=None):
         self.catalog = json.loads(Path(catalog_path).read_text(encoding='utf8'))
-        if self.catalog['characterLimit'] != CHARACTER_LIMIT or self.catalog['comparisonEnabled']:
+        if (self.catalog['characterLimit'] != CHARACTER_LIMIT
+                or self.catalog['comparisonEnabled'] is not True
+                or self.catalog['status'] != 'experimental_descriptive_comparison'):
             raise ValueError('Invalid product catalog policy')
         runtime_path = Path(features.__file__)
         if hashlib.sha256(runtime_path.read_bytes()).hexdigest() != self.catalog['runtimeFeaturesSha256']:
@@ -41,13 +44,30 @@ class NewsInsightsEngine:
         self.lock = threading.Lock()
         definitions = self.criteria.set_index('item')
         for pattern in self.catalog['patterns']:
-            if pattern['displayStatus'] != 'observation_only' or pattern['comparisonEnabled']:
-                raise ValueError('Only observation-only patterns may be displayed')
+            if pattern['displayStatus'] != 'descriptive_comparison' or pattern['comparisonEnabled'] is not True:
+                raise ValueError('Only descriptive comparisons may be displayed')
+            self.validate_comparison(pattern['comparison'])
             for item in pattern['items']:
                 row = definitions.loc[item['item']]
                 operator = '<=' if row.direction == 'baixo' else '>='
                 if row.omitted or row.feature != item['feature'] or row.threshold != item['threshold'] or operator != item['operator']:
                     raise ValueError('Pattern criteria do not match frozen discretization')
+
+    def validate_comparison(self, comparison):
+        expected = {'kind': 'descriptive_corpus_frequency', 'referenceDataset': 'Fake.br-Corpus',
+                    'partition': 'validation', 'authorScope': 'all', 'scope': 'matched_pattern',
+                    'sourceRun': self.catalog['sourceRun'], 'variant': self.catalog['variant']}
+        if set(comparison) != set(expected) | {'fake', 'true'} or any(comparison[k] != v for k, v in expected.items()):
+            raise ValueError('Invalid descriptive comparison provenance or scope')
+        for label in ['fake', 'true']:
+            group = comparison[label]
+            if set(group) != {'count', 'total', 'frequency'}:
+                raise ValueError('Only within-class frequencies may be displayed')
+            count, total, frequency = group['count'], group['total'], group['frequency']
+            if (type(count) is not int or type(total) is not int or total != 720 or not 0 <= count <= total
+                    or type(frequency) not in {float, int} or not math.isfinite(frequency)
+                    or abs(frequency - count / total) > 1e-12):
+                raise ValueError('Invalid descriptive comparison counts/frequency')
 
     def response(self, status, text='', quality=None, insights=None):
         return {'analysisStatus': status, 'catalogVersion': self.catalog['catalogVersion'],
@@ -60,6 +80,24 @@ class NewsInsightsEngine:
         records = pd.DataFrame({'text': [text], 'author': ['']}, index=['input'])
         with self.lock:
             return features.extract_collected_features(records, self.nlp, self.tags, CHARACTER_LIMIT)
+
+    def summarize_measurements(self, pattern, measurements):
+        """Describe every matched criterion briefly, without technical annotation names."""
+        absent, measured = [], []
+        for item, measurement in zip(pattern['items'], measurements, strict=True):
+            count = measurement['count']
+            if count == 0 and item['threshold'] == 0:
+                absent.append(item['summaryPlural'])
+                continue
+            label = item['summarySingular'] if count == 1 else item['summaryPlural']
+            band = 'mais baixa' if item['operator'] == '<=' else 'mais alta'
+            measured.append(f'{count} {label} (proporção na faixa {band} da referência)')
+        parts = []
+        if absent:
+            parts.append('não encontrou ' + ' nem '.join(absent))
+        if measured:
+            parts.append('encontrou ' + ' e '.join(measured))
+        return '; '.join(parts)
 
     def select_insights(self, frame, text):
         # Reindexing inserts NaN for missing columns. Missing never becomes zero.
@@ -93,11 +131,20 @@ class NewsInsightsEngine:
                         measurement['count'] = sum(w.isupper() and len(w) > 1 for w in words)
                     elif feature == 'diversidade':
                         measurement['count'] = len({w.casefold() for w in words})
+                measurement['displayLabel'] = item['displayLabel']
+                count = measurement.get('count')
+                detail = f"{count} ocorrências identificadas" if count is not None else 'medida identificada'
+                if item['threshold'] != 0:
+                    band = 'inferior' if item['operator'] == '<=' else 'superior'
+                    detail += f'; proporção na faixa {band} da referência estudada'
+                measurement['displayText'] = f"{item['displayLabel']}: {detail}"
                 measurements.append(measurement)
             selected.append({'patternId': pattern['patternId'], 'observationTitle': pattern['observationTitle'],
-                             'observation': pattern['observationTemplate'],
+                             'observation': pattern['observationTemplate'].format(
+                                 summary=self.summarize_measurements(pattern, measurements)),
                              'reflectionQuestions': pattern['reflectionQuestions'],
-                             'redundancyFamily': pattern['redundancyFamily'], 'measurements': measurements})
+                             'redundancyFamily': pattern['redundancyFamily'], 'measurements': measurements,
+                             'comparison': json.loads(json.dumps(pattern['comparison']))})
             families.add(pattern['redundancyFamily'])
             selected_items.append(names)
             if len(selected) == 3:

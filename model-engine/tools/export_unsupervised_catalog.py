@@ -14,50 +14,90 @@ RUN = RESEARCH_ROOT / 'outputs/model-comparison/fp-growth-metadados-ampliados-20
 SOURCE = RUN / 'sintaxe_ampliada/pattern_catalog.json'
 DESTINATION = ENGINE_ROOT / 'models/unsupervised/assets/product_catalog.json'
 
-# These templates underwent technical review by the implementing agents.
-# They are experimental observations, not human editorial approval.
+# Editorial wording is specific to every frozen conjunction. Selection order/families
+# are retained from v2, independently of all class frequencies.
 THEMES = {
-    '8715ac5b8fc2': ('referenciacao', 'Como o trecho identifica pessoas e fatos?',
-                    ['A quem cada pessoa ou instituição mencionada se refere?', 'Que informação fora deste trecho ajudaria a entender essas referências?']),
-    'afaef19656e5': ('modificacao_adverbial', 'Como as ações são descritas?',
-                    ['Que afirmação central aparece neste trecho?', 'Que evidência permitiria verificar essa afirmação, além da maneira como foi escrita?']),
-    '8c3cebc0601d': ('construcoes_verbais', 'Quais ações aparecem no trecho?',
-                    ['Quem faz o quê neste trecho?', 'Qual fonte permitiria conferir se essas ações ocorreram?']),
-    'd1280945c7ef': ('agentes', 'Quem participa das ações?',
-                    ['Quais pessoas ou instituições aparecem como responsáveis pelas ações?', 'O texto indica como verificar a participação delas?']),
-    '8b970151f163': ('objetos', 'A que se dirigem as ações?',
-                    ['Sobre quem ou sobre o que recaem as ações descritas?', 'Que registro ou documento ajudaria a verificar essas ações?']),
-    '3542b427d129': ('referenciacao', 'Como o trecho identifica pessoas e fatos?',
-                    ['A quem cada nome mencionado se refere?', 'Que contexto ajudaria a distinguir pessoas ou fatos com nomes semelhantes?']),
-    'd0c4306ce66c': ('contexto', 'Que contexto acompanha os fatos?',
-                    ['Que informações de lugar, tempo ou circunstância estão explícitas?', 'Quais delas precisam ser procuradas na notícia completa ou em outra fonte?']),
-    '58bd81f28dc3': ('adjetivacao', 'Como pessoas e acontecimentos são caracterizados?',
-                    ['Qual afirmação pode ser verificada neste trecho?', 'Que evidência ajudaria a avaliá-la independentemente dos adjetivos usados?']),
-    '340698e8be61': ('modificacao_adverbial', 'Como as ações são descritas?',
-                    ['Que afirmação central aparece neste trecho?', 'Que evidência permitiria verificar a ação descrita?']),
-    'dcc82376b8a6': ('agentes', 'Quem sustenta a afirmação?',
-                    ['É possível identificar quem afirma ou realiza o que é relatado?', 'Que fonte permitiria confirmar essa atribuição?']),
-    '044b4a18072c': ('construcoes_verbais', 'Que acontecimento é relatado?',
-                    ['Que ação ou acontecimento você consegue identificar?', 'Que informações precisaria encontrar para verificar esse acontecimento?']),
-    'a33f9be1d445': ('referenciacao', 'A quem os pronomes se referem?',
-                    ['Você consegue ligar cada pronome à pessoa ou instituição correspondente?', 'A notícia completa esclarece alguma referência que ficou aberta neste trecho?']),
-    '23b2cdc9d31e': ('pontuacao', 'Como a pontuação organiza o trecho?',
-                    ['Que partes a pontuação separa, cita ou destaca?', 'Qual afirmação dessas partes você gostaria de verificar em outra fonte?']),
-    '1d57b1df1486': ('referenciacao', 'Como o trecho identifica pessoas e fatos?',
-                    ['Quem e quais fatos são mencionados explicitamente?', 'Que contexto externo ajudaria a compreender a relação entre eles?']),
-    '6f18c83ea455': ('agentes', 'Quem participa do acontecimento?',
-                    ['Você consegue identificar os participantes do fato relatado?', 'Que detalhe deveria conferir na notícia completa antes de interpretar essa participação?']),
-    '19c77db982d8': ('construcoes_verbais', 'Como os acontecimentos se conectam?',
-                    ['Quais acontecimentos você consegue separar neste trecho?', 'Que evidência permitiria conferir a ordem ou a relação entre eles?']),
-    '9193a887d511': ('referenciacao', 'Como o trecho identifica pessoas e fatos?',
-                    ['Quais pessoas e afirmações aparecem explicitamente?', 'Que informação ajudaria a ligar cada afirmação à sua fonte?']),
-    '11e010b31664': ('modificacao_adverbial', 'Que circunstâncias acompanham a afirmação?',
-                    ['Onde, quando e em que condições o fato teria ocorrido?', 'Que circunstância precisa ser conferida na notícia completa ou em outra fonte?']),
-    '2465ffe4f09d': ('modificacao_adverbial', 'Que circunstâncias acompanham a afirmação?',
-                    ['Que circunstâncias estão explícitas neste trecho?', 'Qual informação adicional ajudaria a interpretar a afirmação principal?']),
-    '9865be178551': ('contexto', 'Como o trecho situa suas afirmações?',
-                    ['Que pessoas, lugares ou circunstâncias estão ligados à afirmação?', 'Que detalhe de contexto você procuraria antes de verificar o fato?']),
+    '8715ac5b8fc2': ('referenciacao', 'Pronomes e descrições ligadas a nomes'),
+    'afaef19656e5': ('modificacao_adverbial', 'Palavras que detalham as ações'),
+    '8c3cebc0601d': ('construcoes_verbais', 'Verbos de apoio e quem recebe a ação'),
+    'd1280945c7ef': ('agentes', 'Quem realiza ou recebe a ação'),
+    '8b970151f163': ('objetos', 'A quem ou a que as ações se dirigem'),
+    '3542b427d129': ('referenciacao', 'Pronomes, descrições e quem recebe a ação'),
+    'd0c4306ce66c': ('contexto', 'Palavras de ligação e quem recebe a ação'),
+    '58bd81f28dc3': ('adjetivacao', 'Palavras que caracterizam nomes'),
+    '340698e8be61': ('modificacao_adverbial', 'Detalhes das ações e quem as recebe'),
+    'dcc82376b8a6': ('agentes', 'Quem age e as afirmações ligadas a verbos'),
+    '044b4a18072c': ('construcoes_verbais', 'Verbos e afirmações que se conectam'),
+    'a33f9be1d445': ('referenciacao', 'Pronomes e quem recebe a ação'),
+    '23b2cdc9d31e': ('pontuacao', 'Pontuação e quem recebe a ação'),
+    '1d57b1df1486': ('referenciacao', 'Pronomes e relações entre partes da frase'),
+    '6f18c83ea455': ('agentes', 'Quem age e as descrições ligadas a nomes'),
+    '19c77db982d8': ('construcoes_verbais', 'Verbos e as circunstâncias das ações'),
+    '9193a887d511': ('referenciacao', 'Pronomes e trechos ligados a nomes e verbos'),
+    '11e010b31664': ('modificacao_adverbial', 'Detalhes e circunstâncias das ações'),
+    '2465ffe4f09d': ('modificacao_adverbial', 'Detalhes das ações e descrições ligadas a nomes'),
+    '9865be178551': ('contexto', 'Palavras de ligação e afirmações ligadas a verbos'),
 }
+
+# These labels describe annotation types rather than inferring journalistic quality.
+DISPLAY_LABELS = {
+    'DEP_acl:relcl_rate': "descrições ligadas a nomes, como 'que chegou' em 'a pessoa que chegou'",
+    'POS_PRON_rate': "pronomes, como 'ele', 'ela' e 'isso'",
+    'DEP_advmod_rate': "palavras que detalham uma ação ou qualidade, como 'rapidamente' e 'muito'",
+    'POS_ADV_rate': "advérbios, como 'hoje', 'aqui' e 'rapidamente'",
+    'DEP_nsubj:pass_rate': "referências a quem recebe a ação, como 'a proposta' em 'a proposta foi aprovada'",
+    'POS_AUX_rate': "verbos de apoio, como 'foi' em 'foi aprovado'",
+    'DEP_nsubj_rate': "referências a quem age, como 'a equipe' em 'a equipe publicou'",
+    'DEP_obj_rate': "referências ao alvo da ação, como 'o relatório' em 'publicou o relatório'",
+    'POS_ADP_rate': "palavras de ligação, como 'de', 'em' e 'para'",
+    'DEP_amod_rate': "palavras que caracterizam nomes, como 'importante' em 'decisão importante'",
+    'POS_ADJ_rate': "adjetivos, como 'importante' e 'novo'",
+    'DEP_ccomp_rate': "afirmações ligadas a um verbo, como 'o prazo acabou' em 'disse que o prazo acabou'",
+    'POS_VERB_rate': "verbos, como 'publicou' e 'informou'",
+    'DEP_advcl_rate': "trechos que acrescentam circunstâncias à ação, como 'quando chegou'",
+    'punctuationDensity_spacy': 'sinais de pontuação',
+}
+
+
+# Short descriptions used in the main card. Longer annotation explanations above
+# remain in measurement details. Both forms are needed to render real counts.
+SUMMARY_LABELS = {
+    'DEP_acl:relcl_rate': ('descrição como “a pessoa que chegou”', 'descrições como “a pessoa que chegou”'),
+    'POS_PRON_rate': ('pronome como “ele” ou “ela”', 'pronomes como “ele” ou “ela”'),
+    'DEP_advmod_rate': ('detalhe como “rapidamente” em “chegou rapidamente”', 'detalhes como “rapidamente” em “chegou rapidamente”'),
+    'POS_ADV_rate': ('palavra como “hoje”, “aqui” ou “rapidamente”', 'palavras como “hoje”, “aqui” ou “rapidamente”'),
+    'DEP_nsubj:pass_rate': ('referência como “a proposta” em “a proposta foi aprovada”', 'referências como “a proposta” em “a proposta foi aprovada”'),
+    'POS_AUX_rate': ('verbo de apoio como “foi” em “foi aprovado”', 'verbos de apoio como “foi” em “foi aprovado”'),
+    'DEP_nsubj_rate': ('referência a quem age, como “a equipe” em “a equipe publicou”', 'referências a quem age, como “a equipe” em “a equipe publicou”'),
+    'DEP_obj_rate': ('alvo da ação, como “o relatório” em “publicou o relatório”', 'alvos da ação, como “o relatório” em “publicou o relatório”'),
+    'POS_ADP_rate': ('palavra de ligação como “de”, “em” ou “para”', 'palavras de ligação como “de”, “em” ou “para”'),
+    'DEP_amod_rate': ('descrição de um nome, como “decisão importante”', 'descrições de nomes, como “decisão importante”'),
+    'POS_ADJ_rate': ('palavra que caracteriza algo, como “novo” ou “importante”', 'palavras que caracterizam algo, como “novo” ou “importante”'),
+    'DEP_ccomp_rate': ('afirmação como “o prazo acabou” em “disse que o prazo acabou”', 'afirmações como “o prazo acabou” em “disse que o prazo acabou”'),
+    'POS_VERB_rate': ('verbo como “publicou” ou “informou”', 'verbos como “publicou” ou “informou”'),
+    'DEP_advcl_rate': ('trecho que indica circunstância, como “quando chegou”', 'trechos que indicam circunstâncias, como “quando chegou”'),
+    'punctuationDensity_spacy': ('sinal de pontuação', 'sinais de pontuação'),
+}
+
+
+def descriptive_comparison(pattern, source):
+    rows = [row for row in pattern['classComparison']
+            if row['partition'] == 'validation' and row['author_state'] == 'all']
+    if len(rows) != 1:
+        raise ValueError('Exactly one validation/all reference is required')
+    row = rows[0]
+    result = {'kind': 'descriptive_corpus_frequency', 'referenceDataset': 'Fake.br-Corpus',
+              'partition': 'validation', 'authorScope': 'all', 'sourceRun': source['sourceRun'],
+              'variant': source['variant'], 'scope': 'matched_pattern'}
+    for label in ['fake', 'true']:
+        count, total = row[label + '_count'], row['population_' + label]
+        if type(count) is not int or type(total) is not int or total != 720 or not 0 <= count <= total:
+            raise ValueError('Invalid frozen class counts')
+        frequency = count / total
+        if abs(row['frequency_in_' + label] - frequency) > 1e-12:
+            raise ValueError('Frozen class frequency does not match count/population')
+        result[label] = {'count': count, 'total': total, 'frequency': frequency}
+    return result
 
 
 def sha256(path):
@@ -104,21 +144,17 @@ def build_catalog():
                              'omitted': row['omitted'] == 'True'})
     patterns = []
     for rank, pattern in enumerate(selected):
-        family, title, questions = THEMES[pattern['patternId']]
-        descriptions = []
-        for item in pattern['items']:
-            label = item['annotation_label']
-            if item['operator'] == '<=' and item['threshold'] == 0:
-                descriptions.append(f'{label}: nenhuma ocorrência anotada')
-            else:
-                band = 'inferior' if item['operator'] == '<=' else 'superior'
-                descriptions.append(f'{label}: frequência na faixa {band} de referência do treino')
-        patterns.append({'patternId': pattern['patternId'], 'items': pattern['items'],
+        family, title = THEMES[pattern['patternId']]
+        items = [dict(item, displayLabel=DISPLAY_LABELS[item['feature']],
+                      summarySingular=SUMMARY_LABELS[item['feature']][0],
+                      summaryPlural=SUMMARY_LABELS[item['feature']][1]) for item in pattern['items']]
+        patterns.append({'patternId': pattern['patternId'], 'items': items,
                          'priority': rank, 'observationTitle': title,
-                         'observationTemplate': 'Na janela analisada, o anotador encontrou ' + '; '.join(descriptions) + '.',
-                         'reflectionQuestions': questions, 'redundancyFamily': family,
-                         'displayStatus': 'observation_only', 'comparisonEnabled': False})
-    return {'catalogVersion': 'sintaxe-ampliada-observation-only-v2',
+                         'observationTemplate': 'Neste trecho, a leitura automática {summary}.',
+                         'reflectionQuestions': [], 'redundancyFamily': family,
+                         'displayStatus': 'descriptive_comparison', 'comparisonEnabled': True,
+                         'comparison': descriptive_comparison(pattern, source)})
+    return {'catalogVersion': 'sintaxe-ampliada-descriptive-comparison-v3',
             'sourceRun': source['sourceRun'], 'variant': source['variant'],
             'runtimeFeaturesSha256': sha256(ENGINE_ROOT / 'models/unsupervised/features.py'),
             'runtimeLayoutVersion': 'model-engine-v1',
@@ -129,12 +165,14 @@ def build_catalog():
             'extractorSourceSha256': sha256(HERE / 'fp_growth_principal.py'),
             'baseExtractionSourceSha256': sha256(HERE / 'history/mineracao-de-padroes/fp-growth-linguistico/linguistic_features.py'),
             'discretizationSourceSha256': sha256(HERE / 'history/mineracao-de-padroes/fp-growth-linguistico/linguistic_fp_growth.py'),
-            'comparisonEnabled': False, 'status': 'experimental_observation_only',
+            'comparisonEnabled': True, 'status': 'experimental_descriptive_comparison',
             'review': {'reviewType': 'agent_technical_review', 'humanEditorialApproval': False,
-                       'notes': ['Observações restritas às medidas da janela de 300 caracteres.',
-                                 'Perguntas não inferem intenção, qualidade jornalística ou veracidade.',
-                                 'Ausência de uma anotação no trecho não implica ausência na notícia completa.',
-                                 'Não contém frequências por classe, probabilidades ou classificação.']},
+                       'notes': ['Observações descrevem as medidas do trecho; anotações automáticas podem errar.',
+                                 'Frequências usam a combinação completa na partição validation/all do Fake.br-Corpus.',
+                                 'As duas classes são exibidas com seus próprios denominadores de 720 notícias.',
+                                 'Rótulos históricos descrevem o corpus, não a veracidade da notícia analisada.',
+                                 'Seleção mantém prioridades e famílias congeladas, sem usar diferenças entre classes.',
+                                 'Não contém composição por classe, probabilidades ou classificação.']},
             'discretization': criteria, 'patterns': patterns}
 
 

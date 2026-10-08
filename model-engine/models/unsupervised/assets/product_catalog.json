@@ -1,5 +1,5 @@
 {
-  "catalogVersion": "sintaxe-ampliada-observation-only-v2",
+  "catalogVersion": "sintaxe-ampliada-descriptive-comparison-v3",
   "sourceRun": "fp-growth-metadados-ampliados-20261008T002311Z",
   "variant": "sintaxe_ampliada",
   "runtimeFeaturesSha256": "9ee1ed4b6c2796ecaa6e329aa5b0db1a24af7cc4e3052627b024d1f858a24e90",
@@ -12,16 +12,18 @@
   "extractorSourceSha256": "ceedd26bd9e62c8f1a8837c06a73f4f482045dc0222df042cbcc613d55106dfa",
   "baseExtractionSourceSha256": "7ccd329258fca25ad3374368ef351863f44073974aae078bff5db9af386262a0",
   "discretizationSourceSha256": "be2d3e21b783e81d384b159b1bd4105993dab14de58d4596047d5b0f302bf230",
-  "comparisonEnabled": false,
-  "status": "experimental_observation_only",
+  "comparisonEnabled": true,
+  "status": "experimental_descriptive_comparison",
   "review": {
     "reviewType": "agent_technical_review",
     "humanEditorialApproval": false,
     "notes": [
-      "Observações restritas às medidas da janela de 300 caracteres.",
-      "Perguntas não inferem intenção, qualidade jornalística ou veracidade.",
-      "Ausência de uma anotação no trecho não implica ausência na notícia completa.",
-      "Não contém frequências por classe, probabilidades ou classificação."
+      "Observações descrevem as medidas do trecho; anotações automáticas podem errar.",
+      "Frequências usam a combinação completa na partição validation/all do Fake.br-Corpus.",
+      "As duas classes são exibidas com seus próprios denominadores de 720 notícias.",
+      "Rótulos históricos descrevem o corpus, não a veracidade da notícia analisada.",
+      "Seleção mantém prioridades e famílias congeladas, sem usar diferenças entre classes.",
+      "Não contém composição por classe, probabilidades ou classificação."
     ]
   },
   "discretization": [
@@ -358,7 +360,10 @@
           "operator": "<=",
           "threshold": 0.0,
           "denominator": "tokens_lexical",
-          "annotation_label": "orações relativas"
+          "annotation_label": "orações relativas",
+          "displayLabel": "descrições ligadas a nomes, como 'que chegou' em 'a pessoa que chegou'",
+          "summarySingular": "descrição como “a pessoa que chegou”",
+          "summaryPlural": "descrições como “a pessoa que chegou”"
         },
         {
           "item": "POS_PRON_rate_baixo",
@@ -366,19 +371,38 @@
           "operator": "<=",
           "threshold": 0.0,
           "denominator": "tokens_lexical",
-          "annotation_label": "pronomes"
+          "annotation_label": "pronomes",
+          "displayLabel": "pronomes, como 'ele', 'ela' e 'isso'",
+          "summarySingular": "pronome como “ele” ou “ela”",
+          "summaryPlural": "pronomes como “ele” ou “ela”"
         }
       ],
       "priority": 0,
-      "observationTitle": "Como o trecho identifica pessoas e fatos?",
-      "observationTemplate": "Na janela analisada, o anotador encontrou orações relativas: nenhuma ocorrência anotada; pronomes: nenhuma ocorrência anotada.",
-      "reflectionQuestions": [
-        "A quem cada pessoa ou instituição mencionada se refere?",
-        "Que informação fora deste trecho ajudaria a entender essas referências?"
-      ],
+      "observationTitle": "Pronomes e descrições ligadas a nomes",
+      "observationTemplate": "Neste trecho, a leitura automática {summary}.",
+      "reflectionQuestions": [],
       "redundancyFamily": "referenciacao",
-      "displayStatus": "observation_only",
-      "comparisonEnabled": false
+      "displayStatus": "descriptive_comparison",
+      "comparisonEnabled": true,
+      "comparison": {
+        "kind": "descriptive_corpus_frequency",
+        "referenceDataset": "Fake.br-Corpus",
+        "partition": "validation",
+        "authorScope": "all",
+        "sourceRun": "fp-growth-metadados-ampliados-20261008T002311Z",
+        "variant": "sintaxe_ampliada",
+        "scope": "matched_pattern",
+        "fake": {
+          "count": 185,
+          "total": 720,
+          "frequency": 0.2569444444444444
+        },
+        "true": {
+          "count": 256,
+          "total": 720,
+          "frequency": 0.35555555555555557
+        }
+      }
     },
     {
       "patternId": "afaef19656e5",
@@ -389,7 +413,10 @@
           "operator": "<=",
           "threshold": 0.0,
           "denominator": "tokens_lexical",
-          "annotation_label": "modificadores adverbiais"
+          "annotation_label": "modificadores adverbiais",
+          "displayLabel": "palavras que detalham uma ação ou qualidade, como 'rapidamente' e 'muito'",
+          "summarySingular": "detalhe como “rapidamente” em “chegou rapidamente”",
+          "summaryPlural": "detalhes como “rapidamente” em “chegou rapidamente”"
         },
         {
           "item": "POS_ADV_rate_baixo",
@@ -397,19 +424,38 @@
           "operator": "<=",
           "threshold": 0.0,
           "denominator": "tokens_lexical",
-          "annotation_label": "advérbios"
+          "annotation_label": "advérbios",
+          "displayLabel": "advérbios, como 'hoje', 'aqui' e 'rapidamente'",
+          "summarySingular": "palavra como “hoje”, “aqui” ou “rapidamente”",
+          "summaryPlural": "palavras como “hoje”, “aqui” ou “rapidamente”"
         }
       ],
       "priority": 1,
-      "observationTitle": "Como as ações são descritas?",
-      "observationTemplate": "Na janela analisada, o anotador encontrou modificadores adverbiais: nenhuma ocorrência anotada; advérbios: nenhuma ocorrência anotada.",
-      "reflectionQuestions": [
-        "Que afirmação central aparece neste trecho?",
-        "Que evidência permitiria verificar essa afirmação, além da maneira como foi escrita?"
-      ],
+      "observationTitle": "Palavras que detalham as ações",
+      "observationTemplate": "Neste trecho, a leitura automática {summary}.",
+      "reflectionQuestions": [],
       "redundancyFamily": "modificacao_adverbial",
-      "displayStatus": "observation_only",
-      "comparisonEnabled": false
+      "displayStatus": "descriptive_comparison",
+      "comparisonEnabled": true,
+      "comparison": {
+        "kind": "descriptive_corpus_frequency",
+        "referenceDataset": "Fake.br-Corpus",
+        "partition": "validation",
+        "authorScope": "all",
+        "sourceRun": "fp-growth-metadados-ampliados-20261008T002311Z",
+        "variant": "sintaxe_ampliada",
+        "scope": "matched_pattern",
+        "fake": {
+          "count": 149,
+          "total": 720,
+          "frequency": 0.20694444444444443
+        },
+        "true": {
+          "count": 267,
+          "total": 720,
+          "frequency": 0.37083333333333335
+        }
+      }
     },
     {
       "patternId": "8c3cebc0601d",
@@ -420,7 +466,10 @@
           "operator": "<=",
           "threshold": 0.0,
           "denominator": "tokens_lexical",
-          "annotation_label": "sujeitos de construções passivas"
+          "annotation_label": "sujeitos de construções passivas",
+          "displayLabel": "referências a quem recebe a ação, como 'a proposta' em 'a proposta foi aprovada'",
+          "summarySingular": "referência como “a proposta” em “a proposta foi aprovada”",
+          "summaryPlural": "referências como “a proposta” em “a proposta foi aprovada”"
         },
         {
           "item": "POS_AUX_rate_baixo",
@@ -428,19 +477,38 @@
           "operator": "<=",
           "threshold": 0.0,
           "denominator": "tokens_lexical",
-          "annotation_label": "verbos auxiliares"
+          "annotation_label": "verbos auxiliares",
+          "displayLabel": "verbos de apoio, como 'foi' em 'foi aprovado'",
+          "summarySingular": "verbo de apoio como “foi” em “foi aprovado”",
+          "summaryPlural": "verbos de apoio como “foi” em “foi aprovado”"
         }
       ],
       "priority": 2,
-      "observationTitle": "Quais ações aparecem no trecho?",
-      "observationTemplate": "Na janela analisada, o anotador encontrou sujeitos de construções passivas: nenhuma ocorrência anotada; verbos auxiliares: nenhuma ocorrência anotada.",
-      "reflectionQuestions": [
-        "Quem faz o quê neste trecho?",
-        "Qual fonte permitiria conferir se essas ações ocorreram?"
-      ],
+      "observationTitle": "Verbos de apoio e quem recebe a ação",
+      "observationTemplate": "Neste trecho, a leitura automática {summary}.",
+      "reflectionQuestions": [],
       "redundancyFamily": "construcoes_verbais",
-      "displayStatus": "observation_only",
-      "comparisonEnabled": false
+      "displayStatus": "descriptive_comparison",
+      "comparisonEnabled": true,
+      "comparison": {
+        "kind": "descriptive_corpus_frequency",
+        "referenceDataset": "Fake.br-Corpus",
+        "partition": "validation",
+        "authorScope": "all",
+        "sourceRun": "fp-growth-metadados-ampliados-20261008T002311Z",
+        "variant": "sintaxe_ampliada",
+        "scope": "matched_pattern",
+        "fake": {
+          "count": 145,
+          "total": 720,
+          "frequency": 0.2013888888888889
+        },
+        "true": {
+          "count": 242,
+          "total": 720,
+          "frequency": 0.33611111111111114
+        }
+      }
     },
     {
       "patternId": "d1280945c7ef",
@@ -451,7 +519,10 @@
           "operator": "<=",
           "threshold": 0.0,
           "denominator": "tokens_lexical",
-          "annotation_label": "sujeitos de construções passivas"
+          "annotation_label": "sujeitos de construções passivas",
+          "displayLabel": "referências a quem recebe a ação, como 'a proposta' em 'a proposta foi aprovada'",
+          "summarySingular": "referência como “a proposta” em “a proposta foi aprovada”",
+          "summaryPlural": "referências como “a proposta” em “a proposta foi aprovada”"
         },
         {
           "item": "DEP_nsubj_rate_alto",
@@ -459,19 +530,38 @@
           "operator": ">=",
           "threshold": 0.09090909090909091,
           "denominator": "tokens_lexical",
-          "annotation_label": "sujeitos nominais"
+          "annotation_label": "sujeitos nominais",
+          "displayLabel": "referências a quem age, como 'a equipe' em 'a equipe publicou'",
+          "summarySingular": "referência a quem age, como “a equipe” em “a equipe publicou”",
+          "summaryPlural": "referências a quem age, como “a equipe” em “a equipe publicou”"
         }
       ],
       "priority": 3,
-      "observationTitle": "Quem participa das ações?",
-      "observationTemplate": "Na janela analisada, o anotador encontrou sujeitos de construções passivas: nenhuma ocorrência anotada; sujeitos nominais: frequência na faixa superior de referência do treino.",
-      "reflectionQuestions": [
-        "Quais pessoas ou instituições aparecem como responsáveis pelas ações?",
-        "O texto indica como verificar a participação delas?"
-      ],
+      "observationTitle": "Quem realiza ou recebe a ação",
+      "observationTemplate": "Neste trecho, a leitura automática {summary}.",
+      "reflectionQuestions": [],
       "redundancyFamily": "agentes",
-      "displayStatus": "observation_only",
-      "comparisonEnabled": false
+      "displayStatus": "descriptive_comparison",
+      "comparisonEnabled": true,
+      "comparison": {
+        "kind": "descriptive_corpus_frequency",
+        "referenceDataset": "Fake.br-Corpus",
+        "partition": "validation",
+        "authorScope": "all",
+        "sourceRun": "fp-growth-metadados-ampliados-20261008T002311Z",
+        "variant": "sintaxe_ampliada",
+        "scope": "matched_pattern",
+        "fake": {
+          "count": 195,
+          "total": 720,
+          "frequency": 0.2708333333333333
+        },
+        "true": {
+          "count": 157,
+          "total": 720,
+          "frequency": 0.21805555555555556
+        }
+      }
     },
     {
       "patternId": "8b970151f163",
@@ -482,7 +572,10 @@
           "operator": "<=",
           "threshold": 0.0,
           "denominator": "tokens_lexical",
-          "annotation_label": "sujeitos de construções passivas"
+          "annotation_label": "sujeitos de construções passivas",
+          "displayLabel": "referências a quem recebe a ação, como 'a proposta' em 'a proposta foi aprovada'",
+          "summarySingular": "referência como “a proposta” em “a proposta foi aprovada”",
+          "summaryPlural": "referências como “a proposta” em “a proposta foi aprovada”"
         },
         {
           "item": "DEP_obj_rate_alto",
@@ -490,19 +583,38 @@
           "operator": ">=",
           "threshold": 0.08163265306122448,
           "denominator": "tokens_lexical",
-          "annotation_label": "objetos diretos"
+          "annotation_label": "objetos diretos",
+          "displayLabel": "referências ao alvo da ação, como 'o relatório' em 'publicou o relatório'",
+          "summarySingular": "alvo da ação, como “o relatório” em “publicou o relatório”",
+          "summaryPlural": "alvos da ação, como “o relatório” em “publicou o relatório”"
         }
       ],
       "priority": 4,
-      "observationTitle": "A que se dirigem as ações?",
-      "observationTemplate": "Na janela analisada, o anotador encontrou sujeitos de construções passivas: nenhuma ocorrência anotada; objetos diretos: frequência na faixa superior de referência do treino.",
-      "reflectionQuestions": [
-        "Sobre quem ou sobre o que recaem as ações descritas?",
-        "Que registro ou documento ajudaria a verificar essas ações?"
-      ],
+      "observationTitle": "A quem ou a que as ações se dirigem",
+      "observationTemplate": "Neste trecho, a leitura automática {summary}.",
+      "reflectionQuestions": [],
       "redundancyFamily": "objetos",
-      "displayStatus": "observation_only",
-      "comparisonEnabled": false
+      "displayStatus": "descriptive_comparison",
+      "comparisonEnabled": true,
+      "comparison": {
+        "kind": "descriptive_corpus_frequency",
+        "referenceDataset": "Fake.br-Corpus",
+        "partition": "validation",
+        "authorScope": "all",
+        "sourceRun": "fp-growth-metadados-ampliados-20261008T002311Z",
+        "variant": "sintaxe_ampliada",
+        "scope": "matched_pattern",
+        "fake": {
+          "count": 211,
+          "total": 720,
+          "frequency": 0.29305555555555557
+        },
+        "true": {
+          "count": 133,
+          "total": 720,
+          "frequency": 0.18472222222222223
+        }
+      }
     },
     {
       "patternId": "3542b427d129",
@@ -513,7 +625,10 @@
           "operator": "<=",
           "threshold": 0.0,
           "denominator": "tokens_lexical",
-          "annotation_label": "orações relativas"
+          "annotation_label": "orações relativas",
+          "displayLabel": "descrições ligadas a nomes, como 'que chegou' em 'a pessoa que chegou'",
+          "summarySingular": "descrição como “a pessoa que chegou”",
+          "summaryPlural": "descrições como “a pessoa que chegou”"
         },
         {
           "item": "DEP_nsubj:pass_rate_baixo",
@@ -521,7 +636,10 @@
           "operator": "<=",
           "threshold": 0.0,
           "denominator": "tokens_lexical",
-          "annotation_label": "sujeitos de construções passivas"
+          "annotation_label": "sujeitos de construções passivas",
+          "displayLabel": "referências a quem recebe a ação, como 'a proposta' em 'a proposta foi aprovada'",
+          "summarySingular": "referência como “a proposta” em “a proposta foi aprovada”",
+          "summaryPlural": "referências como “a proposta” em “a proposta foi aprovada”"
         },
         {
           "item": "POS_PRON_rate_baixo",
@@ -529,19 +647,38 @@
           "operator": "<=",
           "threshold": 0.0,
           "denominator": "tokens_lexical",
-          "annotation_label": "pronomes"
+          "annotation_label": "pronomes",
+          "displayLabel": "pronomes, como 'ele', 'ela' e 'isso'",
+          "summarySingular": "pronome como “ele” ou “ela”",
+          "summaryPlural": "pronomes como “ele” ou “ela”"
         }
       ],
       "priority": 5,
-      "observationTitle": "Como o trecho identifica pessoas e fatos?",
-      "observationTemplate": "Na janela analisada, o anotador encontrou orações relativas: nenhuma ocorrência anotada; sujeitos de construções passivas: nenhuma ocorrência anotada; pronomes: nenhuma ocorrência anotada.",
-      "reflectionQuestions": [
-        "A quem cada nome mencionado se refere?",
-        "Que contexto ajudaria a distinguir pessoas ou fatos com nomes semelhantes?"
-      ],
+      "observationTitle": "Pronomes, descrições e quem recebe a ação",
+      "observationTemplate": "Neste trecho, a leitura automática {summary}.",
+      "reflectionQuestions": [],
       "redundancyFamily": "referenciacao",
-      "displayStatus": "observation_only",
-      "comparisonEnabled": false
+      "displayStatus": "descriptive_comparison",
+      "comparisonEnabled": true,
+      "comparison": {
+        "kind": "descriptive_corpus_frequency",
+        "referenceDataset": "Fake.br-Corpus",
+        "partition": "validation",
+        "authorScope": "all",
+        "sourceRun": "fp-growth-metadados-ampliados-20261008T002311Z",
+        "variant": "sintaxe_ampliada",
+        "scope": "matched_pattern",
+        "fake": {
+          "count": 140,
+          "total": 720,
+          "frequency": 0.19444444444444445
+        },
+        "true": {
+          "count": 179,
+          "total": 720,
+          "frequency": 0.24861111111111112
+        }
+      }
     },
     {
       "patternId": "d0c4306ce66c",
@@ -552,7 +689,10 @@
           "operator": "<=",
           "threshold": 0.0,
           "denominator": "tokens_lexical",
-          "annotation_label": "sujeitos de construções passivas"
+          "annotation_label": "sujeitos de construções passivas",
+          "displayLabel": "referências a quem recebe a ação, como 'a proposta' em 'a proposta foi aprovada'",
+          "summarySingular": "referência como “a proposta” em “a proposta foi aprovada”",
+          "summaryPlural": "referências como “a proposta” em “a proposta foi aprovada”"
         },
         {
           "item": "POS_ADP_rate_baixo",
@@ -560,19 +700,38 @@
           "operator": "<=",
           "threshold": 0.1509433962264151,
           "denominator": "tokens_lexical",
-          "annotation_label": "preposições"
+          "annotation_label": "preposições",
+          "displayLabel": "palavras de ligação, como 'de', 'em' e 'para'",
+          "summarySingular": "palavra de ligação como “de”, “em” ou “para”",
+          "summaryPlural": "palavras de ligação como “de”, “em” ou “para”"
         }
       ],
       "priority": 6,
-      "observationTitle": "Que contexto acompanha os fatos?",
-      "observationTemplate": "Na janela analisada, o anotador encontrou sujeitos de construções passivas: nenhuma ocorrência anotada; preposições: frequência na faixa inferior de referência do treino.",
-      "reflectionQuestions": [
-        "Que informações de lugar, tempo ou circunstância estão explícitas?",
-        "Quais delas precisam ser procuradas na notícia completa ou em outra fonte?"
-      ],
+      "observationTitle": "Palavras de ligação e quem recebe a ação",
+      "observationTemplate": "Neste trecho, a leitura automática {summary}.",
+      "reflectionQuestions": [],
       "redundancyFamily": "contexto",
-      "displayStatus": "observation_only",
-      "comparisonEnabled": false
+      "displayStatus": "descriptive_comparison",
+      "comparisonEnabled": true,
+      "comparison": {
+        "kind": "descriptive_corpus_frequency",
+        "referenceDataset": "Fake.br-Corpus",
+        "partition": "validation",
+        "authorScope": "all",
+        "sourceRun": "fp-growth-metadados-ampliados-20261008T002311Z",
+        "variant": "sintaxe_ampliada",
+        "scope": "matched_pattern",
+        "fake": {
+          "count": 212,
+          "total": 720,
+          "frequency": 0.29444444444444445
+        },
+        "true": {
+          "count": 88,
+          "total": 720,
+          "frequency": 0.12222222222222222
+        }
+      }
     },
     {
       "patternId": "58bd81f28dc3",
@@ -583,7 +742,10 @@
           "operator": "<=",
           "threshold": 0.0196078431372549,
           "denominator": "tokens_lexical",
-          "annotation_label": "modificadores adjetivais"
+          "annotation_label": "modificadores adjetivais",
+          "displayLabel": "palavras que caracterizam nomes, como 'importante' em 'decisão importante'",
+          "summarySingular": "descrição de um nome, como “decisão importante”",
+          "summaryPlural": "descrições de nomes, como “decisão importante”"
         },
         {
           "item": "POS_ADJ_rate_baixo",
@@ -591,19 +753,38 @@
           "operator": "<=",
           "threshold": 0.020833333333333332,
           "denominator": "tokens_lexical",
-          "annotation_label": "adjetivos"
+          "annotation_label": "adjetivos",
+          "displayLabel": "adjetivos, como 'importante' e 'novo'",
+          "summarySingular": "palavra que caracteriza algo, como “novo” ou “importante”",
+          "summaryPlural": "palavras que caracterizam algo, como “novo” ou “importante”"
         }
       ],
       "priority": 7,
-      "observationTitle": "Como pessoas e acontecimentos são caracterizados?",
-      "observationTemplate": "Na janela analisada, o anotador encontrou modificadores adjetivais: frequência na faixa inferior de referência do treino; adjetivos: frequência na faixa inferior de referência do treino.",
-      "reflectionQuestions": [
-        "Qual afirmação pode ser verificada neste trecho?",
-        "Que evidência ajudaria a avaliá-la independentemente dos adjetivos usados?"
-      ],
+      "observationTitle": "Palavras que caracterizam nomes",
+      "observationTemplate": "Neste trecho, a leitura automática {summary}.",
+      "reflectionQuestions": [],
       "redundancyFamily": "adjetivacao",
-      "displayStatus": "observation_only",
-      "comparisonEnabled": false
+      "displayStatus": "descriptive_comparison",
+      "comparisonEnabled": true,
+      "comparison": {
+        "kind": "descriptive_corpus_frequency",
+        "referenceDataset": "Fake.br-Corpus",
+        "partition": "validation",
+        "authorScope": "all",
+        "sourceRun": "fp-growth-metadados-ampliados-20261008T002311Z",
+        "variant": "sintaxe_ampliada",
+        "scope": "matched_pattern",
+        "fake": {
+          "count": 154,
+          "total": 720,
+          "frequency": 0.21388888888888888
+        },
+        "true": {
+          "count": 145,
+          "total": 720,
+          "frequency": 0.2013888888888889
+        }
+      }
     },
     {
       "patternId": "340698e8be61",
@@ -614,7 +795,10 @@
           "operator": "<=",
           "threshold": 0.0,
           "denominator": "tokens_lexical",
-          "annotation_label": "modificadores adverbiais"
+          "annotation_label": "modificadores adverbiais",
+          "displayLabel": "palavras que detalham uma ação ou qualidade, como 'rapidamente' e 'muito'",
+          "summarySingular": "detalhe como “rapidamente” em “chegou rapidamente”",
+          "summaryPlural": "detalhes como “rapidamente” em “chegou rapidamente”"
         },
         {
           "item": "DEP_nsubj:pass_rate_baixo",
@@ -622,7 +806,10 @@
           "operator": "<=",
           "threshold": 0.0,
           "denominator": "tokens_lexical",
-          "annotation_label": "sujeitos de construções passivas"
+          "annotation_label": "sujeitos de construções passivas",
+          "displayLabel": "referências a quem recebe a ação, como 'a proposta' em 'a proposta foi aprovada'",
+          "summarySingular": "referência como “a proposta” em “a proposta foi aprovada”",
+          "summaryPlural": "referências como “a proposta” em “a proposta foi aprovada”"
         },
         {
           "item": "POS_ADV_rate_baixo",
@@ -630,19 +817,38 @@
           "operator": "<=",
           "threshold": 0.0,
           "denominator": "tokens_lexical",
-          "annotation_label": "advérbios"
+          "annotation_label": "advérbios",
+          "displayLabel": "advérbios, como 'hoje', 'aqui' e 'rapidamente'",
+          "summarySingular": "palavra como “hoje”, “aqui” ou “rapidamente”",
+          "summaryPlural": "palavras como “hoje”, “aqui” ou “rapidamente”"
         }
       ],
       "priority": 8,
-      "observationTitle": "Como as ações são descritas?",
-      "observationTemplate": "Na janela analisada, o anotador encontrou modificadores adverbiais: nenhuma ocorrência anotada; sujeitos de construções passivas: nenhuma ocorrência anotada; advérbios: nenhuma ocorrência anotada.",
-      "reflectionQuestions": [
-        "Que afirmação central aparece neste trecho?",
-        "Que evidência permitiria verificar a ação descrita?"
-      ],
+      "observationTitle": "Detalhes das ações e quem as recebe",
+      "observationTemplate": "Neste trecho, a leitura automática {summary}.",
+      "reflectionQuestions": [],
       "redundancyFamily": "modificacao_adverbial",
-      "displayStatus": "observation_only",
-      "comparisonEnabled": false
+      "displayStatus": "descriptive_comparison",
+      "comparisonEnabled": true,
+      "comparison": {
+        "kind": "descriptive_corpus_frequency",
+        "referenceDataset": "Fake.br-Corpus",
+        "partition": "validation",
+        "authorScope": "all",
+        "sourceRun": "fp-growth-metadados-ampliados-20261008T002311Z",
+        "variant": "sintaxe_ampliada",
+        "scope": "matched_pattern",
+        "fake": {
+          "count": 112,
+          "total": 720,
+          "frequency": 0.15555555555555556
+        },
+        "true": {
+          "count": 182,
+          "total": 720,
+          "frequency": 0.25277777777777777
+        }
+      }
     },
     {
       "patternId": "dcc82376b8a6",
@@ -653,7 +859,10 @@
           "operator": "<=",
           "threshold": 0.0,
           "denominator": "tokens_lexical",
-          "annotation_label": "complementos oracionais"
+          "annotation_label": "complementos oracionais",
+          "displayLabel": "afirmações ligadas a um verbo, como 'o prazo acabou' em 'disse que o prazo acabou'",
+          "summarySingular": "afirmação como “o prazo acabou” em “disse que o prazo acabou”",
+          "summaryPlural": "afirmações como “o prazo acabou” em “disse que o prazo acabou”"
         },
         {
           "item": "DEP_nsubj_rate_baixo",
@@ -661,19 +870,38 @@
           "operator": "<=",
           "threshold": 0.05660377358490566,
           "denominator": "tokens_lexical",
-          "annotation_label": "sujeitos nominais"
+          "annotation_label": "sujeitos nominais",
+          "displayLabel": "referências a quem age, como 'a equipe' em 'a equipe publicou'",
+          "summarySingular": "referência a quem age, como “a equipe” em “a equipe publicou”",
+          "summaryPlural": "referências a quem age, como “a equipe” em “a equipe publicou”"
         }
       ],
       "priority": 9,
-      "observationTitle": "Quem sustenta a afirmação?",
-      "observationTemplate": "Na janela analisada, o anotador encontrou complementos oracionais: nenhuma ocorrência anotada; sujeitos nominais: frequência na faixa inferior de referência do treino.",
-      "reflectionQuestions": [
-        "É possível identificar quem afirma ou realiza o que é relatado?",
-        "Que fonte permitiria confirmar essa atribuição?"
-      ],
+      "observationTitle": "Quem age e as afirmações ligadas a verbos",
+      "observationTemplate": "Neste trecho, a leitura automática {summary}.",
+      "reflectionQuestions": [],
       "redundancyFamily": "agentes",
-      "displayStatus": "observation_only",
-      "comparisonEnabled": false
+      "displayStatus": "descriptive_comparison",
+      "comparisonEnabled": true,
+      "comparison": {
+        "kind": "descriptive_corpus_frequency",
+        "referenceDataset": "Fake.br-Corpus",
+        "partition": "validation",
+        "authorScope": "all",
+        "sourceRun": "fp-growth-metadados-ampliados-20261008T002311Z",
+        "variant": "sintaxe_ampliada",
+        "scope": "matched_pattern",
+        "fake": {
+          "count": 114,
+          "total": 720,
+          "frequency": 0.15833333333333333
+        },
+        "true": {
+          "count": 180,
+          "total": 720,
+          "frequency": 0.25
+        }
+      }
     },
     {
       "patternId": "044b4a18072c",
@@ -684,7 +912,10 @@
           "operator": "<=",
           "threshold": 0.0,
           "denominator": "tokens_lexical",
-          "annotation_label": "complementos oracionais"
+          "annotation_label": "complementos oracionais",
+          "displayLabel": "afirmações ligadas a um verbo, como 'o prazo acabou' em 'disse que o prazo acabou'",
+          "summarySingular": "afirmação como “o prazo acabou” em “disse que o prazo acabou”",
+          "summaryPlural": "afirmações como “o prazo acabou” em “disse que o prazo acabou”"
         },
         {
           "item": "POS_VERB_rate_baixo",
@@ -692,19 +923,38 @@
           "operator": "<=",
           "threshold": 0.09615384615384616,
           "denominator": "tokens_lexical",
-          "annotation_label": "verbos"
+          "annotation_label": "verbos",
+          "displayLabel": "verbos, como 'publicou' e 'informou'",
+          "summarySingular": "verbo como “publicou” ou “informou”",
+          "summaryPlural": "verbos como “publicou” ou “informou”"
         }
       ],
       "priority": 10,
-      "observationTitle": "Que acontecimento é relatado?",
-      "observationTemplate": "Na janela analisada, o anotador encontrou complementos oracionais: nenhuma ocorrência anotada; verbos: frequência na faixa inferior de referência do treino.",
-      "reflectionQuestions": [
-        "Que ação ou acontecimento você consegue identificar?",
-        "Que informações precisaria encontrar para verificar esse acontecimento?"
-      ],
+      "observationTitle": "Verbos e afirmações que se conectam",
+      "observationTemplate": "Neste trecho, a leitura automática {summary}.",
+      "reflectionQuestions": [],
       "redundancyFamily": "construcoes_verbais",
-      "displayStatus": "observation_only",
-      "comparisonEnabled": false
+      "displayStatus": "descriptive_comparison",
+      "comparisonEnabled": true,
+      "comparison": {
+        "kind": "descriptive_corpus_frequency",
+        "referenceDataset": "Fake.br-Corpus",
+        "partition": "validation",
+        "authorScope": "all",
+        "sourceRun": "fp-growth-metadados-ampliados-20261008T002311Z",
+        "variant": "sintaxe_ampliada",
+        "scope": "matched_pattern",
+        "fake": {
+          "count": 88,
+          "total": 720,
+          "frequency": 0.12222222222222222
+        },
+        "true": {
+          "count": 193,
+          "total": 720,
+          "frequency": 0.26805555555555555
+        }
+      }
     },
     {
       "patternId": "a33f9be1d445",
@@ -715,7 +965,10 @@
           "operator": "<=",
           "threshold": 0.0,
           "denominator": "tokens_lexical",
-          "annotation_label": "sujeitos de construções passivas"
+          "annotation_label": "sujeitos de construções passivas",
+          "displayLabel": "referências a quem recebe a ação, como 'a proposta' em 'a proposta foi aprovada'",
+          "summarySingular": "referência como “a proposta” em “a proposta foi aprovada”",
+          "summaryPlural": "referências como “a proposta” em “a proposta foi aprovada”"
         },
         {
           "item": "POS_PRON_rate_alto",
@@ -723,19 +976,38 @@
           "operator": ">=",
           "threshold": 0.04081632653061224,
           "denominator": "tokens_lexical",
-          "annotation_label": "pronomes"
+          "annotation_label": "pronomes",
+          "displayLabel": "pronomes, como 'ele', 'ela' e 'isso'",
+          "summarySingular": "pronome como “ele” ou “ela”",
+          "summaryPlural": "pronomes como “ele” ou “ela”"
         }
       ],
       "priority": 11,
-      "observationTitle": "A quem os pronomes se referem?",
-      "observationTemplate": "Na janela analisada, o anotador encontrou sujeitos de construções passivas: nenhuma ocorrência anotada; pronomes: frequência na faixa superior de referência do treino.",
-      "reflectionQuestions": [
-        "Você consegue ligar cada pronome à pessoa ou instituição correspondente?",
-        "A notícia completa esclarece alguma referência que ficou aberta neste trecho?"
-      ],
+      "observationTitle": "Pronomes e quem recebe a ação",
+      "observationTemplate": "Neste trecho, a leitura automática {summary}.",
+      "reflectionQuestions": [],
       "redundancyFamily": "referenciacao",
-      "displayStatus": "observation_only",
-      "comparisonEnabled": false
+      "displayStatus": "descriptive_comparison",
+      "comparisonEnabled": true,
+      "comparison": {
+        "kind": "descriptive_corpus_frequency",
+        "referenceDataset": "Fake.br-Corpus",
+        "partition": "validation",
+        "authorScope": "all",
+        "sourceRun": "fp-growth-metadados-ampliados-20261008T002311Z",
+        "variant": "sintaxe_ampliada",
+        "scope": "matched_pattern",
+        "fake": {
+          "count": 182,
+          "total": 720,
+          "frequency": 0.25277777777777777
+        },
+        "true": {
+          "count": 116,
+          "total": 720,
+          "frequency": 0.16111111111111112
+        }
+      }
     },
     {
       "patternId": "23b2cdc9d31e",
@@ -746,7 +1018,10 @@
           "operator": "<=",
           "threshold": 0.0,
           "denominator": "tokens_lexical",
-          "annotation_label": "sujeitos de construções passivas"
+          "annotation_label": "sujeitos de construções passivas",
+          "displayLabel": "referências a quem recebe a ação, como 'a proposta' em 'a proposta foi aprovada'",
+          "summarySingular": "referência como “a proposta” em “a proposta foi aprovada”",
+          "summaryPlural": "referências como “a proposta” em “a proposta foi aprovada”"
         },
         {
           "item": "punctuationDensity_spacy_alto",
@@ -754,19 +1029,38 @@
           "operator": ">=",
           "threshold": 0.15873015873015872,
           "denominator": "tokens_nonspace",
-          "annotation_label": "pontuação"
+          "annotation_label": "pontuação",
+          "displayLabel": "sinais de pontuação",
+          "summarySingular": "sinal de pontuação",
+          "summaryPlural": "sinais de pontuação"
         }
       ],
       "priority": 12,
-      "observationTitle": "Como a pontuação organiza o trecho?",
-      "observationTemplate": "Na janela analisada, o anotador encontrou sujeitos de construções passivas: nenhuma ocorrência anotada; pontuação: frequência na faixa superior de referência do treino.",
-      "reflectionQuestions": [
-        "Que partes a pontuação separa, cita ou destaca?",
-        "Qual afirmação dessas partes você gostaria de verificar em outra fonte?"
-      ],
+      "observationTitle": "Pontuação e quem recebe a ação",
+      "observationTemplate": "Neste trecho, a leitura automática {summary}.",
+      "reflectionQuestions": [],
       "redundancyFamily": "pontuacao",
-      "displayStatus": "observation_only",
-      "comparisonEnabled": false
+      "displayStatus": "descriptive_comparison",
+      "comparisonEnabled": true,
+      "comparison": {
+        "kind": "descriptive_corpus_frequency",
+        "referenceDataset": "Fake.br-Corpus",
+        "partition": "validation",
+        "authorScope": "all",
+        "sourceRun": "fp-growth-metadados-ampliados-20261008T002311Z",
+        "variant": "sintaxe_ampliada",
+        "scope": "matched_pattern",
+        "fake": {
+          "count": 223,
+          "total": 720,
+          "frequency": 0.30972222222222223
+        },
+        "true": {
+          "count": 64,
+          "total": 720,
+          "frequency": 0.08888888888888889
+        }
+      }
     },
     {
       "patternId": "1d57b1df1486",
@@ -777,7 +1071,10 @@
           "operator": "<=",
           "threshold": 0.0,
           "denominator": "tokens_lexical",
-          "annotation_label": "orações relativas"
+          "annotation_label": "orações relativas",
+          "displayLabel": "descrições ligadas a nomes, como 'que chegou' em 'a pessoa que chegou'",
+          "summarySingular": "descrição como “a pessoa que chegou”",
+          "summaryPlural": "descrições como “a pessoa que chegou”"
         },
         {
           "item": "DEP_advcl_rate_baixo",
@@ -785,7 +1082,10 @@
           "operator": "<=",
           "threshold": 0.0,
           "denominator": "tokens_lexical",
-          "annotation_label": "orações adverbiais"
+          "annotation_label": "orações adverbiais",
+          "displayLabel": "trechos que acrescentam circunstâncias à ação, como 'quando chegou'",
+          "summarySingular": "trecho que indica circunstância, como “quando chegou”",
+          "summaryPlural": "trechos que indicam circunstâncias, como “quando chegou”"
         },
         {
           "item": "POS_PRON_rate_baixo",
@@ -793,19 +1093,38 @@
           "operator": "<=",
           "threshold": 0.0,
           "denominator": "tokens_lexical",
-          "annotation_label": "pronomes"
+          "annotation_label": "pronomes",
+          "displayLabel": "pronomes, como 'ele', 'ela' e 'isso'",
+          "summarySingular": "pronome como “ele” ou “ela”",
+          "summaryPlural": "pronomes como “ele” ou “ela”"
         }
       ],
       "priority": 13,
-      "observationTitle": "Como o trecho identifica pessoas e fatos?",
-      "observationTemplate": "Na janela analisada, o anotador encontrou orações relativas: nenhuma ocorrência anotada; orações adverbiais: nenhuma ocorrência anotada; pronomes: nenhuma ocorrência anotada.",
-      "reflectionQuestions": [
-        "Quem e quais fatos são mencionados explicitamente?",
-        "Que contexto externo ajudaria a compreender a relação entre eles?"
-      ],
+      "observationTitle": "Pronomes e relações entre partes da frase",
+      "observationTemplate": "Neste trecho, a leitura automática {summary}.",
+      "reflectionQuestions": [],
       "redundancyFamily": "referenciacao",
-      "displayStatus": "observation_only",
-      "comparisonEnabled": false
+      "displayStatus": "descriptive_comparison",
+      "comparisonEnabled": true,
+      "comparison": {
+        "kind": "descriptive_corpus_frequency",
+        "referenceDataset": "Fake.br-Corpus",
+        "partition": "validation",
+        "authorScope": "all",
+        "sourceRun": "fp-growth-metadados-ampliados-20261008T002311Z",
+        "variant": "sintaxe_ampliada",
+        "scope": "matched_pattern",
+        "fake": {
+          "count": 101,
+          "total": 720,
+          "frequency": 0.14027777777777778
+        },
+        "true": {
+          "count": 174,
+          "total": 720,
+          "frequency": 0.24166666666666667
+        }
+      }
     },
     {
       "patternId": "6f18c83ea455",
@@ -816,7 +1135,10 @@
           "operator": "<=",
           "threshold": 0.0,
           "denominator": "tokens_lexical",
-          "annotation_label": "orações relativas"
+          "annotation_label": "orações relativas",
+          "displayLabel": "descrições ligadas a nomes, como 'que chegou' em 'a pessoa que chegou'",
+          "summarySingular": "descrição como “a pessoa que chegou”",
+          "summaryPlural": "descrições como “a pessoa que chegou”"
         },
         {
           "item": "DEP_nsubj_rate_baixo",
@@ -824,19 +1146,38 @@
           "operator": "<=",
           "threshold": 0.05660377358490566,
           "denominator": "tokens_lexical",
-          "annotation_label": "sujeitos nominais"
+          "annotation_label": "sujeitos nominais",
+          "displayLabel": "referências a quem age, como 'a equipe' em 'a equipe publicou'",
+          "summarySingular": "referência a quem age, como “a equipe” em “a equipe publicou”",
+          "summaryPlural": "referências a quem age, como “a equipe” em “a equipe publicou”"
         }
       ],
       "priority": 14,
-      "observationTitle": "Quem participa do acontecimento?",
-      "observationTemplate": "Na janela analisada, o anotador encontrou orações relativas: nenhuma ocorrência anotada; sujeitos nominais: frequência na faixa inferior de referência do treino.",
-      "reflectionQuestions": [
-        "Você consegue identificar os participantes do fato relatado?",
-        "Que detalhe deveria conferir na notícia completa antes de interpretar essa participação?"
-      ],
+      "observationTitle": "Quem age e as descrições ligadas a nomes",
+      "observationTemplate": "Neste trecho, a leitura automática {summary}.",
+      "reflectionQuestions": [],
       "redundancyFamily": "agentes",
-      "displayStatus": "observation_only",
-      "comparisonEnabled": false
+      "displayStatus": "descriptive_comparison",
+      "comparisonEnabled": true,
+      "comparison": {
+        "kind": "descriptive_corpus_frequency",
+        "referenceDataset": "Fake.br-Corpus",
+        "partition": "validation",
+        "authorScope": "all",
+        "sourceRun": "fp-growth-metadados-ampliados-20261008T002311Z",
+        "variant": "sintaxe_ampliada",
+        "scope": "matched_pattern",
+        "fake": {
+          "count": 105,
+          "total": 720,
+          "frequency": 0.14583333333333334
+        },
+        "true": {
+          "count": 170,
+          "total": 720,
+          "frequency": 0.2361111111111111
+        }
+      }
     },
     {
       "patternId": "19c77db982d8",
@@ -847,7 +1188,10 @@
           "operator": "<=",
           "threshold": 0.0,
           "denominator": "tokens_lexical",
-          "annotation_label": "orações adverbiais"
+          "annotation_label": "orações adverbiais",
+          "displayLabel": "trechos que acrescentam circunstâncias à ação, como 'quando chegou'",
+          "summarySingular": "trecho que indica circunstância, como “quando chegou”",
+          "summaryPlural": "trechos que indicam circunstâncias, como “quando chegou”"
         },
         {
           "item": "POS_VERB_rate_baixo",
@@ -855,19 +1199,38 @@
           "operator": "<=",
           "threshold": 0.09615384615384616,
           "denominator": "tokens_lexical",
-          "annotation_label": "verbos"
+          "annotation_label": "verbos",
+          "displayLabel": "verbos, como 'publicou' e 'informou'",
+          "summarySingular": "verbo como “publicou” ou “informou”",
+          "summaryPlural": "verbos como “publicou” ou “informou”"
         }
       ],
       "priority": 15,
-      "observationTitle": "Como os acontecimentos se conectam?",
-      "observationTemplate": "Na janela analisada, o anotador encontrou orações adverbiais: nenhuma ocorrência anotada; verbos: frequência na faixa inferior de referência do treino.",
-      "reflectionQuestions": [
-        "Quais acontecimentos você consegue separar neste trecho?",
-        "Que evidência permitiria conferir a ordem ou a relação entre eles?"
-      ],
+      "observationTitle": "Verbos e as circunstâncias das ações",
+      "observationTemplate": "Neste trecho, a leitura automática {summary}.",
+      "reflectionQuestions": [],
       "redundancyFamily": "construcoes_verbais",
-      "displayStatus": "observation_only",
-      "comparisonEnabled": false
+      "displayStatus": "descriptive_comparison",
+      "comparisonEnabled": true,
+      "comparison": {
+        "kind": "descriptive_corpus_frequency",
+        "referenceDataset": "Fake.br-Corpus",
+        "partition": "validation",
+        "authorScope": "all",
+        "sourceRun": "fp-growth-metadados-ampliados-20261008T002311Z",
+        "variant": "sintaxe_ampliada",
+        "scope": "matched_pattern",
+        "fake": {
+          "count": 86,
+          "total": 720,
+          "frequency": 0.11944444444444445
+        },
+        "true": {
+          "count": 186,
+          "total": 720,
+          "frequency": 0.25833333333333336
+        }
+      }
     },
     {
       "patternId": "9193a887d511",
@@ -878,7 +1241,10 @@
           "operator": "<=",
           "threshold": 0.0,
           "denominator": "tokens_lexical",
-          "annotation_label": "orações relativas"
+          "annotation_label": "orações relativas",
+          "displayLabel": "descrições ligadas a nomes, como 'que chegou' em 'a pessoa que chegou'",
+          "summarySingular": "descrição como “a pessoa que chegou”",
+          "summaryPlural": "descrições como “a pessoa que chegou”"
         },
         {
           "item": "DEP_ccomp_rate_baixo",
@@ -886,7 +1252,10 @@
           "operator": "<=",
           "threshold": 0.0,
           "denominator": "tokens_lexical",
-          "annotation_label": "complementos oracionais"
+          "annotation_label": "complementos oracionais",
+          "displayLabel": "afirmações ligadas a um verbo, como 'o prazo acabou' em 'disse que o prazo acabou'",
+          "summarySingular": "afirmação como “o prazo acabou” em “disse que o prazo acabou”",
+          "summaryPlural": "afirmações como “o prazo acabou” em “disse que o prazo acabou”"
         },
         {
           "item": "POS_PRON_rate_baixo",
@@ -894,19 +1263,38 @@
           "operator": "<=",
           "threshold": 0.0,
           "denominator": "tokens_lexical",
-          "annotation_label": "pronomes"
+          "annotation_label": "pronomes",
+          "displayLabel": "pronomes, como 'ele', 'ela' e 'isso'",
+          "summarySingular": "pronome como “ele” ou “ela”",
+          "summaryPlural": "pronomes como “ele” ou “ela”"
         }
       ],
       "priority": 16,
-      "observationTitle": "Como o trecho identifica pessoas e fatos?",
-      "observationTemplate": "Na janela analisada, o anotador encontrou orações relativas: nenhuma ocorrência anotada; complementos oracionais: nenhuma ocorrência anotada; pronomes: nenhuma ocorrência anotada.",
-      "reflectionQuestions": [
-        "Quais pessoas e afirmações aparecem explicitamente?",
-        "Que informação ajudaria a ligar cada afirmação à sua fonte?"
-      ],
+      "observationTitle": "Pronomes e trechos ligados a nomes e verbos",
+      "observationTemplate": "Neste trecho, a leitura automática {summary}.",
+      "reflectionQuestions": [],
       "redundancyFamily": "referenciacao",
-      "displayStatus": "observation_only",
-      "comparisonEnabled": false
+      "displayStatus": "descriptive_comparison",
+      "comparisonEnabled": true,
+      "comparison": {
+        "kind": "descriptive_corpus_frequency",
+        "referenceDataset": "Fake.br-Corpus",
+        "partition": "validation",
+        "authorScope": "all",
+        "sourceRun": "fp-growth-metadados-ampliados-20261008T002311Z",
+        "variant": "sintaxe_ampliada",
+        "scope": "matched_pattern",
+        "fake": {
+          "count": 108,
+          "total": 720,
+          "frequency": 0.15
+        },
+        "true": {
+          "count": 162,
+          "total": 720,
+          "frequency": 0.225
+        }
+      }
     },
     {
       "patternId": "11e010b31664",
@@ -917,7 +1305,10 @@
           "operator": "<=",
           "threshold": 0.0,
           "denominator": "tokens_lexical",
-          "annotation_label": "orações adverbiais"
+          "annotation_label": "orações adverbiais",
+          "displayLabel": "trechos que acrescentam circunstâncias à ação, como 'quando chegou'",
+          "summarySingular": "trecho que indica circunstância, como “quando chegou”",
+          "summaryPlural": "trechos que indicam circunstâncias, como “quando chegou”"
         },
         {
           "item": "DEP_advmod_rate_baixo",
@@ -925,19 +1316,38 @@
           "operator": "<=",
           "threshold": 0.0,
           "denominator": "tokens_lexical",
-          "annotation_label": "modificadores adverbiais"
+          "annotation_label": "modificadores adverbiais",
+          "displayLabel": "palavras que detalham uma ação ou qualidade, como 'rapidamente' e 'muito'",
+          "summarySingular": "detalhe como “rapidamente” em “chegou rapidamente”",
+          "summaryPlural": "detalhes como “rapidamente” em “chegou rapidamente”"
         }
       ],
       "priority": 17,
-      "observationTitle": "Que circunstâncias acompanham a afirmação?",
-      "observationTemplate": "Na janela analisada, o anotador encontrou orações adverbiais: nenhuma ocorrência anotada; modificadores adverbiais: nenhuma ocorrência anotada.",
-      "reflectionQuestions": [
-        "Onde, quando e em que condições o fato teria ocorrido?",
-        "Que circunstância precisa ser conferida na notícia completa ou em outra fonte?"
-      ],
+      "observationTitle": "Detalhes e circunstâncias das ações",
+      "observationTemplate": "Neste trecho, a leitura automática {summary}.",
+      "reflectionQuestions": [],
       "redundancyFamily": "modificacao_adverbial",
-      "displayStatus": "observation_only",
-      "comparisonEnabled": false
+      "displayStatus": "descriptive_comparison",
+      "comparisonEnabled": true,
+      "comparison": {
+        "kind": "descriptive_corpus_frequency",
+        "referenceDataset": "Fake.br-Corpus",
+        "partition": "validation",
+        "authorScope": "all",
+        "sourceRun": "fp-growth-metadados-ampliados-20261008T002311Z",
+        "variant": "sintaxe_ampliada",
+        "scope": "matched_pattern",
+        "fake": {
+          "count": 97,
+          "total": 720,
+          "frequency": 0.13472222222222222
+        },
+        "true": {
+          "count": 198,
+          "total": 720,
+          "frequency": 0.275
+        }
+      }
     },
     {
       "patternId": "2465ffe4f09d",
@@ -948,7 +1358,10 @@
           "operator": "<=",
           "threshold": 0.0,
           "denominator": "tokens_lexical",
-          "annotation_label": "orações relativas"
+          "annotation_label": "orações relativas",
+          "displayLabel": "descrições ligadas a nomes, como 'que chegou' em 'a pessoa que chegou'",
+          "summarySingular": "descrição como “a pessoa que chegou”",
+          "summaryPlural": "descrições como “a pessoa que chegou”"
         },
         {
           "item": "DEP_advmod_rate_baixo",
@@ -956,7 +1369,10 @@
           "operator": "<=",
           "threshold": 0.0,
           "denominator": "tokens_lexical",
-          "annotation_label": "modificadores adverbiais"
+          "annotation_label": "modificadores adverbiais",
+          "displayLabel": "palavras que detalham uma ação ou qualidade, como 'rapidamente' e 'muito'",
+          "summarySingular": "detalhe como “rapidamente” em “chegou rapidamente”",
+          "summaryPlural": "detalhes como “rapidamente” em “chegou rapidamente”"
         },
         {
           "item": "POS_ADV_rate_baixo",
@@ -964,19 +1380,38 @@
           "operator": "<=",
           "threshold": 0.0,
           "denominator": "tokens_lexical",
-          "annotation_label": "advérbios"
+          "annotation_label": "advérbios",
+          "displayLabel": "advérbios, como 'hoje', 'aqui' e 'rapidamente'",
+          "summarySingular": "palavra como “hoje”, “aqui” ou “rapidamente”",
+          "summaryPlural": "palavras como “hoje”, “aqui” ou “rapidamente”"
         }
       ],
       "priority": 18,
-      "observationTitle": "Que circunstâncias acompanham a afirmação?",
-      "observationTemplate": "Na janela analisada, o anotador encontrou orações relativas: nenhuma ocorrência anotada; modificadores adverbiais: nenhuma ocorrência anotada; advérbios: nenhuma ocorrência anotada.",
-      "reflectionQuestions": [
-        "Que circunstâncias estão explícitas neste trecho?",
-        "Qual informação adicional ajudaria a interpretar a afirmação principal?"
-      ],
+      "observationTitle": "Detalhes das ações e descrições ligadas a nomes",
+      "observationTemplate": "Neste trecho, a leitura automática {summary}.",
+      "reflectionQuestions": [],
       "redundancyFamily": "modificacao_adverbial",
-      "displayStatus": "observation_only",
-      "comparisonEnabled": false
+      "displayStatus": "descriptive_comparison",
+      "comparisonEnabled": true,
+      "comparison": {
+        "kind": "descriptive_corpus_frequency",
+        "referenceDataset": "Fake.br-Corpus",
+        "partition": "validation",
+        "authorScope": "all",
+        "sourceRun": "fp-growth-metadados-ampliados-20261008T002311Z",
+        "variant": "sintaxe_ampliada",
+        "scope": "matched_pattern",
+        "fake": {
+          "count": 91,
+          "total": 720,
+          "frequency": 0.12638888888888888
+        },
+        "true": {
+          "count": 175,
+          "total": 720,
+          "frequency": 0.24305555555555555
+        }
+      }
     },
     {
       "patternId": "9865be178551",
@@ -987,7 +1422,10 @@
           "operator": "<=",
           "threshold": 0.0,
           "denominator": "tokens_lexical",
-          "annotation_label": "complementos oracionais"
+          "annotation_label": "complementos oracionais",
+          "displayLabel": "afirmações ligadas a um verbo, como 'o prazo acabou' em 'disse que o prazo acabou'",
+          "summarySingular": "afirmação como “o prazo acabou” em “disse que o prazo acabou”",
+          "summaryPlural": "afirmações como “o prazo acabou” em “disse que o prazo acabou”"
         },
         {
           "item": "POS_ADP_rate_alto",
@@ -995,19 +1433,38 @@
           "operator": ">=",
           "threshold": 0.22448979591836735,
           "denominator": "tokens_lexical",
-          "annotation_label": "preposições"
+          "annotation_label": "preposições",
+          "displayLabel": "palavras de ligação, como 'de', 'em' e 'para'",
+          "summarySingular": "palavra de ligação como “de”, “em” ou “para”",
+          "summaryPlural": "palavras de ligação como “de”, “em” ou “para”"
         }
       ],
       "priority": 19,
-      "observationTitle": "Como o trecho situa suas afirmações?",
-      "observationTemplate": "Na janela analisada, o anotador encontrou complementos oracionais: nenhuma ocorrência anotada; preposições: frequência na faixa superior de referência do treino.",
-      "reflectionQuestions": [
-        "Que pessoas, lugares ou circunstâncias estão ligados à afirmação?",
-        "Que detalhe de contexto você procuraria antes de verificar o fato?"
-      ],
+      "observationTitle": "Palavras de ligação e afirmações ligadas a verbos",
+      "observationTemplate": "Neste trecho, a leitura automática {summary}.",
+      "reflectionQuestions": [],
       "redundancyFamily": "contexto",
-      "displayStatus": "observation_only",
-      "comparisonEnabled": false
+      "displayStatus": "descriptive_comparison",
+      "comparisonEnabled": true,
+      "comparison": {
+        "kind": "descriptive_corpus_frequency",
+        "referenceDataset": "Fake.br-Corpus",
+        "partition": "validation",
+        "authorScope": "all",
+        "sourceRun": "fp-growth-metadados-ampliados-20261008T002311Z",
+        "variant": "sintaxe_ampliada",
+        "scope": "matched_pattern",
+        "fake": {
+          "count": 74,
+          "total": 720,
+          "frequency": 0.10277777777777777
+        },
+        "true": {
+          "count": 190,
+          "total": 720,
+          "frequency": 0.2638888888888889
+        }
+      }
     }
   ]
 }

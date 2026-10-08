@@ -9,6 +9,7 @@ import os
 import socket
 
 from models.unsupervised.engine import CHARACTER_LIMIT, CATALOG_PATH, NewsInsightsEngine
+from models.supervised.engine import SupervisedEngine, InferenceBusy, empty_response as supervised_empty_response
 
 LOGGER = logging.getLogger('news_insights')
 MAX_BODY_BYTES = 1_000_000
@@ -26,7 +27,7 @@ def empty_response(status):
             'quality': {'empty': True, 'noEligibleTokens': True, 'truncated': False}, 'insights': []}
 
 
-def create_server(host='127.0.0.1', port=8010, engine=None):
+def create_server(host='127.0.0.1', port=8010, engine=None, supervised_engine=None):
     class Handler(BaseHTTPRequestHandler):
         server_version = 'NewsInsights/1'
 
@@ -44,51 +45,65 @@ def create_server(host='127.0.0.1', port=8010, engine=None):
             self.wfile.write(body)
 
         def do_GET(self):
-            if self.path != '/health':
+            if self.path == '/health/supervised':
+                ready = self.server.supervised_engine is not None
+                self.send_json(200 if ready else 503,
+                               {'status': 'ok' if ready else 'unavailable',
+                                **(self.server.supervised_engine.identity if ready else {})})
+                return
+            if self.path not in ('/health', '/health/unsupervised'):
                 self.send_json(404, {'error': 'not_found'})
                 return
             response = empty_response('ok' if self.server.engine is not None else 'unavailable')
             self.send_json(200 if self.server.engine is not None else 503,
                            {'status': response['analysisStatus'], 'catalogVersion': response['catalogVersion'],
-                            'extractorVersion': response['extractorVersion'], 'comparisonEnabled': False})
+                            'extractorVersion': response['extractorVersion'],
+                            'comparisonEnabled': self.server.engine is not None
+                                and self.server.engine.catalog['comparisonEnabled']})
 
         def do_POST(self):
-            if self.path != '/analyze':
+            if self.path not in ('/analyze', '/supervised/analyze'):
                 self.send_json(404, {'error': 'not_found'})
                 return
+            supervised = self.path == '/supervised/analyze'
+            selected_engine = self.server.supervised_engine if supervised else self.server.engine
+            def failure(status):
+                return supervised_empty_response(status, selected_engine.identity if selected_engine else None) if supervised else empty_response(status)
             self.close_connection = True
             try:
                 length_header = self.headers.get('Content-Length', '')
                 if not length_header.isdecimal() or self.headers.get('Transfer-Encoding'):
-                    self.send_json(400, empty_response('invalid_text'))
+                    self.send_json(400, failure('invalid_text'))
                     return
                 length = int(length_header)
                 if length < 1 or length > MAX_BODY_BYTES:
-                    self.send_json(413 if length > MAX_BODY_BYTES else 400, empty_response('invalid_text'))
+                    self.send_json(413 if length > MAX_BODY_BYTES else 400, failure('invalid_text'))
                     return
                 if self.headers.get_content_type() != 'application/json':
-                    self.send_json(415, empty_response('invalid_text'))
+                    self.send_json(415, failure('invalid_text'))
                     return
                 raw = self.rfile.read(length)
                 if len(raw) != length:
-                    self.send_json(400, empty_response('invalid_text'))
+                    self.send_json(400, failure('invalid_text'))
                     return
                 payload = json.loads(raw.decode('utf8'))
                 if not isinstance(payload, dict) or set(payload) != {'text'} or not isinstance(payload['text'], str):
-                    self.send_json(400, empty_response('invalid_text'))
+                    self.send_json(400, failure('invalid_text'))
                     return
             except (ValueError, UnicodeError, RecursionError, socket.timeout):
-                self.send_json(400, empty_response('invalid_text'))
+                self.send_json(400, failure('invalid_text'))
                 return
-            if self.server.engine is None:
-                self.send_json(503, empty_response('unavailable'))
+            if selected_engine is None:
+                self.send_json(503, failure('unavailable'))
                 return
             try:
-                response = self.server.engine.analyze_text(payload['text'])
+                response = selected_engine.analyze_text(payload['text'])
                 self.send_json(400 if response['analysisStatus'] == 'invalid_text' else 200, response)
+            except InferenceBusy:
+                self.send_json(503, failure('unavailable'))
             except Exception:
                 LOGGER.exception('Analysis failed')
-                self.send_json(503, empty_response('unavailable'))
+                self.send_json(503, failure('unavailable'))
 
         def log_message(self, message, *args):
             # No request text, URL query, or news body is logged.
@@ -97,6 +112,7 @@ def create_server(host='127.0.0.1', port=8010, engine=None):
     server = ThreadingHTTPServer((host, port), Handler)
     server.daemon_threads = True
     server.engine = engine
+    server.supervised_engine = supervised_engine
     return server
 
 
@@ -111,7 +127,12 @@ def main():
     except Exception:
         LOGGER.exception('Engine initialization failed; service remains unavailable')
         engine = None
-    server = create_server(args.host, args.port, engine)
+    try:
+        supervised_engine = SupervisedEngine()
+    except Exception:
+        LOGGER.exception('Supervised initialization failed; observations remain independently available')
+        supervised_engine = None
+    server = create_server(args.host, args.port, engine, supervised_engine)
     LOGGER.info('Listening on %s:%s; ready=%s', args.host, args.port, engine is not None)
     try:
         server.serve_forever()

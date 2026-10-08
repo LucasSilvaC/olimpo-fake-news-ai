@@ -1,9 +1,10 @@
 # Standalone serving context: only model-engine/ is needed at runtime.
-FROM python:3.12-slim
+FROM python:3.14.2-slim
 WORKDIR /app
 COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 COPY service.py ./
+COPY modelo_olimpo.py metadados_spacy.py ./
 COPY models ./models
 RUN useradd --create-home modelengine
 USER modelengine

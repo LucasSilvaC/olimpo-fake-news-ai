@@ -1,10 +1,12 @@
 from __future__ import annotations
 
 from http.client import HTTPConnection
+import copy
 import json
 from pathlib import Path
 import sys
 import threading
+import tempfile
 import unittest
 from zipfile import ZipFile
 
@@ -98,17 +100,37 @@ class NewsInsightsTests(unittest.TestCase):
         self.assertLessEqual(len(response['insights']), 3)
         self.assertEqual(len(response['insights']), len({i['redundancyFamily'] for i in response['insights']}))
         for insight in response['insights']:
-            self.assertTrue(insight['reflectionQuestions'])
+            self.assertEqual(insight['reflectionQuestions'], [])
             for measurement in insight['measurements']:
                 self.assertGreater(measurement['denominatorCount'], 0)
                 self.assertAlmostEqual(measurement['value'], measurement['count'] / measurement['denominatorCount'])
 
-    def test_product_catalog_reproducible_and_has_no_class_data(self):
+    def test_product_catalog_reproducible_with_exact_validation_frequencies(self):
         self.assertEqual(self.engine.catalog, build_catalog())
         self.assertEqual(len(self.engine.catalog['patterns']), 20)
-        self.assertFalse(self.engine.catalog['comparisonEnabled'])
+        self.assertTrue(self.engine.catalog['comparisonEnabled'])
         self.assertFalse(self.engine.catalog['review']['humanEditorialApproval'])
-        forbidden = {'classComparison', 'classification', 'confidence', 'fake_count', 'true_count', 'composition_fake', 'frequency_in_fake'}
+        source_path = RESEARCH_ROOT / 'outputs/model-comparison/fp-growth-metadados-ampliados-20261008T002311Z/sintaxe_ampliada/pattern_catalog.json'
+        source = json.loads(source_path.read_text(encoding='utf8'))
+        selected = [p for p in source['patterns'] if p['selectionRole'] == 'review_candidate']
+        self.assertEqual([p['patternId'] for p in self.engine.catalog['patterns']], [p['patternId'] for p in selected])
+        for product, scientific in zip(self.engine.catalog['patterns'], selected, strict=True):
+            self.assertEqual([{k: v for k, v in item.items() if k not in {'displayLabel', 'summarySingular', 'summaryPlural'}} for item in product['items']], scientific['items'])
+            row = next(r for r in scientific['classComparison'] if r['partition'] == 'validation' and r['author_state'] == 'all')
+            comparison = product['comparison']
+            self.assertEqual(comparison['scope'], 'matched_pattern')
+            self.assertEqual(comparison['partition'], 'validation')
+            self.assertEqual(comparison['authorScope'], 'all')
+            self.assertEqual(comparison['sourceRun'], source['sourceRun'])
+            for label in ['fake', 'true']:
+                self.assertEqual(comparison[label]['total'], 720)
+                self.assertEqual(comparison[label]['count'], row[label + '_count'])
+                self.assertEqual(comparison[label]['frequency'], row['frequency_in_' + label])
+        # Golden denominator direction: P(pattern | labelled class), not P(class | pattern).
+        first = self.engine.catalog['patterns'][0]['comparison']
+        self.assertEqual(first['fake'], {'count': 185, 'total': 720, 'frequency': 185 / 720})
+        self.assertEqual(first['true'], {'count': 256, 'total': 720, 'frequency': 256 / 720})
+        forbidden = {'classComparison', 'classification', 'confidence', 'fake_count', 'true_count', 'composition_fake', 'composition_true', 'probability', 'risk', 'verdict'}
         def walk(value):
             if isinstance(value, dict):
                 self.assertFalse(forbidden.intersection(value))
@@ -119,6 +141,67 @@ class NewsInsightsTests(unittest.TestCase):
                     walk(child)
         walk(self.engine.catalog)
         walk(self.engine.analyze_text('O governo publicou documentos sobre escolas.'))
+
+    def test_simple_observations_preserve_every_item_in_the_combination(self):
+        result = self.engine.analyze_text('O governo publicou documentos sobre as escolas.')
+        self.assertEqual(result['analysisStatus'], 'ok')
+        for insight in result['insights']:
+            pattern = next(p for p in self.engine.catalog['patterns'] if p['patternId'] == insight['patternId'])
+            self.assertEqual(insight['comparison'], pattern['comparison'])
+            self.assertEqual(len(insight['measurements']), len(pattern['items']))
+            self.assertNotIn('300', insight['observation'])
+            self.assertNotIn('tokens', insight['observation'])
+            self.assertNotIn('limite', insight['observation'])
+            for jargon in ['advérbio', 'modificador', 'auxiliar', 'ocorrências identificadas']:
+                self.assertNotIn(jargon, insight['observation'])
+            for item, measurement in zip(pattern['items'], insight['measurements'], strict=True):
+                self.assertEqual(measurement['displayLabel'], item['displayLabel'])
+                label = item['summarySingular'] if measurement['count'] == 1 else item['summaryPlural']
+                self.assertIn(label, insight['observation'])
+                self.assertIn(str(measurement['count']) + ' ocorrências identificadas', measurement['displayText'])
+        self.assertEqual(result['insights'][0]['observation'],
+                         'Neste trecho, a leitura automática não encontrou descrições como “a pessoa que chegou” nem pronomes como “ele” ou “ela”.')
+        # Editorial coverage for every frozen conjunction, including nonzero limits.
+        for pattern in self.engine.catalog['patterns']:
+            measures = [{'count': 0 if item['threshold'] == 0 else 1} for item in pattern['items']]
+            summary = self.engine.summarize_measurements(pattern, measures)
+            for item, measurement in zip(pattern['items'], measures, strict=True):
+                self.assertIn(item['summaryPlural'] if measurement['count'] == 0 else '1 ' + item['summarySingular'], summary)
+                if item['threshold'] != 0:
+                    band = 'mais baixa' if item['operator'] == '<=' else 'mais alta'
+                    self.assertIn('proporção na faixa ' + band + ' da referência', summary)
+
+    def test_selection_does_not_use_reference_class_frequencies(self):
+        catalog = copy.deepcopy(self.engine.catalog)
+        changed = copy.deepcopy(catalog)
+        for index, pattern in enumerate(changed['patterns']):
+            pattern['comparison']['fake'] = {'count': 720 if index % 2 else 0, 'total': 720, 'frequency': 1 if index % 2 else 0}
+            pattern['comparison']['true'] = {'count': 0 if index % 2 else 720, 'total': 720, 'frequency': 0 if index % 2 else 1}
+        try:
+            baseline = self.engine.analyze_text('O governo publicou documentos sobre as escolas.')
+            self.engine.catalog = changed
+            altered = self.engine.analyze_text('O governo publicou documentos sobre as escolas.')
+            self.assertEqual([i['patternId'] for i in baseline['insights']], [i['patternId'] for i in altered['insights']])
+            self.assertEqual([i['observation'] for i in baseline['insights']], [i['observation'] for i in altered['insights']])
+        finally:
+            self.engine.catalog = catalog
+
+    def test_invalid_comparison_provenance_or_denominator_fails_closed(self):
+        for patch in [
+            {'partition': 'train'}, {'authorScope': 'com_autor'}, {'scope': 'single_feature'},
+            {'referenceDataset': 'unknown'}, {'composition_fake': 0.5},
+            {'fake': {'count': 185, 'total': 441, 'frequency': 185 / 441}},
+            {'fake': {'count': 185, 'total': 720, 'frequency': 0.9}},
+            {'fake': {'count': True, 'total': 720, 'frequency': 1 / 720}},
+            {'fake': {'count': 721, 'total': 720, 'frequency': 721 / 720}},
+        ]:
+            with self.subTest(patch=patch), tempfile.TemporaryDirectory() as directory:
+                catalog = copy.deepcopy(self.engine.catalog)
+                catalog['patterns'][0]['comparison'].update(patch)
+                path = Path(directory) / 'catalog.json'
+                path.write_text(json.dumps(catalog), encoding='utf8')
+                with self.assertRaises(ValueError):
+                    NewsInsightsEngine(path, nlp=self.engine.nlp)
 
     def test_serving_has_no_research_or_mining_imports(self):
         for name in ['fp_growth_principal', 'linguistic_fp_growth', 'linguistic_features', 'mlxtend']:
@@ -152,7 +235,7 @@ class ServiceTests(unittest.TestCase):
         status, health = self.request('GET', '/health')
         self.assertEqual(status, 200)
         self.assertEqual(health['status'], 'ok')
-        self.assertFalse(health['comparisonEnabled'])
+        self.assertTrue(health['comparisonEnabled'])
         text = 'Os jornalistas leram 20 notícias.'
         status, body = self.request('POST', '/analyze', json.dumps({'text': text}).encode(), {'Content-Type': 'application/json'})
         self.assertEqual(status, 200)
