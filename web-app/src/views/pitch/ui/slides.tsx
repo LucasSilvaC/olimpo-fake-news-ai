@@ -17,7 +17,7 @@ function Cover(): React.ReactElement {
         <div
           className={`${styles.float} grid size-44 place-items-center rounded-[40px] bg-white p-5 shadow-[0_30px_60px_-15px_rgba(15,40,120,0.6)]`}
         >
-          <Image src="/olimpo-logo.svg" alt="Logo do Olimpo" width={150} height={150} priority />
+          <Image src="/olimpo-logo.png" alt="Logo do Olimpo" width={150} height={150} priority />
         </div>
       </Rv>
       <Rv d={1}>

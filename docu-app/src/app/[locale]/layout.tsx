@@ -32,6 +32,9 @@ export async function generateMetadata({ params }: LocaleLayoutProps): Promise<M
       template: t("titleTemplate"),
     },
     description: t("description"),
+    icons: {
+      icon: "/olimpo-logo.png",
+    },
   };
 }
 
