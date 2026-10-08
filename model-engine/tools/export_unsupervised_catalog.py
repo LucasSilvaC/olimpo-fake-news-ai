@@ -101,7 +101,8 @@ def descriptive_comparison(pattern, source):
 
 
 def sha256(path):
-    return hashlib.sha256(path.read_bytes()).hexdigest()
+    """Hash research text as LF, matching Git blobs on Windows and Linux."""
+    return hashlib.sha256(path.read_bytes().replace(b'\r\n', b'\n')).hexdigest()
 
 
 def verify_serving_equations():

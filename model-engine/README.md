@@ -224,6 +224,9 @@ Eles são necessários apenas para verificação, não para servir notícias nov
 reconstrói o catálogo exclusivamente a partir dos artefatos existentes; não
 executa mineração. Se os candidatos mudarem, o script exige revisão dos
 templates. Alterações nas fontes também exigem revisão antes da reconstrução.
+Os hashes de procedência textual usam LF, como os blobs do Git, para reproduzir
+o catálogo em checkouts Windows e Linux. O hash do runtime corresponde ao código
+LF exigido por `.gitattributes`; as regras, medidas e frequências permanecem iguais.
 
 Validação inicial anterior à separação: os 14 testes do principal e do motor passaram com Python 3.14.4
 e as versões de bibliotecas fixadas acima. A imagem Docker também foi construída
