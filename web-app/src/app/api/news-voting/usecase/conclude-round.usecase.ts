@@ -6,11 +6,7 @@ import { INewsVoteRepository } from "../repositories/news-vote.repository.interf
 import { redisVoteRepository as defaultRedisVoteRepository } from "../repositories/redis-vote.repository";
 import { IRedisVoteRepository } from "../repositories/redis-vote.repository.interface";
 
-import {
-  AIAnalysisDTO,
-  getArticleAnalysisUseCase as defaultGetArticleAnalysisUseCase,
-  GetArticleAnalysisUseCase,
-} from "@/app/api/ai-feedback";
+import type { AIAnalysisDTO } from "@/app/api/ai-feedback/entities/ai-analysis.entity";
 import { drizzleNewsArticleRepository as defaultNewsArticleRepository } from "@/app/api/ai-feedback/repositories/drizzle-news-article.repository";
 import { INewsArticleRepository } from "@/app/api/ai-feedback/repositories/news-article.repository.interface";
 import {
@@ -24,15 +20,18 @@ import {
   IRedisRoomRepository,
   LeaderboardEntry,
 } from "@/app/api/rooms/repositories";
+import type { MLTargetType } from "@/server/shared/database/schemas/enums";
 
 export interface ConcludeRoundInput {
   roomId: string;
   round: number;
+  userId: string;
 }
 
 export interface ConcludeRoundOutput {
   roundCompleted: boolean;
-  analysis?: AIAnalysisDTO;
+  officialAnswer?: MLTargetType;
+  modelAnalysis?: AIAnalysisDTO | null;
   leaderboard?: LeaderboardEntry[];
 }
 
@@ -43,7 +42,7 @@ export class ConcludeRoundUseCase {
     private readonly roomRepository: IRoomRepository = defaultRoomRepository,
     private readonly redisRoomRepository: IRedisRoomRepository = defaultRedisRoomRepository,
     private readonly newsArticleRepository: INewsArticleRepository = defaultNewsArticleRepository,
-    private readonly getArticleAnalysisUseCase: GetArticleAnalysisUseCase = defaultGetArticleAnalysisUseCase,
+    _legacyAnalysisDependency?: unknown,
     private readonly eventPublisher: IEventPublisher = defaultRedisEventPublisher,
   ) {}
 
@@ -51,6 +50,10 @@ export class ConcludeRoundUseCase {
     const room = await this.roomRepository.findById(input.roomId);
     if (!room) {
       throw new Error(`Room with id "${input.roomId}" not found`);
+    }
+
+    if (!(await this.roomRepository.findMember(input.roomId, input.userId))) {
+      throw new Error("User is not a member of this room");
     }
 
     if (room.status !== "in_progress") {
@@ -67,20 +70,33 @@ export class ConcludeRoundUseCase {
       throw new Error(`Playlist item not found for round ${room.currentRound}`);
     }
 
+    const article = await this.newsArticleRepository.findById(currentItem.articleId);
+    if (!article) throw new Error("Article not found");
+    const alreadyCompleted = await this.redisVoteRepository.isRoundCompleted(
+      input.roomId,
+      input.round,
+    );
+    if (!alreadyCompleted) {
+      const count = await this.redisVoteRepository.getVoteCount(input.roomId, input.round);
+      const participants = await this.roomRepository.countMembers(input.roomId);
+      const deadline = room.updatedAt.getTime() + room.roundDurationSeconds * 1000;
+      if (Date.now() < deadline && (participants < 1 || count < participants)) {
+        throw new Error("Cannot conclude round before its server deadline or all votes");
+      }
+    }
+
     const isFirstToComplete = await this.redisVoteRepository.markRoundCompleted(
       input.roomId,
       room.currentRound,
     );
 
     if (!isFirstToComplete) {
-      const analysis = await this.getArticleAnalysisUseCase.execute({
-        articleId: currentItem.articleId,
-      });
       const leaderboard = await this.redisRoomRepository.getLeaderboard(input.roomId);
 
       return {
         roundCompleted: true,
-        analysis,
+        officialAnswer: article.targetClassification,
+        modelAnalysis: null,
         leaderboard,
       };
     }
@@ -122,9 +138,6 @@ export class ConcludeRoundUseCase {
       );
     }
 
-    const analysis = await this.getArticleAnalysisUseCase.execute({
-      articleId: currentItem.articleId,
-    });
     const leaderboard = await this.redisRoomRepository.getLeaderboard(input.roomId);
 
     await this.eventPublisher.publish(room.pin, {
@@ -134,14 +147,16 @@ export class ConcludeRoundUseCase {
       payload: {
         round: room.currentRound,
         leaderboard,
-        analysis,
+        officialAnswer: article.targetClassification,
+        modelAnalysis: null,
       },
       timestamp: new Date().toISOString(),
     });
 
     return {
       roundCompleted: true,
-      analysis,
+      officialAnswer: article.targetClassification,
+      modelAnalysis: null,
       leaderboard,
     };
   }

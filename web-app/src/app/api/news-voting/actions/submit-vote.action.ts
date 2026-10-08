@@ -5,9 +5,10 @@ import { z } from "zod";
 import { NewsVoteDTO } from "../entities";
 import { submitVoteUseCase } from "../usecase/submit-vote.usecase";
 
-import { AIAnalysisDTO } from "@/app/api/ai-feedback";
+import type { AIAnalysisDTO } from "@/app/api/ai-feedback/entities/ai-analysis.entity";
 import { getSessionUseCase } from "@/app/api/auth/usecase/get-session.usecase";
 import { LeaderboardEntry } from "@/app/api/rooms/repositories";
+import type { MLTargetType } from "@/server/shared/database/schemas/enums";
 import { VoteOptionType } from "@/server/shared/database/schemas/enums";
 
 const submitVoteSchema = z.object({
@@ -25,7 +26,8 @@ export type SubmitVoteActionResult =
       success: true;
       vote: NewsVoteDTO;
       roundCompleted: boolean;
-      analysis?: AIAnalysisDTO;
+      officialAnswer?: MLTargetType;
+      modelAnalysis?: AIAnalysisDTO | null;
       leaderboard?: LeaderboardEntry[];
     }
   | {
@@ -65,9 +67,12 @@ export async function submitVoteAction(
 
     return {
       success: true,
-      vote: result.vote,
+      vote: result.roundCompleted
+        ? result.vote
+        : { ...result.vote, isCorrect: null, pointsAwarded: 0 },
       roundCompleted: result.roundCompleted,
-      analysis: result.analysis,
+      officialAnswer: result.officialAnswer,
+      modelAnalysis: result.modelAnalysis,
       leaderboard: result.leaderboard,
     };
   } catch (error: unknown) {

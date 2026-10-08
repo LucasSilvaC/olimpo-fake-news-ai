@@ -7,6 +7,7 @@ import * as React from "react";
 import { toast } from "sonner";
 
 import { MatchScoreboardStage, type IMatchPlayer } from "./match-scoreboard-stage";
+import { ModelAnalysisPanel } from "./model-analysis-panel";
 import { NewsCheckStage, type INewsArticleData } from "./news-check-stage";
 import { RoundScoreboardStage, type IScoreboardPlayer } from "./round-scoreboard-stage";
 import { VerdictWaitingStage } from "./verdict-waiting-stage";
@@ -40,6 +41,7 @@ export interface RoomGameRoom {
   hostId: string;
   status: RoomStatus;
   roundDurationSeconds: number;
+  roundStartedAt?: string;
   currentRound: number;
   totalRounds: number;
 }
@@ -53,9 +55,7 @@ export interface IUserVoteState {
   pointsAwarded?: number;
   isCorrect?: boolean | null;
   officialAnswer?: "reliable" | "unreliable" | "uncertain" | null;
-  reliabilityScore?: number;
   timeTakenSeconds?: number;
-  reasons?: string[];
   isTimeout?: boolean;
 }
 
@@ -78,6 +78,7 @@ export interface IRoomGameViewProps {
   currentUserId: string;
   initialStage?: GameStage;
   initialVote?: IUserVoteState | null;
+  initialRoundClosed?: boolean;
 }
 
 const FALLBACK_ARTICLE: INewsArticleData = {
@@ -89,6 +90,30 @@ const FALLBACK_ARTICLE: INewsArticleData = {
   imageUrl: null,
 };
 
+const ANSWER_LABELS = { reliable: "Verdadeiro", unreliable: "Falso", uncertain: "Incerto" };
+
+function deadlineFor(startedAt: string | undefined, durationSeconds: number): number {
+  const start = startedAt ? Date.parse(startedAt) : Number.NaN;
+  return (Number.isFinite(start) ? start : Date.now()) + (durationSeconds || 30) * 1000;
+}
+
+function secondsUntil(deadline: number): number {
+  return Math.max(0, Math.ceil((deadline - Date.now()) / 1000));
+}
+
+// Presentation mirrors the game's score only after its registered answer is disclosed.
+function closedVoteResult(
+  vote: IUserVoteState | null,
+  answer: IUserVoteState["vote"] | null,
+): {
+  isCorrect: boolean;
+  pointsAwarded: number;
+} {
+  if (!vote || vote.isTimeout || !answer) return { isCorrect: false, pointsAwarded: 0 };
+  const isCorrect = vote.vote === answer;
+  return { isCorrect, pointsAwarded: isCorrect ? 100 : vote.vote === "uncertain" ? 25 : 0 };
+}
+
 export function RoomGameView({
   room,
   members,
@@ -96,6 +121,7 @@ export function RoomGameView({
   currentUserId,
   initialStage,
   initialVote = null,
+  initialRoundClosed = false,
 }: IRoomGameViewProps): React.ReactElement {
   const router = useRouter();
 
@@ -103,26 +129,26 @@ export function RoomGameView({
   const defaultStage: GameStage = React.useMemo(() => {
     if (initialStage) return initialStage;
     if (room.status === "finished") return "MATCH_FINALE";
+    if (initialRoundClosed) return "ROUND_SCOREBOARD";
     if (initialVote) return "WAITING";
     return "CHECKING";
-  }, [initialStage, initialVote, room.status]);
+  }, [initialStage, initialVote, initialRoundClosed, room.status]);
 
   const [stage, setStage] = React.useState<GameStage>(defaultStage);
   const [currentRound, setCurrentRound] = React.useState<number>(room.currentRound || 1);
-  const [timeRemaining, setTimeRemaining] = React.useState<number | null>(
-    room.roundDurationSeconds || 30,
+  const [roundDeadline, setRoundDeadline] = React.useState(() =>
+    deadlineFor(room.roundStartedAt, room.roundDurationSeconds),
+  );
+  const [timeRemaining, setTimeRemaining] = React.useState<number | null>(() =>
+    secondsUntil(roundDeadline),
   );
   const [lastVote, setLastVote] = React.useState<IUserVoteState | null>(initialVote);
   const [votedCount, setVotedCount] = React.useState<number>(initialVote ? 1 : 0);
   const [isConnected, setIsConnected] = React.useState(true);
 
-  // Verdict reading countdown state and official AI analysis
+  // The server completion marker controls prediction access separately from a vote.
+  const [roundClosed, setRoundClosed] = React.useState(initialRoundClosed);
   const [verdictCountdown, setVerdictCountdown] = React.useState<number | null>(null);
-  const [roundAnalysis, setRoundAnalysis] = React.useState<{
-    classification: "reliable" | "unreliable" | "uncertain";
-    reasons: string[];
-    confidence: number;
-  } | null>(null);
 
   // Maintain players scores and streaks
   const [players, setPlayers] = React.useState<IRoomPlayerState[]>(() =>
@@ -168,19 +194,34 @@ export function RoomGameView({
 
   // Update leaderboard scores when server broadcasts
   const updateLeaderboardFromEntries = React.useCallback(
-    (entries: Array<{ userId: string; score: number }>) => {
+    (
+      entries: Array<{ userId: string; score: number }>,
+      officialAnswer?: IUserVoteState["vote"] | null,
+      submittedVote?: IUserVoteState,
+    ) => {
       setPlayers((prev) =>
         prev.map((player) => {
           const entry = entries.find((e) => e.userId === player.userId);
           if (!entry) return player;
+          if (entry.score === player.score && player.isCorrect !== undefined) return player;
 
           const delta = Math.max(0, entry.score - player.score);
           const scored = delta > 0;
 
           // For the current user, prefer our recorded vote details if available
           const isCurrentUser = player.userId === currentUserId;
-          const isCorrect = isCurrentUser ? (lastVote?.isCorrect ?? scored) : scored;
-          const earnedDelta = isCurrentUser ? (lastVote?.pointsAwarded ?? delta) : delta;
+          const recordedVote = submittedVote ?? lastVote;
+          const disclosedResult = officialAnswer
+            ? closedVoteResult(recordedVote, officialAnswer)
+            : null;
+          const isCorrect = isCurrentUser
+            ? (disclosedResult?.isCorrect ?? recordedVote?.isCorrect ?? scored)
+            : scored;
+          const earnedDelta = isCurrentUser
+            ? (disclosedResult?.pointsAwarded ??
+              (recordedVote?.isCorrect != null ? recordedVote.pointsAwarded : delta) ??
+              delta)
+            : delta;
 
           return {
             ...player,
@@ -196,29 +237,25 @@ export function RoomGameView({
     [currentUserId, lastVote],
   );
 
-  // Round countdown timer (active only during CHECKING stage)
+  // Recompute from the server's deadline, including after suspended tabs or a reload.
   React.useEffect(() => {
-    if (stage !== "CHECKING" || timeRemaining === null || timeRemaining <= 0) {
+    if (roundClosed || (stage !== "CHECKING" && stage !== "WAITING")) {
       return;
     }
 
     const interval = setInterval(() => {
-      setTimeRemaining((prev) => {
-        if (prev === null || prev <= 1) {
-          clearInterval(interval);
-          return 0;
-        }
-        return prev - 1;
-      });
+      const remaining = secondsUntil(roundDeadline);
+      setTimeRemaining(remaining);
+      if (remaining === 0) clearInterval(interval);
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [stage, timeRemaining]);
+  }, [stage, roundDeadline, roundClosed]);
 
   // When round duration expires (timeRemaining === 0), force-conclude the round
   // (host concludes at 1.2s; participants have a fallback at 3.5s)
   React.useEffect(() => {
-    if (timeRemaining !== 0 || stage !== "CHECKING") {
+    if (timeRemaining !== 0 || roundClosed || (stage !== "CHECKING" && stage !== "WAITING")) {
       return;
     }
 
@@ -232,7 +269,7 @@ export function RoomGameView({
     }, delay);
 
     return () => clearTimeout(timeoutId);
-  }, [timeRemaining, stage, isHost, room.id, currentRound]);
+  }, [timeRemaining, stage, roundClosed, isHost, room.id, currentRound]);
 
   // Countdown timer for reading the official verdict (10 seconds)
   React.useEffect(() => {
@@ -277,13 +314,19 @@ export function RoomGameView({
         const messageEvent = event as MessageEvent<string>;
         const data = JSON.parse(messageEvent.data) as RoomEvent<RoundStartedPayload>;
         const nextRound = data.payload?.currentRound ?? currentRound + 1;
+        if (nextRound <= currentRound) return;
 
         setCurrentRound(nextRound);
         setLastVote(null);
-        setRoundAnalysis(null);
+        setPlayers((prev) =>
+          prev.map((player) => ({ ...player, roundDelta: 0, isCorrect: undefined })),
+        );
+        setRoundClosed(false);
         setVerdictCountdown(null);
         setVotedCount(0);
-        setTimeRemaining(room.roundDurationSeconds || 30);
+        const nextDeadline = deadlineFor(data.timestamp, room.roundDurationSeconds);
+        setRoundDeadline(nextDeadline);
+        setTimeRemaining(secondsUntil(nextDeadline));
         setStage("CHECKING");
 
         toast.info(`Rodada ${nextRound} iniciada!`, {
@@ -298,37 +341,19 @@ export function RoomGameView({
       try {
         const messageEvent = event as MessageEvent<string>;
         const data = JSON.parse(messageEvent.data) as RoomEvent<RoundCompletedPayload>;
-        if (data.payload?.leaderboard) {
-          updateLeaderboardFromEntries(data.payload.leaderboard);
+        if (data.payload?.round !== currentRound) return;
+        const officialAnswer = data.payload.officialAnswer ?? null;
+        if (data.payload.leaderboard) {
+          updateLeaderboardFromEntries(data.payload.leaderboard, officialAnswer);
         }
-
-        const analysis = data.payload?.analysis;
-        if (analysis) {
-          const confidenceScore =
-            analysis.confidence > 1
-              ? Math.round(analysis.confidence)
-              : Math.round(analysis.confidence * 100);
-
-          setRoundAnalysis({
-            classification: analysis.classification,
-            reasons: analysis.reasons || [],
-            confidence: confidenceScore,
-          });
-
-          setLastVote((prev) => {
-            const isCorrect = prev?.vote ? prev.vote === analysis.classification : false;
-            return {
-              vote: prev?.vote ?? "uncertain",
-              pointsAwarded: prev?.pointsAwarded ?? 0,
-              isCorrect: prev?.isCorrect ?? isCorrect,
-              officialAnswer: analysis.classification,
-              reliabilityScore: confidenceScore,
-              reasons: analysis.reasons || [],
-              timeTakenSeconds: prev?.timeTakenSeconds ?? (room.roundDurationSeconds || 30),
-              isTimeout: prev?.isTimeout ?? prev === null,
-            };
-          });
-        }
+        setRoundClosed(true);
+        setLastVote((prev) => ({
+          vote: prev?.vote ?? "uncertain",
+          ...closedVoteResult(prev, officialAnswer),
+          officialAnswer,
+          timeTakenSeconds: prev?.timeTakenSeconds ?? (room.roundDurationSeconds || 30),
+          isTimeout: prev?.isTimeout ?? prev === null,
+        }));
 
         setVotedCount(members.length);
         // Retain players in WAITING stage for verdict reveal reading period
@@ -336,7 +361,7 @@ export function RoomGameView({
         setVerdictCountdown(10);
 
         toast.success("Rodada finalizada!", {
-          description: "Confira o gabarito oficial e os argumentos da IA.",
+          description: "Confira o gabarito oficial da rodada e reflita sobre sua resposta.",
         });
       } catch {
         setStage("ROUND_SCOREBOARD");
@@ -387,38 +412,38 @@ export function RoomGameView({
       isTimeout?: boolean;
     }): void => {
       if (data.result.success) {
-        const analysis = data.result.analysis;
-        const confidenceScore = analysis
-          ? analysis.confidence > 1
-            ? Math.round(analysis.confidence)
-            : Math.round(analysis.confidence * 100)
-          : 85;
-
         const voteState: IUserVoteState = {
           vote: data.vote,
           pointsAwarded: data.result.vote.pointsAwarded,
           isCorrect: data.result.vote.isCorrect,
-          officialAnswer: analysis?.classification ?? null,
-          reliabilityScore: confidenceScore,
-          reasons: analysis?.reasons,
+          officialAnswer: data.result.roundCompleted ? (data.result.officialAnswer ?? null) : null,
           timeTakenSeconds: data.timeTakenSeconds,
           isTimeout: data.isTimeout,
         };
 
-        setLastVote(voteState);
-        setStage("WAITING");
+        setLastVote((prev) => {
+          const officialAnswer = voteState.officialAnswer ?? prev?.officialAnswer ?? null;
+          return {
+            ...voteState,
+            ...(officialAnswer ? closedVoteResult(voteState, officialAnswer) : {}),
+            officialAnswer,
+          };
+        });
+        setStage((prev) =>
+          prev === "MATCH_FINALE" || prev === "ROUND_SCOREBOARD" ? prev : "WAITING",
+        );
         setVotedCount((prev) => Math.min(members.length, prev + 1));
 
         // If everyone voted and round completed on this action
-        if (data.result.roundCompleted && analysis) {
+        if (data.result.roundCompleted) {
           if (data.result.leaderboard) {
-            updateLeaderboardFromEntries(data.result.leaderboard);
+            updateLeaderboardFromEntries(
+              data.result.leaderboard,
+              data.result.officialAnswer,
+              voteState,
+            );
           }
-          setRoundAnalysis({
-            classification: analysis.classification,
-            reasons: analysis.reasons || [],
-            confidence: confidenceScore,
-          });
+          setRoundClosed(true);
           setVotedCount(members.length);
           // Standardized 10-second countdown for reading the verdict and AI reasons
           setVerdictCountdown(10);
@@ -533,14 +558,33 @@ export function RoomGameView({
             pointsAwarded={lastVote?.pointsAwarded ?? 0}
             timeTakenSeconds={lastVote?.timeTakenSeconds ?? 0}
             isCorrect={lastVote?.isCorrect ?? null}
-            officialAnswer={lastVote?.officialAnswer ?? roundAnalysis?.classification ?? null}
-            reliabilityScore={lastVote?.reliabilityScore ?? roundAnalysis?.confidence ?? 85}
-            reasons={lastVote?.reasons ?? roundAnalysis?.reasons}
+            officialAnswer={roundClosed ? (lastVote?.officialAnswer ?? null) : null}
             verdictCountdownSeconds={verdictCountdown}
             onSkipCountdown={handleSkipVerdictCountdown}
             isTimeout={lastVote?.isTimeout ?? false}
             votedCount={votedCount}
             totalPlayers={members.length}
+          />
+        )}
+
+        {roundClosed && stage !== "WAITING" && lastVote?.officialAnswer && (
+          <section
+            aria-label="Resultado do jogo"
+            className="mt-6 w-full max-w-2xl rounded-3xl bg-white p-6 text-slate-800"
+          >
+            <h2 className="text-lg font-bold">Resultado do jogo</h2>
+            <p className="mt-2 text-sm">
+              Gabarito cadastrado: <strong>{ANSWER_LABELS[lastVote.officialAnswer]}</strong>
+            </p>
+            <p className="mt-1 text-sm">Seu voto: {ANSWER_LABELS[lastVote.vote]}</p>
+          </section>
+        )}
+
+        {roundClosed && (
+          <ModelAnalysisPanel
+            key={`${room.id}:${currentRound}`}
+            roomId={room.id}
+            round={currentRound}
           />
         )}
 

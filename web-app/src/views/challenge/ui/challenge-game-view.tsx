@@ -6,11 +6,9 @@ import { useRouter } from "next/navigation";
 import * as React from "react";
 
 import { answerGlobalChallengeAction } from "@/app/api/global-challenges/actions/answer-global-challenge.action";
-import { getDefaultAnalysis } from "@/app/api/global-challenges/entities";
 import type { ListedGlobalChallengeDTO } from "@/app/api/global-challenges/usecase/list-global-challenges.usecase";
 import type { SubmitVoteActionResult } from "@/app/api/news-voting/actions/submit-vote.action";
 import type { AvatarConfig } from "@/lib/avatar";
-import type { MLTargetType } from "@/server/shared/database/schemas/enums";
 import {
   MatchScoreboardStage,
   type IMatchPlayer,
@@ -37,9 +35,7 @@ export interface IUserVoteState {
   pointsAwarded?: number;
   isCorrect?: boolean | null;
   officialAnswer?: "reliable" | "unreliable" | "uncertain" | null;
-  reliabilityScore?: number;
   timeTakenSeconds?: number;
-  reasons?: string[];
   isTimeout?: boolean;
 }
 
@@ -134,27 +130,12 @@ export function ChallengeGameView({
         };
       }
 
-      const defaultAnalysis = getDefaultAnalysis(activeChallenge.article.targetClassification);
-      const challengeAnalysis = activeChallenge.analysis ?? defaultAnalysis;
-
-      const toAIAnalysisDTO = (
-        analysis: { classification: MLTargetType; reasons: string[]; confidence: number },
-        articleId: string,
-      ) => ({
-        id: crypto.randomUUID(),
-        articleId,
-        classification: analysis.classification,
-        reasons: analysis.reasons,
-        confidence: analysis.confidence,
-        modelVersion: "mock-v1",
-        createdAt: new Date(),
-      });
-
       if (isTimeout) {
         return {
           success: true,
           roundCompleted: true,
-          analysis: toAIAnalysisDTO(challengeAnalysis, activeChallenge.article.id),
+          officialAnswer: activeChallenge.article.targetClassification,
+          modelAnalysis: null,
           vote: {
             id: activeChallenge.id,
             roomId: "solo",
@@ -175,7 +156,8 @@ export function ChallengeGameView({
         return {
           success: true,
           roundCompleted: true,
-          analysis: toAIAnalysisDTO(challengeAnalysis, activeChallenge.article.id),
+          officialAnswer: activeChallenge.article.targetClassification,
+          modelAnalysis: null,
           vote: {
             id: activeChallenge.id,
             roomId: "solo",
@@ -201,7 +183,8 @@ export function ChallengeGameView({
           return {
             success: true,
             roundCompleted: true,
-            analysis: toAIAnalysisDTO(challengeAnalysis, activeChallenge.article.id),
+            officialAnswer: activeChallenge.article.targetClassification,
+            modelAnalysis: null,
             vote: {
               id: activeChallenge.id,
               roomId: "solo",
@@ -223,7 +206,8 @@ export function ChallengeGameView({
       return {
         success: true,
         roundCompleted: true,
-        analysis: toAIAnalysisDTO(res.analysis ?? challengeAnalysis, activeChallenge.article.id),
+        officialAnswer: res.targetClassification,
+        modelAnalysis: null,
         vote: {
           id: res.answer.id,
           roomId: "solo",
@@ -250,18 +234,12 @@ export function ChallengeGameView({
       const isCorrect = Boolean(data.result.vote.isCorrect);
       const points = data.result.vote.pointsAwarded ?? 0;
 
-      const defaultAnalysis = getDefaultAnalysis(
-        activeChallenge?.article.targetClassification ?? "reliable",
-      );
-      const analysis = data.result.analysis ?? activeChallenge?.analysis ?? defaultAnalysis;
-
       const voteState: IUserVoteState = {
         vote: data.vote,
         pointsAwarded: points,
         isCorrect,
-        officialAnswer: activeChallenge?.article.targetClassification ?? null,
-        reliabilityScore: analysis.confidence,
-        reasons: analysis.reasons,
+        officialAnswer:
+          data.result.officialAnswer ?? activeChallenge?.article.targetClassification ?? null,
         timeTakenSeconds: data.timeTakenSeconds,
         isTimeout: data.isTimeout,
       };
@@ -424,8 +402,6 @@ export function ChallengeGameView({
                 timeTakenSeconds={lastVote.timeTakenSeconds ?? 0}
                 isCorrect={lastVote.isCorrect ?? null}
                 officialAnswer={lastVote.officialAnswer ?? null}
-                reliabilityScore={lastVote.reliabilityScore ?? 85}
-                reasons={lastVote.reasons}
                 verdictCountdownSeconds={verdictCountdown}
                 onSkipCountdown={handleSkipVerdictCountdown}
                 isTimeout={lastVote.isTimeout ?? false}

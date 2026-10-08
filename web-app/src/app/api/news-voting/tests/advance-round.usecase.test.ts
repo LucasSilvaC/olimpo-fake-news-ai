@@ -103,7 +103,9 @@ describe("AdvanceRoundUseCase", () => {
       mockEventPublisher,
     );
 
-    useCase = new AdvanceRoundUseCase(roomRepository, finishMatchUseCase, mockEventPublisher);
+    useCase = new AdvanceRoundUseCase(roomRepository, finishMatchUseCase, mockEventPublisher, {
+      isRoundCompleted: vi.fn().mockResolvedValue(true),
+    });
   });
 
   it("should advance to next round when currentRound < totalRounds", async () => {
@@ -151,6 +153,18 @@ describe("AdvanceRoundUseCase", () => {
     expect(userRepository.updateXp).toHaveBeenCalledWith("user-2", 50);
   });
 
+  it("rejects advancing an open round even for the host", async () => {
+    const guarded = new AdvanceRoundUseCase(
+      roomRepository,
+      finishMatchUseCase,
+      mockEventPublisher,
+      { isRoundCompleted: vi.fn().mockResolvedValue(false) },
+    );
+    await expect(guarded.execute({ roomId: "room-1", hostId: "host-1" })).rejects.toThrow(
+      "not completed",
+    );
+    expect(roomRepository.updateStatus).not.toHaveBeenCalled();
+  });
   it("should reject advancing if room is not found", async () => {
     vi.mocked(roomRepository.findById).mockResolvedValueOnce(null);
 

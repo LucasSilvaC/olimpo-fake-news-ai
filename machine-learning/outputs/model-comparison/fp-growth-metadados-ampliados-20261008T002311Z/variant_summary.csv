@@ -1,0 +1,5 @@
+variant,candidate_features,active_features,omitted_features,items,eligible_directed_rules,eligible_patterns,validation_pass_rules,test_pass_rules_exploratory,stable_validation_rules,review_candidates,review_candidates_with_added_items,validation_pattern_union_count,validation_added_news_vs_reference,validation_review_union_count
+referencia_corrigida,16,15,1,30,152,93,121,120,102,20,0,1374,0,1253
+pos_ampliado,19,18,1,36,189,118,153,154,126,20,5,1410,36,1263
+sintaxe_ampliada,23,22,1,44,523,345,422,392,347,20,14,1439,65,1346
+metadados_coletados,50,37,13,74,4350,2546,3563,3474,3093,20,19,1440,66,1393

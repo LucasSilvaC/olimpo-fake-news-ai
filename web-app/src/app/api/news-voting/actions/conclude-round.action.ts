@@ -4,9 +4,10 @@ import { z } from "zod";
 
 import { concludeRoundUseCase } from "../usecase/conclude-round.usecase";
 
-import { AIAnalysisDTO } from "@/app/api/ai-feedback";
+import type { AIAnalysisDTO } from "@/app/api/ai-feedback/entities/ai-analysis.entity";
 import { getSessionUseCase } from "@/app/api/auth/usecase/get-session.usecase";
 import { LeaderboardEntry } from "@/app/api/rooms/repositories";
+import type { MLTargetType } from "@/server/shared/database/schemas/enums";
 
 const concludeRoundSchema = z.object({
   roomId: z.string().min(1, "Room ID is required"),
@@ -19,7 +20,8 @@ export type ConcludeRoundActionResult =
   | {
       success: true;
       roundCompleted: boolean;
-      analysis?: AIAnalysisDTO;
+      officialAnswer?: MLTargetType;
+      modelAnalysis?: AIAnalysisDTO | null;
       leaderboard?: LeaderboardEntry[];
     }
   | {
@@ -31,7 +33,7 @@ export async function concludeRoundAction(
   input: FormData | ConcludeRoundActionInput,
 ): Promise<ConcludeRoundActionResult> {
   try {
-    await getSessionUseCase.execute();
+    const session = await getSessionUseCase.execute();
 
     const rawData =
       input instanceof FormData
@@ -52,12 +54,14 @@ export async function concludeRoundAction(
     const result = await concludeRoundUseCase.execute({
       roomId: parsed.data.roomId,
       round: parsed.data.round,
+      userId: session.id,
     });
 
     return {
       success: true,
       roundCompleted: result.roundCompleted,
-      analysis: result.analysis,
+      officialAnswer: result.officialAnswer,
+      modelAnalysis: result.modelAnalysis,
       leaderboard: result.leaderboard,
     };
   } catch (error: unknown) {

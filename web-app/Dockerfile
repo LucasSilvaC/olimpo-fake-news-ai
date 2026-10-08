@@ -1,4 +1,4 @@
-FROM node:24-alpine AS base
+FROM node:24.15.0-alpine AS base
 WORKDIR /app
 RUN npm install -g pnpm@11.10.0
 
@@ -23,7 +23,7 @@ COPY --from=dependencies /app/node_modules ./node_modules
 COPY . .
 RUN pnpm build
 
-FROM node:24-alpine AS runner
+FROM node:24.15.0-alpine AS runner
 WORKDIR /app
 ENV NODE_ENV=production
 ENV PORT=3000

@@ -95,7 +95,11 @@ export class AnswerGlobalChallengeUseCase {
     let analysis = getDefaultAnalysis(challengeWithArticle.article.targetClassification);
     try {
       const rec = await this.analysisRepository.findByArticleId(challengeWithArticle.articleId);
-      if (rec) {
+      if (
+        rec?.analysisStatus === "legacy" &&
+        rec.classification !== null &&
+        rec.confidence !== null
+      ) {
         const raw = Number(rec.confidence);
         const confidence = raw <= 1 ? Math.round(raw * 100) : Math.round(raw);
         analysis = {

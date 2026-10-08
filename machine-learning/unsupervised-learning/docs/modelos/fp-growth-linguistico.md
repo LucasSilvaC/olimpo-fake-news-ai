@@ -1,12 +1,14 @@
 # FP-Growth linguístico sem autoria
 
+Esta é a referência linguística anterior. O [principal atual](../../fp_growth_principal_sem_autoria.ipynb) amplia POS/DEP na variante `sintaxe_ampliada`; consulte [os resultados ativos](../../REGRAS_FP_GROWTH.md). Os resultados desta referência permanecem em [sua pasta histórica](../../history/mineracao-de-padroes/fp-growth-linguistico/RESULTADOS.md).
+
 O [notebook linguístico](../../history/mineracao-de-padroes/fp-growth-linguistico/fp_growth_linguistico_sem_autoria.ipynb) incorpora a proposta dos scripts da equipe em uma extração por notícia. Cada transação corresponde a um `record_id` canônico, com contagens, denominadores e taxas POS/DEP. Essa unidade permite medir coocorrências reais entre atributos do mesmo texto; os totais agregados por classe dos scripts originais não são usados como transações.
 
-Os notebooks [baseline com autoria](../../fp_growth_baseline_com_autoria.ipynb) e [principal sem autoria](../../fp_growth_principal_sem_autoria_controles.ipynb) permanecem preservados. O novo experimento compara representações nos mesmos IDs e produz regras direcionais e padrões consolidados como unidades diferentes.
+Os notebooks [baseline com autoria](../../history/mineracao-de-padroes/fp-growth-legado/fp_growth_baseline_com_autoria.ipynb) e [principal sem autoria](../../history/mineracao-de-padroes/fp-growth-legado/fp_growth_principal_sem_autoria_controles.ipynb) permanecem preservados. O novo experimento compara representações nos mesmos IDs e produz regras direcionais e padrões consolidados como unidades diferentes.
 
 ## Resultados executados em 6 de outubro de 2026
 
-O [run executado](../../../outputs/model-comparison/fp-growth-linguistic-20261006T230752Z/run_manifest.json) reproduziu o baseline e minerou as sete variantes no corpus de 7.200 notícias. A [tabela completa](../../../outputs/model-comparison/fp-growth-linguistic-20261006T230752Z/variant_summary.csv) separa regras direcionais de padrões. A interpretação das regras e a comparação detalhada estão no [relatório de resultados](../../REGRAS_FP_GROWTH_LINGUISTICO.md).
+O [run executado](../../../outputs/model-comparison/fp-growth-linguistic-20261006T230752Z/run_manifest.json) reproduziu o baseline e minerou as sete variantes no corpus de 7.200 notícias. A [tabela completa](../../../outputs/model-comparison/fp-growth-linguistic-20261006T230752Z/variant_summary.csv) separa regras direcionais de padrões. A interpretação das regras e a comparação detalhada estão no [relatório de resultados](../../history/mineracao-de-padroes/fp-growth-linguistico/RESULTADOS.md).
 
 | Variante | Padrões frequentes de tamanho ≥2 | Regras elegíveis no treino | Mantêm filtros na validação | Mantêm filtros no teste |
 |---|---:|---:|---:|---:|

@@ -5,6 +5,10 @@ import Image from "next/image";
 import * as React from "react";
 import { toast } from "sonner";
 
+import { useNewsInsights } from "../hooks/use-news-insights";
+
+import { NewsInsightsPanel } from "./news-insights-panel";
+
 import {
   submitVoteAction,
   type SubmitVoteActionResult,
@@ -40,15 +44,29 @@ export interface INewsCheckStageProps {
   }) => void;
 }
 
-export function NewsCheckStage({
+export function NewsCheckStage(props: INewsCheckStageProps): React.ReactElement {
+  return (
+    <NewsCheckRound
+      key={`${props.roomId}:${props.currentRound}:${props.article.id ?? props.article.url}`}
+      {...props}
+    />
+  );
+}
+
+function NewsCheckRound({
   roomId,
   currentRound,
   totalRounds,
-  article,
+  article: initialArticle,
   timeRemainingSeconds,
   onCustomVote,
   onVoteSubmitted,
 }: INewsCheckStageProps): React.ReactElement {
+  const insightsState = useNewsInsights(roomId, currentRound);
+  const article: INewsArticleData =
+    insightsState.status === "ready"
+      ? { ...insightsState.response.article, id: initialArticle.id }
+      : initialArticle;
   const [selectedVote, setSelectedVote] = React.useState<
     "reliable" | "unreliable" | "uncertain" | null
   >(null);
@@ -56,11 +74,17 @@ export function NewsCheckStage({
   const [imageError, setImageError] = React.useState(false);
   const startTimeRef = React.useRef<number>(0);
   const hasAutoSubmittedRef = React.useRef(false);
+  const mountedRef = React.useRef(false);
+  const voteInFlightRef = React.useRef(false);
 
   React.useEffect(() => {
+    mountedRef.current = true;
     startTimeRef.current = Date.now();
     hasAutoSubmittedRef.current = false;
-  }, [article.id]);
+    return () => {
+      mountedRef.current = false;
+    };
+  }, [initialArticle.id, currentRound, roomId]);
 
   // Extract friendly publisher tag or hostname fallback
   const publisherName = React.useMemo(() => {
@@ -109,7 +133,8 @@ export function NewsCheckStage({
 
   const handleVote = React.useCallback(
     async (vote: "reliable" | "unreliable" | "uncertain", isTimeout = false): Promise<void> => {
-      if (isSubmitting) return;
+      if (voteInFlightRef.current) return;
+      voteInFlightRef.current = true;
 
       setSelectedVote(vote);
       setIsSubmitting(true);
@@ -133,6 +158,7 @@ export function NewsCheckStage({
             error: "Identificador da sala ou manipulador customizado não fornecido.",
           };
         }
+        if (!mountedRef.current) return;
 
         if (!result.success) {
           toast.error("Erro ao registrar voto", {
@@ -140,6 +166,7 @@ export function NewsCheckStage({
           });
           setIsSubmitting(false);
           setSelectedVote(null);
+          voteInFlightRef.current = false;
           return;
         }
 
@@ -156,14 +183,16 @@ export function NewsCheckStage({
           isTimeout,
         });
       } catch {
+        if (!mountedRef.current) return;
         toast.error("Erro ao registrar voto", {
           description: "Falha de conexão. Tente novamente.",
         });
         setIsSubmitting(false);
         setSelectedVote(null);
+        voteInFlightRef.current = false;
       }
     },
-    [isSubmitting, onCustomVote, onVoteSubmitted, roomId],
+    [onCustomVote, onVoteSubmitted, roomId],
   );
 
   // Automatically submit neutral timeout vote when round duration expires
@@ -286,7 +315,20 @@ export function NewsCheckStage({
             article.content?.slice(0, 320) ||
             "Leia com atenção os detalhes da publicação e pondere se os fatos relatados possuem respaldo em veículos de imprensa e fontes primárias idôneas."}
         </p>
+
+        {article.content && (
+          <details className="mt-4 rounded-xl border border-slate-200 p-3 text-sm">
+            <summary className="cursor-pointer font-semibold text-blue-700 focus-visible:outline-2 focus-visible:outline-blue-600">
+              Ler o corpo da notícia
+            </summary>
+            <div className="mt-3 max-h-80 overflow-y-auto pr-2 leading-relaxed whitespace-pre-wrap text-slate-700">
+              {article.content}
+            </div>
+          </details>
+        )}
       </article>
+
+      {roomId && <NewsInsightsPanel state={insightsState} />}
 
       {/* Answer Decision Buttons */}
       <div
