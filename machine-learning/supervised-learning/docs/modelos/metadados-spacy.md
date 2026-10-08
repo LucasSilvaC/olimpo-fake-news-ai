@@ -26,4 +26,4 @@ Instale spaCy e o pacote de língua:
 python -m spacy download pt_core_news_sm
 ```
 
-Os caches em [`data/`](../../data/) foram gerados nos experimentos 10 e 11. A escolha de features e o efeito delas no desempenho estão descritos nos [notebooks 10–12](../../history/modelo-final/) e na [documentação do modelo final](modelo-olimpo.md).
+Os caches em [`data/`](../../data/README.md) foram gerados pelo notebook 10 e reutilizados nos experimentos 11 e 12. A escolha de features e o efeito delas no desempenho estão descritos nos [antecessores 10–11](../../history/modelo-final/README.md), no [principal 12](../../12_selectk_svd_svm_spacy.ipynb) e na [documentação do modelo final](modelo-olimpo.md).
