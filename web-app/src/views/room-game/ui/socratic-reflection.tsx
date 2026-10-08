@@ -1,13 +1,19 @@
 "use client";
 
-import { ShieldCheck } from "lucide-react";
 import * as React from "react";
 
 export interface ISocraticCard {
   icon: string;
   category: string;
-  question: string;
+  question?: string;
   guidance: string;
+  tag: string;
+  bgClass: string;
+  borderClass: string;
+  hoverClass: string;
+  iconBg: string;
+  iconColor: string;
+  tagColor: string;
 }
 
 export interface ISocraticReflectionProps {
@@ -18,88 +24,92 @@ export interface ISocraticReflectionProps {
 
 const DEFAULT_CARDS: ISocraticCard[] = [
   {
-    icon: "🔎",
+    icon: "🧭",
     category: "A Fonte e o Meio",
-    question: "Quem ganha com a divulgação dessa narrativa?",
     guidance:
-      "Verifique se há interesse financeiro, político ou apelo a cliques fáceis. O veículo tem histórico comprovado de responsabilidade editorial ou é anônimo?",
+      "Quem ganha com a divulgação dessa narrativa? O canal possui histórico comprovado de responsabilidade editorial?",
+    tag: "Origem & Motivação",
+    bgClass: "bg-blue-50/50",
+    borderClass: "border-blue-100/80",
+    hoverClass: "hover:bg-blue-50/90",
+    iconBg: "bg-blue-100",
+    iconColor: "text-blue-700",
+    tagColor: "text-blue-600/80",
   },
   {
     icon: "⚡",
     category: "O Tom Emocional",
-    question: "O conteúdo apela para a indignação ou o medo?",
     guidance:
-      "Mensagens construídas para gerar reações viscerais imediatas frequentemente mascaram distorções de fatos para acelerar o compartilhamento impulsivo.",
+      "O conteúdo apela para indignação, urgência ou medo imediato? Distorções costumam acelerar o compartilhamento impulsivo.",
+    tag: "Gatilhos Psicológicos",
+    bgClass: "bg-amber-50/40",
+    borderClass: "border-amber-100/80",
+    hoverClass: "hover:bg-amber-50/80",
+    iconBg: "bg-amber-100",
+    iconColor: "text-amber-700",
+    tagColor: "text-amber-600/80",
   },
   {
     icon: "⚖️",
     category: "A Evidência",
-    question: "Onde estão os dados primários e fontes?",
     guidance:
-      "Afirmações extraordinárias exigem evidências extraordinárias. Há citação direta de especialistas independentes ou apenas menções genéricas?",
+      "Onde estão as fontes primárias e dados verificáveis? Alegações extraordinárias exigem evidências extraordinárias.",
+    tag: "Fatos & Validação",
+    bgClass: "bg-emerald-50/40",
+    borderClass: "border-emerald-100/80",
+    hoverClass: "hover:bg-emerald-50/80",
+    iconBg: "bg-emerald-100",
+    iconColor: "text-emerald-700",
+    tagColor: "text-emerald-600/80",
   },
 ];
 
-const DEFAULT_TIP =
-  "Notícias alarmistas com títulos em letras maiúsculas e sem autoria clara têm 78% mais chances de serem desinformação.";
-
 export function SocraticReflection({
   customCards,
-  tip = DEFAULT_TIP,
   className = "",
 }: ISocraticReflectionProps): React.ReactElement {
   const cards = customCards && customCards.length > 0 ? customCards : DEFAULT_CARDS;
 
   return (
-    <div className={`flex flex-col gap-4 ${className}`} data-purpose="socratic-reflection-section">
-      {/* Header */}
-      <div>
-        <div className="flex items-center gap-2">
-          <span className="rounded-md border border-blue-100 bg-blue-50/80 px-2 py-0.5 text-xs font-bold tracking-wider text-blue-600 uppercase">
-            Método Crítico
+    <div
+      className={`flex flex-col gap-3 border-t border-slate-100 pt-2 ${className}`}
+      data-purpose="socratic-thinking-section"
+    >
+      <div className="flex flex-col justify-between gap-1 sm:flex-row sm:items-center">
+        <div className="flex items-center gap-1.5">
+          <span className="flex items-center gap-1 text-[11px] font-black tracking-wider text-blue-900 uppercase">
+            🧠 REFLEXÃO SOCRÁTICA • O QUE QUESTIONAR?
           </span>
-          <h3 className="text-sm font-extrabold tracking-wider text-slate-800 uppercase">
-            Reflexão Socrática: O que questionar?
-          </h3>
         </div>
-        <p className="mt-0.5 text-xs text-slate-500">
-          Questione as premissas antes da revelação do gabarito
-        </p>
+        <span className="text-[11px] font-medium text-slate-400">
+          Perguntas-chave para exercitar seu pensamento crítico enquanto aguarda a rodada
+        </span>
       </div>
 
-      {/* 3 Critical Thinking Cards */}
-      <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-3">
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
         {cards.map((card) => (
           <div
             key={card.category}
-            className="flex flex-col rounded-2xl border border-slate-200 bg-slate-100/90 p-3 text-xs shadow-sm"
+            className={`flex flex-col justify-between rounded-2xl border p-3.5 transition-all ${card.bgClass} ${card.borderClass} ${card.hoverClass}`}
           >
-            <div className="mb-1.5 inline-flex items-center gap-1.5 font-bold text-slate-700">
-              <span className="text-sm" aria-hidden="true">
-                {card.icon}
-              </span>
-              <span className="font-extrabold tracking-tight text-blue-900">{card.category}</span>
+            <div>
+              <div className="mb-1.5 flex items-center gap-2">
+                <span
+                  className={`flex size-6 shrink-0 items-center justify-center rounded-lg text-xs font-bold ${card.iconBg} ${card.iconColor}`}
+                >
+                  {card.icon}
+                </span>
+                <h4 className="text-xs leading-tight font-bold text-slate-800">{card.category}</h4>
+              </div>
+              <p className="text-[11px] leading-relaxed text-slate-600">{card.guidance}</p>
             </div>
-            <p className="mb-1 leading-snug font-bold text-slate-900">{card.question}</p>
-            <p className="text-[10px] leading-relaxed text-slate-600">{card.guidance}</p>
+            <span
+              className={`mt-2 block text-[9px] font-bold tracking-wider uppercase ${card.tagColor}`}
+            >
+              {card.tag}
+            </span>
           </div>
         ))}
-      </div>
-
-      {/* Fact-checking Tip Box */}
-      <div
-        className="flex items-start gap-3 rounded-2xl border border-blue-100 bg-blue-50/80 p-4 text-slate-700 shadow-sm"
-        data-purpose="fact-checking-tip"
-      >
-        <div className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg bg-blue-600/10 text-blue-600">
-          <ShieldCheck className="size-4 stroke-[2.5]" aria-hidden="true" />
-        </div>
-        <div className="text-xs leading-relaxed text-slate-600">
-          <strong className="mb-0.5 block text-sm font-extrabold text-blue-900">
-            Dica do Olimpo:
-          </strong>
-          {tip}
-        </div>
       </div>
     </div>
   );

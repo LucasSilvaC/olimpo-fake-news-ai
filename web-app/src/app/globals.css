@@ -78,4 +78,18 @@
       0 0 0 2px #0f172a,
       0 0 0 4px #ffffff;
   }
+
+  @keyframes floatingRocket {
+    0%,
+    100% {
+      transform: translateY(0px) rotate(-2deg);
+    }
+    50% {
+      transform: translateY(-10px) rotate(3deg);
+    }
+  }
+
+  .animate-float {
+    animation: floatingRocket 4s ease-in-out infinite;
+  }
 }

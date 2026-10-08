@@ -1,6 +1,5 @@
 "use client";
 
-import { BarChart3 } from "lucide-react";
 import * as React from "react";
 
 export interface IVerometroGaugeProps {
@@ -14,7 +13,6 @@ export interface IVerometroGaugeProps {
 
 export function VerometroGauge({
   reliabilityScore,
-  marginOfError = "±1.8%",
   className = "",
 }: IVerometroGaugeProps): React.ReactElement {
   // Normalize score to 0..100 integer range
@@ -26,231 +24,92 @@ export function VerometroGauge({
     return Math.max(0, Math.min(100, Math.round(raw)));
   }, [reliabilityScore]);
 
-  // Determine current active zone
+  // Determine current active zone and visual tokens
   const zone = React.useMemo(() => {
     if (normalizedScore <= 30) {
       return {
-        id: "falso",
-        label: "Manipulado",
-        tag: "Falso / Desinformação",
-        colorClass: "rose",
+        statusTag: "FALSO",
+        label: "Manipulado / Falso",
         pinBg: "bg-rose-600",
-        pinText: "text-rose-600",
-        badgeBg: "bg-rose-50",
-        badgeBorder: "border-rose-200",
-        borderClass: "border-rose-200/80",
-        activeBg: "bg-rose-50",
-        activeText: "text-rose-600",
-        arrowColor: "border-t-rose-600",
-        circleBorder: "border-rose-600",
+        ringColor: "ring-rose-600/50",
+        badgeClass: "bg-rose-100 text-rose-600 border-rose-200/60",
       };
     }
     if (normalizedScore <= 70) {
       return {
-        id: "impreciso",
-        label: "Impreciso",
-        tag: "Impreciso / Fora de Contexto",
-        colorClass: "amber",
+        statusTag: "IMPRECISO",
+        label: "Impreciso / Contexto Incompleto",
         pinBg: "bg-amber-500",
-        pinText: "text-amber-700",
-        badgeBg: "bg-amber-50",
-        badgeBorder: "border-amber-200",
-        borderClass: "border-amber-200/80",
-        activeBg: "bg-amber-50",
-        activeText: "text-amber-700",
-        arrowColor: "border-t-amber-500",
-        circleBorder: "border-amber-500",
+        ringColor: "ring-amber-500/50",
+        badgeClass: "bg-amber-100 text-amber-700 border-amber-200/60",
       };
     }
     return {
-      id: "fato",
-      label: "Comprovado",
-      tag: "Fato Verídico / Comprovado",
-      colorClass: "emerald",
+      statusTag: "FATO",
+      label: "Autêntico / Verídico",
       pinBg: "bg-emerald-600",
-      pinText: "text-emerald-700",
-      badgeBg: "bg-emerald-50",
-      badgeBorder: "border-emerald-200",
-      borderClass: "border-emerald-200/80",
-      activeBg: "bg-emerald-50",
-      activeText: "text-emerald-700",
-      arrowColor: "border-t-emerald-600",
-      circleBorder: "border-emerald-600",
+      ringColor: "ring-emerald-600/50",
+      badgeClass: "bg-emerald-100 text-emerald-700 border-emerald-200/60",
     };
   }, [normalizedScore]);
 
   // Clamp pin position for CSS left property to keep tooltips within view
-  const pinLeftPercent = Math.max(5, Math.min(95, normalizedScore));
+  const pinLeftPercent = Math.max(4, Math.min(96, normalizedScore));
 
   return (
     <div
-      className={`relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-4 shadow-sm ${className}`}
-      data-purpose="verometro-gauge"
+      className={`flex flex-col gap-3 rounded-2xl border border-slate-200/80 bg-slate-50/80 p-4 ${className}`}
+      data-purpose="veracity-index-card"
     >
-      {/* Header: Title & Status Badge */}
-      <div className="flex flex-col justify-between gap-2.5 border-b border-slate-100 pb-3 sm:flex-row sm:items-center">
+      <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-2">
-          <div
-            className={`flex size-8 shrink-0 items-center justify-center rounded-lg border shadow-sm ${zone.badgeBg} ${zone.badgeBorder} ${zone.pinText}`}
-          >
-            <BarChart3 className="size-4 stroke-[2.5]" aria-hidden="true" />
-          </div>
-          <div>
-            <div className="flex items-center gap-1.5">
-              <span className="text-[10px] font-extrabold tracking-wider text-slate-400 uppercase">
-                Verômetro Olimpo
-              </span>
-              <span className={`inline-block size-1.5 rounded-full ${zone.pinBg}`} />
-            </div>
-            <h4 className="text-xs font-extrabold tracking-tight text-slate-800 md:text-sm">
-              Índice de Veracidade Apurado
-            </h4>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2 self-start sm:self-auto">
-          <span
-            className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-black shadow-sm ${zone.badgeBg} ${zone.badgeBorder} ${zone.activeText}`}
-          >
-            {normalizedScore}% Autenticidade
+          <span className="text-xs font-black tracking-wider text-slate-700 uppercase">
+            Índice de Confiabilidade da Notícia
           </span>
           <span
-            className={`hidden rounded-md border px-2 py-1 text-[11px] font-extrabold sm:inline-block ${zone.badgeBg} ${zone.badgeBorder} ${zone.activeText}`}
+            className={`inline-flex items-center rounded-md border px-2 py-0.5 text-[10px] font-bold ${zone.badgeClass}`}
           >
-            {zone.label}
+            {normalizedScore}% de Autenticidade • {zone.label}
           </span>
         </div>
+        <span className="flex items-center gap-1 text-[11px] font-semibold text-slate-400">
+          Alta precisão (IA + Checagem Coletiva)
+        </span>
       </div>
 
-      {/* Visual Spectrum & Floating Marker Pin */}
-      <div className="relative px-1 pt-8 pb-2">
-        {/* Floating Pin Pointer */}
+      {/* Visual Spectrum & Floating Pin */}
+      <div className="relative pt-5 pb-1">
+        {/* Floating Pin Marker */}
         <div
-          className="pointer-events-none absolute top-0 z-10 flex -translate-x-1/2 flex-col items-center transition-all duration-700 ease-out"
+          className="absolute top-0 flex -translate-x-1/2 flex-col items-center transition-all duration-700 ease-out"
           style={{ left: `${pinLeftPercent}%` }}
         >
           <span
-            className={`flex items-center gap-1 rounded-md px-2 py-0.5 text-[10px] font-black tracking-tight whitespace-nowrap text-white shadow-md ${zone.pinBg}`}
+            className={`rounded-md px-1.5 py-0.5 text-[9px] leading-none font-black whitespace-nowrap text-white shadow-sm ${zone.pinBg}`}
           >
-            <span>📍</span> {normalizedScore}% Detectado
+            {normalizedScore}% {zone.statusTag}
           </span>
-          <div
-            className={`-mt-0.5 size-0 border-x-4 border-t-4 border-x-transparent ${zone.arrowColor}`}
-          />
+          <span className={`-mt-0.5 size-1.5 rotate-45 ${zone.pinBg}`} />
         </div>
 
-        {/* Continuous Spectrum Gradient Bar */}
-        <div className="relative flex h-3 w-full items-center overflow-visible rounded-full border border-slate-200 bg-slate-100 p-0.5 shadow-inner">
+        {/* Gradient Spectrum Bar */}
+        <div className="relative h-2.5 w-full overflow-hidden rounded-full bg-gradient-to-r from-rose-500 via-amber-400 to-emerald-500 shadow-inner">
           <div
-            className="h-full w-full rounded-full shadow-sm"
-            style={{
-              background: "linear-gradient(to right, #dc2626 0%, #f59e0b 50%, #10b981 100%)",
-            }}
-          />
-          {/* Ring Marker */}
-          <div
-            className={`absolute top-1/2 size-4 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 bg-white shadow-md transition-all duration-700 ease-out ${zone.circleBorder}`}
+            className={`absolute top-0 bottom-0 w-1 bg-white shadow-sm ring-2 ${zone.ringColor} transition-all duration-700 ease-out`}
             style={{ left: `${pinLeftPercent}%` }}
           />
         </div>
-      </div>
 
-      {/* 3 Segmented Zones */}
-      <div className="mt-2 grid grid-cols-3 gap-1.5 border-t border-slate-100 pt-1 text-center">
-        {/* Zone 1: 0% to 30% (Falso) */}
-        <div
-          className={`rounded-lg p-1.5 transition-all ${
-            zone.id === "falso"
-              ? "border border-rose-200/80 bg-rose-50 text-rose-600"
-              : "border border-slate-100 bg-slate-50 text-slate-500"
-          }`}
-        >
-          <div
-            className={`flex items-center justify-center gap-1 text-[10px] tracking-tight ${
-              zone.id === "falso" ? "font-extrabold text-rose-600" : "font-bold text-slate-500"
-            }`}
-          >
-            <span
-              className={`inline-block size-1.5 rounded-full ${
-                zone.id === "falso" ? "bg-rose-600" : "bg-slate-400"
-              }`}
-            />
-            0% a 30%
-          </div>
-          <div
-            className={`mt-0.5 text-[10px] leading-tight ${
-              zone.id === "falso" ? "font-black text-rose-600" : "font-semibold text-slate-600"
-            }`}
-          >
-            Falso / Desinformação
-          </div>
+        {/* Gradient Boundary Labels */}
+        <div className="mt-1.5 flex items-center justify-between text-[10px] font-bold text-slate-400">
+          <span className="flex items-center gap-1 font-extrabold text-rose-600">
+            0% Falso / Desinformação
+          </span>
+          <span className="font-medium text-slate-400">50% Impreciso / Contexto Incompleto</span>
+          <span className="flex items-center gap-1 font-extrabold text-emerald-600">
+            100% Autêntico / Verídico
+          </span>
         </div>
-
-        {/* Zone 2: 31% to 70% (Impreciso) */}
-        <div
-          className={`rounded-lg p-1.5 transition-all ${
-            zone.id === "impreciso"
-              ? "border border-amber-200/80 bg-amber-50 text-amber-700"
-              : "border border-slate-100 bg-slate-50 text-slate-500"
-          }`}
-        >
-          <div
-            className={`flex items-center justify-center gap-1 text-[10px] tracking-tight ${
-              zone.id === "impreciso" ? "font-extrabold text-amber-700" : "font-bold text-slate-500"
-            }`}
-          >
-            <span
-              className={`inline-block size-1.5 rounded-full ${
-                zone.id === "impreciso" ? "bg-amber-500" : "bg-slate-400"
-              }`}
-            />
-            31% a 70%
-          </div>
-          <div
-            className={`mt-0.5 text-[10px] leading-tight ${
-              zone.id === "impreciso" ? "font-black text-amber-700" : "font-semibold text-slate-600"
-            }`}
-          >
-            Impreciso / Fora de Contexto
-          </div>
-        </div>
-
-        {/* Zone 3: 71% to 100% (Fato) */}
-        <div
-          className={`rounded-lg p-1.5 transition-all ${
-            zone.id === "fato"
-              ? "border border-emerald-200/80 bg-emerald-50 text-emerald-700"
-              : "border border-slate-100 bg-slate-50 text-slate-500"
-          }`}
-        >
-          <div
-            className={`flex items-center justify-center gap-1 text-[10px] tracking-tight ${
-              zone.id === "fato" ? "font-extrabold text-emerald-700" : "font-bold text-slate-500"
-            }`}
-          >
-            <span
-              className={`inline-block size-1.5 rounded-full ${
-                zone.id === "fato" ? "bg-emerald-600" : "bg-slate-400"
-              }`}
-            />
-            71% a 100%
-          </div>
-          <div
-            className={`mt-0.5 text-[10px] leading-tight ${
-              zone.id === "fato" ? "font-black text-emerald-700" : "font-semibold text-slate-600"
-            }`}
-          >
-            Fato Verídico / Comprovado
-          </div>
-        </div>
-      </div>
-
-      {/* Technical Footer */}
-      <div className="mt-2.5 flex items-center justify-between border-t border-slate-50 pt-2 text-[10px] font-medium text-slate-400">
-        <span className="text-slate-500">Avaliação assistida por IA</span>
-        <span className="hidden font-bold text-slate-600 sm:inline-block">
-          Margem de erro: {marginOfError}
-        </span>
       </div>
     </div>
   );
