@@ -29,7 +29,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import FunctionTransformer, Normalizer, StandardScaler
 from sklearn.svm import LinearSVC
 
-import metadados_spacy as ms
+from support import metadados_spacy as ms
 
 VERSAO_MODELO = "svm-spacy-chi2k10k-svd500-v1"
 

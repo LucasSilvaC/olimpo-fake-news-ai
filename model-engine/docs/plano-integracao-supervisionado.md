@@ -28,7 +28,7 @@ O classificador analisa texto. Ele não consulta fontes externas nem confirma ac
 
 ### Modelo e artefato
 
-Fontes: [documentação do modelo](../../machine-learning/supervised-learning/docs/modelos/modelo-olimpo.md), [implementação](../../machine-learning/supervised-learning/modelo_olimpo.py), [features spaCy](../../machine-learning/supervised-learning/metadados_spacy.py) e [exportador](../../machine-learning/supervised-learning/exportar_modelo.py).
+Fontes: [documentação do modelo](../../machine-learning/supervised-learning/docs/modelos/modelo-olimpo.md), [implementação](../../machine-learning/supervised-learning/modelo_olimpo.py), [features spaCy](../../machine-learning/supervised-learning/support/metadados_spacy.py) e [exportador](../../machine-learning/supervised-learning/support/exportar_modelo.py).
 
 - Pipeline M2: TF-IDF de palavras/caracteres → χ² com 10.000 atributos → SVD com 500 componentes → normalização, combinado com 24 atributos spaCy de peso `0,03`.
 - Classificador `LinearSVC(C=1, class_weight="balanced")`, calibrado por sigmoide, cinco folds e `ensemble=False`.
