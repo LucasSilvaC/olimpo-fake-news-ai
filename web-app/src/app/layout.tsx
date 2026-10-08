@@ -15,6 +15,9 @@ const montserrat = Montserrat({
 
 export const metadata: Metadata = {
   title: "Olimpo Fake News",
+  icons: {
+    icon: "/olimpo-logo.png",
+  },
   description: "Extraia o conteúdo e os metadados de uma notícia pública.",
 };
 

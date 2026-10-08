@@ -37,7 +37,7 @@ export function DevSandboxPage(): React.ReactElement {
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div className="flex items-center gap-3">
               <Image
-                src="/olimpo-logo.svg"
+                src="/olimpo-logo.png"
                 alt="Olimpo"
                 width={44}
                 height={44}
