@@ -231,7 +231,7 @@ export function RoundScoreboardStage({
             type="button"
             disabled={isAdvancing}
             onClick={() => void handleAdvance()}
-            className="flex w-full items-center justify-center gap-2 rounded-full bg-amber-400 px-8 py-3.5 text-base font-extrabold text-amber-950 shadow-xl transition-all duration-200 hover:bg-amber-300 hover:shadow-2xl active:scale-95 disabled:opacity-60 sm:w-auto"
+            className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-full bg-amber-400 px-8 py-3.5 text-base font-extrabold text-amber-950 shadow-xl transition-all duration-200 hover:bg-amber-300 hover:shadow-2xl active:scale-95 disabled:opacity-60 sm:w-auto"
           >
             {isAdvancing ? (
               <>

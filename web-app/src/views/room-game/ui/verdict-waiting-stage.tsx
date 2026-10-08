@@ -382,7 +382,7 @@ export function VerdictWaitingStage({
             <button
               type="button"
               onClick={onSkipCountdown}
-              className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-blue-600 px-6 py-2.5 text-sm font-extrabold text-white shadow-lg shadow-blue-600/30 transition-all hover:bg-blue-700 active:scale-95"
+              className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-full bg-amber-400 px-8 py-3.5 text-base font-extrabold text-amber-950 shadow-xl transition-all duration-200 hover:bg-amber-300 hover:shadow-2xl active:scale-95 disabled:opacity-60 sm:w-auto"
             >
               <span>Ir para o Placar da Rodada</span>
               {verdictCountdownSeconds !== null && verdictCountdownSeconds !== undefined && (
