@@ -18,6 +18,7 @@ import type {
   RoundStartedPayload,
   RoomEvent,
 } from "@/app/api/realtime-events/entities/event.types";
+import { PageShell } from "@/components/molecules/page-shell";
 import type { RoomStatus } from "@/server/shared/database/schemas/enums";
 import { Header } from "@/widgets/app-header";
 
@@ -470,16 +471,7 @@ export function RoomGameView({
   }, [router]);
 
   return (
-    <div className="relative flex min-h-screen flex-col overflow-x-hidden bg-gradient-to-b from-[#3b82f6] via-[#2563eb] to-[#1d4ed8] text-white selection:bg-amber-300 selection:text-slate-900">
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute -top-32 -left-40 size-[30rem] rounded-full bg-sky-200/20 blur-3xl"
-      />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute right-[-12rem] bottom-1/4 size-[34rem] rounded-full bg-indigo-300/20 blur-3xl"
-      />
-
+    <PageShell className="overflow-x-hidden">
       <Header className="relative z-20">
         <button
           type="button"
@@ -544,6 +536,6 @@ export function RoomGameView({
           <MatchScoreboardStage totalRounds={room.totalRounds} leaderboard={matchPlayers} />
         )}
       </main>
-    </div>
+    </PageShell>
   );
 }

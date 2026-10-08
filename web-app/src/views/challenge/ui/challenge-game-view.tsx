@@ -8,6 +8,7 @@ import { answerGlobalChallengeAction } from "@/app/api/global-challenges/actions
 import { getDefaultAnalysis } from "@/app/api/global-challenges/entities";
 import type { ListedGlobalChallengeDTO } from "@/app/api/global-challenges/usecase/list-global-challenges.usecase";
 import type { SubmitVoteActionResult } from "@/app/api/news-voting/actions/submit-vote.action";
+import { PageShell } from "@/components/molecules/page-shell";
 import type { AvatarConfig } from "@/lib/avatar";
 import type { MLTargetType } from "@/server/shared/database/schemas/enums";
 import {
@@ -339,16 +340,7 @@ export function ChallengeGameView({
   }, [totalChallenges, correctCount, currentUser.id, currentUser.name, score]);
 
   return (
-    <div className="relative flex min-h-screen flex-col overflow-x-hidden bg-linear-to-b from-[#3b82f6] via-[#2563eb] to-[#1d4ed8] text-white selection:bg-amber-300 selection:text-slate-900">
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute -top-32 -left-40 size-120 rounded-full bg-sky-200/20 blur-3xl"
-      />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute -right-48 bottom-1/4 size-136 rounded-full bg-indigo-300/20 blur-3xl"
-      />
-
+    <PageShell className="overflow-x-hidden">
       <Header className="relative z-20">
         <div className="flex items-center gap-3">
           <div className="hidden items-center gap-2 rounded-full border border-white/20 bg-white/15 px-3.5 py-1.5 text-xs font-bold text-white shadow-sm backdrop-blur-sm sm:flex">
@@ -436,6 +428,6 @@ export function ChallengeGameView({
           </>
         )}
       </main>
-    </div>
+    </PageShell>
   );
 }

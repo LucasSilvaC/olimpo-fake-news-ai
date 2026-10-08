@@ -62,12 +62,12 @@
   body {
     min-height: 100vh;
     color: white;
-    background: radial-gradient(120% 120% at 50% 20%, #4387f4 0%, #3478ed 45%, #2f70e3 100%);
+    background: #2563eb;
   }
 
   .dark body {
     color: var(--foreground);
-    background: radial-gradient(120% 120% at 50% 20%, #3b82f6 0%, #3478ed 45%, #2f70e3 100%);
+    background: #2563eb;
   }
 }
 

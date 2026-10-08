@@ -1,16 +1,12 @@
 import { LoaderCircle, Users } from "lucide-react";
 import * as React from "react";
 
+import { PageShell } from "@/components/molecules/page-shell";
 import { Header } from "@/widgets/app-header";
 
 export default function RoomLoading(): React.ReactElement {
   return (
-    <div className="relative flex min-h-screen flex-col overflow-hidden bg-gradient-to-b from-[#3b82f6] via-[#2563eb] to-[#1d4ed8] text-white">
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute -top-32 -left-40 size-[30rem] rounded-full bg-sky-200/20 blur-3xl"
-      />
-
+    <PageShell>
       <Header className="relative z-20" />
 
       <main
@@ -35,6 +31,6 @@ export default function RoomLoading(): React.ReactElement {
           <div className="h-full w-1/2 animate-pulse rounded-full bg-amber-300" />
         </div>
       </main>
-    </div>
+    </PageShell>
   );
 }
