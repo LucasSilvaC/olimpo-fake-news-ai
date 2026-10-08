@@ -23,11 +23,15 @@ export interface INewsArticleData {
 }
 
 export interface INewsCheckStageProps {
-  roomId: string;
+  roomId?: string;
   currentRound: number;
   totalRounds: number;
   article: INewsArticleData;
   timeRemainingSeconds?: number | null;
+  onCustomVote?: (
+    vote: "reliable" | "unreliable" | "uncertain",
+    isTimeout?: boolean,
+  ) => Promise<SubmitVoteActionResult>;
   onVoteSubmitted: (data: {
     vote: "reliable" | "unreliable" | "uncertain";
     result: SubmitVoteActionResult;
@@ -42,6 +46,7 @@ export function NewsCheckStage({
   totalRounds,
   article,
   timeRemainingSeconds,
+  onCustomVote,
   onVoteSubmitted,
 }: INewsCheckStageProps): React.ReactElement {
   const [selectedVote, setSelectedVote] = React.useState<
@@ -113,11 +118,21 @@ export function NewsCheckStage({
         : Math.max(1, Math.round((Date.now() - startTimeRef.current) / 1000));
 
       try {
-        const result = await submitVoteAction({
-          roomId,
-          vote,
-          isTimeout,
-        });
+        let result: SubmitVoteActionResult;
+        if (onCustomVote) {
+          result = await onCustomVote(vote, isTimeout);
+        } else if (roomId) {
+          result = await submitVoteAction({
+            roomId,
+            vote,
+            isTimeout,
+          });
+        } else {
+          result = {
+            success: false,
+            error: "Identificador da sala ou manipulador customizado não fornecido.",
+          };
+        }
 
         if (!result.success) {
           toast.error("Erro ao registrar voto", {
@@ -148,7 +163,7 @@ export function NewsCheckStage({
         setSelectedVote(null);
       }
     },
-    [isSubmitting, onVoteSubmitted, roomId],
+    [isSubmitting, onCustomVote, onVoteSubmitted, roomId],
   );
 
   // Automatically submit neutral timeout vote when round duration expires

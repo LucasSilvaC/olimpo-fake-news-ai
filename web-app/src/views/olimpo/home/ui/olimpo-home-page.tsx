@@ -43,6 +43,7 @@ export async function OlimpoHomePage(): Promise<React.ReactElement> {
             description="Aprimore seu faro contra fake news com quizzes temáticos diários, missões investigativas e ranking global individual."
             footer="Modo Solo & Quizzes"
             title="Fazer desafios"
+            href="/challenge"
           />
         </section>
       </main>
