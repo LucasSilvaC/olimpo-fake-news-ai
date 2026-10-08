@@ -28,7 +28,7 @@ export function Footer(): React.ReactElement {
           className="group inline-flex items-center gap-2.5 rounded-lg transition-transform hover:scale-105 focus-visible:ring-2 focus-visible:ring-amber-300 focus-visible:outline-none"
         >
           <Image
-            src="/olimpo-logo.svg"
+            src="/olimpo-logo.png"
             alt=""
             width={36}
             height={36}

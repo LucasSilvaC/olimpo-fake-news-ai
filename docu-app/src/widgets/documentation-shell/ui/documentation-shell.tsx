@@ -61,7 +61,7 @@ export function DocumentationShell({ children }: { children: React.ReactNode }):
         <Link href="/" onClick={() => setMobileNavigationOpen(false)} className="group inline-flex items-center gap-2 rounded-xl text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-amber-300 sm:gap-3">
           <span className="grid size-10 shrink-0 place-items-center rounded-xl border border-white/20 bg-white/10 shadow-lg shadow-blue-950/15 transition-transform group-hover:-rotate-3 sm:size-12">
             <Image
-              src="/olimpo-logo.svg"
+              src="/olimpo-logo.png"
               alt=""
               aria-hidden="true"
               width={36}

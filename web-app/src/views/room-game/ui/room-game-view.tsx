@@ -545,6 +545,14 @@ export function RoomGameView({
           />
         )}
 
+        {roundClosed && (
+          <ModelAnalysisPanel
+            key={`${room.id}:${currentRound}`}
+            roomId={room.id}
+            round={currentRound}
+          />
+        )}
+
         {roundClosed && stage !== "WAITING" && lastVote?.officialAnswer && (
           <section
             aria-label="Resultado do jogo"
@@ -556,14 +564,6 @@ export function RoomGameView({
             </p>
             <p className="mt-1 text-sm">Seu voto: {ANSWER_LABELS[lastVote.vote]}</p>
           </section>
-        )}
-
-        {roundClosed && (
-          <ModelAnalysisPanel
-            key={`${room.id}:${currentRound}`}
-            roomId={room.id}
-            round={currentRound}
-          />
         )}
 
         {stage === "ROUND_SCOREBOARD" && (
