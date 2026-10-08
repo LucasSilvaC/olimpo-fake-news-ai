@@ -1,53 +1,62 @@
-# Regras extraídas pelo FP-Growth e utilidade para o projeto
+# Resultados do FP-Growth principal
 
-## Origem e leitura correta
+Execução realizada em 7 de outubro de 2026, horário de São Paulo. Os nomes das pastas usam UTC. [Run completo](../outputs/model-comparison/fp-growth-metadados-ampliados-20261008T002311Z/summary.md), com 100 reamostragens de grupos para redescoberta e 100 para intervalos gramaticais da validação.
 
-Este relatório usa o [run principal sem autoria](../outputs/model-comparison/fp-growth-controls-20260929T215211Z/run_manifest.json) e, como comparação, o [baseline com autoria](../outputs/model-comparison/fp-growth-20260929T212058Z/run_manifest.json). Os padrões foram descobertos em **4.320 notícias do treino canônico**, sem ler Fake/Real. A incidência por classe foi medida depois nas **7.200 notícias do corpus**. Essa avaliação inclui os registros de treino; portanto, não mede generalização a notícias novas.
+| Representação | Features ativas | Regras elegíveis no treino | Regras sustentadas na validação | Sustentadas e com redescoberta ≥80% | Padrões distintos elegíveis | Novos candidatos na fila de revisão | Cobertura de todos os padrões na validação |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| Referência corrigida | 15 | 152 | 121 | 102 | 93 | 0 | 1.374/1.440 |
+| POS ampliado | 18 | 189 | 153 | 126 | 118 | 5 | 1.410/1.440 |
+| Sintaxe ampliada | 22 | 523 | 422 | 347 | 345 | 14 | 1.439/1.440 |
+| Vocabulário coletado amplo | 37 | 4.350 | 3.563 | 3.093 | 2.546 | 19 | 1.440/1.440 |
 
-Cada item indica que uma feature calculada nos **primeiros 300 caracteres** ficou abaixo do quantil 25% (`baixo`) ou acima do quantil 75% (`alto`) do treino. `typeTokenRatio` mede a razão de palavras distintas por token; `diversidade`, a razão de palavras distintas por palavra; `punctuationDensity`, a proporção de tokens de pontuação. `uppercaseRatio` também foi testada. `linkDensity` não gerou itens porque seus dois quantis coincidiram em zero. Empates nos limites podem fazer as faixas abrangerem mais que 25% dos registros.
+A coluna de novos candidatos conta padrões com itens acrescentados em relação à referência, entre os 20 selecionados para revisão em cada variante. Os padrões elegíveis resultam da união de itens das regras que passaram os filtros do treino. A cobertura total inclui padrões instáveis. Não representa cobertura de observações aprovadas nem ganho de utilidade para usuários.
 
-Uma regra `A → B` significa que **B aparece frequentemente quando A aparece**. `support` é a fração do treino que contém ambos; `confidence` é a fração com B entre os registros com A; `lift` compara essa confidence com a frequência geral de B. A seta não implica causalidade nem prediz a classe da notícia. O Jaccard da regra compara a cobertura de A e B no treino. Os filtros configurados foram support mínimo 0,08 para os itemsets, confidence mínima 0,50, lift mínimo 1,05 e Jaccard mínimo 0,10 para destacar regras. Veja as [20 regras brutas](../outputs/model-comparison/fp-growth-controls-20260929T215211Z/no_author_association_rules.csv) e os [10 padrões consolidados](../outputs/model-comparison/fp-growth-controls-20260929T215211Z/no_author_consolidated_patterns.csv).
+## Modelo principal
 
-## Oito regras que passaram pelos filtros
+A variante `sintaxe_ampliada` é o modelo principal para descobrir os padrões textuais usados na proposta de reflexão sobre notícias. Ela acrescenta ADP, AUX e NUM, além de obl, cc, acl:relcl e nsubj:pass. A versão ampla eleva as regras de 523 para 4.350 e acrescenta somente uma notícia à união total dos padrões na validação. Ainda pode conter observações diferentes e úteis, mas a variante ampla permanece uma ablação de comparação.
 
-As regras inversas compartilham o mesmo support e lift, mas têm confidence diferente. A tabela mantém as duas direções para que essa diferença fique explícita. Todos os valores são do **treino de descoberta**, arredondados a três casas.
+A fila sintática cobre 1.346 notícias da validação, comparada a 1.253 da fila da referência e 1.393 da fila ampla. Essas são uniões de listas diferentes de até 20 candidatos. Suas diferenças de contagem não medem diretamente quantas notícias novas foram acrescentadas nem comprovam melhoria editorial.
 
-| Regra | Support | Confidence | Lift | Jaccard |
-|---|---:|---:|---:|---:|
-| `diversidade_baixo → typeTokenRatio_baixo` | 0,172 | 0,684 | 2,692 | 0,516 |
-| `typeTokenRatio_baixo → diversidade_baixo` | 0,172 | 0,677 | 2,692 | 0,516 |
-| `typeTokenRatio_alto → diversidade_alto` | 0,166 | 0,657 | 2,557 | 0,482 |
-| `diversidade_alto → typeTokenRatio_alto` | 0,166 | 0,645 | 2,557 | 0,482 |
-| `typeTokenRatio_alto → punctuationDensity_baixo` | 0,138 | 0,548 | 2,163 | 0,376 |
-| `punctuationDensity_baixo → typeTokenRatio_alto` | 0,138 | 0,546 | 2,163 | 0,376 |
-| `typeTokenRatio_baixo → punctuationDensity_alto` | 0,138 | 0,545 | 2,137 | 0,374 |
-| `punctuationDensity_alto → typeTokenRatio_baixo` | 0,138 | 0,543 | 2,137 | 0,374 |
+Exemplos da fila sintática, sem seleção por Fake/True:
 
-As **12 regras restantes** continuam no CSV bruto com `passes_filters=False`. Elas envolvem `uppercaseRatio_baixo`; nenhuma atingiu simultaneamente os filtros de confidence e lift. Isso não significa que `uppercaseRatio` seja inútil: ela ainda aparece em padrões com diferenças descritivas de classe, mas suas regras de coocorrência não passaram pelo critério escolhido.
+| Combinação | Ocorrências na validação | Redescoberta da direção representativa |
+|---|---:|---:|
+| `DEP_acl:relcl_rate_baixo + POS_PRON_rate_baixo` | 441 | 100% |
+| `DEP_nsubj:pass_rate_baixo + POS_AUX_rate_baixo` | 387 | 100% |
+| `DEP_nsubj:pass_rate_baixo + DEP_nsubj_rate_alto` | 352 | 100% |
+| `DEP_nsubj:pass_rate_baixo + DEP_obj_rate_alto` | 344 | 100% |
 
-## O que os quatro pares mostram para o projeto
+Para revisar um padrão, inspecionar o limiar e seu denominador, os tokens previstos e exemplos cobertos. `baixo` pode significar contagem zero em determinadas tags. Ausência de uma anotação prevista não demonstra ausência de um fenômeno em todo o documento. Os exemplos do notebook permitem iniciar essa revisão, mas não equivalem a anotação linguística humana de referência.
 
-As porcentagens e lifts Fake/Real abaixo vêm da [avaliação posterior dos padrões sem autoria](../outputs/model-comparison/fp-growth-controls-20260929T215211Z/no_author_pattern_evaluation.csv), no corpus completo. A prevalência global é 50% Fake e 50% Real. **Lift Fake nesta tabela é uma métrica de classe**, diferente do lift das regras acima.
+## Associação descritiva com Fake e True
 
-| Padrão de itens | Notícias | Fake | Real | Lift Fake | Utilidade prática |
-|---|---:|---:|---:|---:|---|
-| `diversidade_baixo + typeTokenRatio_baixo` | 1.242 | 61,6% | 38,4% | 1,232 | Ajuda a investigar repetição e menor variedade lexical em conjunto. As duas medidas são próximas; a regra não representa duas evidências independentes. |
-| `diversidade_alto + typeTokenRatio_alto` | 1.199 | 31,2% | 68,8% | 0,624 | Serve de contraste lexical para o padrão anterior e orienta inspeção de perfis de texto. |
-| `punctuationDensity_baixo + typeTokenRatio_alto` | 978 | 30,9% | 69,1% | 0,618 | Aponta um perfil de menor pontuação e maior variedade de tokens para comparação exploratória. |
-| `punctuationDensity_alto + typeTokenRatio_baixo` | 1.007 | 70,3% | 29,7% | 1,406 | É o maior lift Fake agregado entre os dez padrões textuais; prioriza revisão humana de exemplos e testes em novos dados. |
+Na validação, os 345 padrões do principal apresentam 105 com maior presença proporcional em Fake, 235 em True e cinco empatados. A descrição já está calculada por classe, partição e autoria em [posthoc_composition.csv](../outputs/model-comparison/fp-growth-metadados-ampliados-20261008T002311Z/sintaxe_ampliada/posthoc_composition.csv). Ainda faltam intervalos e avaliação da força das associações para escolher padrões por classe. Essas contagens não classificam textos novos.
 
-Essas regras ajudam a **descrever estilos recorrentes**, montar subconjuntos auditáveis de notícias e levantar hipóteses para features futuras. Elas não verificam fatos, fontes ou afirmações; portanto, não devem ser convertidas diretamente em decisão Fake/Real.
+## Relação com o propósito do teste.md
 
-## Controle de autoria: limite dos resultados agregados
+O experimento entrega quatro catálogos de pesquisa. Seus itens carregam operadores, limiares completos, denominadores e procedência. As uniões consolidam direções inversas e possuem famílias de redundância. Há descrições e perguntas preliminares, além de contagens por partição e autoria com os dois denominadores da comparação por classe.
 
-No baseline, **21 dos 31 padrões incluem autoria**. Autoria isolada já separa fortemente as classes neste corpus: 3.528 de 3.601 notícias `sem_autor` são Fake, enquanto 72 de 3.599 `com_autor` são Fake; Cramér V = **0,960**. As regras do [baseline](../outputs/model-comparison/fp-growth-20260929T212058Z/association_rules.csv) que combinam estilo e autoria podem refletir sobretudo essa composição, mesmo quando apresentam lift de coocorrência alto. Por isso o notebook [principal sem autoria](fp_growth_principal_sem_autoria_controles.ipynb) e a [comparação estratificada](../outputs/model-comparison/fp-growth-controls-20260929T215211Z/comparison_summary.md) são a referência para interpretar o texto.
+Todos os padrões permanecem `research_only`, com comparação por classe desabilitada. A próxima etapa é selecionar observações compreensíveis, revisar perguntas e exemplos e promover somente os padrões aprovados para um catálogo do produto. Termos como `acl:relcl` não devem aparecer sem tradução na experiência do usuário.
 
-O controle mostra que o padrão `punctuationDensity_alto + typeTokenRatio_baixo`, com **70,3% Fake no total**, tem **0,7% Fake entre notícias com autor** e **98,9% Fake entre notícias sem autor**. Em cada estrato, essas porcentagens ficam próximas ou abaixo da respectiva prevalência Fake (2,0% e 98,0%). O lift Fake dentro do estrato sem autor é **1,009**. Assim, o sinal agregado não é evidência de que esse padrão textual identifique desinformação independentemente da autoria. Os estratos têm pouquíssimos exemplos da classe minoritária, e a análise é observacional.
+## Verificações realizadas
 
-## Uso recomendado
+- ZIP congelado validado por SHA-256.
+- Os 7.200 textos do CSV coletado corresponderam ao corpus congelado, preservando CRLF/BOM.
+- IDs e grupos canônicos reconstruídos sem separação dos pares entre partições.
+- Os atributos e as 152 regras direcionais da referência corrigida foram reproduzidos.
+- Cinco testes passaram, cobrindo denominadores, janela, ausência versus zero, mineração e reamostragem de pares.
+- Notebook executado, com checagem de identidade e ocorrências de todos os padrões dos quatro catálogos na validação.
 
-1. Use as regras para **explorar e auditar** perfis de escrita, mostrando os itens e exemplos cobertos ao analista.
-2. Compare qualquer associação com a **baseline de autoria** e com as taxas dentro de `com_autor` e `sem_autor` antes de atribuir utilidade ao texto.
-3. Para usar essas features em um detector, faça uma **avaliação preditiva separada** em notícias novas, com split por grupo/fonte e métricas como F1, precisão, recall e taxa de falso positivo. Este experimento FP-Growth não fornece essas métricas.
+As métricas medem recorrência e estabilidade neste corpus. O teste já conhecido continua exploratório. Os atributos/famílias foram escolhidos à luz de análises anteriores. Não há nova validação externa, aprovação editorial ou estudo com usuários nesta entrega.
 
-Reprodução: [notebook principal](fp_growth_principal_sem_autoria_controles.ipynb), [notebook baseline](fp_growth_baseline_com_autoria.ipynb), [manifesto e parâmetros do controle](../outputs/model-comparison/fp-growth-controls-20260929T215211Z/run_manifest.json).
+## Arquivos e reprodução
+
+- [Notebook principal](fp_growth_principal_sem_autoria.ipynb): resultados, comparações, exemplos e catálogos.
+- [Implementação principal](fp_growth_principal.py): extração e comparação com `PRIMARY_VARIANT = "sintaxe_ampliada"`.
+- [Legado](history/mineracao-de-padroes/fp-growth-legado/README.md) e [referência linguística anterior](history/mineracao-de-padroes/fp-growth-linguistico/README.md): documentação e resultados históricos nas próprias pastas.
+- As referências e ablações do run têm README junto aos respectivos CSVs.
+
+```powershell
+python machine-learning/unsupervised-learning/fp_growth_principal.py --repetitions 100
+python -m unittest discover -s machine-learning/unsupervised-learning/tests -v
+```

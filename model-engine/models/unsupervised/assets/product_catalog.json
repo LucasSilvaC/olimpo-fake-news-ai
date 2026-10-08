@@ -1,0 +1,1013 @@
+{
+  "catalogVersion": "sintaxe-ampliada-observation-only-v2",
+  "sourceRun": "fp-growth-metadados-ampliados-20261008T002311Z",
+  "variant": "sintaxe_ampliada",
+  "runtimeFeaturesSha256": "9ee1ed4b6c2796ecaa6e329aa5b0db1a24af7cc4e3052627b024d1f858a24e90",
+  "runtimeLayoutVersion": "model-engine-v1",
+  "sourceCatalogSha256": "c635dcd5fce4811619e39559ebd5c3d8c449a4389eb3d46dfa3017f27101a6c7",
+  "sourceDiscretizationSha256": "6e535502b1eca02ed9e0986e9a94e7d4bbc78f988d069ce2b219c1546a1a3185",
+  "characterLimit": 300,
+  "normalization": "NFKC; strip leading BOM; first 300 characters",
+  "extractorVersion": "collected-features-v1/spacy-3.8.16/pt_core_news_sm-3.8.0",
+  "extractorSourceSha256": "ceedd26bd9e62c8f1a8837c06a73f4f482045dc0222df042cbcc613d55106dfa",
+  "baseExtractionSourceSha256": "7ccd329258fca25ad3374368ef351863f44073974aae078bff5db9af386262a0",
+  "discretizationSourceSha256": "be2d3e21b783e81d384b159b1bd4105993dab14de58d4596047d5b0f302bf230",
+  "comparisonEnabled": false,
+  "status": "experimental_observation_only",
+  "review": {
+    "reviewType": "agent_technical_review",
+    "humanEditorialApproval": false,
+    "notes": [
+      "Observações restritas às medidas da janela de 300 caracteres.",
+      "Perguntas não inferem intenção, qualidade jornalística ou veracidade.",
+      "Ausência de uma anotação no trecho não implica ausência na notícia completa.",
+      "Não contém frequências por classe, probabilidades ou classificação."
+    ]
+  },
+  "discretization": [
+    {
+      "feature": "diversidade",
+      "item": "diversidade_baixo",
+      "direction": "baixo",
+      "threshold": 0.7647058823529411,
+      "omitted": false
+    },
+    {
+      "feature": "diversidade",
+      "item": "diversidade_alto",
+      "direction": "alto",
+      "threshold": 0.8541666666666666,
+      "omitted": false
+    },
+    {
+      "feature": "linkDensity",
+      "item": "linkDensity_baixo",
+      "direction": "baixo",
+      "threshold": 0.0,
+      "omitted": true
+    },
+    {
+      "feature": "linkDensity",
+      "item": "linkDensity_alto",
+      "direction": "alto",
+      "threshold": 0.0,
+      "omitted": true
+    },
+    {
+      "feature": "uppercaseRatio",
+      "item": "uppercaseRatio_baixo",
+      "direction": "baixo",
+      "threshold": 0.0,
+      "omitted": false
+    },
+    {
+      "feature": "uppercaseRatio",
+      "item": "uppercaseRatio_alto",
+      "direction": "alto",
+      "threshold": 0.038461538461538464,
+      "omitted": false
+    },
+    {
+      "feature": "punctuationDensity_spacy",
+      "item": "punctuationDensity_spacy_baixo",
+      "direction": "baixo",
+      "threshold": 0.09615384615384616,
+      "omitted": false
+    },
+    {
+      "feature": "punctuationDensity_spacy",
+      "item": "punctuationDensity_spacy_alto",
+      "direction": "alto",
+      "threshold": 0.15873015873015872,
+      "omitted": false
+    },
+    {
+      "feature": "POS_ADJ_rate",
+      "item": "POS_ADJ_rate_baixo",
+      "direction": "baixo",
+      "threshold": 0.020833333333333332,
+      "omitted": false
+    },
+    {
+      "feature": "POS_ADJ_rate",
+      "item": "POS_ADJ_rate_alto",
+      "direction": "alto",
+      "threshold": 0.06818181818181818,
+      "omitted": false
+    },
+    {
+      "feature": "POS_ADV_rate",
+      "item": "POS_ADV_rate_baixo",
+      "direction": "baixo",
+      "threshold": 0.0,
+      "omitted": false
+    },
+    {
+      "feature": "POS_ADV_rate",
+      "item": "POS_ADV_rate_alto",
+      "direction": "alto",
+      "threshold": 0.041666666666666664,
+      "omitted": false
+    },
+    {
+      "feature": "POS_NOUN_rate",
+      "item": "POS_NOUN_rate_baixo",
+      "direction": "baixo",
+      "threshold": 0.19148936170212766,
+      "omitted": false
+    },
+    {
+      "feature": "POS_NOUN_rate",
+      "item": "POS_NOUN_rate_alto",
+      "direction": "alto",
+      "threshold": 0.2653061224489796,
+      "omitted": false
+    },
+    {
+      "feature": "POS_PROPN_rate",
+      "item": "POS_PROPN_rate_baixo",
+      "direction": "baixo",
+      "threshold": 0.10416666666666667,
+      "omitted": false
+    },
+    {
+      "feature": "POS_PROPN_rate",
+      "item": "POS_PROPN_rate_alto",
+      "direction": "alto",
+      "threshold": 0.21568627450980393,
+      "omitted": false
+    },
+    {
+      "feature": "POS_VERB_rate",
+      "item": "POS_VERB_rate_baixo",
+      "direction": "baixo",
+      "threshold": 0.09615384615384616,
+      "omitted": false
+    },
+    {
+      "feature": "POS_VERB_rate",
+      "item": "POS_VERB_rate_alto",
+      "direction": "alto",
+      "threshold": 0.15217391304347827,
+      "omitted": false
+    },
+    {
+      "feature": "POS_PRON_rate",
+      "item": "POS_PRON_rate_baixo",
+      "direction": "baixo",
+      "threshold": 0.0,
+      "omitted": false
+    },
+    {
+      "feature": "POS_PRON_rate",
+      "item": "POS_PRON_rate_alto",
+      "direction": "alto",
+      "threshold": 0.04081632653061224,
+      "omitted": false
+    },
+    {
+      "feature": "DEP_nsubj_rate",
+      "item": "DEP_nsubj_rate_baixo",
+      "direction": "baixo",
+      "threshold": 0.05660377358490566,
+      "omitted": false
+    },
+    {
+      "feature": "DEP_nsubj_rate",
+      "item": "DEP_nsubj_rate_alto",
+      "direction": "alto",
+      "threshold": 0.09090909090909091,
+      "omitted": false
+    },
+    {
+      "feature": "DEP_obj_rate",
+      "item": "DEP_obj_rate_baixo",
+      "direction": "baixo",
+      "threshold": 0.04,
+      "omitted": false
+    },
+    {
+      "feature": "DEP_obj_rate",
+      "item": "DEP_obj_rate_alto",
+      "direction": "alto",
+      "threshold": 0.08163265306122448,
+      "omitted": false
+    },
+    {
+      "feature": "DEP_amod_rate",
+      "item": "DEP_amod_rate_baixo",
+      "direction": "baixo",
+      "threshold": 0.0196078431372549,
+      "omitted": false
+    },
+    {
+      "feature": "DEP_amod_rate",
+      "item": "DEP_amod_rate_alto",
+      "direction": "alto",
+      "threshold": 0.061224489795918366,
+      "omitted": false
+    },
+    {
+      "feature": "DEP_advmod_rate",
+      "item": "DEP_advmod_rate_baixo",
+      "direction": "baixo",
+      "threshold": 0.0,
+      "omitted": false
+    },
+    {
+      "feature": "DEP_advmod_rate",
+      "item": "DEP_advmod_rate_alto",
+      "direction": "alto",
+      "threshold": 0.04081632653061224,
+      "omitted": false
+    },
+    {
+      "feature": "DEP_ccomp_rate",
+      "item": "DEP_ccomp_rate_baixo",
+      "direction": "baixo",
+      "threshold": 0.0,
+      "omitted": false
+    },
+    {
+      "feature": "DEP_ccomp_rate",
+      "item": "DEP_ccomp_rate_alto",
+      "direction": "alto",
+      "threshold": 0.020833333333333332,
+      "omitted": false
+    },
+    {
+      "feature": "DEP_advcl_rate",
+      "item": "DEP_advcl_rate_baixo",
+      "direction": "baixo",
+      "threshold": 0.0,
+      "omitted": false
+    },
+    {
+      "feature": "DEP_advcl_rate",
+      "item": "DEP_advcl_rate_alto",
+      "direction": "alto",
+      "threshold": 0.02040816326530612,
+      "omitted": false
+    },
+    {
+      "feature": "POS_ADP_rate",
+      "item": "POS_ADP_rate_baixo",
+      "direction": "baixo",
+      "threshold": 0.1509433962264151,
+      "omitted": false
+    },
+    {
+      "feature": "POS_ADP_rate",
+      "item": "POS_ADP_rate_alto",
+      "direction": "alto",
+      "threshold": 0.22448979591836735,
+      "omitted": false
+    },
+    {
+      "feature": "POS_AUX_rate",
+      "item": "POS_AUX_rate_baixo",
+      "direction": "baixo",
+      "threshold": 0.0,
+      "omitted": false
+    },
+    {
+      "feature": "POS_AUX_rate",
+      "item": "POS_AUX_rate_alto",
+      "direction": "alto",
+      "threshold": 0.041666666666666664,
+      "omitted": false
+    },
+    {
+      "feature": "POS_NUM_rate",
+      "item": "POS_NUM_rate_baixo",
+      "direction": "baixo",
+      "threshold": 0.0,
+      "omitted": false
+    },
+    {
+      "feature": "POS_NUM_rate",
+      "item": "POS_NUM_rate_alto",
+      "direction": "alto",
+      "threshold": 0.04081632653061224,
+      "omitted": false
+    },
+    {
+      "feature": "DEP_obl_rate",
+      "item": "DEP_obl_rate_baixo",
+      "direction": "baixo",
+      "threshold": 0.037037037037037035,
+      "omitted": false
+    },
+    {
+      "feature": "DEP_obl_rate",
+      "item": "DEP_obl_rate_alto",
+      "direction": "alto",
+      "threshold": 0.07547169811320754,
+      "omitted": false
+    },
+    {
+      "feature": "DEP_cc_rate",
+      "item": "DEP_cc_rate_baixo",
+      "direction": "baixo",
+      "threshold": 0.0,
+      "omitted": false
+    },
+    {
+      "feature": "DEP_cc_rate",
+      "item": "DEP_cc_rate_alto",
+      "direction": "alto",
+      "threshold": 0.0392156862745098,
+      "omitted": false
+    },
+    {
+      "feature": "DEP_acl:relcl_rate",
+      "item": "DEP_acl:relcl_rate_baixo",
+      "direction": "baixo",
+      "threshold": 0.0,
+      "omitted": false
+    },
+    {
+      "feature": "DEP_acl:relcl_rate",
+      "item": "DEP_acl:relcl_rate_alto",
+      "direction": "alto",
+      "threshold": 0.02040816326530612,
+      "omitted": false
+    },
+    {
+      "feature": "DEP_nsubj:pass_rate",
+      "item": "DEP_nsubj:pass_rate_baixo",
+      "direction": "baixo",
+      "threshold": 0.0,
+      "omitted": false
+    },
+    {
+      "feature": "DEP_nsubj:pass_rate",
+      "item": "DEP_nsubj:pass_rate_alto",
+      "direction": "alto",
+      "threshold": 0.018867924528301886,
+      "omitted": false
+    }
+  ],
+  "patterns": [
+    {
+      "patternId": "8715ac5b8fc2",
+      "items": [
+        {
+          "item": "DEP_acl:relcl_rate_baixo",
+          "feature": "DEP_acl:relcl_rate",
+          "operator": "<=",
+          "threshold": 0.0,
+          "denominator": "tokens_lexical",
+          "annotation_label": "orações relativas"
+        },
+        {
+          "item": "POS_PRON_rate_baixo",
+          "feature": "POS_PRON_rate",
+          "operator": "<=",
+          "threshold": 0.0,
+          "denominator": "tokens_lexical",
+          "annotation_label": "pronomes"
+        }
+      ],
+      "priority": 0,
+      "observationTitle": "Como o trecho identifica pessoas e fatos?",
+      "observationTemplate": "Na janela analisada, o anotador encontrou orações relativas: nenhuma ocorrência anotada; pronomes: nenhuma ocorrência anotada.",
+      "reflectionQuestions": [
+        "A quem cada pessoa ou instituição mencionada se refere?",
+        "Que informação fora deste trecho ajudaria a entender essas referências?"
+      ],
+      "redundancyFamily": "referenciacao",
+      "displayStatus": "observation_only",
+      "comparisonEnabled": false
+    },
+    {
+      "patternId": "afaef19656e5",
+      "items": [
+        {
+          "item": "DEP_advmod_rate_baixo",
+          "feature": "DEP_advmod_rate",
+          "operator": "<=",
+          "threshold": 0.0,
+          "denominator": "tokens_lexical",
+          "annotation_label": "modificadores adverbiais"
+        },
+        {
+          "item": "POS_ADV_rate_baixo",
+          "feature": "POS_ADV_rate",
+          "operator": "<=",
+          "threshold": 0.0,
+          "denominator": "tokens_lexical",
+          "annotation_label": "advérbios"
+        }
+      ],
+      "priority": 1,
+      "observationTitle": "Como as ações são descritas?",
+      "observationTemplate": "Na janela analisada, o anotador encontrou modificadores adverbiais: nenhuma ocorrência anotada; advérbios: nenhuma ocorrência anotada.",
+      "reflectionQuestions": [
+        "Que afirmação central aparece neste trecho?",
+        "Que evidência permitiria verificar essa afirmação, além da maneira como foi escrita?"
+      ],
+      "redundancyFamily": "modificacao_adverbial",
+      "displayStatus": "observation_only",
+      "comparisonEnabled": false
+    },
+    {
+      "patternId": "8c3cebc0601d",
+      "items": [
+        {
+          "item": "DEP_nsubj:pass_rate_baixo",
+          "feature": "DEP_nsubj:pass_rate",
+          "operator": "<=",
+          "threshold": 0.0,
+          "denominator": "tokens_lexical",
+          "annotation_label": "sujeitos de construções passivas"
+        },
+        {
+          "item": "POS_AUX_rate_baixo",
+          "feature": "POS_AUX_rate",
+          "operator": "<=",
+          "threshold": 0.0,
+          "denominator": "tokens_lexical",
+          "annotation_label": "verbos auxiliares"
+        }
+      ],
+      "priority": 2,
+      "observationTitle": "Quais ações aparecem no trecho?",
+      "observationTemplate": "Na janela analisada, o anotador encontrou sujeitos de construções passivas: nenhuma ocorrência anotada; verbos auxiliares: nenhuma ocorrência anotada.",
+      "reflectionQuestions": [
+        "Quem faz o quê neste trecho?",
+        "Qual fonte permitiria conferir se essas ações ocorreram?"
+      ],
+      "redundancyFamily": "construcoes_verbais",
+      "displayStatus": "observation_only",
+      "comparisonEnabled": false
+    },
+    {
+      "patternId": "d1280945c7ef",
+      "items": [
+        {
+          "item": "DEP_nsubj:pass_rate_baixo",
+          "feature": "DEP_nsubj:pass_rate",
+          "operator": "<=",
+          "threshold": 0.0,
+          "denominator": "tokens_lexical",
+          "annotation_label": "sujeitos de construções passivas"
+        },
+        {
+          "item": "DEP_nsubj_rate_alto",
+          "feature": "DEP_nsubj_rate",
+          "operator": ">=",
+          "threshold": 0.09090909090909091,
+          "denominator": "tokens_lexical",
+          "annotation_label": "sujeitos nominais"
+        }
+      ],
+      "priority": 3,
+      "observationTitle": "Quem participa das ações?",
+      "observationTemplate": "Na janela analisada, o anotador encontrou sujeitos de construções passivas: nenhuma ocorrência anotada; sujeitos nominais: frequência na faixa superior de referência do treino.",
+      "reflectionQuestions": [
+        "Quais pessoas ou instituições aparecem como responsáveis pelas ações?",
+        "O texto indica como verificar a participação delas?"
+      ],
+      "redundancyFamily": "agentes",
+      "displayStatus": "observation_only",
+      "comparisonEnabled": false
+    },
+    {
+      "patternId": "8b970151f163",
+      "items": [
+        {
+          "item": "DEP_nsubj:pass_rate_baixo",
+          "feature": "DEP_nsubj:pass_rate",
+          "operator": "<=",
+          "threshold": 0.0,
+          "denominator": "tokens_lexical",
+          "annotation_label": "sujeitos de construções passivas"
+        },
+        {
+          "item": "DEP_obj_rate_alto",
+          "feature": "DEP_obj_rate",
+          "operator": ">=",
+          "threshold": 0.08163265306122448,
+          "denominator": "tokens_lexical",
+          "annotation_label": "objetos diretos"
+        }
+      ],
+      "priority": 4,
+      "observationTitle": "A que se dirigem as ações?",
+      "observationTemplate": "Na janela analisada, o anotador encontrou sujeitos de construções passivas: nenhuma ocorrência anotada; objetos diretos: frequência na faixa superior de referência do treino.",
+      "reflectionQuestions": [
+        "Sobre quem ou sobre o que recaem as ações descritas?",
+        "Que registro ou documento ajudaria a verificar essas ações?"
+      ],
+      "redundancyFamily": "objetos",
+      "displayStatus": "observation_only",
+      "comparisonEnabled": false
+    },
+    {
+      "patternId": "3542b427d129",
+      "items": [
+        {
+          "item": "DEP_acl:relcl_rate_baixo",
+          "feature": "DEP_acl:relcl_rate",
+          "operator": "<=",
+          "threshold": 0.0,
+          "denominator": "tokens_lexical",
+          "annotation_label": "orações relativas"
+        },
+        {
+          "item": "DEP_nsubj:pass_rate_baixo",
+          "feature": "DEP_nsubj:pass_rate",
+          "operator": "<=",
+          "threshold": 0.0,
+          "denominator": "tokens_lexical",
+          "annotation_label": "sujeitos de construções passivas"
+        },
+        {
+          "item": "POS_PRON_rate_baixo",
+          "feature": "POS_PRON_rate",
+          "operator": "<=",
+          "threshold": 0.0,
+          "denominator": "tokens_lexical",
+          "annotation_label": "pronomes"
+        }
+      ],
+      "priority": 5,
+      "observationTitle": "Como o trecho identifica pessoas e fatos?",
+      "observationTemplate": "Na janela analisada, o anotador encontrou orações relativas: nenhuma ocorrência anotada; sujeitos de construções passivas: nenhuma ocorrência anotada; pronomes: nenhuma ocorrência anotada.",
+      "reflectionQuestions": [
+        "A quem cada nome mencionado se refere?",
+        "Que contexto ajudaria a distinguir pessoas ou fatos com nomes semelhantes?"
+      ],
+      "redundancyFamily": "referenciacao",
+      "displayStatus": "observation_only",
+      "comparisonEnabled": false
+    },
+    {
+      "patternId": "d0c4306ce66c",
+      "items": [
+        {
+          "item": "DEP_nsubj:pass_rate_baixo",
+          "feature": "DEP_nsubj:pass_rate",
+          "operator": "<=",
+          "threshold": 0.0,
+          "denominator": "tokens_lexical",
+          "annotation_label": "sujeitos de construções passivas"
+        },
+        {
+          "item": "POS_ADP_rate_baixo",
+          "feature": "POS_ADP_rate",
+          "operator": "<=",
+          "threshold": 0.1509433962264151,
+          "denominator": "tokens_lexical",
+          "annotation_label": "preposições"
+        }
+      ],
+      "priority": 6,
+      "observationTitle": "Que contexto acompanha os fatos?",
+      "observationTemplate": "Na janela analisada, o anotador encontrou sujeitos de construções passivas: nenhuma ocorrência anotada; preposições: frequência na faixa inferior de referência do treino.",
+      "reflectionQuestions": [
+        "Que informações de lugar, tempo ou circunstância estão explícitas?",
+        "Quais delas precisam ser procuradas na notícia completa ou em outra fonte?"
+      ],
+      "redundancyFamily": "contexto",
+      "displayStatus": "observation_only",
+      "comparisonEnabled": false
+    },
+    {
+      "patternId": "58bd81f28dc3",
+      "items": [
+        {
+          "item": "DEP_amod_rate_baixo",
+          "feature": "DEP_amod_rate",
+          "operator": "<=",
+          "threshold": 0.0196078431372549,
+          "denominator": "tokens_lexical",
+          "annotation_label": "modificadores adjetivais"
+        },
+        {
+          "item": "POS_ADJ_rate_baixo",
+          "feature": "POS_ADJ_rate",
+          "operator": "<=",
+          "threshold": 0.020833333333333332,
+          "denominator": "tokens_lexical",
+          "annotation_label": "adjetivos"
+        }
+      ],
+      "priority": 7,
+      "observationTitle": "Como pessoas e acontecimentos são caracterizados?",
+      "observationTemplate": "Na janela analisada, o anotador encontrou modificadores adjetivais: frequência na faixa inferior de referência do treino; adjetivos: frequência na faixa inferior de referência do treino.",
+      "reflectionQuestions": [
+        "Qual afirmação pode ser verificada neste trecho?",
+        "Que evidência ajudaria a avaliá-la independentemente dos adjetivos usados?"
+      ],
+      "redundancyFamily": "adjetivacao",
+      "displayStatus": "observation_only",
+      "comparisonEnabled": false
+    },
+    {
+      "patternId": "340698e8be61",
+      "items": [
+        {
+          "item": "DEP_advmod_rate_baixo",
+          "feature": "DEP_advmod_rate",
+          "operator": "<=",
+          "threshold": 0.0,
+          "denominator": "tokens_lexical",
+          "annotation_label": "modificadores adverbiais"
+        },
+        {
+          "item": "DEP_nsubj:pass_rate_baixo",
+          "feature": "DEP_nsubj:pass_rate",
+          "operator": "<=",
+          "threshold": 0.0,
+          "denominator": "tokens_lexical",
+          "annotation_label": "sujeitos de construções passivas"
+        },
+        {
+          "item": "POS_ADV_rate_baixo",
+          "feature": "POS_ADV_rate",
+          "operator": "<=",
+          "threshold": 0.0,
+          "denominator": "tokens_lexical",
+          "annotation_label": "advérbios"
+        }
+      ],
+      "priority": 8,
+      "observationTitle": "Como as ações são descritas?",
+      "observationTemplate": "Na janela analisada, o anotador encontrou modificadores adverbiais: nenhuma ocorrência anotada; sujeitos de construções passivas: nenhuma ocorrência anotada; advérbios: nenhuma ocorrência anotada.",
+      "reflectionQuestions": [
+        "Que afirmação central aparece neste trecho?",
+        "Que evidência permitiria verificar a ação descrita?"
+      ],
+      "redundancyFamily": "modificacao_adverbial",
+      "displayStatus": "observation_only",
+      "comparisonEnabled": false
+    },
+    {
+      "patternId": "dcc82376b8a6",
+      "items": [
+        {
+          "item": "DEP_ccomp_rate_baixo",
+          "feature": "DEP_ccomp_rate",
+          "operator": "<=",
+          "threshold": 0.0,
+          "denominator": "tokens_lexical",
+          "annotation_label": "complementos oracionais"
+        },
+        {
+          "item": "DEP_nsubj_rate_baixo",
+          "feature": "DEP_nsubj_rate",
+          "operator": "<=",
+          "threshold": 0.05660377358490566,
+          "denominator": "tokens_lexical",
+          "annotation_label": "sujeitos nominais"
+        }
+      ],
+      "priority": 9,
+      "observationTitle": "Quem sustenta a afirmação?",
+      "observationTemplate": "Na janela analisada, o anotador encontrou complementos oracionais: nenhuma ocorrência anotada; sujeitos nominais: frequência na faixa inferior de referência do treino.",
+      "reflectionQuestions": [
+        "É possível identificar quem afirma ou realiza o que é relatado?",
+        "Que fonte permitiria confirmar essa atribuição?"
+      ],
+      "redundancyFamily": "agentes",
+      "displayStatus": "observation_only",
+      "comparisonEnabled": false
+    },
+    {
+      "patternId": "044b4a18072c",
+      "items": [
+        {
+          "item": "DEP_ccomp_rate_baixo",
+          "feature": "DEP_ccomp_rate",
+          "operator": "<=",
+          "threshold": 0.0,
+          "denominator": "tokens_lexical",
+          "annotation_label": "complementos oracionais"
+        },
+        {
+          "item": "POS_VERB_rate_baixo",
+          "feature": "POS_VERB_rate",
+          "operator": "<=",
+          "threshold": 0.09615384615384616,
+          "denominator": "tokens_lexical",
+          "annotation_label": "verbos"
+        }
+      ],
+      "priority": 10,
+      "observationTitle": "Que acontecimento é relatado?",
+      "observationTemplate": "Na janela analisada, o anotador encontrou complementos oracionais: nenhuma ocorrência anotada; verbos: frequência na faixa inferior de referência do treino.",
+      "reflectionQuestions": [
+        "Que ação ou acontecimento você consegue identificar?",
+        "Que informações precisaria encontrar para verificar esse acontecimento?"
+      ],
+      "redundancyFamily": "construcoes_verbais",
+      "displayStatus": "observation_only",
+      "comparisonEnabled": false
+    },
+    {
+      "patternId": "a33f9be1d445",
+      "items": [
+        {
+          "item": "DEP_nsubj:pass_rate_baixo",
+          "feature": "DEP_nsubj:pass_rate",
+          "operator": "<=",
+          "threshold": 0.0,
+          "denominator": "tokens_lexical",
+          "annotation_label": "sujeitos de construções passivas"
+        },
+        {
+          "item": "POS_PRON_rate_alto",
+          "feature": "POS_PRON_rate",
+          "operator": ">=",
+          "threshold": 0.04081632653061224,
+          "denominator": "tokens_lexical",
+          "annotation_label": "pronomes"
+        }
+      ],
+      "priority": 11,
+      "observationTitle": "A quem os pronomes se referem?",
+      "observationTemplate": "Na janela analisada, o anotador encontrou sujeitos de construções passivas: nenhuma ocorrência anotada; pronomes: frequência na faixa superior de referência do treino.",
+      "reflectionQuestions": [
+        "Você consegue ligar cada pronome à pessoa ou instituição correspondente?",
+        "A notícia completa esclarece alguma referência que ficou aberta neste trecho?"
+      ],
+      "redundancyFamily": "referenciacao",
+      "displayStatus": "observation_only",
+      "comparisonEnabled": false
+    },
+    {
+      "patternId": "23b2cdc9d31e",
+      "items": [
+        {
+          "item": "DEP_nsubj:pass_rate_baixo",
+          "feature": "DEP_nsubj:pass_rate",
+          "operator": "<=",
+          "threshold": 0.0,
+          "denominator": "tokens_lexical",
+          "annotation_label": "sujeitos de construções passivas"
+        },
+        {
+          "item": "punctuationDensity_spacy_alto",
+          "feature": "punctuationDensity_spacy",
+          "operator": ">=",
+          "threshold": 0.15873015873015872,
+          "denominator": "tokens_nonspace",
+          "annotation_label": "pontuação"
+        }
+      ],
+      "priority": 12,
+      "observationTitle": "Como a pontuação organiza o trecho?",
+      "observationTemplate": "Na janela analisada, o anotador encontrou sujeitos de construções passivas: nenhuma ocorrência anotada; pontuação: frequência na faixa superior de referência do treino.",
+      "reflectionQuestions": [
+        "Que partes a pontuação separa, cita ou destaca?",
+        "Qual afirmação dessas partes você gostaria de verificar em outra fonte?"
+      ],
+      "redundancyFamily": "pontuacao",
+      "displayStatus": "observation_only",
+      "comparisonEnabled": false
+    },
+    {
+      "patternId": "1d57b1df1486",
+      "items": [
+        {
+          "item": "DEP_acl:relcl_rate_baixo",
+          "feature": "DEP_acl:relcl_rate",
+          "operator": "<=",
+          "threshold": 0.0,
+          "denominator": "tokens_lexical",
+          "annotation_label": "orações relativas"
+        },
+        {
+          "item": "DEP_advcl_rate_baixo",
+          "feature": "DEP_advcl_rate",
+          "operator": "<=",
+          "threshold": 0.0,
+          "denominator": "tokens_lexical",
+          "annotation_label": "orações adverbiais"
+        },
+        {
+          "item": "POS_PRON_rate_baixo",
+          "feature": "POS_PRON_rate",
+          "operator": "<=",
+          "threshold": 0.0,
+          "denominator": "tokens_lexical",
+          "annotation_label": "pronomes"
+        }
+      ],
+      "priority": 13,
+      "observationTitle": "Como o trecho identifica pessoas e fatos?",
+      "observationTemplate": "Na janela analisada, o anotador encontrou orações relativas: nenhuma ocorrência anotada; orações adverbiais: nenhuma ocorrência anotada; pronomes: nenhuma ocorrência anotada.",
+      "reflectionQuestions": [
+        "Quem e quais fatos são mencionados explicitamente?",
+        "Que contexto externo ajudaria a compreender a relação entre eles?"
+      ],
+      "redundancyFamily": "referenciacao",
+      "displayStatus": "observation_only",
+      "comparisonEnabled": false
+    },
+    {
+      "patternId": "6f18c83ea455",
+      "items": [
+        {
+          "item": "DEP_acl:relcl_rate_baixo",
+          "feature": "DEP_acl:relcl_rate",
+          "operator": "<=",
+          "threshold": 0.0,
+          "denominator": "tokens_lexical",
+          "annotation_label": "orações relativas"
+        },
+        {
+          "item": "DEP_nsubj_rate_baixo",
+          "feature": "DEP_nsubj_rate",
+          "operator": "<=",
+          "threshold": 0.05660377358490566,
+          "denominator": "tokens_lexical",
+          "annotation_label": "sujeitos nominais"
+        }
+      ],
+      "priority": 14,
+      "observationTitle": "Quem participa do acontecimento?",
+      "observationTemplate": "Na janela analisada, o anotador encontrou orações relativas: nenhuma ocorrência anotada; sujeitos nominais: frequência na faixa inferior de referência do treino.",
+      "reflectionQuestions": [
+        "Você consegue identificar os participantes do fato relatado?",
+        "Que detalhe deveria conferir na notícia completa antes de interpretar essa participação?"
+      ],
+      "redundancyFamily": "agentes",
+      "displayStatus": "observation_only",
+      "comparisonEnabled": false
+    },
+    {
+      "patternId": "19c77db982d8",
+      "items": [
+        {
+          "item": "DEP_advcl_rate_baixo",
+          "feature": "DEP_advcl_rate",
+          "operator": "<=",
+          "threshold": 0.0,
+          "denominator": "tokens_lexical",
+          "annotation_label": "orações adverbiais"
+        },
+        {
+          "item": "POS_VERB_rate_baixo",
+          "feature": "POS_VERB_rate",
+          "operator": "<=",
+          "threshold": 0.09615384615384616,
+          "denominator": "tokens_lexical",
+          "annotation_label": "verbos"
+        }
+      ],
+      "priority": 15,
+      "observationTitle": "Como os acontecimentos se conectam?",
+      "observationTemplate": "Na janela analisada, o anotador encontrou orações adverbiais: nenhuma ocorrência anotada; verbos: frequência na faixa inferior de referência do treino.",
+      "reflectionQuestions": [
+        "Quais acontecimentos você consegue separar neste trecho?",
+        "Que evidência permitiria conferir a ordem ou a relação entre eles?"
+      ],
+      "redundancyFamily": "construcoes_verbais",
+      "displayStatus": "observation_only",
+      "comparisonEnabled": false
+    },
+    {
+      "patternId": "9193a887d511",
+      "items": [
+        {
+          "item": "DEP_acl:relcl_rate_baixo",
+          "feature": "DEP_acl:relcl_rate",
+          "operator": "<=",
+          "threshold": 0.0,
+          "denominator": "tokens_lexical",
+          "annotation_label": "orações relativas"
+        },
+        {
+          "item": "DEP_ccomp_rate_baixo",
+          "feature": "DEP_ccomp_rate",
+          "operator": "<=",
+          "threshold": 0.0,
+          "denominator": "tokens_lexical",
+          "annotation_label": "complementos oracionais"
+        },
+        {
+          "item": "POS_PRON_rate_baixo",
+          "feature": "POS_PRON_rate",
+          "operator": "<=",
+          "threshold": 0.0,
+          "denominator": "tokens_lexical",
+          "annotation_label": "pronomes"
+        }
+      ],
+      "priority": 16,
+      "observationTitle": "Como o trecho identifica pessoas e fatos?",
+      "observationTemplate": "Na janela analisada, o anotador encontrou orações relativas: nenhuma ocorrência anotada; complementos oracionais: nenhuma ocorrência anotada; pronomes: nenhuma ocorrência anotada.",
+      "reflectionQuestions": [
+        "Quais pessoas e afirmações aparecem explicitamente?",
+        "Que informação ajudaria a ligar cada afirmação à sua fonte?"
+      ],
+      "redundancyFamily": "referenciacao",
+      "displayStatus": "observation_only",
+      "comparisonEnabled": false
+    },
+    {
+      "patternId": "11e010b31664",
+      "items": [
+        {
+          "item": "DEP_advcl_rate_baixo",
+          "feature": "DEP_advcl_rate",
+          "operator": "<=",
+          "threshold": 0.0,
+          "denominator": "tokens_lexical",
+          "annotation_label": "orações adverbiais"
+        },
+        {
+          "item": "DEP_advmod_rate_baixo",
+          "feature": "DEP_advmod_rate",
+          "operator": "<=",
+          "threshold": 0.0,
+          "denominator": "tokens_lexical",
+          "annotation_label": "modificadores adverbiais"
+        }
+      ],
+      "priority": 17,
+      "observationTitle": "Que circunstâncias acompanham a afirmação?",
+      "observationTemplate": "Na janela analisada, o anotador encontrou orações adverbiais: nenhuma ocorrência anotada; modificadores adverbiais: nenhuma ocorrência anotada.",
+      "reflectionQuestions": [
+        "Onde, quando e em que condições o fato teria ocorrido?",
+        "Que circunstância precisa ser conferida na notícia completa ou em outra fonte?"
+      ],
+      "redundancyFamily": "modificacao_adverbial",
+      "displayStatus": "observation_only",
+      "comparisonEnabled": false
+    },
+    {
+      "patternId": "2465ffe4f09d",
+      "items": [
+        {
+          "item": "DEP_acl:relcl_rate_baixo",
+          "feature": "DEP_acl:relcl_rate",
+          "operator": "<=",
+          "threshold": 0.0,
+          "denominator": "tokens_lexical",
+          "annotation_label": "orações relativas"
+        },
+        {
+          "item": "DEP_advmod_rate_baixo",
+          "feature": "DEP_advmod_rate",
+          "operator": "<=",
+          "threshold": 0.0,
+          "denominator": "tokens_lexical",
+          "annotation_label": "modificadores adverbiais"
+        },
+        {
+          "item": "POS_ADV_rate_baixo",
+          "feature": "POS_ADV_rate",
+          "operator": "<=",
+          "threshold": 0.0,
+          "denominator": "tokens_lexical",
+          "annotation_label": "advérbios"
+        }
+      ],
+      "priority": 18,
+      "observationTitle": "Que circunstâncias acompanham a afirmação?",
+      "observationTemplate": "Na janela analisada, o anotador encontrou orações relativas: nenhuma ocorrência anotada; modificadores adverbiais: nenhuma ocorrência anotada; advérbios: nenhuma ocorrência anotada.",
+      "reflectionQuestions": [
+        "Que circunstâncias estão explícitas neste trecho?",
+        "Qual informação adicional ajudaria a interpretar a afirmação principal?"
+      ],
+      "redundancyFamily": "modificacao_adverbial",
+      "displayStatus": "observation_only",
+      "comparisonEnabled": false
+    },
+    {
+      "patternId": "9865be178551",
+      "items": [
+        {
+          "item": "DEP_ccomp_rate_baixo",
+          "feature": "DEP_ccomp_rate",
+          "operator": "<=",
+          "threshold": 0.0,
+          "denominator": "tokens_lexical",
+          "annotation_label": "complementos oracionais"
+        },
+        {
+          "item": "POS_ADP_rate_alto",
+          "feature": "POS_ADP_rate",
+          "operator": ">=",
+          "threshold": 0.22448979591836735,
+          "denominator": "tokens_lexical",
+          "annotation_label": "preposições"
+        }
+      ],
+      "priority": 19,
+      "observationTitle": "Como o trecho situa suas afirmações?",
+      "observationTemplate": "Na janela analisada, o anotador encontrou complementos oracionais: nenhuma ocorrência anotada; preposições: frequência na faixa superior de referência do treino.",
+      "reflectionQuestions": [
+        "Que pessoas, lugares ou circunstâncias estão ligados à afirmação?",
+        "Que detalhe de contexto você procuraria antes de verificar o fato?"
+      ],
+      "redundancyFamily": "contexto",
+      "displayStatus": "observation_only",
+      "comparisonEnabled": false
+    }
+  ]
+}

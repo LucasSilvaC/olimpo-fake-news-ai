@@ -1,0 +1,3 @@
+# Runtime source hashes must remain identical after checkout on Windows/Linux.
+*.py text eol=lf
+*.json text eol=lf

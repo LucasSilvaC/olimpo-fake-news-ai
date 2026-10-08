@@ -336,7 +336,7 @@ export function RoomGameView({
         setVerdictCountdown(10);
 
         toast.success("Rodada finalizada!", {
-          description: "Confira o gabarito oficial e os argumentos da IA.",
+          description: "Confira o gabarito oficial da rodada e reflita sobre sua resposta.",
         });
       } catch {
         setStage("ROUND_SCOREBOARD");

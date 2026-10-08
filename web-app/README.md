@@ -149,6 +149,59 @@ O pipeline mantém a extração local, o fallback pelo Jina Reader, os metadados
 as validações de URL e SSRF. A interface isolada `/extrair` e seu endpoint
 `/api/news/extract` foram removidos; a extração acontece pelo fluxo da sala.
 
+### Observações e perguntas durante a rodada
+
+Em `/sala/[codigo]`, a etapa de leitura solicita `POST /api/news-insights` com
+`roomId` e `round`. O servidor verifica sessão, participação e rodada, resolve
+a notícia da playlist e envia seu corpo ao serviço Python do FP-Growth principal
+`sintaxe_ampliada`. Se o corpo salvo estiver vazio, utiliza o parser compartilhado
+e devolve o conteúdo extraído para a tela.
+
+O jogador recebe até três observações de famílias diferentes e perguntas sobre
+afirmações, contexto e evidências. Pode consultar o corpo completo, o trecho
+normalizado de até 300 caracteres e as medições. Falhas de extração ou análise
+não impedem o voto. Requisições antigas são descartadas ao trocar de rodada.
+
+O catálogo de observações é experimental, revisado tecnicamente durante a
+implementação e separado do catálogo científico. A revisão editorial humana e
+a avaliação com usuários permanecem pendentes. As respostas não incluem
+classificação, confiança ou comparação por classe. O gabarito e a pontuação são
+dados próprios do jogo; URLs novas ainda recebem `uncertain` pelo fluxo existente.
+Os percentuais e as razões fixas do mock não são apresentados como checagem factual.
+
+O Docker Compose já inclui `news-insights`, com healthcheck e conexão interna.
+Para rodar o Next.js diretamente no Windows, mantenha o serviço Python em outro
+terminal, a partir da raiz do repositório:
+
+```powershell
+python -m venv .venv-insights
+.\.venv-insights\Scripts\python.exe -m pip install -r model-engine/requirements.txt
+.\.venv-insights\Scripts\python.exe model-engine/service.py
+```
+
+No servidor Next.js, configure `NEWS_INSIGHTS_SERVICE_URL=http://127.0.0.1:8010`
+(também é o endereço padrão). Essa variável é interna; não use `NEXT_PUBLIC_*`.
+Consulte o [serviço Python](../model-engine/README.md)
+e o [plano atualizado](../docs/machine-learning/plano-integracao-fp-growth.md).
+
+O teste de integração `scripts/check-news-insights.ts` exige um banco isolado
+migrado, Redis, o serviço Python real e um build pronto. Ele cria registros
+temporários, verifica a API e a tela com Playwright, testa o voto, salva capturas
+e remove os registros. Exemplo a partir de `web-app`, com suas URLs de teste:
+
+```powershell
+$env:NEWS_INSIGHTS_SMOKE_DATABASE_URL='postgresql://usuario:senha@127.0.0.1:55432/banco_de_teste'
+$env:NEWS_INSIGHTS_SMOKE_REDIS_URL='redis://127.0.0.1:56379'
+$env:NEWS_INSIGHTS_SMOKE_APP_URL='http://127.0.0.1:3001'
+$env:NEWS_INSIGHTS_SMOKE_START_APP='1'
+pnpm exec tsx scripts/check-news-insights.ts
+```
+
+`NEWS_INSIGHTS_SMOKE_START_APP=1` inicia e encerra um servidor local de teste,
+com configuração isolada, sem editar `.env`. Sem essa opção, informe `AUTH_SECRET`
+com o valor do servidor de teste já iniciado. O script não usa implicitamente
+`DATABASE_URL` para criar dados de teste.
+
 ---
 
 ## 🚀 7. Como Executar o Projeto Localmente

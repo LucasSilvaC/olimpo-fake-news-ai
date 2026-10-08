@@ -137,6 +137,10 @@ olimpo-fake-news-ai/
 ├── machine-learning/                      # Experimentos e pipelines de dados com scikit-learn
 │   ├── supervised-learning/               # Classificação supervisionada e modelos de baseline
 │   └── unsupervised-learning/             # Detecção de anomalias (K-Means, DBSCAN, Isolation Forest)
+├── model-engine/                          # Execução dos modelos consumida pelo aplicativo
+│   ├── service.py                         # Serviço HTTP interno
+│   ├── models/unsupervised/               # FP-Growth, extração e catálogo congelados
+│   └── tools/                            # Exportação offline dos artefatos de pesquisa
 └── web-app/                               # Aplicação Full-Stack Next.js 16
     ├── drizzle/                           # Migrações SQL versionadas
     ├── tests/                             # Suítes de testes globais, componentes e E2E Playwright
@@ -162,6 +166,11 @@ olimpo-fake-news-ai/
 ---
 
 ## 🚀 5. Como Executar Localmente
+
+O serviço de análise dos modelos está separado em [`model-engine/`](model-engine/README.md).
+Ele executa o FP-Growth usado nas perguntas socráticas sem importar os scripts de
+experimento de `machine-learning/`. Novos modelos de execução, incluindo o
+supervisionado, podem ser adicionados como módulos próprios nessa camada.
 
 ### Pré-requisitos
 

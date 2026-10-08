@@ -29,6 +29,29 @@ services:
       timeout: 3s
       retries: 10
 
+  news-insights:
+    build:
+      context: ../model-engine
+      dockerfile: Dockerfile
+    environment:
+      NEWS_INSIGHTS_HOST: 0.0.0.0
+      NEWS_INSIGHTS_PORT: 8010
+    ports:
+      - "127.0.0.1:${NEWS_INSIGHTS_PORT:-8010}:8010"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8010/health', timeout=5)",
+        ]
+      interval: 10s
+      timeout: 6s
+      retries: 5
+      start_period: 60s
+    restart: unless-stopped
+
   migrate:
     build:
       context: .
@@ -56,6 +79,7 @@ services:
       AUTH_SECRET: ${AUTH_SECRET:-development-auth-secret-change-in-production-min-32-chars}
       NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-http://localhost:3000}
       JINA_API_KEY: ${JINA_API_KEY:-}
+      NEWS_INSIGHTS_SERVICE_URL: http://news-insights:8010
     volumes:
       - .:/app
       - app-node-modules:/app/node_modules
@@ -69,6 +93,8 @@ services:
         condition: service_healthy
       migrate:
         condition: service_completed_successfully
+      news-insights:
+        condition: service_healthy
     healthcheck:
       test:
         - CMD
