@@ -39,7 +39,7 @@ export function MatchScoreboardStage({
           ? p.accuracy
           : p.correctCount !== undefined && totalRounds > 0
             ? Math.round((p.correctCount / totalRounds) * 100)
-            : 75;
+            : 0;
       return acc + pAcc;
     }, 0);
     return Math.round(totalAcc / leaderboard.length);
@@ -125,10 +125,14 @@ export function MatchScoreboardStage({
                   </div>
                   <div className="px-1 text-center">
                     <span className="block text-[10px] font-bold text-[#434655] sm:text-xs">
-                      {second.correctCount ?? Math.round(totalRounds * 0.8)}/{totalRounds} acertos
+                      {second.correctCount ?? 0}/{totalRounds} acertos
                     </span>
                     <span className="text-[10px] font-extrabold text-blue-700 sm:text-xs">
-                      {second.accuracy ?? 80}% precisão
+                      {second.accuracy ??
+                        (totalRounds > 0
+                          ? Math.round(((second.correctCount ?? 0) / totalRounds) * 100)
+                          : 0)}
+                      % precisão
                     </span>
                   </div>
                 </div>
@@ -158,7 +162,12 @@ export function MatchScoreboardStage({
                       Campeão
                     </span>
                     <span className="text-xs font-black text-[#261a00] sm:text-sm">
-                      {first.correctCount ?? totalRounds}/{totalRounds} • {first.accuracy ?? 100}%
+                      {first.correctCount ?? 0}/{totalRounds} •{" "}
+                      {first.accuracy ??
+                        (totalRounds > 0
+                          ? Math.round(((first.correctCount ?? 0) / totalRounds) * 100)
+                          : 0)}
+                      %
                     </span>
                   </div>
                 </div>
@@ -184,10 +193,14 @@ export function MatchScoreboardStage({
                   </div>
                   <div className="px-1 text-center">
                     <span className="block text-[10px] font-bold text-white/90 sm:text-xs">
-                      {third.correctCount ?? Math.round(totalRounds * 0.7)}/{totalRounds} acertos
+                      {third.correctCount ?? 0}/{totalRounds} acertos
                     </span>
                     <span className="text-[10px] font-extrabold text-[#ffdf9f] sm:text-xs">
-                      {third.accuracy ?? 70}% precisão
+                      {third.accuracy ??
+                        (totalRounds > 0
+                          ? Math.round(((third.correctCount ?? 0) / totalRounds) * 100)
+                          : 0)}
+                      % precisão
                     </span>
                   </div>
                 </div>
@@ -210,9 +223,7 @@ export function MatchScoreboardStage({
 
           {remaining.map((player, index) => {
             const rank = index + 4;
-            const correctText = `${
-              player.correctCount ?? Math.round(totalRounds * 0.6)
-            }/${totalRounds} corretas`;
+            const correctText = `${player.correctCount ?? 0}/${totalRounds} corretas`;
 
             return (
               <div

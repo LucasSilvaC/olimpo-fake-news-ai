@@ -1,13 +1,15 @@
 import { drizzleUserRepository as defaultUserRepository } from "@/app/api/auth/repositories/drizzle-user.repository";
 import { IUserRepository } from "@/app/api/auth/repositories/user.repository.interface";
+import { drizzleNewsVoteRepository as defaultNewsVoteRepository } from "@/app/api/news-voting/repositories/drizzle-news-vote.repository";
+import { INewsVoteRepository } from "@/app/api/news-voting/repositories/news-vote.repository.interface";
 import {
   IEventPublisher,
   redisEventPublisher as defaultRedisEventPublisher,
 } from "@/app/api/realtime-events";
+import { MatchFinishedLeaderboardEntry } from "@/app/api/realtime-events/entities/event.types";
 import { drizzleRoomRepository as defaultRoomRepository } from "@/app/api/rooms/repositories/drizzle-room.repository";
 import { redisRoomRepository as defaultRedisRoomRepository } from "@/app/api/rooms/repositories/redis-room.repository";
 import { IRedisRoomRepository } from "@/app/api/rooms/repositories/redis-room.repository.interface";
-import { LeaderboardEntry } from "@/app/api/rooms/repositories/redis-room.repository.interface";
 import { IRoomRepository } from "@/app/api/rooms/repositories/room.repository.interface";
 import { RoomStatus } from "@/server/shared/database/schemas/enums";
 
@@ -20,7 +22,7 @@ export interface FinishMatchOutput {
   roomId: string;
   status: RoomStatus;
   consolidatedCount: number;
-  leaderboard: LeaderboardEntry[];
+  leaderboard: MatchFinishedLeaderboardEntry[];
 }
 
 export class FinishMatchUseCase {
@@ -29,6 +31,7 @@ export class FinishMatchUseCase {
     private readonly redisRoomRepository: IRedisRoomRepository = defaultRedisRoomRepository,
     private readonly userRepository: IUserRepository = defaultUserRepository,
     private readonly eventPublisher: IEventPublisher = defaultRedisEventPublisher,
+    private readonly newsVoteRepository: INewsVoteRepository = defaultNewsVoteRepository,
   ) {}
 
   async execute(input: FinishMatchInput): Promise<FinishMatchOutput> {
@@ -59,13 +62,36 @@ export class FinishMatchUseCase {
     }
 
     const leaderboard = await this.redisRoomRepository.getLeaderboard(input.roomId);
+    const allVotes =
+      typeof this.newsVoteRepository?.listByRoomId === "function"
+        ? ((await this.newsVoteRepository.listByRoomId(input.roomId)) ?? [])
+        : [];
+    const correctCountByUser = new Map<string, number>();
+    for (const vote of allVotes) {
+      if (vote.isCorrect) {
+        correctCountByUser.set(vote.userId, (correctCountByUser.get(vote.userId) ?? 0) + 1);
+      }
+    }
+
+    const enrichedLeaderboard: MatchFinishedLeaderboardEntry[] = leaderboard.map((entry) => {
+      const correctCount = correctCountByUser.get(entry.userId) ?? 0;
+      const totalAnswered = room.totalRounds;
+      const accuracy = totalAnswered > 0 ? Math.round((correctCount / totalAnswered) * 100) : 0;
+      return {
+        userId: entry.userId,
+        score: entry.score,
+        correctCount,
+        totalAnswered,
+        accuracy,
+      };
+    });
 
     await this.eventPublisher.publish(room.pin, {
       type: "MATCH_FINISHED",
       roomId: room.id,
       pin: room.pin,
       payload: {
-        leaderboard,
+        leaderboard: enrichedLeaderboard,
       },
       timestamp: new Date().toISOString(),
     });
@@ -74,7 +100,7 @@ export class FinishMatchUseCase {
       roomId: input.roomId,
       status: "finished",
       consolidatedCount,
-      leaderboard,
+      leaderboard: enrichedLeaderboard,
     };
   }
 }

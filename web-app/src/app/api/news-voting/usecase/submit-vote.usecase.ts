@@ -17,12 +17,12 @@ import {
   IEventPublisher,
   redisEventPublisher as defaultRedisEventPublisher,
 } from "@/app/api/realtime-events";
+import { RoundCompletedLeaderboardEntry } from "@/app/api/realtime-events/entities/event.types";
 import {
   drizzleRoomRepository as defaultRoomRepository,
   IRoomRepository,
   redisRoomRepository as defaultRedisRoomRepository,
   IRedisRoomRepository,
-  LeaderboardEntry,
 } from "@/app/api/rooms/repositories";
 import { VoteOptionType } from "@/server/shared/database/schemas/enums";
 
@@ -37,7 +37,7 @@ export interface SubmitVoteOutput {
   vote: NewsVoteDTO;
   roundCompleted: boolean;
   analysis?: AIAnalysisDTO;
-  leaderboard?: LeaderboardEntry[];
+  leaderboard?: RoundCompletedLeaderboardEntry[];
 }
 
 export class SubmitVoteUseCase {
@@ -153,6 +153,21 @@ export class SubmitVoteUseCase {
         articleId: currentItem.articleId,
       });
       const leaderboard = await this.redisRoomRepository.getLeaderboard(input.roomId);
+      const roundVotes =
+        typeof this.newsVoteRepository.listByPlaylistItem === "function"
+          ? ((await this.newsVoteRepository.listByPlaylistItem(currentItem.id)) ?? [])
+          : [];
+      const roundVotesMap = new Map(roundVotes.map((v) => [v.userId, v]));
+
+      const enrichedLeaderboard: RoundCompletedLeaderboardEntry[] = leaderboard.map((entry) => {
+        const vote = roundVotesMap.get(entry.userId);
+        return {
+          userId: entry.userId,
+          score: entry.score,
+          roundDelta: vote?.pointsAwarded ?? 0,
+          isCorrect: vote?.isCorrect ?? false,
+        };
+      });
 
       if (isFirstToComplete) {
         await this.eventPublisher.publish(room.pin, {
@@ -161,7 +176,7 @@ export class SubmitVoteUseCase {
           pin: room.pin,
           payload: {
             round: room.currentRound,
-            leaderboard,
+            leaderboard: enrichedLeaderboard,
             analysis,
           },
           timestamp: new Date().toISOString(),
@@ -172,7 +187,7 @@ export class SubmitVoteUseCase {
         vote: evaluatedVote.toDTO(),
         roundCompleted: true,
         analysis,
-        leaderboard,
+        leaderboard: enrichedLeaderboard,
       };
     }
 

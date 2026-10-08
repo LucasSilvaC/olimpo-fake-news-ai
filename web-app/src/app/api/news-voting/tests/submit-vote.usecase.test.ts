@@ -88,6 +88,7 @@ describe("SubmitVoteUseCase", () => {
       findById: vi.fn(),
       findByParticipantAndPlaylistItem: vi.fn().mockResolvedValue(null),
       listByPlaylistItem: vi.fn(),
+      listByRoomId: vi.fn(),
       countByPlaylistItem: vi.fn(),
       updateEvaluation: vi.fn(),
     };
@@ -314,7 +315,7 @@ describe("SubmitVoteUseCase", () => {
 
     expect(result.roundCompleted).toBe(true);
     expect(result.analysis).toEqual(sampleAnalysis);
-    expect(result.leaderboard).toEqual([{ userId: "user-1", score: 100 }]);
+    expect(result.leaderboard).toEqual([expect.objectContaining({ userId: "user-1", score: 100 })]);
     expect(getArticleAnalysisUseCase.execute).toHaveBeenCalledWith({
       articleId: "art-1",
     });
@@ -327,7 +328,7 @@ describe("SubmitVoteUseCase", () => {
         pin: "123 456",
         payload: {
           round: 1,
-          leaderboard: [{ userId: "user-1", score: 100 }],
+          leaderboard: [expect.objectContaining({ userId: "user-1", score: 100 })],
           analysis: sampleAnalysis,
         },
       }),

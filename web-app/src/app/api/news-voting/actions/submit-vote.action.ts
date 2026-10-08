@@ -7,7 +7,7 @@ import { submitVoteUseCase } from "../usecase/submit-vote.usecase";
 
 import { AIAnalysisDTO } from "@/app/api/ai-feedback";
 import { getSessionUseCase } from "@/app/api/auth/usecase/get-session.usecase";
-import { LeaderboardEntry } from "@/app/api/rooms/repositories";
+import { RoundCompletedLeaderboardEntry } from "@/app/api/realtime-events/entities/event.types";
 import { VoteOptionType } from "@/server/shared/database/schemas/enums";
 
 const submitVoteSchema = z.object({
@@ -26,7 +26,7 @@ export type SubmitVoteActionResult =
       vote: NewsVoteDTO;
       roundCompleted: boolean;
       analysis?: AIAnalysisDTO;
-      leaderboard?: LeaderboardEntry[];
+      leaderboard?: RoundCompletedLeaderboardEntry[];
     }
   | {
       success: false;
