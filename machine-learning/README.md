@@ -1,6 +1,6 @@
 # Machine Learning
 
-O classificador principal está destacado nos [experimentos supervisionados](supervised-learning/README.md), com [notebook 12](supervised-learning/12_selectk_svd_svm_spacy.ipynb) e [resultados atuais](supervised-learning/RESULTADOS.md) na raiz da pasta. As duas linhas de pesquisa mantêm seus experimentos anteriores em `history/`; o [motor do app](../model-engine/README.md) contém a camada de execução.
+O classificador principal está destacado nos [experimentos supervisionados](supervised-learning/README.md). O [modelo Olimpo](supervised-learning/modelo_olimpo.py) e o [relatório de resultados](supervised-learning/RESULTADOS.md) ficam na raiz; o [notebook 12](supervised-learning/support/notebooks/12_selectk_svd_svm_spacy.ipynb), o exportador e os testes ficam em `support/`. As duas linhas de pesquisa mantêm seus experimentos anteriores em `history/`; o [motor do app](../model-engine/README.md) contém a camada de execução.
 
 Esta pasta contém experimentos supervisionados e não supervisionados do Olimpo. Os planos para implementar e comparar DBSCAN, HDBSCAN, K-means e Jev estão em [documentação de ML](../docs/machine-learning/README.md).
 

@@ -1,20 +1,20 @@
 # Resultados do modelo supervisionado principal
 
-O experimento atual é o [notebook 12](12_selectk_svd_svm_spacy.ipynb):
+O experimento atual é o [notebook 12](support/notebooks/12_selectk_svd_svm_spacy.ipynb):
 **M2 + χ² (10.000 atributos) + SVD (500 componentes)**. As métricas vêm dos CSVs
 salvos e do manifesto do artefato. A reorganização não executou novo treino.
 
-| Evidência                                 |           Resultado | Fonte                                                                     |
-| ----------------------------------------- | ------------------: | ------------------------------------------------------------------------- |
-| F1 macro em CV de cinco folds             | 0,929503 ± 0,008131 | [CV, M2/10000/500](resultados_selectk_svd500_cv.csv)                      |
-| F1 macro de treino em CV                  |            0,971657 | [CV](resultados_selectk_svd500_cv.csv)                                    |
-| Gap treino–validação                      |            0,042153 | [CV](resultados_selectk_svd500_cv.csv)                                    |
-| F1 macro no teste interno, sem calibração |            0,924304 | [Teste, M2/10000/500](resultados_selectk_svd500_teste.csv)                |
-| AUC no teste interno, sem calibração      |            0,978937 | [Teste](resultados_selectk_svd500_teste.csv)                              |
-| F1 macro no teste interno, calibrado      |              0,9208 | [Manifesto do artefato](modelos/olimpo-svm-spacy-chi2k10k-svd500-v1.json) |
-| AUC no teste interno, calibrado           |              0,9789 | [Manifesto do artefato](modelos/olimpo-svm-spacy-chi2k10k-svd500-v1.json) |
-| F1 macro externo em títulos FakeRecogna   |            0,637803 | [Teste externo exploratório](resultados_selectk_svd500_teste.csv)         |
-| AUC externo em títulos FakeRecogna        |            0,677441 | [Teste externo exploratório](resultados_selectk_svd500_teste.csv)         |
+| Evidência                                 |           Resultado | Fonte                                                                             |
+| ----------------------------------------- | ------------------: | --------------------------------------------------------------------------------- |
+| F1 macro em CV de cinco folds             | 0,929503 ± 0,008131 | [CV, M2/10000/500](data/resultados/resultados_selectk_svd500_cv.csv)              |
+| F1 macro de treino em CV                  |            0,971657 | [CV](data/resultados/resultados_selectk_svd500_cv.csv)                            |
+| Gap treino–validação                      |            0,042153 | [CV](data/resultados/resultados_selectk_svd500_cv.csv)                            |
+| F1 macro no teste interno, sem calibração |            0,924304 | [Teste, M2/10000/500](data/resultados/resultados_selectk_svd500_teste.csv)        |
+| AUC no teste interno, sem calibração      |            0,978937 | [Teste](data/resultados/resultados_selectk_svd500_teste.csv)                      |
+| F1 macro no teste interno, calibrado      |              0,9208 | [Manifesto do artefato](modelos/olimpo-svm-spacy-chi2k10k-svd500-v1.json)         |
+| AUC no teste interno, calibrado           |              0,9789 | [Manifesto do artefato](modelos/olimpo-svm-spacy-chi2k10k-svd500-v1.json)         |
+| F1 macro externo em títulos FakeRecogna   |            0,637803 | [Teste externo exploratório](data/resultados/resultados_selectk_svd500_teste.csv) |
+| AUC externo em títulos FakeRecogna        |            0,677441 | [Teste externo exploratório](data/resultados/resultados_selectk_svd500_teste.csv) |
 
 O principal não tem o maior F1 de todas as configurações de CV. A escolha
 documentada considera desempenho interno, tamanho e explicabilidade; o baseline

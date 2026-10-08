@@ -6,7 +6,7 @@ Ponto de entrada para scripts de extração e análise de atributos linguístico
 
 - [`extracao_funcoes.py`](extracao_funcoes.py): extração por notícia de atributos POS, DEP e MORPH com spaCy.
 - [`eda.py`](eda.py): análise exploratória e seleção de features linguísticas.
-- [Metadados spaCy do classificador de produção](../supervised-learning/metadados_spacy.py): implementação específica do pipeline supervisionado. Ela permanece na pasta do modelo porque `modelo_olimpo.py` a importa dali.
+- [Metadados spaCy do classificador](../supervised-learning/support/metadados_spacy.py): implementação específica do pipeline supervisionado, organizada em `support/` e importada pelo modelo principal.
 
 ## Scripts legados
 

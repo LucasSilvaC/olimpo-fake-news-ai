@@ -822,7 +822,7 @@ Limitações dessa extração: é **agregada por classe** (não por notícia, po
 
 ### Metadados morfossintáticos por notícia (spaCy; notebooks 10 a 12)
 
-O módulo `machine-learning/supervised-learning/metadados_spacy.py` transforma a ideia acima em atributos utilizáveis pelo modelo. Decisões de projeto:
+O módulo `machine-learning/supervised-learning/support/metadados_spacy.py` transforma a ideia acima em atributos utilizáveis pelo modelo. Decisões de projeto:
 
 - **Entrada**: o mesmo `texto_trunc` que o TF-IDF vê (normalizado, 100 palavras), para que bloco textual e bloco de metadados descrevam o mesmo texto.
 - **Taxas, não contagens**: cada atributo é dividido pelo número de tokens (ou de verbos), para não depender do tamanho do texto.

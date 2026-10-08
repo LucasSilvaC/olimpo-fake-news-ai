@@ -1,6 +1,6 @@
 # Modelo Olimpo principal
 
-O módulo [`modelo_olimpo.py`](../../modelo_olimpo.py) implementa o pipeline de pesquisa do classificador **M2 + χ² (10 mil) + SVD (500)**, versão `svm-spacy-chi2k10k-svd500-v1`. O artefato correspondente está em [`modelos/`](../../modelos/). O [notebook principal 12](../../12_selectk_svd_svm_spacy.ipynb) e o [relatório de resultados atuais](../../RESULTADOS.md) ficam na raiz supervisionada. O app utiliza a cópia congelada e o serviço HTTP de [`model-engine/`](../../../../model-engine/README.md).
+O módulo [`modelo_olimpo.py`](../../modelo_olimpo.py) implementa o pipeline de pesquisa do classificador **M2 + χ² (10 mil) + SVD (500)**, versão `svm-spacy-chi2k10k-svd500-v1`. O artefato correspondente está em [`modelos/`](../../modelos/). O [notebook principal 12](../../support/notebooks/12_selectk_svd_svm_spacy.ipynb) fica em `support/notebooks/`; o [relatório de resultados atuais](../../RESULTADOS.md) permanece na raiz. O app utiliza a cópia congelada e o serviço HTTP de [`model-engine/`](../../../../model-engine/README.md).
 
 ## Pipeline
 
@@ -24,7 +24,7 @@ O modelo de língua `pt_core_news_sm` é carregado sob demanda durante a inferê
 
 O desempenho cai fora do Fake.br: convenções de redação, domínio e o uso de títulos em vez de corpos de notícias limitam a transferência. Apresente a previsão como indício, e não como veredito. As métricas externas são exploratórias e não devem ser comparadas como se viessem do mesmo protocolo interno.
 
-O notebook 12 compara candidatos no split interno e registra os resultados em [`resultados_selectk_svd500_cv.csv`](../../resultados_selectk_svd500_cv.csv) e [`resultados_selectk_svd500_teste.csv`](../../resultados_selectk_svd500_teste.csv). O pipeline escolhido equilibra desempenho interno, tamanho e explicabilidade; o B0 word+char sem spaCy permanece como baseline.
+O notebook 12 compara candidatos no split interno e registra os resultados em [`resultados_selectk_svd500_cv.csv`](../../data/resultados/resultados_selectk_svd500_cv.csv) e [`resultados_selectk_svd500_teste.csv`](../../data/resultados/resultados_selectk_svd500_teste.csv). O pipeline escolhido equilibra desempenho interno, tamanho e explicabilidade; o B0 word+char sem spaCy permanece como baseline.
 
 ## Inferência e contrato de pesquisa
 
@@ -50,7 +50,7 @@ cadastrado e apresenta a previsão separadamente. Consulte o
 
 ## Exportação
 
-Execute `python machine-learning/supervised-learning/exportar_modelo.py` a partir da raiz do repositório. O [script](../../exportar_modelo.py) resolve dados e saídas pela sua própria localização, confere que o pré-processamento reproduz o split oficial, repete o F1 0,9243 do notebook 12 com o pipeline sem calibração, avalia a versão calibrada e valida o arquivo após recarregá-lo.
+Execute `python machine-learning/supervised-learning/support/exportar_modelo.py` a partir da raiz do repositório. O [script](../../support/exportar_modelo.py) resolve dados e saídas pela sua própria localização, confere que o pré-processamento reproduz o split oficial, repete o F1 0,9243 do notebook 12 com o pipeline sem calibração, avalia a versão calibrada e valida o arquivo após recarregá-lo.
 
 Por padrão, o artefato final é treinado nas 7.200 notícias do split oficial. `--somente-treino` restringe o ajuste final às 5.760 notícias de treino. Ambos os arquivos, `.joblib` e `.json`, são gravados em `modelos/`; o JSON registra SHA-256, versões, hiperparâmetros e métricas.
 
@@ -58,5 +58,5 @@ Por padrão, o artefato final é treinado nas 7.200 notícias do split oficial. 
 
 - [Notebook 10 — metadados spaCy](../../history/modelo-final/10_svm_metadados_spacy.ipynb)
 - [Notebook 11 — redução de dimensão](../../history/modelo-final/11_reducao_dim_svm_spacy.ipynb)
-- [Notebook 12 — seleção final χ² + SVD](../../12_selectk_svd_svm_spacy.ipynb)
+- [Notebook 12 — seleção final χ² + SVD](../../support/notebooks/12_selectk_svd_svm_spacy.ipynb)
 - [Relatório técnico, seção 5.11](../../../../docs/entregaveis/entregavel-final-reestruturado.md)
