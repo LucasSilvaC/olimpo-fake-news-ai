@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "artifact": "olimpo-svm-spacy-chi2k10k-svd500-v1.joblib",
+  "artifactSha256": "123763864725531f12aa0503530edce432ca6e59853d36ef472559790207df27",
+  "artifactManifest": "olimpo-svm-spacy-chi2k10k-svd500-v1.json",
+  "artifactManifestSha256": "6f49422171c7f6879670814766c62a59f9f3d5af30ac8dd09a4291201d4ebd72",
+  "runtimeVersions": {
+    "python": "3.14.2",
+    "scikit_learn": "1.9.1",
+    "numpy": "2.5.3",
+    "scipy": "1.18.1",
+    "pandas": "3.0.6",
+    "spacy": "3.8.16",
+    "pt_core_news_sm": "3.8.0",
+    "joblib": "1.6.0"
+  },
+  "policy": {
+    "version": "olimpo-decision-policy-v1",
+    "lowThreshold": 0.35,
+    "highThreshold": 0.65,
+    "minWords": 30,
+    "wordLimit": 100
+  },
+  "codeSha256": {
+    "models/supervised/pipeline.py": "a3dfaf5628ad51e056963e2ef8d71ed289ac0cd61709bbb66e8421cd18314817",
+    "models/supervised/linguistic_features.py": "1c04b4a9cff75eeef816c2c784dbdfc90c239c482bd9d917793c430abf7e3243",
+    "models/supervised/engine.py": "f9b62d9e75911602a70c82c2932dafcadefd550a211c27d76239145f664a29c6",
+    "modelo_olimpo.py": "569039410082e8526d1b1f7292ea167e9e6e0a14937a793484ff908f71ce3cb6",
+    "metadados_spacy.py": "48e3826c52b2f208893cc67d1f48ad09710d7e0c87dd17f98083eff206cde7da"
+  },
+  "inferenceVersion": "1b552c7bd1a07e12e6323c50f1a81e8095f3a6cf326ea01394f4af6a94b6b97b"
+}

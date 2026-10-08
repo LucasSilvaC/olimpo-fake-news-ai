@@ -1,4 +1,5 @@
-import type { AIAnalysisDTO } from "@/app/api/ai-feedback";
+import type { AIAnalysisDTO } from "@/app/api/ai-feedback/entities/ai-analysis.entity";
+import type { MLTargetType } from "@/server/shared/database/schemas/enums";
 
 export type RoomEventType =
   "MEMBER_JOINED" | "PRESENCE_CHANGED" | "ROUND_STARTED" | "ROUND_COMPLETED" | "MATCH_FINISHED";
@@ -35,7 +36,8 @@ export interface RoundStartedPayload {
 export interface RoundCompletedPayload {
   round: number;
   leaderboard?: Array<{ userId: string; score: number }>;
-  analysis?: AIAnalysisDTO;
+  officialAnswer: MLTargetType;
+  modelAnalysis: AIAnalysisDTO | null;
 }
 
 export interface MatchFinishedPayload {

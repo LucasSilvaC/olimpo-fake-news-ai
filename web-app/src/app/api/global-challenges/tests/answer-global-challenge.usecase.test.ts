@@ -7,6 +7,8 @@ import {
 } from "../repositories";
 import { AnswerGlobalChallengeUseCase } from "../usecase/answer-global-challenge.usecase";
 
+import type { INewsAnalysisRepository } from "@/app/api/ai-feedback/repositories/news-analysis.repository.interface";
+import { predictionRecord } from "@/app/api/ai-feedback/tests/supervised-fixture";
 import { IUserRepository } from "@/app/api/auth/repositories/user.repository.interface";
 import { User } from "@/server/shared/database/schemas";
 import { VoteOptionType } from "@/server/shared/database/schemas/enums";
@@ -15,6 +17,7 @@ describe("AnswerGlobalChallengeUseCase", () => {
   let challengeRepository: IGlobalChallengeRepository;
   let answerRepository: IGlobalChallengeAnswerRepository;
   let userRepository: IUserRepository;
+  let analysisRepository: INewsAnalysisRepository;
   let useCase: AnswerGlobalChallengeUseCase;
 
   const mockActiveChallenge: GlobalChallengeWithArticle = {
@@ -85,10 +88,17 @@ describe("AnswerGlobalChallengeUseCase", () => {
       }),
     };
 
+    analysisRepository = {
+      findByArticleId: vi.fn().mockResolvedValue(null),
+      findByIdentity: vi.fn(),
+      create: vi.fn(),
+      withIdentityLock: vi.fn(),
+    };
     useCase = new AnswerGlobalChallengeUseCase(
       challengeRepository,
       answerRepository,
       userRepository,
+      analysisRepository,
     );
   });
 
@@ -186,5 +196,21 @@ describe("AnswerGlobalChallengeUseCase", () => {
         answer: "invalid_vote" as unknown as VoteOptionType,
       }),
     ).rejects.toThrow(/Invalid vote option/);
+  });
+
+  it("awards XP from the registered answer when the supervised cache disagrees", async () => {
+    vi.mocked(analysisRepository.findByArticleId).mockResolvedValue(predictionRecord);
+    const result = await useCase.execute({
+      challengeId: "chal-1",
+      userId: "user-1",
+      answer: "unreliable",
+    });
+    expect(result).toMatchObject({
+      targetClassification: "unreliable",
+      isCorrect: true,
+      xpAwarded: 50,
+      analysis: { classification: "unreliable" },
+    });
+    expect(userRepository.updateXp).toHaveBeenCalledWith("user-1", 50);
   });
 });

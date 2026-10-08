@@ -1,10 +1,9 @@
 "use client";
 
-import { ArrowRight, Check, Clock, HelpCircle, Sparkles, Users, X } from "lucide-react";
+import { ArrowRight, Check, Clock, HelpCircle, Users, X } from "lucide-react";
 import * as React from "react";
 
 import { SocraticReflection } from "./socratic-reflection";
-import { VerometroGauge } from "./verometro-gauge";
 
 export interface IVerdictWaitingStageProps {
   userName: string;
@@ -13,10 +12,8 @@ export interface IVerdictWaitingStageProps {
   timeTakenSeconds?: number;
   isCorrect?: boolean | null;
   officialAnswer?: "reliable" | "unreliable" | "uncertain" | null;
-  reliabilityScore: number;
   votedCount: number;
   totalPlayers: number;
-  reasons?: string[];
   verdictCountdownSeconds?: number | null;
   onSkipCountdown?: () => void;
   isTimeout?: boolean;
@@ -70,10 +67,8 @@ export function VerdictWaitingStage({
   timeTakenSeconds = 3,
   isCorrect,
   officialAnswer,
-  reliabilityScore,
   votedCount,
   totalPlayers,
-  reasons,
   verdictCountdownSeconds,
   onSkipCountdown,
   isTimeout = false,
@@ -219,7 +214,7 @@ export function VerdictWaitingStage({
         </h1>
         <p className="mt-2 max-w-lg text-base font-medium text-blue-100/90 md:text-lg">
           {officialAnswer
-            ? "Confira o gabarito oficial, o Verômetro e as justificativas da IA Olimpo."
+            ? "Confira o gabarito cadastrado da rodada e reflita sobre sua resposta."
             : "Aguardando os outros checadores concluírem a análise dos fatos..."}
         </p>
 
@@ -279,18 +274,22 @@ export function VerdictWaitingStage({
                     <span className="block text-[10px] font-bold text-rose-500">
                       Tempo Esgotado
                     </span>
-                    <span className="inline-flex items-center rounded bg-rose-100 px-1.5 py-0.5 text-[10px] font-bold text-rose-700">
-                      0 pts
-                    </span>
+                    {officialAnswer && (
+                      <span className="inline-flex items-center rounded bg-rose-100 px-1.5 py-0.5 text-[10px] font-bold text-rose-700">
+                        0 pts
+                      </span>
+                    )}
                   </>
                 ) : (
                   <>
                     <span className="block text-[10px] font-semibold text-slate-500">
                       {timeTakenSeconds}s
                     </span>
-                    <span className="inline-flex items-center rounded bg-amber-100/80 px-1.5 py-0.5 text-[10px] font-bold text-amber-600">
-                      ⚡ +{pointsAwarded} pts
-                    </span>
+                    {officialAnswer && (
+                      <span className="inline-flex items-center rounded bg-amber-100/80 px-1.5 py-0.5 text-[10px] font-bold text-amber-600">
+                        ⚡ +{pointsAwarded} pts
+                      </span>
+                    )}
                   </>
                 )}
               </div>
@@ -364,50 +363,11 @@ export function VerdictWaitingStage({
             )}
           </div>
 
-          {/* Verômetro Gauge Integration */}
-          <VerometroGauge reliabilityScore={reliabilityScore} />
+          <p className="mt-4 text-xs leading-relaxed text-slate-600">
+            O gabarito pertence à rodada. As observações linguísticas ajudam a formular perguntas; a
+            verificação da notícia exige evidências sobre suas afirmações.
+          </p>
         </div>
-
-        {/* AI Explanation & Reasons Card */}
-        {officialAnswer && reasons && reasons.length > 0 && (
-          <div
-            className="mb-6 rounded-2xl border border-blue-200/90 bg-linear-to-br from-blue-50/80 to-indigo-50/50 p-4 sm:p-5"
-            data-purpose="ai-analysis-reasons"
-          >
-            <div className="mb-3.5 flex flex-wrap items-center justify-between gap-2 border-b border-blue-100 pb-2.5">
-              <div className="flex items-center gap-2">
-                <div className="flex size-7 items-center justify-center rounded-lg bg-blue-600 text-white shadow-sm">
-                  <Sparkles className="size-4" aria-hidden="true" />
-                </div>
-                <div>
-                  <h3 className="text-sm font-extrabold text-slate-900 sm:text-base">
-                    Por que a notícia foi classificada como {officialConfig?.name.toLowerCase()}?
-                  </h3>
-                  <p className="text-[11px] font-medium text-slate-500">
-                    Análise factual e checagem de evidências da IA Olimpo
-                  </p>
-                </div>
-              </div>
-              <span className="inline-flex items-center rounded-full bg-blue-600 px-2.5 py-0.5 text-[10px] font-black tracking-wide text-white uppercase shadow-sm">
-                IA Olimpo
-              </span>
-            </div>
-
-            <ul className="space-y-2.5">
-              {reasons.map((reason, idx) => (
-                <li
-                  key={idx}
-                  className="flex items-start gap-2.5 rounded-xl border border-white/80 bg-white/95 p-3 text-xs leading-relaxed font-medium text-slate-700 shadow-sm sm:text-sm"
-                >
-                  <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-blue-100 text-[11px] font-black text-blue-700">
-                    {idx + 1}
-                  </span>
-                  <span className="flex-1">{reason}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
 
         {/* Live Room Progress Section (displayed while waiting for other players) */}
         {!officialAnswer && (

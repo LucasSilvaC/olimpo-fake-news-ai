@@ -82,7 +82,7 @@ describe("SSE Route Handler (/api/rooms/[pin]/events)", () => {
     updateStatus: vi.fn(),
     updateRoom: vi.fn(),
     addMember: vi.fn(),
-    findMember: vi.fn(),
+    findMember: vi.fn().mockResolvedValue({ userId: "participant-1" }),
     listMembers: vi.fn(),
     countMembers: vi.fn(),
     updateMemberScore: vi.fn(),
@@ -231,6 +231,57 @@ describe("SSE Route Handler (/api/rooms/[pin]/events)", () => {
     const response = await createSSEResponse(new Request("http://localhost"), "123456");
     expect(response.status).toBe(401);
     expect(mocks.touch).not.toHaveBeenCalled();
+  });
+
+  it("rejects non-members before subscribing to result events", async () => {
+    const repo = createMockRoomRepo();
+    vi.mocked(repo.findMember).mockResolvedValue(null);
+    const subscriber = createMockSubscriber();
+    const response = await createSSEResponse(new Request("http://localhost"), "123456", {
+      roomRepository: repo,
+      redisRoomRepo: createMockRedisRoomRepo(),
+      createSubscriber: () => subscriber as unknown as Redis,
+    });
+    expect(response.status).toBe(403);
+    expect(subscriber.subscribe).not.toHaveBeenCalled();
+  });
+  it("checks collective closure and strips model results from SSE", async () => {
+    const subscriber = createMockSubscriber();
+    const rounds = { isRoundCompleted: vi.fn().mockResolvedValue(false) };
+    const response = await createSSEResponse(new Request("http://localhost"), "123456", {
+      roomRepository: createMockRoomRepo(),
+      redisRoomRepo: createMockRedisRoomRepo(),
+      createSubscriber: () => subscriber as unknown as Redis,
+      roundRepository: rounds,
+    });
+    const reader = response.body!.getReader();
+    await reader.read();
+    await reader.read();
+    const completion = {
+      type: "ROUND_COMPLETED",
+      roomId: sampleRoom.id,
+      pin: sampleRoom.pin,
+      payload: {
+        round: 1,
+        officialAnswer: "reliable",
+        analysis: { confidence: 0.99 },
+        modelAnalysis: { fakeScore: 99 },
+      },
+    };
+    subscriber.emitMessage("room:123 456", JSON.stringify(completion));
+    await vi.advanceTimersByTimeAsync(0);
+    subscriber.emitMessage(
+      "room:123 456",
+      JSON.stringify({ type: "MEMBER_JOINED", roomId: sampleRoom.id }),
+    );
+    expect(new TextDecoder().decode((await reader.read()).value)).toContain("MEMBER_JOINED");
+    rounds.isRoundCompleted.mockResolvedValue(true);
+    subscriber.emitMessage("room:123 456", JSON.stringify(completion));
+    const chunk = new TextDecoder().decode((await reader.read()).value);
+    expect(chunk).toContain('"modelAnalysis":null');
+    expect(chunk).not.toContain("fakeScore");
+    expect(chunk).not.toContain("confidence");
+    await reader.cancel();
   });
 
   it("renews presence and stops renewing after cancellation", async () => {

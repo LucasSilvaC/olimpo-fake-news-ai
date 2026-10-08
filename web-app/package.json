@@ -29,7 +29,7 @@
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
-    "db:seed": "tsx src/server/infrastructure/database/drizzle/seed.ts",
+    "db:seed": "tsx scripts/populate-challenges.ts",
     "check": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm build",
     "validate": "pnpm lint && pnpm typecheck && pnpm test && pnpm build",
     "validate:changed": "pnpm validate",

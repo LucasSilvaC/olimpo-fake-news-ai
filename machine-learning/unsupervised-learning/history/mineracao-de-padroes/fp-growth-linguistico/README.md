@@ -1,4 +1,6 @@
-# FP-Growth linguístico
+# FP-Growth linguístico — referência anterior
+
+Referência histórica preservada. O [modelo principal atual](../../../fp_growth_principal_sem_autoria.ipynb) acrescenta ADP, AUX, NUM e quatro relações DEP. Esta referência corrigida produziu 152 regras direcionais elegíveis, que foram reproduzidas pelo novo experimento.
 
 O [notebook executado](fp_growth_linguistico_sem_autoria.ipynb) usa os módulos desta pasta:
 
@@ -10,7 +12,7 @@ O [notebook executado](fp_growth_linguistico_sem_autoria.ipynb) usa os módulos 
 - `compare_linguistic_rules.py`: ranking posterior por classe, porcentagens, controle descritivo de autoria e gráficos.
 - `tests/`: verificações semânticas.
 
-Consulte o [protocolo](../../../docs/modelos/fp-growth-linguistico.md) e o [relatório das regras](../../../REGRAS_FP_GROWTH_LINGUISTICO.md). As dependências estão em [`machine-learning/requirements-linguistic.txt`](../../../../requirements-linguistic.txt).
+Consulte o [protocolo](../../../docs/modelos/fp-growth-linguistico.md) e o [relatório das regras](RESULTADOS.md). As dependências estão em [`machine-learning/requirements-linguistic.txt`](../../../../requirements-linguistic.txt).
 
 A partir da raiz do repositório, execute os testes com:
 

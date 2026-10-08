@@ -29,10 +29,34 @@ services:
       timeout: 3s
       retries: 10
 
+  news-insights:
+    build:
+      context: ../model-engine
+      dockerfile: Dockerfile
+    environment:
+      NEWS_INSIGHTS_HOST: 0.0.0.0
+      NEWS_INSIGHTS_PORT: 8010
+    ports:
+      - "127.0.0.1:${NEWS_INSIGHTS_PORT:-8010}:8010"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8010/health', timeout=5)",
+        ]
+      interval: 10s
+      timeout: 6s
+      retries: 5
+      start_period: 60s
+    restart: unless-stopped
+
   migrate:
     build:
       context: .
       target: migrator
+      network: host
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-root}@postgres:5432/${POSTGRES_DB:-olimpo}
     depends_on:
@@ -40,11 +64,25 @@ services:
         condition: service_healthy
     restart: "no"
 
+  seed:
+    build:
+      context: .
+      target: migrator
+      network: host
+    command: ["pnpm", "db:seed"]
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-root}@postgres:5432/${POSTGRES_DB:-olimpo}
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    restart: "no"
+
   app:
     container_name: olimpo
     build:
       context: .
       target: development
+      network: host
     environment:
       NODE_ENV: development
       WATCHPACK_POLLING: "true"
@@ -56,6 +94,9 @@ services:
       AUTH_SECRET: ${AUTH_SECRET:-development-auth-secret-change-in-production-min-32-chars}
       NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-http://localhost:3000}
       JINA_API_KEY: ${JINA_API_KEY:-}
+      NEWS_INSIGHTS_SERVICE_URL: http://news-insights:8010
+      NEWS_PREDICTION_SERVICE_URL: http://news-insights:8010
+      NEWS_PREDICTION_TIMEOUT_MS: ${NEWS_PREDICTION_TIMEOUT_MS:-15000}
     volumes:
       - .:/app
       - app-node-modules:/app/node_modules
@@ -67,8 +108,10 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-      migrate:
+      seed:
         condition: service_completed_successfully
+      news-insights:
+        condition: service_healthy
     healthcheck:
       test:
         - CMD

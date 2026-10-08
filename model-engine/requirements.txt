@@ -1,0 +1,7 @@
+numpy==2.5.3
+pandas==3.0.6
+spacy==3.8.16
+scikit-learn==1.9.1
+scipy==1.18.1
+joblib==1.6.0
+pt_core_news_sm @ https://github.com/explosion/spacy-models/releases/download/pt_core_news_sm-3.8.0/pt_core_news_sm-3.8.0-py3-none-any.whl
