@@ -12,10 +12,8 @@ export interface IVerdictWaitingStageProps {
   timeTakenSeconds?: number;
   isCorrect?: boolean | null;
   officialAnswer?: "reliable" | "unreliable" | "uncertain" | null;
-  reliabilityScore: number;
   votedCount: number;
   totalPlayers: number;
-  reasons?: string[];
   verdictCountdownSeconds?: number | null;
   onSkipCountdown?: () => void;
   isTimeout?: boolean;
@@ -216,7 +214,7 @@ export function VerdictWaitingStage({
         </h1>
         <p className="mt-2 max-w-lg text-base font-medium text-blue-100/90 md:text-lg">
           {officialAnswer
-            ? "Confira o gabarito oficial, o Verômetro e as justificativas da IA Olimpo."
+            ? "Confira o gabarito cadastrado da rodada e reflita sobre sua resposta."
             : "Aguardando os outros checadores concluírem a análise dos fatos..."}
         </p>
 
@@ -276,18 +274,22 @@ export function VerdictWaitingStage({
                     <span className="block text-[10px] font-bold text-rose-500">
                       Tempo Esgotado
                     </span>
-                    <span className="inline-flex items-center rounded bg-rose-100 px-1.5 py-0.5 text-[10px] font-bold text-rose-700">
-                      0 pts
-                    </span>
+                    {officialAnswer && (
+                      <span className="inline-flex items-center rounded bg-rose-100 px-1.5 py-0.5 text-[10px] font-bold text-rose-700">
+                        0 pts
+                      </span>
+                    )}
                   </>
                 ) : (
                   <>
                     <span className="block text-[10px] font-semibold text-slate-500">
                       {timeTakenSeconds}s
                     </span>
-                    <span className="inline-flex items-center rounded bg-amber-100/80 px-1.5 py-0.5 text-[10px] font-bold text-amber-600">
-                      ⚡ +{pointsAwarded} pts
-                    </span>
+                    {officialAnswer && (
+                      <span className="inline-flex items-center rounded bg-amber-100/80 px-1.5 py-0.5 text-[10px] font-bold text-amber-600">
+                        ⚡ +{pointsAwarded} pts
+                      </span>
+                    )}
                   </>
                 )}
               </div>

@@ -132,6 +132,16 @@ async function main(): Promise<void> {
         .slice(0, 300),
     );
     assert.ok(result.analysis.insights.length >= 1 && result.analysis.insights.length <= 3);
+    for (const insight of result.analysis.insights) {
+      assert.equal(insight.comparison.kind, "descriptive_corpus_frequency");
+      assert.equal(insight.comparison.partition, "validation");
+      assert.equal(insight.comparison.scope, "matched_pattern");
+      for (const group of [insight.comparison.fake, insight.comparison.true]) {
+        assert.equal(group.total, 720);
+        assert.ok(group.count >= 0 && group.count <= group.total);
+        assert.ok(Math.abs(group.frequency - group.count / group.total) < 1e-9);
+      }
+    }
     assert.equal(
       new Set(result.analysis.insights.map((i) => i.redundancyFamily)).size,
       result.analysis.insights.length,
@@ -152,26 +162,56 @@ async function main(): Promise<void> {
     );
     await page.goto(`${baseUrl}/sala/${encodeURIComponent(pin)}`);
     assert.equal((await analysisResponse).status(), 200);
-    await page.getByRole("heading", { name: "Investigue antes de decidir" }).waitFor();
-    await page.getByText(result.analysis.insights[0]!.observation, { exact: true }).waitFor();
     assert.equal(
       await page.getByRole("button", { name: "Classificar notícia como Incerta" }).isEnabled(),
       true,
     );
-    await page.getByText("Ver o trecho analisado e as medições", { exact: true }).click();
+    assert.equal(await page.getByRole("dialog").count(), 0);
+    await page.getByRole("button", { name: "Abrir observações sobre a escrita" }).click();
+    await page.getByRole("dialog", { name: "Observe a escrita" }).waitFor();
+    await page.getByText(result.analysis.insights[0]!.observation, { exact: true }).waitFor();
+    const panel = page.locator('[data-purpose="news-insights"]');
+    const collapsedText = await panel.innerText();
+    assert.match(collapsedText, /rotuladas como falsas/);
+    assert.match(collapsedText, /rotuladas como verdadeiras/);
+    assert.doesNotMatch(collapsedText, /300|tokens|POS_|DEP_|<=|>=/);
+    await page.getByText("Ver o trecho analisado e os detalhes", { exact: true }).click();
     await page.getByText(result.analysis.analyzedText, { exact: true }).waitFor();
     assert.doesNotMatch(
       await page.locator('[data-purpose="news-insights"]').innerText(),
       /78%|chance de ser falsa|Fake\/True/,
     );
+    await page.getByText("Ver o trecho analisado e os detalhes", { exact: true }).click();
+    await panel.getByText("Ver contagens e referência", { exact: true }).first().click();
+    await panel
+      .getByText(/Referência: Fake\.br-Corpus, amostra de validação/)
+      .first()
+      .waitFor();
+    await panel.getByText("Ver contagens e referência", { exact: true }).first().click();
     await mkdir("validation/news-insights", { recursive: true });
     await page.screenshot({ path: "validation/news-insights/desktop.png", fullPage: true });
+    await page.mouse.click(1400, 100);
+    await page.getByRole("dialog").waitFor({ state: "hidden" });
+    await page.screenshot({
+      path: "validation/news-insights/desktop-collapsed.png",
+      fullPage: true,
+    });
+    await page.getByRole("button", { name: "Abrir observações sobre a escrita" }).click();
     await page.setViewportSize({ width: 390, height: 844 });
     assert.equal(
       await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth),
       true,
     );
     await page.screenshot({ path: "validation/news-insights/mobile.png", fullPage: true });
+    await page.getByRole("button", { name: "Fechar observações sobre a escrita" }).click();
+    await page.getByRole("dialog").waitFor({ state: "hidden" });
+    await page.screenshot({
+      path: "validation/news-insights/mobile-collapsed.png",
+      fullPage: true,
+    });
+    await page.getByRole("button", { name: "Abrir observações sobre a escrita" }).click();
+    await page.keyboard.press("Escape");
+    await page.getByRole("dialog").waitFor({ state: "hidden" });
     await page.getByRole("button", { name: "Classificar notícia como Incerta" }).click();
     await page.locator('[data-purpose="waiting-state-container"]').waitFor();
     assert.equal(await page.locator('[data-purpose="ai-analysis-reasons"]').count(), 0);

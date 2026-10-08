@@ -41,6 +41,17 @@ function responseFor(round = 1): NewsInsightsResponse {
             "Esta terceira pergunta não deve aparecer no cartão.",
           ],
           redundancyFamily: "structure",
+          comparison: {
+            kind: "descriptive_corpus_frequency",
+            referenceDataset: "Fake.br-Corpus",
+            partition: "validation",
+            authorScope: "all",
+            sourceRun: "run-test",
+            variant: "sintaxe_ampliada",
+            scope: "matched_pattern",
+            fake: { count: 432, total: 720, frequency: 0.6 },
+            true: { count: 252, total: 720, frequency: 0.35 },
+          },
           measurements: [
             {
               feature: "test_feature",
@@ -92,10 +103,12 @@ describe("investigação socrática durante a rodada", () => {
   it("requests the authoritative round article and keeps voting enabled during extraction", () => {
     mocks.fetch.mockReturnValue(new Promise(() => {}));
     render(<NewsCheckStage {...baseProps} />);
-    expect(screen.getByRole("status")).toHaveTextContent("Extraindo o corpo da notícia");
+    expect(screen.queryByRole("dialog")).toBeNull();
     expect(
       screen.getByRole("button", { name: "Classificar notícia como Verdadeira" }),
     ).toBeEnabled();
+    fireEvent.click(screen.getByRole("button", { name: "Abrir observações sobre a escrita" }));
+    expect(screen.getByRole("status")).toHaveTextContent("Extraindo o corpo da notícia");
     expect(
       screen.getByRole("region", { name: "Perguntas gerais de leitura crítica" }),
     ).toBeVisible();
@@ -110,28 +123,50 @@ describe("investigação socrática durante a rodada", () => {
     expect(document.body.textContent).not.toMatch(/78%|chances|alarmistas|indignação|medo/);
   });
 
-  it("shows measured observations, the exact analyzed snippet and the extracted full body", async () => {
+  it("shows both corpus frequencies equally and keeps the analyzed scope and counts available", async () => {
     mocks.fetch.mockResolvedValue(httpResponse(responseFor()));
     render(<NewsCheckStage {...baseProps} />);
     expect(await screen.findByRole("heading", { name: "Notícia extraída 1" })).toBeVisible();
-    expect(screen.getByText("Como essas conexões ajudam a explicar a afirmação?")).toBeVisible();
-    expect(screen.getByText("Qual fonte permitiria conferir essa afirmação?")).toBeVisible();
+    expect(screen.queryByRole("dialog")).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: "Abrir observações sobre a escrita" }));
+    expect(screen.getByRole("dialog", { name: "Observe a escrita" })).toBeVisible();
+    expect(screen.getByText("O trecho reúne formas de conectar as frases.")).toBeVisible();
+    expect(screen.queryByText("Como essas conexões ajudam a explicar a afirmação?")).toBeNull();
+    expect(screen.queryByText("Qual fonte permitiria conferir essa afirmação?")).toBeNull();
     expect(screen.queryByText("Esta terceira pergunta não deve aparecer no cartão.")).toBeNull();
     expect(
       screen.queryByRole("region", { name: "Perguntas gerais de leitura crítica" }),
     ).toBeNull();
-    fireEvent.click(screen.getByText("Ver o trecho analisado e as medições"));
+    const fakeLabel = screen.getByText("Notícias rotuladas como falsas");
+    const trueLabel = screen.getByText("Notícias rotuladas como verdadeiras");
+    expect(fakeLabel.parentElement?.className).toBe(trueLabel.parentElement?.className);
+    expect(screen.getByText("60%")).toBeVisible();
+    expect(screen.getByText("35%")).toBeVisible();
+    expect(
+      screen.getByText("O trecho reúne formas de conectar as frases.").closest("article")
+        ?.textContent,
+    ).not.toMatch(/300|tokens|POS|DEP/);
+    fireEvent.click(screen.getByText("Ver contagens e referência"));
+    expect(screen.getByText(/432 de 720 notícias rotuladas como falsas/)).toBeVisible();
+    expect(screen.getByText(/252 de 720 notícias rotuladas como verdadeiras/)).toBeVisible();
+    expect(screen.getByText(/Fake.br-Corpus, amostra de validação/)).toBeVisible();
+    expect(screen.getByText(/todos os critérios do padrão juntos/)).toBeVisible();
+    fireEvent.click(screen.getByText("Ver o trecho analisado e os detalhes"));
     expect(screen.getByText("Este é o trecho normalizado analisado.")).toBeVisible();
     expect(screen.getByText(/3 de 25/)).toBeVisible();
-    expect(screen.getByText(/palavras e outros tokens sem pontuação/)).toBeVisible();
+    expect(
+      screen.getByText(/palavras, números e outras unidades de texto, sem pontuação/),
+    ).toBeVisible();
     expect(document.body.textContent).not.toContain("tokens_lexical");
+    fireEvent.click(screen.getByRole("button", { name: "Fechar observações sobre a escrita" }));
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
     fireEvent.click(screen.getByText("Ler o corpo da notícia"));
     expect(screen.getByText(responseFor().article.content)).toBeVisible();
-    expect(document.body.textContent).not.toMatch(/\d+%|confiança|probabilidade|78/);
+    expect(document.body.textContent).not.toMatch(/confiança|probabilidade|78%|suspeito|confiável/);
   });
 
   it.each([
-    ["tokens_nonspace", "tokens sem espaços"],
+    ["tokens_nonspace", "palavras, números e sinais de pontuação; espaços não são contados"],
     ["regex_words", "palavras identificadas no trecho"],
   ])("explains the %s measurement base in readable language", async (denominator, label) => {
     const data = responseFor();
@@ -139,7 +174,8 @@ describe("investigação socrática durante a rodada", () => {
     mocks.fetch.mockResolvedValue(httpResponse(data));
     render(<NewsCheckStage {...baseProps} />);
     await screen.findByRole("heading", { name: "Notícia extraída 1" });
-    fireEvent.click(screen.getByText("Ver o trecho analisado e as medições"));
+    fireEvent.click(screen.getByRole("button", { name: "Abrir observações sobre a escrita" }));
+    fireEvent.click(screen.getByText("Ver o trecho analisado e os detalhes"));
     expect(screen.getByText(new RegExp(label!))).toBeVisible();
     expect(document.body.textContent).not.toContain(denominator);
   });
@@ -153,11 +189,14 @@ describe("investigação socrática durante a rodada", () => {
       mocks.fetch.mockResolvedValue(httpResponse(data));
       render(<NewsCheckStage {...baseProps} />);
       await screen.findByRole("heading", { name: "Notícia extraída 1" });
+      fireEvent.click(screen.getByRole("button", { name: "Abrir observações sobre a escrita" }));
       expect(screen.queryByText("Estrutura das frases")).toBeNull();
       expect(
         screen.getByRole("region", { name: "Perguntas gerais de leitura crítica" }),
       ).toBeVisible();
       expect(screen.getByText(/não são observações medidas pelo modelo/)).toBeVisible();
+      fireEvent.click(screen.getByRole("button", { name: "Fechar observações sobre a escrita" }));
+      await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
       expect(
         screen.getByRole("button", { name: "Classificar notícia como Incerta" }),
       ).toBeEnabled();
@@ -168,7 +207,10 @@ describe("investigação socrática durante a rodada", () => {
     mocks.fetch.mockRejectedValue(new Error("Network failed"));
     mocks.submitVote.mockResolvedValue({ success: false, error: "Tente novamente" });
     render(<NewsCheckStage {...baseProps} />);
+    fireEvent.click(screen.getByRole("button", { name: "Abrir observações sobre a escrita" }));
     await waitFor(() => expect(screen.getByRole("status")).toHaveTextContent("indisponíveis"));
+    fireEvent.click(screen.getByRole("button", { name: "Fechar observações sobre a escrita" }));
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
     fireEvent.click(screen.getByRole("button", { name: "Classificar notícia como Incerta" }));
     expect(mocks.submitVote).toHaveBeenCalledWith({
       roomId: "room-test",
@@ -209,6 +251,7 @@ describe("investigação socrática durante a rodada", () => {
   it("rejects results for a different round", async () => {
     mocks.fetch.mockResolvedValue(httpResponse(responseFor(2)));
     render(<NewsCheckStage {...baseProps} />);
+    fireEvent.click(screen.getByRole("button", { name: "Abrir observações sobre a escrita" }));
     await waitFor(() => expect(screen.getByRole("status")).toHaveTextContent("indisponíveis"));
     expect(screen.queryByRole("heading", { name: "Notícia extraída 2" })).toBeNull();
   });
@@ -234,6 +277,8 @@ describe("investigação socrática durante a rodada", () => {
       completeVote({ success: true, vote: { pointsAwarded: 100, isCorrect: true } });
     });
     expect(baseProps.onVoteSubmitted).not.toHaveBeenCalled();
+    expect(screen.queryByRole("dialog")).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: "Abrir observações sobre a escrita" }));
     await waitFor(() => expect(screen.getByRole("status")).toHaveTextContent("indisponíveis"));
   });
 });

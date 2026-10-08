@@ -1,10 +1,10 @@
 import { notFound } from "next/navigation";
 
-import { drizzleNewsAnalysisRepository } from "@/app/api/ai-feedback/repositories/drizzle-news-analysis.repository";
 import { drizzleNewsArticleRepository } from "@/app/api/ai-feedback/repositories/drizzle-news-article.repository";
 import { drizzleUserRepository } from "@/app/api/auth/repositories/drizzle-user.repository";
 import { getSessionUseCase } from "@/app/api/auth/usecase/get-session.usecase";
 import { drizzleNewsVoteRepository } from "@/app/api/news-voting/repositories/drizzle-news-vote.repository";
+import { redisVoteRepository } from "@/app/api/news-voting/repositories/redis-vote.repository";
 import { RoomPin } from "@/app/api/rooms/entities/room-pin.vo";
 import { drizzleRoomRepository } from "@/app/api/rooms/repositories/drizzle-room.repository";
 import { DEFAULT_AVATAR } from "@/lib/avatar";
@@ -83,6 +83,9 @@ export default async function RoomPage({
     );
 
     const activeItem = playlistItems.find((item) => item.roundOrder === room.currentRound);
+    const initialRoundClosed = activeItem
+      ? await redisVoteRepository.isRoundCompleted(room.id, room.currentRound)
+      : false;
     let initialVote: IUserVoteState | null = null;
     if (activeItem) {
       const existingVote = await drizzleNewsVoteRepository.findByParticipantAndPlaylistItem(
@@ -90,24 +93,15 @@ export default async function RoomPage({
         user.id,
       );
       if (existingVote) {
-        const [articleRecord, existingAnalysis] = await Promise.all([
-          drizzleNewsArticleRepository.findById(activeItem.articleId),
-          drizzleNewsAnalysisRepository.findByArticleId(activeItem.articleId),
-        ]);
-        const confidenceScore = existingAnalysis
-          ? Math.round(
-              Number(existingAnalysis.confidence) *
-                (Number(existingAnalysis.confidence) <= 1 ? 100 : 1),
-            )
-          : 85;
+        const articleRecord = initialRoundClosed
+          ? await drizzleNewsArticleRepository.findById(activeItem.articleId)
+          : null;
 
         initialVote = {
           vote: existingVote.vote,
-          pointsAwarded: existingVote.pointsAwarded,
-          isCorrect: existingVote.isCorrect,
+          pointsAwarded: initialRoundClosed ? existingVote.pointsAwarded : 0,
+          isCorrect: initialRoundClosed ? existingVote.isCorrect : null,
           officialAnswer: articleRecord?.targetClassification ?? null,
-          reliabilityScore: confidenceScore,
-          reasons: existingAnalysis?.reasons,
         };
       }
     }
@@ -129,6 +123,7 @@ export default async function RoomPage({
           hostId: room.hostId,
           status: room.status,
           roundDurationSeconds: room.roundDurationSeconds,
+          roundStartedAt: room.updatedAt?.toISOString(),
           currentRound: room.currentRound,
           totalRounds: room.totalRounds,
         }}
@@ -136,6 +131,7 @@ export default async function RoomPage({
         playlistArticles={playlistArticles}
         currentUserId={user.id}
         initialVote={initialVote}
+        initialRoundClosed={initialRoundClosed}
       />
     );
   }

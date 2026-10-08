@@ -19,22 +19,21 @@ export interface ISocraticReflectionProps {
 const DEFAULT_CARDS: ISocraticCard[] = [
   {
     icon: "🔎",
-    category: "Fonte",
-    question: "Quem publicou esta informação e como podemos consultar a fonte?",
-    guidance: "Procure a autoria, a data e o caminho até a publicação original.",
+    category: "Palavras",
+    question: "Quais palavras chamam sua atenção neste trecho?",
+    guidance: "Observe as expressões escolhidas e o efeito que elas têm na sua leitura.",
   },
   {
     icon: "📄",
-    category: "Evidência",
-    question: "Que evidências sustentam as principais afirmações?",
-    guidance:
-      "Localize documentos, dados ou relatos citados e examine o que eles permitem concluir.",
+    category: "Frases",
+    question: "Como as frases organizam o que está sendo contado?",
+    guidance: "Observe como as ideias se conectam e o que recebe mais espaço no texto.",
   },
   {
     icon: "💬",
-    category: "Contexto",
-    question: "Que informação adicional ajudaria a avaliar esta notícia?",
-    guidance: "Compare datas, contexto e fontes independentes antes de decidir.",
+    category: "Estilo",
+    question: "Como a forma de escrever influencia sua impressão?",
+    guidance: "Observe a pontuação e o destaque dado às palavras durante a leitura.",
   },
 ];
 
