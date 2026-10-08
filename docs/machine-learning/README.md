@@ -14,8 +14,8 @@ Os scripts de extração e análise de atributos linguísticos estão catalogado
 ## Entregáveis
 
 - [Metodologias e planejamento da etapa final](entregaveis/entregavel-semana-final.md)
-- [Relatório técnico consolidado (Markdown)](entregaveis/entregavel-final-reestruturado.md)
-- [Fonte LaTeX do relatório](entregaveis/entregavel-final-reestruturado.tex)
+- [Relatório técnico consolidado (Markdown)](entregaveis/entregavel-final-completo.md)
+- [Fonte LaTeX do relatório](entregaveis/entregavel-final-completo.tex)
 - As figuras usadas pelo relatório estão em [`entregaveis/entregavel-final-img/`](entregaveis/entregavel-final-img/).
 
 O LaTeX encontra as figuras quando compilado da raiz do repositório ou de `docs/entregaveis/`.

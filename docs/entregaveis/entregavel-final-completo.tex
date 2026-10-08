@@ -463,7 +463,7 @@ Fornecer o \emph{pipeline}
 
 \subsection{2.10 Protocolo comum de comparação}\label{protocolo-comum-de-comparauxe7uxe3o}
 
-O repositório define um protocolo comum para que métodos supervisionados e não supervisionados sejam comparáveis (\texttt{machine-learning/docs/comparison-protocol.md}):
+O repositório define um protocolo comum para que métodos supervisionados e não supervisionados sejam comparáveis (\texttt{docs/machine-learning/comparacao-modelos/comparison-protocol.md}):
 
 \begin{itemize}
 \tightlist
@@ -2364,12 +2364,12 @@ flowchart LR
 Regras de dependência: aplicação → domínio; infraestrutura → aplicação e domínio; domínio não importa Next.js, Drizzle nem React; o frontend nunca acessa a infraestrutura.
 
 \begin{quote}
-\textbf{Observação.} O \texttt{web-app/docs/architecture.md} e o README descrevem as camadas em \texttt{src/server/}. No código atual, cada módulo vive em \texttt{src/app/api/\textless{}módulo\textgreater{}/} (\texttt{entities}, \texttt{repositories}, \texttt{usecase}, \texttt{actions}, \texttt{tests}) e \texttt{src/server/shared} guarda apenas banco, Redis e logger. Essa organização por funcionalidade é a descrita corretamente em \texttt{docs/arquitetura.tex} (documentação de arquitetura do repositório), usada como fonte das decisões abaixo; o \texttt{architecture.md} e o README devem ser atualizados.
+\textbf{Observação.} O \texttt{docs/codigo/arquitetura-web-app.md} e o README descrevem as camadas em \texttt{src/server/}. No código atual, cada módulo vive em \texttt{src/app/api/\textless{}módulo\textgreater{}/} (\texttt{entities}, \texttt{repositories}, \texttt{usecase}, \texttt{actions}, \texttt{tests}) e \texttt{src/server/shared} guarda apenas banco, Redis e logger. Essa organização por funcionalidade é a descrita corretamente em \texttt{docs/codigo/arquitetura.tex} (documentação de arquitetura do repositório), usada como fonte das decisões abaixo; o \texttt{architecture.md} e o README devem ser atualizados.
 \end{quote}
 
 \subsubsection{Decisões de arquitetura e trade-offs}\label{decisuxf5es-de-arquitetura-e-trade-offs}
 
-Cada decisão segue o formato contexto, pontos positivos, pontos negativos e resolução. Fonte: \texttt{docs/arquitetura.tex} e o registro de decisões do grupo.
+Cada decisão segue o formato contexto, pontos positivos, pontos negativos e resolução. Fonte: \texttt{docs/codigo/arquitetura.tex} e o registro de decisões do grupo.
 
 \paragraph{Next.js como plataforma full-stack}\label{next.js-como-plataforma-full-stack}
 
@@ -2858,12 +2858,12 @@ O grupo definiu, na primeira semana, um roadmap de 7 semanas para a Residência 
 \bottomrule\noalign{}
 \endlastfoot
 1 & Metodologia e organização & Metodologias documentadas (seção 2): Crystal Clear, RACI, MoSCoW, Planning Poker, AIPGF, CRISP-DM, MLOps, testes e pesquisa. GitHub com \emph{pull requests} numerados, branches por funcionalidade, Conventional Commits e revisão automatizada \\
-2 & Arquitetura, tecnologias e dataset & Arquitetura documentada (\texttt{docs/arquitetura.tex}, OpenSpec) e tecnologias escolhidas (seção 8.2); Fake.br analisado e limpo (seção 4); variável-alvo identificada; Regressão Logística como baseline \\
+2 & Arquitetura, tecnologias e dataset & Arquitetura documentada (\texttt{docs/codigo/arquitetura.tex}, OpenSpec) e tecnologias escolhidas (seção 8.2); Fake.br analisado e limpo (seção 4); variável-alvo identificada; Regressão Logística como baseline \\
 3 & Estudo e experimentação de técnicas & TF-IDF e n-gramas; Regressão Logística, SVM e Random Forest comparados; várias técnicas não supervisionadas (Isolation Forest, LOF, One-Class SVM, K-means, DBSCAN, HDBSCAN, PU Learning, FP-Growth); SVD/PCA; métricas iniciais \\
 4 & Construção e avaliação do modelo; preparação para o backend & Pipeline de treino em Python; split controlado; accuracy, precisão, recall, F1 e matriz de confusão; várias visualizações; modelo principal documentado (seções 5 e 7); módulo de inferência isolado (\texttt{modelo\_olimpo.py}); contrato de entrada e saída (\texttt{AIAnalysisResult}) \\
 5 & Motor de análise, backend e fundação do frontend & Backend com autenticação, salas, votação em três níveis (equivalente ao semáforo), SSE, desafios globais e extração de notícia com proteção contra SSRF; entradas validadas com Zod; estrutura base do frontend; a tela já consome o contrato \texttt{analysis} \\
 6 & Experiência do usuário, integração e início da frente de negócio & Tela inicial, criação e entrada em sala, lobby, jogo por etapas, placares, ranking, submissão de notícia e extração por URL; semáforo de três níveis; reflexão socrática (cartões fixos) \\
-7 & Validação, negócio, refinamento e pitch & Documentação técnica (este documento, \texttt{docs/arquitetura.tex}, especificações OpenSpec); cerca de 40 arquivos de teste automatizados e CI com auditoria, verificação estática, E2E e CodeQL \\
+7 & Validação, negócio, refinamento e pitch & Documentação técnica (este documento, \texttt{docs/codigo/arquitetura.tex}, especificações OpenSpec); cerca de 40 arquivos de teste automatizados e CI com auditoria, verificação estática, E2E e CodeQL \\
 \end{longtable}
 }
 

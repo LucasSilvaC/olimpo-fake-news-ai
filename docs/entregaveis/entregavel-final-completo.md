@@ -256,7 +256,7 @@ Fornecer o _pipeline_
 
 ## 2.10 Protocolo comum de comparação
 
-O repositório define um protocolo comum para que métodos supervisionados e não supervisionados sejam comparáveis (`machine-learning/docs/comparison-protocol.md`):
+O repositório define um protocolo comum para que métodos supervisionados e não supervisionados sejam comparáveis (`docs/machine-learning/comparacao-modelos/comparison-protocol.md`):
 
 - Rótulos fixos (`0 = True`, `1 = Fake`); IDs, pastas de origem e labels servem para auditoria e nunca como feature.
 - Imputação, normalização, vocabulário TF-IDF e qualquer redução de dimensão são ajustados **somente no treino**.
@@ -881,7 +881,7 @@ Limitações dessa extração: é **agregada por classe** (não por notícia, po
 
 ### Metadados morfossintáticos por notícia (spaCy; notebooks 10 a 12)
 
-O módulo `machine-learning/supervised-learning/metadados_spacy.py` transforma a ideia acima em atributos utilizáveis pelo modelo. Decisões de projeto:
+O módulo `machine-learning/supervised-learning/support/metadados_spacy.py` transforma a ideia acima em atributos utilizáveis pelo modelo. Decisões de projeto:
 
 - **Entrada**: o mesmo `texto_trunc` que o TF-IDF vê (normalizado, 100 palavras), para que bloco textual e bloco de metadados descrevam o mesmo texto.
 - **Taxas, não contagens**: cada atributo é dividido pelo número de tokens (ou de verbos), para não depender do tamanho do texto.
@@ -1422,11 +1422,11 @@ flowchart LR
 
 Regras de dependência: aplicação → domínio; infraestrutura → aplicação e domínio; domínio não importa Next.js, Drizzle nem React; o frontend nunca acessa a infraestrutura.
 
-> **Observação.** O `web-app/docs/architecture.md` e o README descrevem as camadas em `src/server/`. No código atual, cada módulo vive em `src/app/api/<módulo>/` (`entities`, `repositories`, `usecase`, `actions`, `tests`) e `src/server/shared` guarda apenas banco, Redis e logger. Essa organização por funcionalidade é a descrita corretamente em `docs/arquitetura.tex` (documentação de arquitetura do repositório), usada como fonte das decisões abaixo; o `architecture.md` e o README devem ser atualizados.
+> **Observação.** O `docs/codigo/arquitetura-web-app.md` e o README descrevem as camadas em `src/server/`. No código atual, cada módulo vive em `src/app/api/<módulo>/` (`entities`, `repositories`, `usecase`, `actions`, `tests`) e `src/server/shared` guarda apenas banco, Redis e logger. Essa organização por funcionalidade é a descrita corretamente em `docs/codigo/arquitetura.tex` (documentação de arquitetura do repositório), usada como fonte das decisões abaixo; o `architecture.md` e o README devem ser atualizados.
 
 ### Decisões de arquitetura e trade-offs
 
-Cada decisão segue o formato contexto, pontos positivos, pontos negativos e resolução. Fonte: `docs/arquitetura.tex` e o registro de decisões do grupo.
+Cada decisão segue o formato contexto, pontos positivos, pontos negativos e resolução. Fonte: `docs/codigo/arquitetura.tex` e o registro de decisões do grupo.
 
 #### Next.js como plataforma full-stack
 
@@ -1820,11 +1820,11 @@ O grupo definiu, na primeira semana, um roadmap de 7 semanas para a Residência 
 | Etapa | Objetivo planejado | Entregue (evidência) |
 |---|---|---|
 |  1 | Metodologia e organização | Metodologias documentadas (seção 2): Crystal Clear, RACI, MoSCoW, Planning Poker, AIPGF, CRISP-DM, MLOps, testes e pesquisa. GitHub com *pull requests* numerados, branches por funcionalidade, Conventional Commits e revisão automatizada |
-|  2 | Arquitetura, tecnologias e dataset | Arquitetura documentada (`docs/arquitetura.tex`, OpenSpec) e tecnologias escolhidas (seção 8.2); Fake.br analisado e limpo (seção 4); variável-alvo identificada; Regressão Logística como baseline |
+|  2 | Arquitetura, tecnologias e dataset | Arquitetura documentada (`docs/codigo/arquitetura.tex`, OpenSpec) e tecnologias escolhidas (seção 8.2); Fake.br analisado e limpo (seção 4); variável-alvo identificada; Regressão Logística como baseline |
 |  3 | Estudo e experimentação de técnicas | TF-IDF e n-gramas; Regressão Logística, SVM e Random Forest comparados; várias técnicas não supervisionadas (Isolation Forest, LOF, One-Class SVM, K-means, DBSCAN, HDBSCAN, PU Learning, FP-Growth); SVD/PCA; métricas iniciais |
 |  4 | Construção e avaliação do modelo; preparação para o backend | Pipeline de treino em Python; split controlado; accuracy, precisão, recall, F1 e matriz de confusão; várias visualizações; modelo principal documentado (seções 5 e 7); módulo de inferência isolado (`modelo_olimpo.py`); contrato de entrada e saída (`AIAnalysisResult`) |
 |  5 | Motor de análise, backend e fundação do frontend | Backend com autenticação, salas, votação em três níveis (equivalente ao semáforo), SSE, desafios globais e extração de notícia com proteção contra SSRF; entradas validadas com Zod; estrutura base do frontend; a tela já consome o contrato `analysis` |
 |  6 | Experiência do usuário, integração e início da frente de negócio | Tela inicial, criação e entrada em sala, lobby, jogo por etapas, placares, ranking, submissão de notícia e extração por URL; semáforo de três níveis; reflexão socrática (cartões fixos) |
-|  7 | Validação, negócio, refinamento e pitch | Documentação técnica (este documento, `docs/arquitetura.tex`, especificações OpenSpec); cerca de 40 arquivos de teste automatizados e CI com auditoria, verificação estática, E2E e CodeQL |
+|  7 | Validação, negócio, refinamento e pitch | Documentação técnica (este documento, `docs/codigo/arquitetura.tex`, especificações OpenSpec); cerca de 40 arquivos de teste automatizados e CI com auditoria, verificação estática, E2E e CodeQL |
 
 **Diretrizes de escopo do roadmap versus o construído.** O roadmap previa como *Must Have* a classificação com score, o semáforo, a explicação por sinais, o modo desafio, a entrada manual de notícia, o modelo supervisionado, um experimento não supervisionado, as métricas e a validação com usuários. Desses, o repositório evidencia o semáforo, o modo desafio, a entrada de notícia (por URL), o modelo supervisionado, os experimentos não supervisionados e as métricas; **a classificação com score e a explicação vindas do modelo, e a validação com usuários, não estão evidenciadas**. Itens que o roadmap classificava como *Could Have* (login, ranking global e funcionalidades sociais) e como *Won't Have* (infraestrutura avançada de multiplayer) **foram implementados**, o que mostra que a prioridade do produto passou do avaliador individual para o jogo multiplayer, antes da integração do modelo.
