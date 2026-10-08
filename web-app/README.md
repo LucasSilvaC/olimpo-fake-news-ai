@@ -149,6 +149,107 @@ O pipeline mantém a extração local, o fallback pelo Jina Reader, os metadados
 as validações de URL e SSRF. A interface isolada `/extrair` e seu endpoint
 `/api/news/extract` foram removidos; a extração acontece pelo fluxo da sala.
 
+### Observações e comparação do corpus durante a rodada
+
+Em `/sala/[codigo]`, a etapa de leitura solicita `POST /api/news-insights` com
+`roomId` e `round`. O servidor verifica sessão, participação e rodada, resolve
+a notícia da playlist e envia seu corpo ao serviço Python do FP-Growth principal
+`sintaxe_ampliada`. Se o corpo salvo estiver vazio, utiliza o parser compartilhado
+e devolve o conteúdo extraído para a tela.
+
+As observações ficam em um painel aberto pelo ícone lateral "Observe a escrita". O painel começa
+recolhido em cada rodada e pode ser fechado pelo botão, pela tecla Esc ou por
+clique fora. O jogador recebe até três observações simples de famílias diferentes, acompanhadas
+pela frequência da mesma combinação nas notícias rotuladas como falsas e verdadeiras
+do corpus Fake.br. As duas classes têm apresentação equivalente; os percentuais
+descrevem a amostra de validação, com 720 notícias em cada classe. São frequências
+dentro de cada classe, sem estimar uma probabilidade para a notícia em jogo.
+Contagens e origem podem ser consultadas. O corpo completo, o trecho normalizado
+de até 300 caracteres e a metodologia ficam nos detalhes da análise. Falhas de
+extração ou análise não impedem o voto; respostas antigas são descartadas.
+
+O catálogo de observações é experimental, revisado tecnicamente durante a
+implementação e separado do catálogo científico. A revisão editorial humana e
+a avaliação com usuários permanecem pendentes. As respostas não incluem
+classificação ou confiança; a comparação por classe é estritamente descritiva.
+O gabarito e a pontuação são
+dados próprios do jogo; URLs novas ainda recebem `uncertain` pelo fluxo existente.
+Os percentuais do corpus não são apresentados como checagem factual.
+
+### Previsão supervisionada após o encerramento
+
+O componente “Análise do modelo” consulta `POST /api/news-prediction` com
+`{roomId, round}` após o encerramento coletivo. O servidor exige sessão,
+participação e encerramento confirmado; votar individualmente não libera o
+resultado. A rota resolve o corpo salvo da notícia e chama o motor real em
+`POST /supervised/analyze`, sem enviar o gabarito ou metadados.
+
+O score de falsidade estimado é `100 × P(Fake)` (0–100): quanto maior, maior a
+estimativa de falsidade. Ele não é pontuação do jogador nem frequência do corpus.
+O gabarito cadastrado continua governando o placar e aparece separado da previsão.
+O classificador examina o texto, sem verificar acontecimentos ou fontes externas.
+Textos com menos de 30 palavras e falhas recebem score nulo e mensagem explícita.
+
+O adaptador real substitui o mock no fluxo do jogo. O cache em `news_analyses`
+inclui artigo, hash do corpo, artefato, código de inferência e política, com
+coordenação de requisições concorrentes e unicidade no PostgreSQL. Registros
+antigos continuam identificados; `mock-v1` não é reutilizado. Falhas transitórias
+não ficam no cache. Votar, concluir e publicar o resultado não chamam inferência.
+
+Configure `NEWS_PREDICTION_SERVICE_URL` no servidor e aplique `pnpm db:migrate`
+antes de iniciar a versão atualizada. Compose conecta ambos os modelos ao mesmo
+serviço `news-insights`, em rede interna. `NEWS_PREDICTION_TIMEOUT_MS` limita a
+espera da previsão. O navegador acessa somente as rotas autenticadas do Next.js.
+
+Validação integrada com parser HTML, modelo real, navegador desktop/celular,
+cache concorrente e banco/Redis isolados:
+
+```powershell
+$env:NEWS_PREDICTION_SMOKE_DATABASE_URL = "postgresql://postgres:validation@127.0.0.1:55439/olimpo_supervised_validation"
+$env:NEWS_PREDICTION_SMOKE_REDIS_URL = "redis://127.0.0.1:56389"
+$env:NEWS_PREDICTION_SERVICE_URL = "http://127.0.0.1:58019"
+$env:NEWS_INSIGHTS_SERVICE_URL = "http://127.0.0.1:58019"
+pnpm build
+pnpm exec tsx scripts/check-news-prediction.ts
+```
+
+Use somente um banco descartável migrado para esse comando. Evidências ficam em
+`validation/news-prediction/`; o relatório técnico está em
+[`docs/machine-learning/validacao-integracao-supervisionado.md`](../docs/machine-learning/validacao-integracao-supervisionado.md).
+
+O Docker Compose já inclui `news-insights`, com healthcheck e conexão interna.
+Para rodar o Next.js diretamente no Windows, mantenha o serviço Python em outro
+terminal, a partir da raiz do repositório:
+
+```powershell
+python -m venv .venv-insights
+.\.venv-insights\Scripts\python.exe -m pip install -r model-engine/requirements.txt
+.\.venv-insights\Scripts\python.exe model-engine/service.py
+```
+
+No servidor Next.js, configure `NEWS_INSIGHTS_SERVICE_URL=http://127.0.0.1:8010`
+(também é o endereço padrão). Essa variável é interna; não use `NEXT_PUBLIC_*`.
+Consulte o [serviço Python](../model-engine/README.md)
+e o [plano atualizado](../model-engine/docs/plano-integracao-fp-growth.md).
+
+O teste de integração `scripts/check-news-insights.ts` exige um banco isolado
+migrado, Redis, o serviço Python real e um build pronto. Ele cria registros
+temporários, verifica a API e a tela com Playwright, testa o voto, salva capturas
+e remove os registros. Exemplo a partir de `web-app`, com suas URLs de teste:
+
+```powershell
+$env:NEWS_INSIGHTS_SMOKE_DATABASE_URL='postgresql://usuario:senha@127.0.0.1:55432/banco_de_teste'
+$env:NEWS_INSIGHTS_SMOKE_REDIS_URL='redis://127.0.0.1:56379'
+$env:NEWS_INSIGHTS_SMOKE_APP_URL='http://127.0.0.1:3001'
+$env:NEWS_INSIGHTS_SMOKE_START_APP='1'
+pnpm exec tsx scripts/check-news-insights.ts
+```
+
+`NEWS_INSIGHTS_SMOKE_START_APP=1` inicia e encerra um servidor local de teste,
+com configuração isolada, sem editar `.env`. Sem essa opção, informe `AUTH_SECRET`
+com o valor do servidor de teste já iniciado. O script não usa implicitamente
+`DATABASE_URL` para criar dados de teste.
+
 ---
 
 ## 🚀 7. Como Executar o Projeto Localmente

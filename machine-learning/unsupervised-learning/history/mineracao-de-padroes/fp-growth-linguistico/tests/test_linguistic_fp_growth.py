@@ -59,7 +59,7 @@ class LinguisticFeaturesTests(unittest.TestCase):
     def test_legacy_features_reproduce_original_definitions(self):
         # Read the original implementation rather than reimplement its formula.
         ns = {'np': np}
-        notebook = json.loads((HERE.parents[2] / 'fp_growth_baseline_com_autoria.ipynb').read_text(encoding='utf-8'))
+        notebook = json.loads((HERE.parent / 'fp-growth-legado/fp_growth_baseline_com_autoria.ipynb').read_text(encoding='utf-8'))
         import re
         import unicodedata
         ns.update({'re': re, 'unicodedata': unicodedata})

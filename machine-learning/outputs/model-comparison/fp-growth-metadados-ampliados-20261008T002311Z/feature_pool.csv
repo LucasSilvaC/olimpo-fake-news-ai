@@ -1,0 +1,55 @@
+source_feature,feature,selected_in_previous_supervised_eda,included_in_broad_variant,exclusion_reason,denominator
+POS_ADJ,POS_ADJ_rate,False,True,,tokens_lexical
+POS_ADP,POS_ADP_rate,True,True,,tokens_lexical
+POS_ADV,POS_ADV_rate,False,True,,tokens_lexical
+POS_AUX,POS_AUX_rate,True,True,,tokens_lexical
+POS_CCONJ,POS_CCONJ_rate,False,True,,tokens_lexical
+POS_DET,POS_DET_rate,False,True,,tokens_lexical
+POS_INTJ,POS_INTJ_rate,False,False,tag esparsa: reservar para análise própria,diagnostic_or_separate_measure
+POS_NOUN,POS_NOUN_rate,True,True,,tokens_lexical
+POS_NUM,POS_NUM_rate,True,True,,tokens_lexical
+POS_PART,POS_PART_rate,False,True,,tokens_lexical
+POS_PRON,POS_PRON_rate,True,True,,tokens_lexical
+POS_PROPN,POS_PROPN_rate,True,True,,tokens_lexical
+POS_PUNCT,POS_PUNCT_rate,False,False,representada por punctuationDensity_spacy com denominador próprio,diagnostic_or_separate_measure
+POS_SCONJ,POS_SCONJ_rate,False,True,,tokens_lexical
+POS_SPACE,POS_SPACE_rate,True,False,diagnóstico de whitespace e formatação,diagnostic_or_separate_measure
+POS_SYM,POS_SYM_rate,True,False,símbolos: requer auditoria editorial própria,diagnostic_or_separate_measure
+POS_VERB,POS_VERB_rate,True,True,,tokens_lexical
+POS_X,POS_X_rate,False,False,diagnóstico de anotação/tokenização,diagnostic_or_separate_measure
+DEP_ROOT,DEP_ROOT_rate,True,False,segmentação de frases: diagnóstico de sensibilidade,diagnostic_or_separate_measure
+DEP_acl,DEP_acl_rate,True,True,,tokens_lexical
+DEP_acl:relcl,DEP_acl:relcl_rate,True,True,,tokens_lexical
+DEP_advcl,DEP_advcl_rate,True,True,,tokens_lexical
+DEP_advmod,DEP_advmod_rate,False,True,,tokens_lexical
+DEP_amod,DEP_amod_rate,True,True,,tokens_lexical
+DEP_appos,DEP_appos_rate,True,True,,tokens_lexical
+DEP_aux,DEP_aux_rate,False,True,,tokens_lexical
+DEP_aux:pass,DEP_aux:pass_rate,False,True,,tokens_lexical
+DEP_case,DEP_case_rate,False,True,,tokens_lexical
+DEP_cc,DEP_cc_rate,True,True,,tokens_lexical
+DEP_ccomp,DEP_ccomp_rate,False,True,,tokens_lexical
+DEP_compound,DEP_compound_rate,True,True,,tokens_lexical
+DEP_conj,DEP_conj_rate,False,True,,tokens_lexical
+DEP_cop,DEP_cop_rate,False,True,,tokens_lexical
+DEP_csubj,DEP_csubj_rate,True,True,,tokens_lexical
+DEP_dep,DEP_dep_rate,False,False,diagnóstico de anotação e formatação,diagnostic_or_separate_measure
+DEP_det,DEP_det_rate,False,True,,tokens_lexical
+DEP_discourse,DEP_discourse_rate,True,True,,tokens_lexical
+DEP_expl,DEP_expl_rate,True,True,,tokens_lexical
+DEP_fixed,DEP_fixed_rate,True,True,,tokens_lexical
+DEP_flat,DEP_flat_rate,True,True,,tokens_lexical
+DEP_flat:foreign,DEP_flat:foreign_rate,False,True,,tokens_lexical
+DEP_flat:name,DEP_flat:name_rate,False,True,,tokens_lexical
+DEP_iobj,DEP_iobj_rate,True,True,,tokens_lexical
+DEP_mark,DEP_mark_rate,True,True,,tokens_lexical
+DEP_nmod,DEP_nmod_rate,False,True,,tokens_lexical
+DEP_nsubj,DEP_nsubj_rate,True,True,,tokens_lexical
+DEP_nsubj:pass,DEP_nsubj:pass_rate,True,True,,tokens_lexical
+DEP_nummod,DEP_nummod_rate,True,True,,tokens_lexical
+DEP_obj,DEP_obj_rate,True,True,,tokens_lexical
+DEP_obl,DEP_obl_rate,True,True,,tokens_lexical
+DEP_obl:agent,DEP_obl:agent_rate,True,True,,tokens_lexical
+DEP_parataxis,DEP_parataxis_rate,True,True,,tokens_lexical
+DEP_punct,DEP_punct_rate,False,False,representada por punctuationDensity_spacy,diagnostic_or_separate_measure
+DEP_xcomp,DEP_xcomp_rate,False,True,,tokens_lexical

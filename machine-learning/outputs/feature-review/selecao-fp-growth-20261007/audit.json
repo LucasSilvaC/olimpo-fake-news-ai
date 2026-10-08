@@ -1,0 +1,1040 @@
+{
+  "inputs": {
+    "saida_features\\selecao\\dataset_filtrado.csv": "5e27b5ed4a91fab6a7d2a004279cc95f3c80c95be0912252a76589f6cec60ab2",
+    "saida_features\\selecao\\dataset_selecionado.csv": "0265042f22682568fd276b5209c4498923e578d55608eff8e80a1cab026d9432",
+    "saida_features\\selecao\\divisao_treino_teste.csv": "a7620cdf36202673c35f0f8803d9d072233648126eaefa4df4337aac75fff337",
+    "saida_features\\selecao\\features_selecionadas.csv": "a787b51501b51bed988b8128ba18f4ecca9e9d5a24335b6e78cadca2f45e3ac3",
+    "saida_features\\selecao\\relatorio_features.csv": "ab85b63d548c9d5667f3b8b0b4d8edd43573b9fa26a2573b111209595df2ba96",
+    "saida_features\\dataset_features.csv": "31aa7558376c9609d45227d1643d37d6d6461ff98bf9624dc2d69ab2ab2dd420",
+    "outputs\\model-comparison\\fp-growth-linguistic-20261006T230752Z\\run_manifest.json": "1ce4eae1bcf40daa379522dcdd3fca59881433bebf889e157c4161aaeafa976f"
+  },
+  "shape": {
+    "filtered": [
+      7200,
+      34
+    ],
+    "selected": [
+      7200,
+      34
+    ],
+    "original": [
+      7200,
+      57
+    ]
+  },
+  "selected_features": [
+    "POS_SPACE",
+    "DEP_ROOT",
+    "POS_ADP",
+    "POS_NOUN",
+    "DEP_obl",
+    "DEP_iobj",
+    "POS_SYM",
+    "DEP_csubj",
+    "DEP_parataxis",
+    "DEP_fixed",
+    "DEP_flat",
+    "DEP_obl:agent",
+    "DEP_cc",
+    "DEP_acl:relcl",
+    "DEP_nsubj",
+    "DEP_acl",
+    "POS_VERB",
+    "DEP_obj",
+    "DEP_advcl",
+    "POS_PROPN",
+    "DEP_compound",
+    "DEP_appos",
+    "DEP_amod",
+    "DEP_expl",
+    "DEP_nummod",
+    "DEP_nsubj:pass",
+    "POS_PRON",
+    "DEP_mark",
+    "POS_AUX",
+    "POS_NUM",
+    "DEP_discourse"
+  ],
+  "class_split": {
+    "0": {
+      "teste": 720,
+      "treino": 2880
+    },
+    "1": {
+      "teste": 720,
+      "treino": 2880
+    }
+  },
+  "alignment": {
+    "filtered_selected_shared_exact": true,
+    "split_exact": true,
+    "line_ids_contiguous": true,
+    "original_text_exact": true,
+    "original_numeric_max_error": 0.0
+  },
+  "missing": {
+    "label": 0,
+    "conjunto": 0,
+    "n_tokens": 0,
+    "POS_SPACE": 0,
+    "DEP_ROOT": 0,
+    "POS_ADP": 0,
+    "POS_NOUN": 0,
+    "DEP_obl": 0,
+    "DEP_iobj": 0,
+    "POS_SYM": 0,
+    "DEP_csubj": 0,
+    "DEP_parataxis": 0,
+    "DEP_fixed": 0,
+    "DEP_flat": 0,
+    "DEP_obl:agent": 0,
+    "DEP_cc": 0,
+    "DEP_acl:relcl": 0,
+    "DEP_nsubj": 0,
+    "DEP_acl": 0,
+    "POS_VERB": 0,
+    "DEP_obj": 0,
+    "DEP_advcl": 0,
+    "POS_PROPN": 0,
+    "DEP_compound": 0,
+    "DEP_appos": 0,
+    "DEP_amod": 0,
+    "DEP_expl": 0,
+    "DEP_nummod": 0,
+    "DEP_nsubj:pass": 0,
+    "POS_PRON": 0,
+    "DEP_mark": 0,
+    "POS_AUX": 0,
+    "POS_NUM": 0,
+    "DEP_discourse": 0
+  },
+  "mapping": {
+    "exact_single_matches": 7198,
+    "ambiguous_matches": 2,
+    "missing_matches": 0,
+    "local_records": 7200,
+    "exact_matches_in_extractor_order": 7200
+  },
+  "canonical_overlap": {
+    "test": {
+      "teste": 297,
+      "treino": 1143
+    },
+    "train": {
+      "teste": 866,
+      "treino": 3454
+    },
+    "validation": {
+      "teste": 277,
+      "treino": 1163
+    }
+  },
+  "pair_split": {
+    "total_pairs": 3600,
+    "pairs_crossing_eda_split": 1140,
+    "groups_crossing_eda_split": 1140
+  },
+  "author_class": {
+    "0": {
+      "0": 73,
+      "1": 3527
+    },
+    "1": {
+      "0": 3528,
+      "1": 72
+    }
+  },
+  "text_duplicate_split": 0,
+  "length_summary": {},
+  "format_summary": {
+    "('text_length', 'mean')": {
+      "0": 6676.544722222222,
+      "1": 1125.0508333333332
+    },
+    "('text_length', 'median')": {
+      "0": 5581.0,
+      "1": 956.5
+    },
+    "('linebreaks', 'mean')": {
+      "0": 2.861388888888889,
+      "1": 0.9216666666666666
+    },
+    "('linebreaks', 'median')": {
+      "0": 0.0,
+      "1": 0.0
+    },
+    "('extra_whitespace', 'mean')": {
+      "0": 5.341388888888889,
+      "1": 7.1375
+    },
+    "('extra_whitespace', 'median')": {
+      "0": 1.0,
+      "1": 4.0
+    },
+    "('POS_SPACE', 'mean')": {
+      "0": 0.003916331707202725,
+      "1": 0.02988062675122033
+    },
+    "('POS_SPACE', 'median')": {
+      "0": 0.0012135922330097,
+      "1": 0.024721916636108003
+    }
+  },
+  "token_summary": {
+    "min": {
+      "0": 24,
+      "1": 11
+    },
+    "median": {
+      "0": 1062.0,
+      "1": 189.0
+    },
+    "max": {
+      "0": 9122,
+      "1": 2646
+    }
+  },
+  "text_gt_300": 7101,
+  "space_nonzero": {
+    "0": {
+      "False": 0,
+      "True": 3600
+    },
+    "1": {
+      "False": 32,
+      "True": 3568
+    }
+  },
+  "normalization": {
+    "pos_sum_max_error": 1.3322676295501878e-15,
+    "dep_sum_max_error": 3.3306690738754696e-15,
+    "fractional_count_max_error": 8.526512829121202e-13
+  },
+  "degenerate_selected_quartiles": [
+    "DEP_compound",
+    "DEP_discourse"
+  ],
+  "reported_auc_max_error": 4.989390431919816e-07,
+  "auc_focus": [
+    {
+      "partition": "treino",
+      "feature": "POS_ADJ",
+      "denominator": "all_tokens",
+      "auc_fake": 0.4572086588541666,
+      "relevance": 0.08558268229166677
+    },
+    {
+      "partition": "treino",
+      "feature": "POS_ADJ",
+      "denominator": "nonspace",
+      "auc_fake": 0.47558804735725313,
+      "relevance": 0.04882390528549374
+    },
+    {
+      "partition": "treino",
+      "feature": "POS_ADJ",
+      "denominator": "lexical",
+      "auc_fake": 0.47870358314043215,
+      "relevance": 0.04259283371913569
+    },
+    {
+      "partition": "treino",
+      "feature": "POS_ADP",
+      "denominator": "all_tokens",
+      "auc_fake": 0.2737020158179012,
+      "relevance": 0.4525959683641976
+    },
+    {
+      "partition": "treino",
+      "feature": "POS_ADP",
+      "denominator": "nonspace",
+      "auc_fake": 0.3094455897955247,
+      "relevance": 0.38110882040895055
+    },
+    {
+      "partition": "treino",
+      "feature": "POS_ADP",
+      "denominator": "lexical",
+      "auc_fake": 0.30647177613811727,
+      "relevance": 0.38705644772376546
+    },
+    {
+      "partition": "treino",
+      "feature": "POS_ADV",
+      "denominator": "all_tokens",
+      "auc_fake": 0.5030005184220679,
+      "relevance": 0.0060010368441358874
+    },
+    {
+      "partition": "treino",
+      "feature": "POS_ADV",
+      "denominator": "nonspace",
+      "auc_fake": 0.5196330656828704,
+      "relevance": 0.03926613136574075
+    },
+    {
+      "partition": "treino",
+      "feature": "POS_ADV",
+      "denominator": "lexical",
+      "auc_fake": 0.5218476924189814,
+      "relevance": 0.04369538483796287
+    },
+    {
+      "partition": "treino",
+      "feature": "POS_NOUN",
+      "denominator": "all_tokens",
+      "auc_fake": 0.31844431182484567,
+      "relevance": 0.36311137635030866
+    },
+    {
+      "partition": "treino",
+      "feature": "POS_NOUN",
+      "denominator": "nonspace",
+      "auc_fake": 0.37052631896219135,
+      "relevance": 0.2589473620756173
+    },
+    {
+      "partition": "treino",
+      "feature": "POS_NOUN",
+      "denominator": "lexical",
+      "auc_fake": 0.3720442708333333,
+      "relevance": 0.2559114583333334
+    },
+    {
+      "partition": "treino",
+      "feature": "POS_SPACE",
+      "denominator": "all_tokens",
+      "auc_fake": 0.9306812427662038,
+      "relevance": 0.8613624855324076
+    },
+    {
+      "partition": "treino",
+      "feature": "POS_SPACE",
+      "denominator": "nonspace",
+      "auc_fake": 0.9306812427662038,
+      "relevance": 0.8613624855324076
+    },
+    {
+      "partition": "treino",
+      "feature": "POS_SPACE",
+      "denominator": "lexical",
+      "auc_fake": 0.9307368827160495,
+      "relevance": 0.861473765432099
+    },
+    {
+      "partition": "treino",
+      "feature": "DEP_ROOT",
+      "denominator": "all_tokens",
+      "auc_fake": 0.7481345244984567,
+      "relevance": 0.4962690489969135
+    },
+    {
+      "partition": "treino",
+      "feature": "DEP_ROOT",
+      "denominator": "nonspace",
+      "auc_fake": 0.7717881341628087,
+      "relevance": 0.5435762683256173
+    },
+    {
+      "partition": "treino",
+      "feature": "DEP_ROOT",
+      "denominator": "lexical",
+      "auc_fake": 0.7653856216242284,
+      "relevance": 0.5307712432484568
+    },
+    {
+      "partition": "treino",
+      "feature": "DEP_advmod",
+      "denominator": "all_tokens",
+      "auc_fake": 0.5054844232253086,
+      "relevance": 0.010968846450617242
+    },
+    {
+      "partition": "treino",
+      "feature": "DEP_advmod",
+      "denominator": "nonspace",
+      "auc_fake": 0.5216637731481482,
+      "relevance": 0.043327546296296315
+    },
+    {
+      "partition": "treino",
+      "feature": "DEP_advmod",
+      "denominator": "lexical",
+      "auc_fake": 0.5238949773341048,
+      "relevance": 0.04778995466820968
+    },
+    {
+      "partition": "treino",
+      "feature": "DEP_amod",
+      "denominator": "all_tokens",
+      "auc_fake": 0.4379155213155864,
+      "relevance": 0.12416895736882716
+    },
+    {
+      "partition": "treino",
+      "feature": "DEP_amod",
+      "denominator": "nonspace",
+      "auc_fake": 0.4542017505787037,
+      "relevance": 0.09159649884259258
+    },
+    {
+      "partition": "treino",
+      "feature": "DEP_amod",
+      "denominator": "lexical",
+      "auc_fake": 0.4564817226080247,
+      "relevance": 0.08703655478395056
+    },
+    {
+      "partition": "teste",
+      "feature": "POS_ADJ",
+      "denominator": "all_tokens",
+      "auc_fake": 0.47398533950617283,
+      "relevance": 0.05202932098765434
+    },
+    {
+      "partition": "teste",
+      "feature": "POS_ADJ",
+      "denominator": "nonspace",
+      "auc_fake": 0.4922453703703703,
+      "relevance": 0.01550925925925939
+    },
+    {
+      "partition": "teste",
+      "feature": "POS_ADJ",
+      "denominator": "lexical",
+      "auc_fake": 0.49422453703703706,
+      "relevance": 0.011550925925925881
+    },
+    {
+      "partition": "teste",
+      "feature": "POS_ADP",
+      "denominator": "all_tokens",
+      "auc_fake": 0.2813840663580247,
+      "relevance": 0.4372318672839506
+    },
+    {
+      "partition": "teste",
+      "feature": "POS_ADP",
+      "denominator": "nonspace",
+      "auc_fake": 0.3166367669753086,
+      "relevance": 0.36672646604938275
+    },
+    {
+      "partition": "teste",
+      "feature": "POS_ADP",
+      "denominator": "lexical",
+      "auc_fake": 0.3109481095679012,
+      "relevance": 0.3781037808641976
+    },
+    {
+      "partition": "teste",
+      "feature": "POS_ADV",
+      "denominator": "all_tokens",
+      "auc_fake": 0.4961130401234568,
+      "relevance": 0.007773919753086389
+    },
+    {
+      "partition": "teste",
+      "feature": "POS_ADV",
+      "denominator": "nonspace",
+      "auc_fake": 0.5129282407407407,
+      "relevance": 0.025856481481481453
+    },
+    {
+      "partition": "teste",
+      "feature": "POS_ADV",
+      "denominator": "lexical",
+      "auc_fake": 0.5145640432098766,
+      "relevance": 0.029128086419753174
+    },
+    {
+      "partition": "teste",
+      "feature": "POS_NOUN",
+      "denominator": "all_tokens",
+      "auc_fake": 0.3258613040123457,
+      "relevance": 0.3482773919753086
+    },
+    {
+      "partition": "teste",
+      "feature": "POS_NOUN",
+      "denominator": "nonspace",
+      "auc_fake": 0.37681616512345684,
+      "relevance": 0.24636766975308633
+    },
+    {
+      "partition": "teste",
+      "feature": "POS_NOUN",
+      "denominator": "lexical",
+      "auc_fake": 0.37799093364197534,
+      "relevance": 0.24401813271604933
+    },
+    {
+      "partition": "teste",
+      "feature": "POS_SPACE",
+      "denominator": "all_tokens",
+      "auc_fake": 0.9305507330246913,
+      "relevance": 0.8611014660493825
+    },
+    {
+      "partition": "teste",
+      "feature": "POS_SPACE",
+      "denominator": "nonspace",
+      "auc_fake": 0.9305507330246913,
+      "relevance": 0.8611014660493825
+    },
+    {
+      "partition": "teste",
+      "feature": "POS_SPACE",
+      "denominator": "lexical",
+      "auc_fake": 0.93078800154321,
+      "relevance": 0.8615760030864199
+    },
+    {
+      "partition": "teste",
+      "feature": "DEP_ROOT",
+      "denominator": "all_tokens",
+      "auc_fake": 0.7364515817901235,
+      "relevance": 0.472903163580247
+    },
+    {
+      "partition": "teste",
+      "feature": "DEP_ROOT",
+      "denominator": "nonspace",
+      "auc_fake": 0.7605295138888889,
+      "relevance": 0.5210590277777778
+    },
+    {
+      "partition": "teste",
+      "feature": "DEP_ROOT",
+      "denominator": "lexical",
+      "auc_fake": 0.7548331404320987,
+      "relevance": 0.5096662808641974
+    },
+    {
+      "partition": "teste",
+      "feature": "DEP_advmod",
+      "denominator": "all_tokens",
+      "auc_fake": 0.5011979166666667,
+      "relevance": 0.0023958333333333748
+    },
+    {
+      "partition": "teste",
+      "feature": "DEP_advmod",
+      "denominator": "nonspace",
+      "auc_fake": 0.5180507330246913,
+      "relevance": 0.03610146604938258
+    },
+    {
+      "partition": "teste",
+      "feature": "DEP_advmod",
+      "denominator": "lexical",
+      "auc_fake": 0.5194222608024691,
+      "relevance": 0.03884452160493823
+    },
+    {
+      "partition": "teste",
+      "feature": "DEP_amod",
+      "denominator": "all_tokens",
+      "auc_fake": 0.4619319058641975,
+      "relevance": 0.07613618827160495
+    },
+    {
+      "partition": "teste",
+      "feature": "DEP_amod",
+      "denominator": "nonspace",
+      "auc_fake": 0.4778722993827161,
+      "relevance": 0.04425540123456784
+    },
+    {
+      "partition": "teste",
+      "feature": "DEP_amod",
+      "denominator": "lexical",
+      "auc_fake": 0.48005979938271603,
+      "relevance": 0.03988040123456793
+    }
+  ],
+  "window_comparison": [
+    {
+      "feature": "POS_ADJ",
+      "spearman_full_all_tokens_vs_window_lexical": 0.5599794802716958
+    },
+    {
+      "feature": "POS_ADV",
+      "spearman_full_all_tokens_vs_window_lexical": 0.4465110241013577
+    },
+    {
+      "feature": "POS_NOUN",
+      "spearman_full_all_tokens_vs_window_lexical": 0.5385087901423884
+    },
+    {
+      "feature": "POS_PROPN",
+      "spearman_full_all_tokens_vs_window_lexical": 0.5725095117842088
+    },
+    {
+      "feature": "POS_VERB",
+      "spearman_full_all_tokens_vs_window_lexical": 0.5325148110704583
+    },
+    {
+      "feature": "POS_PRON",
+      "spearman_full_all_tokens_vs_window_lexical": 0.43896726884804216
+    }
+  ],
+  "cached_raw_length_mismatches": 0,
+  "cached_author_mismatches": 0,
+  "patterns_affected_by_removed_grammar": [
+    "R01",
+    "R02",
+    "R03",
+    "R04",
+    "R08",
+    "R10",
+    "R11",
+    "R12",
+    "R13",
+    "R14",
+    "R15",
+    "R16",
+    "R17",
+    "R20",
+    "R21",
+    "R22",
+    "R23",
+    "R24"
+  ],
+  "spacy_sample": [
+    {
+      "record_id": "true/2205",
+      "label": 0,
+      "variant": "raw_full",
+      "tokens": 1250,
+      "POS_SPACE": 0.0008,
+      "DEP_ROOT": 0.0424,
+      "max_exported_feature_error": 0.0
+    },
+    {
+      "record_id": "true/2205",
+      "label": 0,
+      "variant": "collapsed_whitespace_full",
+      "tokens": 1249,
+      "POS_SPACE": 0.0,
+      "DEP_ROOT": 0.04243394715772618,
+      "max_exported_feature_error": null
+    },
+    {
+      "record_id": "true/2205",
+      "label": 0,
+      "variant": "nfkc_300",
+      "tokens": 51,
+      "POS_SPACE": 0.0196078431372549,
+      "DEP_ROOT": 0.058823529411764705,
+      "max_exported_feature_error": null
+    },
+    {
+      "record_id": "true/2440",
+      "label": 0,
+      "variant": "raw_full",
+      "tokens": 1007,
+      "POS_SPACE": 0.0009930486593843098,
+      "DEP_ROOT": 0.0506454816285998,
+      "max_exported_feature_error": 9.71445146547012e-17
+    },
+    {
+      "record_id": "true/2440",
+      "label": 0,
+      "variant": "collapsed_whitespace_full",
+      "tokens": 1006,
+      "POS_SPACE": 0.0,
+      "DEP_ROOT": 0.05069582504970179,
+      "max_exported_feature_error": null
+    },
+    {
+      "record_id": "true/2440",
+      "label": 0,
+      "variant": "nfkc_300",
+      "tokens": 64,
+      "POS_SPACE": 0.015625,
+      "DEP_ROOT": 0.0625,
+      "max_exported_feature_error": null
+    },
+    {
+      "record_id": "true/953",
+      "label": 0,
+      "variant": "raw_full",
+      "tokens": 1257,
+      "POS_SPACE": 0.0007955449482895784,
+      "DEP_ROOT": 0.0477326968973747,
+      "max_exported_feature_error": 8.326672684688674e-17
+    },
+    {
+      "record_id": "true/953",
+      "label": 0,
+      "variant": "collapsed_whitespace_full",
+      "tokens": 1256,
+      "POS_SPACE": 0.0,
+      "DEP_ROOT": 0.04777070063694268,
+      "max_exported_feature_error": null
+    },
+    {
+      "record_id": "true/953",
+      "label": 0,
+      "variant": "nfkc_300",
+      "tokens": 55,
+      "POS_SPACE": 0.01818181818181818,
+      "DEP_ROOT": 0.07272727272727272,
+      "max_exported_feature_error": null
+    },
+    {
+      "record_id": "true/977",
+      "label": 0,
+      "variant": "raw_full",
+      "tokens": 1132,
+      "POS_SPACE": 0.0008833922261484099,
+      "DEP_ROOT": 0.046819787985865724,
+      "max_exported_feature_error": 9.71445146547012e-17
+    },
+    {
+      "record_id": "true/977",
+      "label": 0,
+      "variant": "collapsed_whitespace_full",
+      "tokens": 1131,
+      "POS_SPACE": 0.0,
+      "DEP_ROOT": 0.046861184792219276,
+      "max_exported_feature_error": null
+    },
+    {
+      "record_id": "true/977",
+      "label": 0,
+      "variant": "nfkc_300",
+      "tokens": 56,
+      "POS_SPACE": 0.017857142857142856,
+      "DEP_ROOT": 0.07142857142857142,
+      "max_exported_feature_error": null
+    },
+    {
+      "record_id": "true/1189",
+      "label": 0,
+      "variant": "raw_full",
+      "tokens": 3500,
+      "POS_SPACE": 0.00028571428571428574,
+      "DEP_ROOT": 0.05657142857142857,
+      "max_exported_feature_error": 8.673617379884035e-17
+    },
+    {
+      "record_id": "true/1189",
+      "label": 0,
+      "variant": "collapsed_whitespace_full",
+      "tokens": 3499,
+      "POS_SPACE": 0.0,
+      "DEP_ROOT": 0.05687339239782795,
+      "max_exported_feature_error": null
+    },
+    {
+      "record_id": "true/1189",
+      "label": 0,
+      "variant": "nfkc_300",
+      "tokens": 62,
+      "POS_SPACE": 0.016129032258064516,
+      "DEP_ROOT": 0.03225806451612903,
+      "max_exported_feature_error": null
+    },
+    {
+      "record_id": "true/922",
+      "label": 0,
+      "variant": "raw_full",
+      "tokens": 633,
+      "POS_SPACE": 0.001579778830963665,
+      "DEP_ROOT": 0.04739336492890995,
+      "max_exported_feature_error": 9.71445146547012e-17
+    },
+    {
+      "record_id": "true/922",
+      "label": 0,
+      "variant": "collapsed_whitespace_full",
+      "tokens": 632,
+      "POS_SPACE": 0.0,
+      "DEP_ROOT": 0.04746835443037975,
+      "max_exported_feature_error": null
+    },
+    {
+      "record_id": "true/922",
+      "label": 0,
+      "variant": "nfkc_300",
+      "tokens": 55,
+      "POS_SPACE": 0.0,
+      "DEP_ROOT": 0.05454545454545454,
+      "max_exported_feature_error": null
+    },
+    {
+      "record_id": "true/2318",
+      "label": 0,
+      "variant": "raw_full",
+      "tokens": 953,
+      "POS_SPACE": 0.001049317943336831,
+      "DEP_ROOT": 0.053515215110178385,
+      "max_exported_feature_error": 8.673617379884035e-17
+    },
+    {
+      "record_id": "true/2318",
+      "label": 0,
+      "variant": "collapsed_whitespace_full",
+      "tokens": 952,
+      "POS_SPACE": 0.0,
+      "DEP_ROOT": 0.05357142857142857,
+      "max_exported_feature_error": null
+    },
+    {
+      "record_id": "true/2318",
+      "label": 0,
+      "variant": "nfkc_300",
+      "tokens": 62,
+      "POS_SPACE": 0.016129032258064516,
+      "DEP_ROOT": 0.0967741935483871,
+      "max_exported_feature_error": null
+    },
+    {
+      "record_id": "true/1119",
+      "label": 0,
+      "variant": "raw_full",
+      "tokens": 1840,
+      "POS_SPACE": 0.0005434782608695652,
+      "DEP_ROOT": 0.06956521739130435,
+      "max_exported_feature_error": 9.107298248878237e-17
+    },
+    {
+      "record_id": "true/1119",
+      "label": 0,
+      "variant": "collapsed_whitespace_full",
+      "tokens": 1839,
+      "POS_SPACE": 0.0,
+      "DEP_ROOT": 0.06960304513322457,
+      "max_exported_feature_error": null
+    },
+    {
+      "record_id": "true/1119",
+      "label": 0,
+      "variant": "nfkc_300",
+      "tokens": 62,
+      "POS_SPACE": 0.016129032258064516,
+      "DEP_ROOT": 0.08064516129032258,
+      "max_exported_feature_error": null
+    },
+    {
+      "record_id": "fake/2916",
+      "label": 1,
+      "variant": "raw_full",
+      "tokens": 243,
+      "POS_SPACE": 0.037037037037037035,
+      "DEP_ROOT": 0.06995884773662552,
+      "max_exported_feature_error": 8.326672684688674e-17
+    },
+    {
+      "record_id": "fake/2916",
+      "label": 1,
+      "variant": "collapsed_whitespace_full",
+      "tokens": 234,
+      "POS_SPACE": 0.0,
+      "DEP_ROOT": 0.07692307692307693,
+      "max_exported_feature_error": null
+    },
+    {
+      "record_id": "fake/2916",
+      "label": 1,
+      "variant": "nfkc_300",
+      "tokens": 66,
+      "POS_SPACE": 0.045454545454545456,
+      "DEP_ROOT": 0.09090909090909091,
+      "max_exported_feature_error": null
+    },
+    {
+      "record_id": "fake/1707",
+      "label": 1,
+      "variant": "raw_full",
+      "tokens": 148,
+      "POS_SPACE": 0.006756756756756757,
+      "DEP_ROOT": 0.05405405405405406,
+      "max_exported_feature_error": 8.326672684688674e-17
+    },
+    {
+      "record_id": "fake/1707",
+      "label": 1,
+      "variant": "collapsed_whitespace_full",
+      "tokens": 147,
+      "POS_SPACE": 0.0,
+      "DEP_ROOT": 0.047619047619047616,
+      "max_exported_feature_error": null
+    },
+    {
+      "record_id": "fake/1707",
+      "label": 1,
+      "variant": "nfkc_300",
+      "tokens": 57,
+      "POS_SPACE": 0.017543859649122806,
+      "DEP_ROOT": 0.08771929824561403,
+      "max_exported_feature_error": null
+    },
+    {
+      "record_id": "fake/2948",
+      "label": 1,
+      "variant": "raw_full",
+      "tokens": 169,
+      "POS_SPACE": 0.08284023668639054,
+      "DEP_ROOT": 0.05917159763313609,
+      "max_exported_feature_error": 9.020562075079397e-17
+    },
+    {
+      "record_id": "fake/2948",
+      "label": 1,
+      "variant": "collapsed_whitespace_full",
+      "tokens": 155,
+      "POS_SPACE": 0.0,
+      "DEP_ROOT": 0.06451612903225806,
+      "max_exported_feature_error": null
+    },
+    {
+      "record_id": "fake/2948",
+      "label": 1,
+      "variant": "nfkc_300",
+      "tokens": 64,
+      "POS_SPACE": 0.109375,
+      "DEP_ROOT": 0.078125,
+      "max_exported_feature_error": null
+    },
+    {
+      "record_id": "fake/2446",
+      "label": 1,
+      "variant": "raw_full",
+      "tokens": 160,
+      "POS_SPACE": 0.05,
+      "DEP_ROOT": 0.04375,
+      "max_exported_feature_error": 0.0
+    },
+    {
+      "record_id": "fake/2446",
+      "label": 1,
+      "variant": "collapsed_whitespace_full",
+      "tokens": 152,
+      "POS_SPACE": 0.0,
+      "DEP_ROOT": 0.046052631578947366,
+      "max_exported_feature_error": null
+    },
+    {
+      "record_id": "fake/2446",
+      "label": 1,
+      "variant": "nfkc_300",
+      "tokens": 64,
+      "POS_SPACE": 0.0625,
+      "DEP_ROOT": 0.0625,
+      "max_exported_feature_error": null
+    },
+    {
+      "record_id": "fake/391",
+      "label": 1,
+      "variant": "raw_full",
+      "tokens": 149,
+      "POS_SPACE": 0.013422818791946308,
+      "DEP_ROOT": 0.0738255033557047,
+      "max_exported_feature_error": 8.326672684688674e-17
+    },
+    {
+      "record_id": "fake/391",
+      "label": 1,
+      "variant": "collapsed_whitespace_full",
+      "tokens": 147,
+      "POS_SPACE": 0.0,
+      "DEP_ROOT": 0.06802721088435375,
+      "max_exported_feature_error": null
+    },
+    {
+      "record_id": "fake/391",
+      "label": 1,
+      "variant": "nfkc_300",
+      "tokens": 64,
+      "POS_SPACE": 0.03125,
+      "DEP_ROOT": 0.09375,
+      "max_exported_feature_error": null
+    },
+    {
+      "record_id": "fake/921",
+      "label": 1,
+      "variant": "raw_full",
+      "tokens": 153,
+      "POS_SPACE": 0.006535947712418301,
+      "DEP_ROOT": 0.058823529411764705,
+      "max_exported_feature_error": 1.3877787807814457e-17
+    },
+    {
+      "record_id": "fake/921",
+      "label": 1,
+      "variant": "collapsed_whitespace_full",
+      "tokens": 152,
+      "POS_SPACE": 0.0,
+      "DEP_ROOT": 0.05921052631578947,
+      "max_exported_feature_error": null
+    },
+    {
+      "record_id": "fake/921",
+      "label": 1,
+      "variant": "nfkc_300",
+      "tokens": 58,
+      "POS_SPACE": 0.017241379310344827,
+      "DEP_ROOT": 0.05172413793103448,
+      "max_exported_feature_error": null
+    },
+    {
+      "record_id": "fake/1578",
+      "label": 1,
+      "variant": "raw_full",
+      "tokens": 233,
+      "POS_SPACE": 0.008583690987124463,
+      "DEP_ROOT": 0.060085836909871244,
+      "max_exported_feature_error": 9.540979117872439e-17
+    },
+    {
+      "record_id": "fake/1578",
+      "label": 1,
+      "variant": "collapsed_whitespace_full",
+      "tokens": 231,
+      "POS_SPACE": 0.0,
+      "DEP_ROOT": 0.06060606060606061,
+      "max_exported_feature_error": null
+    },
+    {
+      "record_id": "fake/1578",
+      "label": 1,
+      "variant": "nfkc_300",
+      "tokens": 58,
+      "POS_SPACE": 0.034482758620689655,
+      "DEP_ROOT": 0.06896551724137931,
+      "max_exported_feature_error": null
+    },
+    {
+      "record_id": "fake/171",
+      "label": 1,
+      "variant": "raw_full",
+      "tokens": 415,
+      "POS_SPACE": 0.012048192771084338,
+      "DEP_ROOT": 0.04819277108433735,
+      "max_exported_feature_error": 8.326672684688674e-17
+    },
+    {
+      "record_id": "fake/171",
+      "label": 1,
+      "variant": "collapsed_whitespace_full",
+      "tokens": 410,
+      "POS_SPACE": 0.0,
+      "DEP_ROOT": 0.04878048780487805,
+      "max_exported_feature_error": null
+    },
+    {
+      "record_id": "fake/171",
+      "label": 1,
+      "variant": "nfkc_300",
+      "tokens": 54,
+      "POS_SPACE": 0.018518518518518517,
+      "DEP_ROOT": 0.05555555555555555,
+      "max_exported_feature_error": null
+    }
+  ],
+  "spacy_version": "3.8.16",
+  "spacy_model_version": "3.8.0"
+}

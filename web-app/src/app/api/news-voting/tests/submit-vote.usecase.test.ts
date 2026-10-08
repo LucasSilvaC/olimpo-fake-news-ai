@@ -164,8 +164,8 @@ describe("SubmitVoteUseCase", () => {
     });
 
     expect(result.vote.vote).toBe("reliable");
-    expect(result.vote.isCorrect).toBe(true);
-    expect(result.vote.pointsAwarded).toBe(100);
+    expect(result.vote.isCorrect).toBeNull();
+    expect(result.vote.pointsAwarded).toBe(0);
     expect(result.roundCompleted).toBe(false);
 
     expect(newsVoteRepository.create).toHaveBeenCalledWith(
@@ -194,8 +194,8 @@ describe("SubmitVoteUseCase", () => {
       vote: "uncertain",
     });
 
-    expect(result.vote.isCorrect).toBe(false);
-    expect(result.vote.pointsAwarded).toBe(25);
+    expect(result.vote.isCorrect).toBeNull();
+    expect(result.vote.pointsAwarded).toBe(0);
     expect(roomRepository.updateMemberScore).toHaveBeenCalledWith("room-1", "user-1", 25);
   });
 
@@ -206,7 +206,7 @@ describe("SubmitVoteUseCase", () => {
       vote: "unreliable",
     });
 
-    expect(result.vote.isCorrect).toBe(false);
+    expect(result.vote.isCorrect).toBeNull();
     expect(result.vote.pointsAwarded).toBe(0);
     expect(roomRepository.updateMemberScore).not.toHaveBeenCalled();
   });
@@ -298,7 +298,7 @@ describe("SubmitVoteUseCase", () => {
     ).rejects.toThrow("Participant has already voted in this round");
   });
 
-  it("should detect round completion when all participants have voted, trigger AI analysis, and return leaderboard", async () => {
+  it("should detect round completion when all participants have voted, defer model analysis, and return leaderboard", async () => {
     // Total members: 2, current votes: 2 (this was the last vote)
     vi.mocked(roomRepository.countMembers).mockResolvedValueOnce(2);
     vi.mocked(redisVoteRepository.recordVoteAtomic).mockResolvedValueOnce({
@@ -306,6 +306,7 @@ describe("SubmitVoteUseCase", () => {
       currentVoteCount: 2,
     });
 
+    vi.mocked(getArticleAnalysisUseCase.execute).mockRejectedValue(new Error("Model offline"));
     const result = await useCase.execute({
       roomId: "room-1",
       userId: "user-1",
@@ -313,11 +314,10 @@ describe("SubmitVoteUseCase", () => {
     });
 
     expect(result.roundCompleted).toBe(true);
-    expect(result.analysis).toEqual(sampleAnalysis);
+    expect(result.officialAnswer).toBe("reliable");
+    expect(result.modelAnalysis).toBeNull();
     expect(result.leaderboard).toEqual([{ userId: "user-1", score: 100 }]);
-    expect(getArticleAnalysisUseCase.execute).toHaveBeenCalledWith({
-      articleId: "art-1",
-    });
+    expect(getArticleAnalysisUseCase.execute).not.toHaveBeenCalled();
     expect(redisRoomRepository.getLeaderboard).toHaveBeenCalledWith("room-1");
     expect(mockEventPublisher.publish).toHaveBeenCalledWith(
       "123 456",
@@ -328,7 +328,8 @@ describe("SubmitVoteUseCase", () => {
         payload: {
           round: 1,
           leaderboard: [{ userId: "user-1", score: 100 }],
-          analysis: sampleAnalysis,
+          officialAnswer: "reliable",
+          modelAnalysis: null,
         },
       }),
     );
@@ -343,7 +344,7 @@ describe("SubmitVoteUseCase", () => {
     });
 
     expect(result.vote.pointsAwarded).toBe(0);
-    expect(result.vote.isCorrect).toBe(false);
+    expect(result.vote.isCorrect).toBeNull();
     expect(roomRepository.updateMemberScore).not.toHaveBeenCalled();
   });
 
@@ -355,6 +356,7 @@ describe("SubmitVoteUseCase", () => {
     });
     vi.mocked(redisVoteRepository.markRoundCompleted).mockResolvedValueOnce(false);
 
+    vi.mocked(getArticleAnalysisUseCase.execute).mockRejectedValue(new Error("Model offline"));
     const result = await useCase.execute({
       roomId: "room-1",
       userId: "user-1",
