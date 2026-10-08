@@ -69,7 +69,7 @@ Para viabilizar essa solução, estruturamos as prioridades de desenvolvimento d
 - **Tooltips Socráticos:** Exibição interativa de perguntas reflexivas geradas pela socratic-llm ao interagir com os trechos destacados, instigando o senso crítico do leitor sem exigir resposta.
 
 
-> **Observação.** Situação dos requisitos *Must Have* em 06/10/2026, verificada no código: **plataforma web**: implementada (Next.js); **input do usuário**: implementado como extração de notícia a partir de URL (`/api/news/extract`); **semáforo**: implementado como votação em três níveis (*reliable / uncertain / unreliable*); **método socrático**: **parcial**: a tela de jogo exibe três cartões socráticos **fixos** (fonte, tom emocional e evidência) antes da revelação do gabarito, mas as perguntas não são geradas pelo modelo nem por LLM; **modo solo**: backend de salas pronto, interface em andamento. O modelo de ML **ainda não está integrado** ao sistema: o serviço de análise é um *mock* por palavras-chave (seção 8.4).
+> **Observação.** Situação dos requisitos *Must Have* em 06/10/2026, verificada no código: **plataforma web**: implementada (Next.js); **input do usuário**: implementado como extração de notícia a partir de URL (`/api/news/extract`); **semáforo**: implementado como votação em três níveis (*reliable / uncertain / unreliable*); **método socrático**: **parcial**: a tela de jogo exibe três cartões socráticos **fixos** (fonte, tom emocional e evidência) antes da revelação do gabarito, mas as perguntas não são geradas pelo modelo nem por LLM; **modo solo**: backend de salas pronto, interface em andamento. O modelo supervisionado **está integrado** ao sistema por um serviço Python próprio, e a previsão é exibida após o fechamento coletivo da rodada (seção 8.4).
 
 
 ## 1.4 Indicadores de desinformação (parâmetros)
@@ -1394,7 +1394,7 @@ Os experimentos de anomalia e agrupamento mapearam métodos e revelaram sinais f
 
 # 8. MVP: plataforma Olimpo
 
-> **Estado**: em desenvolvimento ativo. O backend de jogo está implementado e testado; a interface já cobre o fluxo principal do jogo (seção 8.3); **o modelo de ML ainda não está integrado** e as perguntas socráticas são cartões fixos, não geradas dinamicamente.
+> **Estado** (referência: branch `dev`, 08/10/2026): o backend de jogo está implementado e testado, a interface cobre o fluxo principal e **o modelo supervisionado está integrado**, servido por um serviço Python próprio (`model-engine/`) e exibido após o fechamento coletivo de cada rodada. As observações de escrita do FP-Growth aparecem durante a leitura. As perguntas socráticas continuam sendo cartões fixos, não geradas dinamicamente.
 
 ## 8.1 Visão do produto
 
@@ -1484,7 +1484,7 @@ Camada de acesso a dados com entidades tipadas e consultas construídas no códi
 
 #### Conexão da IA com o backend
 
-O ponto de integração é a interface de domínio `IAIAnalysisService`, injetada no caso de uso de feedback. Hoje a implementação é um mock por palavras-chave; a implementação com o modelo de produção é descrita na seção 8.5. Como o domínio só conhece o contrato, a troca não altera as regras do jogo.
+O ponto de integração é a interface de domínio `IAIAnalysisService`, injetada no caso de uso de feedback. A implementação padrão é o adaptador HTTP `HttpAIAnalysisService`, que consome o `model-engine` (seção 8.4); o `MockAIAnalysisService` permanece apenas para testes. Como o domínio só conhece o contrato, a troca não alterou as regras do jogo.
 
 #### Diagrama entidade-relacionamento
 
@@ -1594,7 +1594,8 @@ Restrições de unicidade relevantes: um usuário por sala (`room_members`), uma
 | `realtime-events` | rota SSE e publicador via Redis pub/sub |
 | `global-challenges` | desafios globais e respostas |
 | `news/extract` | extração de título e conteúdo a partir de URL (ingestão) |
-| `ai-feedback` | análise de credibilidade de cada notícia (hoje *mock*) |
+| `ai-feedback` | análise do modelo supervisionado por notícia, com cache em `news_analyses` por conteúdo, artefato, código e política |
+| `news-prediction` | rota `POST /api/news-prediction`, liberada só após o fechamento coletivo da rodada |
 
 Dados: `users`, `user_avatars`, `rooms`, `room_members`, `room_playlist_items`, `news_articles` (com carga `jsonb`), `news_analyses`, `news_votes`, `global_challenges`, `global_challenge_answers`. A construção seguiu o fluxo de especificação com OpenSpec (specs arquivadas e ativas por módulo) e TDD nos casos de uso.
 
@@ -1604,38 +1605,58 @@ Dados: `users`, `user_avatars`, `rooms`, `room_members`, `room_playlist_items`, 
 
 ## 8.4 Estado do componente de IA
 
-O contrato do serviço de análise é uma interface de domínio (`IAIAnalysisService`): recebe título, conteúdo, fonte e autor e devolve `classification` (`reliable | uncertain | unreliable`), `confidence`, uma lista de `reasons` e `modelVersion`. A implementação atual (`MockAIAnalysisService`, `modelVersion: "mock-v1"`) classifica por palavras-chave (por exemplo "chocante", "bomba", "fraude" para não confiável; "universidade", "ministério", "dados oficiais" para confiável) e devolve motivos e confiança fixos por classe. A especificação já prevê o *fallback* para o mock quando o serviço externo estiver indisponível.
+Os dois componentes de IA são executados pelo `model-engine/`, um serviço HTTP em Python separado do app Next.js e acessado apenas pelo servidor. `machine-learning/` continua responsável por experimentos, treinamento e resultados; o motor contém só o que é necessário para analisar um texto. Os componentes têm funções e saídas distintas e **não são combinados em um único escore**:
 
-Isso significa que o resultado das seções 5 e 6 **ainda não chega ao usuário**; a camada de domínio, porém, já isola a troca de implementação.
+| Componente | Função | Onde aparece no jogo |
+|---|---|---|
+| Observação de escrita (FP-Growth, `POST /analyze`) | Mostra padrões gramaticais presentes no trecho e a frequência da mesma combinação em cada classe do corpus | Painel "Observe a escrita", durante a leitura |
+| Modelo supervisionado (`POST /supervised/analyze`) | Estima P(fake) com explicação por n-grama e atributo | "Análise do modelo", após todos votarem ou o tempo acabar |
+| Gabarito cadastrado | Referência da pontuação dos jogadores | Veredito da rodada, identificado à parte da previsão |
 
-**Consumo pela interface.** A tela do jogo já lê o campo `analysis` (classificação, motivos e confiança) do evento de fim de rodada e o exibe, incluindo um verômetro de confiabilidade. Ou seja, o front está pronto para receber a saída do modelo real: hoje o conteúdo exibido vem do mock.
+### Modelo supervisionado
 
-> **Observação.** Há textos e valores **fixos** na interface, sem origem no modelo nem nos experimentos: a dica da reflexão socrática ("notícias alarmistas com títulos em maiúsculas e sem autoria clara têm 78% mais chances de serem desinformação") e a margem de erro padrão do verômetro ("±1.8%"). Como o modelo não foi avaliado para esses números, eles devem ser substituídos por valores medidos ou removidos antes de qualquer demonstração.
+O serviço recebe somente o corpo da notícia extraído pelo parser (até 100 mil caracteres) e não registra o conteúdo. Devolve `classification` (`reliable | uncertain | unreliable`), `fakeProbability`, escore canônico `100 × P(fake)`, `reasons`, `modelVersion`, hash do artefato e versão do código de inferência. A política `olimpo-decision-policy-v1` define `reliable` para P ≤ 0,35, `unreliable` para P ≥ 0,65 e `uncertain` entre os dois valores; textos com menos de 30 palavras não são classificados, e a análise usa as primeiras 100 palavras, como no treino.
+
+- **Verificação de integridade.** Antes de carregar o `.joblib`, o motor confere o SHA-256 do artefato, o patch exato do Python (3.14.2) e as versões de scikit-learn, NumPy, SciPy, pandas, spaCy, `pt_core_news_sm` e joblib registradas no manifesto. Se algo divergir, apenas o supervisionado fica indisponível (`/health/supervised` devolve 503) e as observações de escrita continuam funcionando.
+- **Artefato final.** O modelo foi reajustado em treino + teste (7.200 notícias). As métricas internas da seção 5.11 vêm de outro ajuste, treinado só no treino, e não são uma avaliação independente deste artefato.
+- **Desempenho do motor** (execução local em Docker Linux, 20 análises aquecidas): carga e aquecimento de 8,3 s, mediana de 140,6 ms, p95 de 188,3 ms e pico de 438 MiB. Com oito requisições simultâneas, três foram atendidas e cinco recusadas, pois a fila é intencionalmente curta (uma execução e duas vagas de espera). A medição não representa um teste de carga em produção.
+- **Cache e identidade.** A análise é guardada em PostgreSQL (migração `0005_supervised_analysis_identity`) com chave composta por hash do corpo, artefato, código e política; trocar a versão gera nova análise. Em teste com duas instâncias do caso de uso e quatro consultas concorrentes, houve uma inferência e um registro.
+- **Acesso.** `POST /api/news-prediction` exige sessão, participação na sala e rodada encerrada coletivamente; votar, avançar ou concluir individualmente não libera a previsão. Votos, placar e eventos SSE fecham sem chamar o modelo, e a pontuação continua vindo do gabarito. Se o modelo falhar, a partida segue e só a previsão fica indisponível. O marcador de fechamento da rodada fica no Redis e expira em 24 horas; depois disso a previsão é bloqueada, mesmo em partidas finalizadas.
+
+### Observação de escrita (FP-Growth)
+
+O catálogo de produto vem da variante `sintaxe_ampliada` do run `fp-growth-metadados-ampliados-20261008T002311Z` (22 atributos, 523 regras direcionais elegíveis, 345 padrões distintos) e contém 20 padrões candidatos, selecionados sem classe ou autoria no ranking. Para um texto novo, o motor normaliza (NFKC), recorta os 300 primeiros caracteres, extrai as medidas com limites congelados e indica os padrões que correspondem **integralmente**, sem recalcular quantis nem receber gabarito ou autor. Cada padrão traz uma explicação em linguagem simples e a frequência da combinação em cada classe da partição de validação (720 falsas e 720 verdadeiras): `frequência = contagem / 720`. Essas frequências são **dentro de cada classe** do corpus, e não a probabilidade de a notícia ser falsa. O catálogo tem status `experimental_descriptive_comparison` e **não passou por aprovação editorial humana**; o catálogo científico permanece `research_only`. A análise devolve `ok`, `no_match`, `invalid_text` (HTTP 400) ou `unavailable` (503).
+
+### Validação da integração
+
+Um teste ponta a ponta (`web-app/scripts/check-news-prediction.ts`) usa banco e Redis descartáveis, parser HTML real, o modelo real e duas sessões de navegador. Verifica bloqueio antes do fechamento coletivo, recusa de texto arbitrário, cinco consultas concorrentes com um registro, recarga, telas desktop e celular, próxima rodada sem resultado antigo e encerramento da partida com falha induzida do modelo; passou com P(fake) = 0,99 em uma notícia de teste e versão `svm-spacy-chi2k10k-svd500-v1`. A suíte do web app reportou 419 testes aprovados (cinco condicionais ignorados) e a suíte Python 20, que inclui a reprodução numérica das features e das probabilidades do código original. O teste não cobre extração de URL externa ao vivo. Evidências em `web-app/validation/news-prediction/` e relatório em `docs/machine-learning/validacao-integracao-supervisionado.md`.
+
+> **Observação.** Os textos fixos que a interface exibia sem origem no modelo (a dica "78% mais chances" e a margem "±1.8%") não existem mais na `dev`. A reflexão socrática, porém, continua sendo um conjunto de perguntas gerais fixas.
 
 ## 8.5 Como o MVP constrói sobre as descobertas
 
-O modelo de produção (seção 5.11) foi desenhado para encaixar no contrato do backend. O que falta para ele chegar ao jogador é o serviço que o expõe ao app e a troca do mock.
+1. **Contrato de saída alinhado.** O adaptador HTTP implementa `IAIAnalysisService` e devolve o formato do backend, sem mudar o domínio.
+2. **Três níveis a partir de um classificador binário.** O jogo tem *reliable / uncertain / unreliable* e o modelo tem duas classes; a solução usa a probabilidade calibrada com limiares 0,35 e 0,65, decisão de produto.
+3. **Entrada heterogênea.** O app recebe o texto extraído da página (`news/extract`). O motor aplica a mesma normalização e o mesmo truncamento do treino. Risco conhecido: os atributos de estrutura de sentença saem da distribuição de treino em textos curtos, o que também explica parte da queda externa (seção 5.6).
+4. **Explicação.** Os `reasons` vêm da decomposição exata do score em n-gramas e atributos de estilo, em linguagem para o jogador. Os padrões do FP-Growth chegam ao jogo como observações descritivas, não como argumento de classificação.
+5. **Separação de papéis.** A previsão só é revelada após o fechamento coletivo, para não influenciar o voto; a pontuação segue o gabarito. A interface usa "previsão do modelo" e "estimativa", e o classificador não consulta fontes nem confirma acontecimentos.
+6. **Registro.** `modelVersion`, hash do artefato e versão do código ficam gravados em cada análise (`news_analyses`).
 
-1. **Contrato de saída alinhado.** `modelo_olimpo.analisar` devolve exatamente o formato de `AIAnalysisResult` (`classification`, `confidence`, `reasons`, `modelVersion`), de modo que a implementação do `IAIAnalysisService` pode substituir o mock sem mudar o domínio.
-2. **Três níveis a partir de um classificador binário.** O jogo tem *reliable / uncertain / unreliable* e o modelo tem duas classes. A solução usa a probabilidade calibrada: `uncertain` entre 0,35 e 0,65, limiares que são decisão de produto.
-3. **Entrada heterogênea.** O app recebe o texto extraído da página (`news/extract`), com tamanhos e formatos variados. O `PreparadorEntrada` aplica a mesma normalização e o mesmo truncamento em 100 palavras do treino. Risco conhecido: os atributos de estrutura de sentença saem da distribuição de treino quando o texto é curto.
-4. **Explicação.** Os `reasons` vêm da decomposição exata do score em n-gramas e atributos de estilo, em linguagem para o jogador (por exemplo, "frases curtas", "muitas preposições"). Os padrões do FP-Growth continuam como fonte de hipóteses de estilo; a interface hoje exibe três cartões socráticos fixos, e a geração dinâmica de perguntas (por exemplo, via LLM) ainda não existe.
-5. **Hospedagem.** O app é TypeScript e o modelo é scikit-learn/spaCy; a opção natural é um serviço Python separado exposto por HTTP, consumido pela implementação do `IAIAnalysisService`, mantendo o mock como *fallback*. O `.joblib` exige o módulo `modelo_olimpo` importável e as mesmas versões de bibliotecas, e o modelo de linguagem do spaCy é dependência de inferência.
-6. **Registro.** Gravar o `modelVersion` em cada análise (`news_analyses`) e medir o modelo em notícias reais coletadas pelo `news/extract`.
+**O que ainda falta.** Medir o modelo com notícias reais coletadas pelo `news/extract`; submeter o catálogo de observações a revisão editorial humana e a um estudo de compreensão com jogadores; gerar dinamicamente as perguntas socráticas; persistir o fechamento da rodada de forma durável; e dimensionar a fila de inferência para carga real.
 
 
 
 # 9. Conclusão
 
-O projeto percorreu o caminho de uma ideia de produto (avaliador socrático de notícias) para uma plataforma de jogo com backend funcional, apoiada por duas linhas de pesquisa complementares e por um modelo de produção desenhado para ser integrado.
+O projeto percorreu o caminho de uma ideia de produto (avaliador socrático de notícias) para uma plataforma de jogo com backend funcional, apoiada por duas linhas de pesquisa complementares e por um modelo de produção já integrado ao jogo.
 
 **O que está estabelecido.** (i) Um classificador linear sobre TF-IDF word+char resolve o Fake.br com F1 ≈ 0,93 e é difícil de superar: nem reduções de dimensionalidade, nem kernels, nem modelos de árvore, nem metadados morfossintáticos trouxeram ganho relevante de F1. (ii) O regime d ≫ N e a esparsidade favorecem modelos lineares, e C=1 é o ponto ótimo do LinearSVC. (iii) A normalização do texto e o truncamento são decisões metodológicas necessárias: eliminaram o artefato de formatação (`SPACE`), embora reste um sinal de tamanho. (iv) O FP-Growth, com controle de autoria, é o método de descoberta mais útil para formular perguntas, com a ressalva de que descreve o corpus. (v) O modelo de produção, M2 + χ² + SVD(500), mantém o F1 de 0,9295 com gap de 0,042 em vez de 0,0705.
 
-**Trade-offs assumidos.** Interpretabilidade e custo contra capacidade (linear em vez de kernel ou árvore); descoberta de padrões contra classificação (FP-Growth em vez de detector de anomalias); controle de vazamento de fonte contra desempenho aparente (normalização e truncamento reduziram o F1 interno); menor ajuste ao treino e explicação detalhada contra generalização externa (o modelo de produção tem AUC externo de 0,677, contra 0,707 do word+char completo); e escopo (jogo e backend antes da integração do modelo).
+**Trade-offs assumidos.** Interpretabilidade e custo contra capacidade (linear em vez de kernel ou árvore); descoberta de padrões contra classificação (FP-Growth em vez de detector de anomalias); controle de vazamento de fonte contra desempenho aparente (normalização e truncamento reduziram o F1 interno); menor ajuste ao treino e explicação detalhada contra generalização externa (o modelo de produção tem AUC externo de 0,677, contra 0,707 do word+char completo); e escopo (a previsão só é revelada após o fechamento coletivo e não altera a pontuação).
 
-**Limites.** A generalização fora do Fake.br é fraca (F1 ≈ 0,61–0,64, AUC ≈ 0,68–0,71, em títulos), por viés de domínio que nenhuma das técnicas testadas resolveu; por isso a saída do modelo é apresentada como indício. O método socrático está implementado apenas como cartões fixos na interface, e o modelo ainda não está conectado ao `ai-feedback`.
+**Limites.** A generalização fora do Fake.br é fraca (F1 ≈ 0,61–0,64, AUC ≈ 0,68–0,71, em títulos), por viés de domínio que nenhuma das técnicas testadas resolveu; por isso a saída do modelo é apresentada como indício. O método socrático está implementado apenas como perguntas gerais fixas na interface, e o modelo ainda não foi medido em notícias reais de usuários.
 
-**Próximos passos.** (1) Publicar o serviço de inferência e substituir o mock; (2) medir o modelo com notícias reais; (3) coletar um conjunto externo com texto completo de fontes e épocas distintas; (4) tornar dinâmicas as perguntas socráticas, a partir dos `reasons` e dos padrões do FP-Growth.
+**Próximos passos.** (1) Medir o modelo com notícias reais; (2) revisar editorialmente o catálogo de observações e testar sua compreensão com jogadores; (3) coletar um conjunto externo com texto completo de fontes e épocas distintas; (4) tornar dinâmicas as perguntas socráticas, a partir dos `reasons` e dos padrões do FP-Growth; (5) persistir o fechamento da rodada e dimensionar a fila de inferência.
 
 
 
