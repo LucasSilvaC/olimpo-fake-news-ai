@@ -1,0 +1,1059 @@
+\documentclass[12pt,a4paper]{article}
+
+% --- Detecção do Compilador (pdflatex, xelatex, lualatex) ---
+\usepackage{iftex}
+\usepackage{amsmath}
+\usepackage{geometry}
+\usepackage{xcolor}
+\usepackage{fancyhdr}
+\usepackage{hyperref}
+\usepackage{tabularx}
+\usepackage{array}
+
+% --- Configuração de Fontes e Codificação ---
+\ifPDFTeX
+  % Compilação via pdflatex / latex
+  \usepackage[utf8]{inputenc}
+  \usepackage[T1]{fontenc}
+  \usepackage{lmodern}
+  \renewcommand{\familydefault}{\sfdefault}
+\else
+  % Compilação via xelatex / lualatex (Suporte a fontes do sistema / Calibri)
+  \usepackage{fontspec}
+  \defaultfontfeatures{Ligatures=TeX}
+  \IfFontExistsTF{Calibri}{
+    \setmainfont{Calibri}
+  }{
+    \IfFontExistsTF{Carlito}{
+      \setmainfont{Carlito}
+    }{
+      % Caso Calibri/Carlito ainda não estejam no sistema
+    }
+  }
+\fi
+
+% --- Tradução de Termos sem Dependência do Babel ---
+\renewcommand{\contentsname}{Sumário}
+\renewcommand{\figurename}{Figura}
+\renewcommand{\tablename}{Tabela}
+
+% --- Geometria da Página ---
+\geometry{
+  a4paper,
+  top=2.5cm,
+  bottom=2.5cm,
+  left=2.5cm,
+  right=2.5cm,
+  headheight=15pt
+}
+
+% --- Paleta de Cores Corporativa ---
+\definecolor{primary}{RGB}{15, 44, 89}      % Azul Escuro Institucional
+\definecolor{secondary}{RGB}{14, 116, 144}  % Ciano Tecnológico
+\definecolor{darkslate}{RGB}{30, 41, 59}    % Grafite Textual
+\definecolor{lightbg}{RGB}{248, 250, 252}   % Cinza Claro de Fundo
+\definecolor{bordercol}{RGB}{203, 213, 225} % Bordas Suaves
+\definecolor{codecol}{RGB}{3, 105, 161}     % Azul Código
+
+% --- Configurações de Hyperref ---
+\hypersetup{
+  colorlinks=true,
+  linkcolor=primary,
+  urlcolor=secondary,
+  citecolor=primary,
+  pdfborder={0 0 0},
+  pdftitle={Olimpo - Documentacao de Arquitetura e Engenharia de Software},
+  pdfauthor={Equipe Olimpo AI},
+  pdfsubject={Arquitetura, Padroes Tecnicos e Engenharia de Software}
+}
+
+% --- Configurações de Cabeçalho e Rodapé (fancyhdr) ---
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\textbf{\color{primary}Olimpo — Fake News AI}}
+\fancyhead[R]{\small\color{darkslate}Documentação Técnica e Arquitetural}
+\fancyfoot[L]{\small\color{darkslate}Projeto Olimpo (PUCC / Eldorado)}
+\fancyfoot[R]{\small\color{darkslate}Página \textbf{\thepage} de \pageref{LastPage}}
+\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\footrulewidth}{0.5pt}
+
+% Estilo para páginas iniciais/sumário
+\fancypagestyle{plain}{
+  \fancyhf{}
+  \fancyfoot[L]{\small\color{darkslate}Projeto Olimpo (PUCC / Eldorado)}
+  \fancyfoot[R]{\small\color{darkslate}Página \textbf{\thepage} de \pageref{LastPage}}
+  \renewcommand{\headrulewidth}{0pt}
+  \renewcommand{\footrulewidth}{0.5pt}
+}
+
+% Espaçamento entre parágrafos
+\setlength{\parskip}{0.6em}
+\setlength{\parindent}{0pt}
+
+\begin{document}
+
+% ==============================================================================
+% CAPA DO DOCUMENTO
+% ==============================================================================
+\begin{titlepage}
+  \centering
+  \vspace*{1.5cm}
+  
+  {\Huge \textbf{\color{primary}OLIMPO — FAKE NEWS AI}}\\[0.4cm]
+  {\Large \textbf{\color{secondary}Documentação de Arquitetura e Decisões de Engenharia}}\\[0.8cm]
+  \rule{\textwidth}{1.5pt}\\[1.5cm]
+
+  \begin{minipage}{0.9\textwidth}
+    \centering
+    \textbf{Visão Arquitetural Abrangente de Software:}\\
+    Fundamentos, Padrões Estruturais, Persistência, Comunicação em Tempo Real, 
+    Segurança de Sessão e Organização Modular.
+  \end{minipage}
+
+  \vfill
+
+  \begin{minipage}{0.85\textwidth}
+    \begin{tabular}{ll}
+      \textbf{Projeto:} & Plataforma Olimpo — Gamificação e Combate à Desinformação \\
+      \textbf{Parcerias:} & PUCC \& Instituto de Pesquisas Eldorado \\
+      \textbf{Stack Principal:} & Next.js 16, TypeScript, PostgreSQL (Supabase / Drizzle), Redis, SSE \\
+      \textbf{Tipografia:} & Calibri (Sans-Serif Corporativo) \\
+      \textbf{Versão do Doc:} & 1.2.0 \\
+      \textbf{Data:} & 7 de outubro de 2026
+    \end{tabular}
+  \end{minipage}
+
+  \vspace{1.5cm}
+  {\small \color{darkslate}Repositório Oficial: \texttt{LucasSilvaC/olimpo-fake-news-ai}}
+\end{titlepage}
+
+% ==============================================================================
+% SUMÁRIO
+% ==============================================================================
+\newpage
+\pagenumbering{roman}
+\tableofcontents
+\newpage
+\pagenumbering{arabic}
+
+% ==============================================================================
+% SEÇÃO 1: OPENSPEC
+% ==============================================================================
+\section{OpenSpec}
+
+\subsection{O que é?}
+O \textbf{OpenSpec} é um padrão e framework de governança técnica para especificação viva de software baseada em capacidades (\textit{Capability-Based Specifications}) e gestão estruturada de mudanças evolutivas (\textit{Spec-Driven Development}). Em vez de documentações estáticas ou isoladas em wikis externas que rapidamente se tornam obsoletas, o OpenSpec reside diretamente dentro do repositório de código, na pasta de documentação \texttt{docs/openspec/}. Ele divide as definições do projeto em duas frentes complementares: especificações canônicas de capacidades permanentes da aplicação (\texttt{docs/openspec/specs/}) e propostas de alteração incrementais e versionadas (\texttt{docs/openspec/changes/}).
+
+Cada especificação segue um modelo orientado ao comportamento (Behavior-Driven Development -- BDD) e aos contratos de domínio, formalizando propósitos claros, requisitos inequívocos e cenários compostos pelas diretivas \texttt{WHEN} (quando) e \texttt{THEN} (então).
+
+\subsection{Por que?}
+A adoção do OpenSpec no projeto Olimpo visa solucionar três desafios críticos de engenharia de software contemporânea:
+\begin{enumerate}
+  \item \textbf{Alinhamento entre Humanos e Agentes de IA:} A inteligência artificial colaborativa necessita de limites contratuais rígidos e contexto verificável para evitar alucinações de escopo e modificações não autorizadas em contratos de APIs já validados.
+  \item \textbf{Rastreabilidade Histórica de Decisões:} Muitas decisões de design são tomadas oralmente ou em mensagens efêmeras. O OpenSpec documenta a motivação (\texttt{proposal.md}), as decisões de arquitetura e trade-offs (\texttt{design.md}) e a lista atômica de tarefas (\texttt{tasks.md}) antes que qualquer linha de código seja modificada.
+  \item \textbf{Prevenção de Débito Técnico e Desvio de Escopo:} Nenhuma alteração entra no projeto sem que seus cenários de teste e critérios de aceitação estejam previamente aprovados e sincronizados com a especificação principal através do comando de sync ou archive.
+\end{enumerate}
+
+\subsection{Como?}
+No Olimpo, o OpenSpec é estruturado em \texttt{docs/openspec/} conforme a árvore abaixo:
+\begin{itemize}
+  \item \texttt{docs/openspec/specs/}: Contém as capacidades estáveis consolidadas do sistema:
+  \begin{itemize}
+    \item \texttt{auth/spec.md}: Especificação de cadastro, login com hash e emissão de JWT.
+    \item \texttt{rooms/spec.md}: Ciclo de vida de salas, código PIN (\texttt{XXX XXX}), lobbies e playlists.
+    \item \texttt{news-voting/spec.md}: Ciclo de votação dos jogadores em 3 níveis (\textit{reliable}, \textit{uncertain}, \textit{unreliable}).
+    \item \texttt{realtime-events/spec.md}: Transmissão contínua de eventos de sala via Server-Sent Events (SSE).
+    \item \texttt{ai-feedback/spec.md}: Análise explicativa pedagógica da veracidade das manchetes.
+    \item \texttt{gamification/spec.md}: Mecânicas de pontuação, bônus de blefe e ranking.
+  \end{itemize}
+  \item \texttt{docs/openspec/changes/}: Contém os deltas de mudanças em andamento e o histórico de mudanças arquivadas (\texttt{archive/}).
+  \item \textbf{Fluxo de Trabalho Operacional:}
+  \begin{enumerate}
+    \item \textbf{Proposta:} O desenvolvedor inicia uma mudança com proposta de escopo e análise de impacto.
+    \item \textbf{Design e Tarefas:} Redação do \texttt{design.md} com metas, não-metas e trade-offs técnicos, acompanhado de \texttt{tasks.md}.
+    \item \textbf{Implementação e Validação:} Implementação orientada a testes unitários (TDD) e verificação com linters e compilador.
+    \item \textbf{Sincronização e Arquivamento:} Atualização das especificações canônicas e transferência da proposta para a pasta de arquivo histórico.
+  \end{enumerate}
+\end{itemize}
+
+% ==============================================================================
+% SEÇÃO 2: ARQUITETURA BACKEND
+% ==============================================================================
+\section{Arquitetura Backend}
+
+\subsection{O que é?}
+A arquitetura de backend do Olimpo segue o princípio de \textbf{Clean Architecture Adaptada e Orientada a Funcionalidades} (\textit{Feature-First Layered Architecture}). Em contraste com arquiteturas em que o código de domínio se perde misturado a middlewares web ou ORMs acoplados, o Olimpo organiza as capacidades de negócio em módulos autocontidos dentro de \texttt{src/app/api/\{feature\}/}, apoiados por um núcleo compartilhado em \texttt{src/server/shared/}.
+
+O design garante que as entidades e regras de negócio essenciais (como a lógica de cálculo de pontuação de blefe ou a validação matemática de PIN de sala) sejam totalmente agnósticas de framework, desconhecendo detalhes técnicos sobre HTTP, Next.js, Drizzle ou Redis.
+
+\subsection{Por que?}
+A escolha dessa arquitetura decorre dos seguintes fatores fundamentais:
+\begin{itemize}
+  \item \textbf{Independência de Detalhes Tecnológicos:} Mecanismos de banco de dados, bibliotecas de hash ou provedores de mensageria podem ser substituídos sem alterar nenhuma linha da lógica do jogo.
+  \item \textbf{Alta Testabilidade (TDD):} Casos de uso e entidades podem ser executados e testados em milissegundos utilizando dublês de teste (\textit{mocks} ou repositórios em memória), sem exigir subida de contêineres ou instâncias reais de banco.
+  \item \textbf{Coesão Vertical e Escalabilidade de Time:} Todo o ciclo de uma funcionalidade (entidade, caso de uso, repositório, action e testes) reside sob o mesmo diretório temático, evitando saltos cognitivos por pastas distantes.
+\end{itemize}
+
+\subsection{Como?}
+A estrutura de pastas e responsabilidades é rigidamente padronizada:
+\begin{itemize}
+  \item \texttt{src/app/api/\{feature\}/}:
+  \begin{itemize}
+    \item \texttt{entities/}: Entidades de domínio puras e Value Objects com suas regras invariantes e validações intrínsecas (ex.: \texttt{RoomPin}, \texttt{UserEntity}).
+    \item \texttt{usecase/}: Classes de casos de uso (Application Services) contendo o fluxo orquestrador da regra de negócio (ex.: \texttt{CreateRoomUseCase}, \texttt{LoginUseCase}).
+    \item \texttt{repositories/}: Contratos de interface que definem o que a camada de domínio precisa (ex.: \texttt{IRoomRepository}), juntamente com as implementações de infraestrutura concretas baseadas em Drizzle ORM ou Redis.
+    \item \texttt{actions/}: Server Actions que servem como porta de entrada oficial para invocações do frontend, tratando deserialização de dados e validação de schema via Zod.
+    \item \texttt{tests/}: Baterias completas de testes unitários e de integração focadas na respectiva feature.
+  \end{itemize}
+  \item \texttt{src/server/shared/}: Serviços de infraestrutura globais compartilhados:
+  \begin{itemize}
+    \item \texttt{database/}: Cliente Drizzle singleton com \texttt{postgres.js} e schemas relacionais centrais.
+    \item \texttt{redis/}: Cliente singleton \texttt{ioredis} com suporte a reuso de conexões em ambientes serverless.
+    \item \texttt{logger/}: Sistema de logs estruturados em JSON via Pino.
+  \end{itemize}
+\end{itemize}
+\textbf{Fluxo de Execução Unidirecional:}
+$$\text{UI / Formulário} \longrightarrow \text{Server Action (Zod)} \longrightarrow \text{Use Case} \longrightarrow \text{Repository Interface} \longleftarrow \text{Drizzle / Redis}$$
+
+% ==============================================================================
+% SEÇÃO 3: BANCO DE DADOS E CACHE
+% ==============================================================================
+\section{Banco de Dados e Cache}
+
+\subsection{O que é?}
+Trata-se de uma estratégia de persistência poliglota e híbrida que combina um banco de dados relacional de conformidade ACID (\textbf{PostgreSQL}, hospedado no \textbf{Supabase}) com um armazenamento em memória de altíssimo desempenho (\textbf{Redis}). No Olimpo, o PostgreSQL é gerenciado pelo \textbf{Drizzle ORM} (com o driver nativo \texttt{postgres.js}), enquanto o cache, controle de conexões de eventos e dados efêmeros de partidas em andamento são gerenciados pelo \textbf{ioredis}.
+
+\subsection{Por que?}
+Uma aplicação gamificada em tempo real apresenta padrões de acesso diametralmente opostos:
+\begin{itemize}
+  \item \textbf{Dados Duráveis e Relacionais:} Informações como cadastros de usuários, credenciais, histórico de partidas concluídas, acervo de notícias e seus metadados estruturados exigem garantias transacionais rígidas, integridade referencial com chaves estrangeiras e durabilidade permanente. O PostgreSQL é excelente nesse papel.
+  \item \textbf{Dados Efêmeros e Alta Frequência:} Consultas de código PIN de sala ativa, apuração instantânea de votos a cada rodada cronometrada, ranking dinâmico de participantes e canais de mensageria Pub/Sub geram um volume massivo de leituras e escritas por segundo. Manter essa carga exclusivamente no PostgreSQL causaria gargalos de concorrência, contenção de locks e degradação de I/O em disco. O Redis opera integralmente em memória RAM, oferecendo latência sub-milissegundo para o estado ativo da sala.
+\end{itemize}
+
+\subsection{Como?}
+A integração de dados no projeto Olimpo ocorre da seguinte maneira:
+\begin{enumerate}
+  \item \textbf{PostgreSQL com Drizzle ORM:}
+  \begin{itemize}
+    \item Definição de schemas tipados com TypeScript em \texttt{src/server/shared/database/schemas/}.
+    \item Uso estratégico da coluna \texttt{article} tipada como \textbf{JSONB} na tabela \texttt{news\_articles}, permitindo armazenar o documento extraído pelo motor de ingestão (título, autor, fonte, trecho, imagens) sem necessidade de esparsidade ou migrações destrutivas.
+    \item Enums nativos para integridade estrita: \texttt{ml\_target\_type} e \texttt{vote\_option\_type} contendo \texttt{('reliable', 'uncertain', 'unreliable')}.
+    \item Migrações versionadas e determinísticas geradas com o utilitário \texttt{drizzle-kit}.
+  \end{itemize}
+  \item \textbf{Redis (ioredis):}
+  \begin{itemize}
+    \item \textbf{Lookup O(1) de PIN:} Chave \texttt{room:pin:<pin>} associando o código alfanumérico ao ID da sala e status atual, viabilizando entrada rápida sem consulta relacional prévia.
+    \item \textbf{Placar Dinâmico (Sorted Sets):} Uso dos comandos atômicos \texttt{ZADD} e \texttt{ZREVRANGE} na chave \texttt{room:<id>:scores} para manter o ranking ordenado de pontuações de forma automática e imediata.
+    \item \textbf{Canais Pub/Sub:} Publicação de eventos na chave de canal \texttt{room:<pin>} para disparar atualizações para ouvintes SSE.
+    \item \textbf{Padrão Singleton Seguro:} Implementação em \texttt{client.ts} que preserva a conexão em \texttt{globalThis} durante o ciclo de recarregamento a quente (\textit{Hot Module Reload}) em ambiente de desenvolvimento.
+  \end{itemize}
+\end{enumerate}
+
+% ==============================================================================
+% SEÇÃO 4: SUPABASE (INFRAESTRUTURA DE BANCO DE DADOS)
+% ==============================================================================
+\section{Supabase (Infraestrutura de Banco de Dados)}
+
+\subsection{O que é?}
+O \textbf{Supabase} é uma plataforma de código aberto baseada em computação em nuvem que fornece um ecossistema completo de \textit{Backend-as-a-Service} (BaaS) estruturado sobre o motor relacional \textbf{PostgreSQL}. Na arquitetura da plataforma Olimpo, o Supabase foi selecionado e configurado como a infraestrutura de hospedagem e gestão em nuvem do banco de dados relacional. Ele disponibiliza instâncias corporativas de PostgreSQL com alta disponibilidade, serviços nativos de pooler de conexões transacionais (\textbf{Supavisor}), backups contínuos automatizados, observabilidade em tempo real e um console administrativo visual (Supabase Studio) para auditoria e governança técnica.
+
+\subsection{Por que?}
+A opção por implementar a base relacional no Supabase, em vez de recorrer a soluções manuais autogerenciadas ou outros bancos legados, fundamenta-se nos seguintes pilares de engenharia:
+\begin{itemize}
+  \item \textbf{Sobrecarga Operacional Nula (Zero Ops):} A equipe de desenvolvimento não despende tempo gerenciando sistemas operacionais de servidores dedicados, configurando volumes de disco virtual (EBS), executando rotinas manuais de recuperação de desastres ou aplicando patches de vulnerabilidade no daemon do PostgreSQL. O ciclo operacional é plenamente gerenciado pela nuvem.
+  \item \textbf{Connection Pooling para o Paradigma Serverless:} A execução de rotas e procedimentos no Next.js (por meio de Server Actions e Route Handlers sob demanda) opera em ciclos de vida efêmeros. O acesso concorrente direto de funções serverless tradicionais ao PostgreSQL causaria rápida exaustão de conexões (\textit{connection exhaustion}). O Supabase resolve nativamente essa barreira com o \textbf{Supavisor} no modo transação (porta 6543), permitindo que centenas de invocações paralelas compartilhem um pool controlado de conexões seguras sem sobrecarregar o banco.
+  \item \textbf{Desacoplamento e Independência de Fornecedor (Sem Vendor Lock-in):} Embora o banco de dados resida na infraestrutura do Supabase, o Olimpo conecta-se estritamente como um cliente padrão PostgreSQL através do \textbf{Drizzle ORM} e do driver \texttt{postgres.js}. O vínculo dá-se unicamente via string de conexão (\texttt{DATABASE\_URL}), sem qualquer acoplamento a bibliotecas proprietárias de cliente do Supabase no núcleo da aplicação. Caso haja necessidade futura, a base de dados pode ser migrada para qualquer outro provedor PostgreSQL sem modificar uma única linha dos casos de uso ou repositórios.
+  \item \textbf{Console Studio e Governança de Dados:} O painel administrativo integrado possibilita inspecionar tabelas, monitorar a latência de consultas analíticas, verificar estatísticas de cache e validar a execução correta de transações diretamente na nuvem.
+\end{itemize}
+
+\subsection{Como?}
+A implementação e o ciclo de vida da persistência com o Supabase no Olimpo são estruturados da seguinte maneira:
+\begin{enumerate}
+  \item \textbf{Estratégia de Conexão com Pooling e Singleton:}
+  \begin{itemize}
+    \item A conexão é provisionada pela variável de ambiente \texttt{DATABASE\_URL} em \texttt{.env}, aplicando obrigatoriamente criptografia TLS/SSL em trânsito com \texttt{sslmode=require}.
+    \item Em tempo de execução da aplicação web (\texttt{src/server/shared/database/client.ts}), o cliente instancia o driver com \texttt{postgres(connectionString, \{ max: 1 \})} apontando para a porta do pooler do Supavisor, associando a instância ao \texttt{globalThis} para reuso inteligente entre invocações ativas em ambientes serverless.
+    \item Em rotinas de migração de esquema, utiliza-se a conexão direta (porta 5432) para viabilizar comandos DDL estruturais e travas transacionais de integridade.
+  \end{itemize}
+  \item \textbf{Migrações Declarativas com Drizzle Kit:}
+  \begin{itemize}
+    \item Todos os esquemas de dados relacionais (\texttt{user\_accounts}, \texttt{news\_articles}, \texttt{rooms}, \texttt{news\_votes}), tipos enumerados (\texttt{ml\_target\_type}, \texttt{vote\_option\_type}) e índices são definidos em TypeScript em \texttt{src/server/shared/database/schemas/}.
+    \item A ferramenta \texttt{drizzle-kit} gera scripts SQL determinísticos aplicados diretamente contra a instância PostgreSQL no Supabase, garantindo paridade absoluta de ambiente e histórico versionado no Git.
+  \end{itemize}
+  \item \textbf{Aproveitamento de Capacidades Avançadas do PostgreSQL:}
+  \begin{itemize}
+    \item Armazenamento de notícias completas na coluna semiestruturada \textbf{JSONB} da tabela \texttt{news\_articles}, viabilizando flexibilidade de metadados extraídos pelo motor de ingestão sem perda da rigidez relacional.
+    \item Chaves primárias baseadas em UUID v4 geradas nativamente e restrições de integridade referencial com remoção em cascata (\texttt{ON DELETE CASCADE}).
+  \end{itemize}
+\end{enumerate}
+
+% ==============================================================================
+% SEÇÃO 5: NEXT.JS PARA BACKEND E FRONTEND
+% ==============================================================================
+\section{Next.js para Backend e Frontend}
+
+\subsection{O que é?}
+Consiste na utilização do framework unificado \textbf{Next.js 16} (baseado em React 19) como uma solução integrada full-stack. O Next.js opera simultaneamente como plataforma de renderização do cliente e servidor de apresentação (com Server Components e Client Components) e como motor de execução de backend robusto através de rotas HTTP (\textbf{Route Handlers}) e procedimentos mutáveis remotos (\textbf{Server Actions}) marcados com a diretiva \texttt{"use server"}.
+
+\subsection{Por que?}
+A consolidação em uma arquitetura monorrepositório full-stack com Next.js oferece vantagens competitivas de engenharia:
+\begin{itemize}
+  \item \textbf{Segurança de Tipos Fim-a-Fim (\textit{End-to-End Type Safety}):} Interfaces de domínio, DTOs de entrada e saída e esquemas de validação Zod são compartilhados diretamente entre a tela do usuário e o caso de uso no servidor sem necessidade de geração de código intermediário ou contratos desincronizados.
+  \item \textbf{Eliminação de Complexidade Operacional:} Elimina a necessidade de gerenciar múltiplos pipelines de implantação, múltiplos repositórios Git e negociações de CORS (Cross-Origin Resource Sharing), já que frontend e backend operam na mesma origem.
+  \item \textbf{Otimização de Desempenho:} A utilização de React Server Components (RSC) reduz substancialmente o pacote de JavaScript enviado ao navegador do usuário, deixando tarefas pesadas de parsing DOM e cálculos de regras de negócio exclusivamente no servidor.
+\end{itemize}
+
+\subsection{Como?}
+A estrutura de distribuição no projeto é particionada da seguinte forma:
+\begin{itemize}
+  \item \textbf{Backend via Server Actions:} Em vez de expor dezenas de endpoints REST tradicionais para mutações simples, operações como autenticação, criação de sala e submissão de votos são funções assíncronas assinaladas com \texttt{"use server"}. Exemplo: \texttt{loginAction}, \texttt{createRoomAction}, \texttt{submitVoteAction}.
+  \item \textbf{Backend via Route Handlers:} Rotas HTTP tradicionais são reservadas para endpoints que necessitam de protocolos específicos de streaming contínuo ou webhooks externos, como a rota \texttt{GET /api/rooms/[pin]/events} para o fluxo de Server-Sent Events.
+  \item \textbf{Isolamento de Segurança com \texttt{server-only}:} Módulos críticos de infraestrutura (como conexões de banco de dados e segredos de criptografia) importam obrigatoriamente o pacote \texttt{"server-only"}. Se qualquer desenvolvedor tentar importar acidentalmente esses arquivos em componentes clientes, o compilador interrompe o build imediatamente.
+\end{itemize}
+
+% ==============================================================================
+% SEÇÃO 6: SSE PARA TEMPO REAL E NÃO WEBSOCKET
+% ==============================================================================
+\section{SSE para Tempo Real e Não WebSocket}
+
+\subsection{O que é?}
+A adoção de \textbf{Server-Sent Events (SSE)} representa a escolha de um protocolo web unidirecional padronizado pela W3C (baseado no tipo de mídia \texttt{text/event-stream}) sobre HTTP padrão para transmitir notificações e atualizações de estado do servidor para os clientes em tempo real, em detrimento do protocolo bidirecional \textbf{WebSocket}.
+
+\subsection{Por que?}
+A decisão de optar por SSE em vez de WebSockets no Olimpo foi pautada por rigorosos critérios arquiteturais e de custo de infraestrutura:
+\begin{enumerate}
+  \item \textbf{Natureza Unidirecional da Interação:} Na dinâmica do Olimpo, as ações dos jogadores (entrar na sala, submeter voto na notícia, avançar rodada) são operações de mutação pontuais que exigem autenticação, validação de schema e persistência. Elas se encaixam perfeitamente no modelo de requisição HTTP (Server Actions). Não há necessidade de canal persistente do cliente para o servidor; apenas o servidor precisa empurrar dados contínuos para os jogadores (jogadores conectados, início de contagem regressiva, revelação do gabarito e feedback de IA).
+  \item \textbf{Compatibilidade com Arquitetura Serverless e HTTP/2:} WebSockets exigem servidores \textit{stateful} com conexões TCP abertas e processos rodando ininterruptamente (ou serviços externos caros como Pusher ou AWS API Gateway WebSocket). O SSE opera nativamente sobre HTTP/2 e HTTP/3, aproveitando a multiplexação de conexões sem sobrecarregar a infraestrutura.
+  \item \textbf{Reconexão Automática e Simplicidade no Cliente:} A API padrão do navegador \texttt{EventSource} possui mecanismo nativo de reconexão automática com preservação do último evento recebido (\textit{Last-Event-ID}), eliminando bibliotecas pesadas de cliente (como Socket.io) e reduzindo a superfície de bugs de rede.
+  \item \textbf{Transparência em Redes Corporativas e Proxies:} WebSockets frequentemente sofrem bloqueios por firewalls corporativos, proxies intermediários ou inspeções de segurança que não reconhecem o cabeçalho \texttt{Upgrade}. O SSE transita como tráfego HTTP comum via porta 443/TLS.
+\end{enumerate}
+
+\subsection{Como?}
+A implementação no Olimpo envolve duas pontas:
+\begin{enumerate}
+  \item \textbf{Servidor (\texttt{src/app/api/rooms/[pin]/events/route.ts}):}
+  \begin{itemize}
+    \item Expõe uma rota \texttt{GET} com os cabeçalhos:
+    \begin{quote}
+      \texttt{Content-Type: text/event-stream; charset=utf-8}\\
+      \texttt{Cache-Control: no-cache, no-transform}\\
+      \texttt{Connection: keep-alive}\\
+      \texttt{X-Accel-Buffering: no}
+    \end{quote}
+    \item Instancia um cliente \texttt{ioredis} dedicado como assinante (\textit{subscriber}) do canal \texttt{room:<pin>}.
+    \item Utiliza a API web nativa \texttt{ReadableStream}. Sempre que uma mensagem chega ao canal Redis, o controlador a codifica e envia ao fluxo HTTP no formato \texttt{event: <tipo>\textbackslash n data: <json>\textbackslash n\textbackslash n}.
+    \item \textbf{Gerenciamento de Ciclo de Vida e Desconexão:} Escuta o evento \texttt{request.signal.addEventListener("abort")}. Quando o usuário fecha a aba ou perde conexão, o listener remove as inscrições e encerra a conexão do Redis com \texttt{quit()}, evitando vazamento de memória (\textit{connection leaks}).
+  \end{itemize}
+  \item \textbf{Cliente (Frontend):}
+  \begin{itemize}
+    \item O hook ou componente React conecta via \texttt{const es = new EventSource('/api/rooms/' + pin + '/events')}.
+    \item Adiciona ouvintes tipados para cada evento do jogo: \texttt{MEMBER\_JOINED}, \texttt{VOTE\_CAST}, \texttt{ROUND\_COMPLETED}, \texttt{MATCH\_FINISHED}.
+  \end{itemize}
+\end{enumerate}
+
+% ==============================================================================
+% SEÇÃO 7: SERVERLESS
+% ==============================================================================
+\section{Serverless}
+
+\subsection{O que é?}
+O modelo de computação \textbf{Serverless} (Computação Sem Servidor) refere-se à execução de código de backend em ambientes efêmeros, acionados por eventos e funções sob demanda (ex.: Vercel Serverless Functions ou AWS Lambda), onde o desenvolvedor não gerencia, monitora ou realiza manutenção em sistemas operacionais ou instâncias virtuais permanentes.
+
+\subsection{Por que?}
+A aplicação Olimpo foi projetada tendo o paradigma Serverless como horizonte estratégico:
+\begin{itemize}
+  \item \textbf{Custo Proporcional à Utilização (Zero Idle Cost):} Plataformas de quiz e treinamento corporativo possuem tráfego oscilante; há períodos de pico durante treinamentos e aulas e longos períodos de inatividade. Em arquitetura serverless, paga-se estritamente pelos milissegundos de processamento ativo.
+  \item \textbf{Elasticidade Instantânea:} Caso um evento simultâneo com centenas de salas e milhares de estudantes seja iniciado, a infraestrutura escala horizontalmente de forma automática sem intervenção manual de infraestrutura.
+  \item \textbf{Foco Total no Produto:} Redução do custo operacional de manutenção de servidores, atualizações de segurança do sistema operacional e balanceadores de carga dedicados.
+\end{itemize}
+
+\subsection{Como?}
+Para operar de forma robusta no modelo Serverless sem sofrer com problemas clássicos de \textit{cold start} e esgotamento de conexões, o Olimpo implementa técnicas específicas:
+\begin{itemize}
+  \item \textbf{Pool de Conexões com Reuso em \texttt{globalThis}:} As instâncias de conexão com PostgreSQL (\texttt{postgres.js}) e Redis (\texttt{ioredis}) são associadas ao escopo global do processo Node.js. Isso garante que, quando uma função lambda é mantida aquecida (\textit{warm execution}), a conexão existente é reaproveitada, impedindo que milhares de conexões zumbis saturem o banco de dados.
+  \item \textbf{Declaração de Runtime Node.js:} Definição explícita de \texttt{export const runtime = "nodejs"} e \texttt{export const dynamic = "force-dynamic"} nas rotas de API com SSE para assegurar compatibilidade plena com os módulos de rede e criptografia.
+  \item \textbf{Execuções Stateless:} Nenhum estado mutável de sessão é armazenado na memória da máquina ou em disco local temporário; todo estado transita via JWT assinado nos cookies ou reside no Redis/PostgreSQL.
+\end{itemize}
+
+% ==============================================================================
+% SEÇÃO 8: RESPOSTAS API
+% ==============================================================================
+\section{Respostas API}
+
+\subsection{O que é?}
+É o padrão formal e padronizado de estruturação de mensagens de retorno trafegadas entre o backend e os consumidores (frontend ou clientes externos), contemplando contratos uniformes tanto para invocações de Server Actions quanto para endpoints HTTP REST. Esse formato utiliza tipos de união discriminada (\textit{Discriminated Unions}) em TypeScript para modelar sucesso e falha.
+
+\subsection{Por que?}
+A ausência de padronização nas respostas de rede gera inconsistência, vulnerabilidades e código defensivo redundante:
+\begin{itemize}
+  \item \textbf{Eliminação de Tratamento Caótico de Erros:} Impede cenários onde uma rota retorna \texttt{\{ msg: "erro" \}}, outra \texttt{\{ message: "falha" \}} e outra dispara exceções não tratadas com stack traces internas em HTML.
+  \item \textbf{Tipagem Segura e Previsível no Frontend:} O compilador TypeScript exige que o desenvolvedor do frontend verifique explicitamente \texttt{if (result.success)} antes de tentar acessar os dados de retorno, prevenindo erros de \texttt{undefined is not an object} em produção.
+  \item \textbf{Segurança e Prevenção de Vazamento de Dados:} Erros inesperados de infraestrutura são interceptados por blocos de captura centralizados, mascarando detalhes internos do banco de dados e expondo mensagens amigáveis ao usuário.
+\end{itemize}
+
+\subsection{Como?}
+O padrão de respostas no Olimpo é dividido conforme o mecanismo de transporte:
+\begin{enumerate}
+  \item \textbf{Contrato em Server Actions:}
+  Todas as actions retornam um tipo genérico discriminado:
+  \begin{quote}
+    \texttt{type ActionResult<T> = \\
+    \quad | \{ success: true; data: T \}\\
+    \quad | \{ success: false; error: string; code?: string \};}
+  \end{quote}
+  Exemplo real em \texttt{login.action.ts}:
+  \begin{quote}
+    \texttt{export type LoginActionResult =\\
+    \quad | \{ success: true; user: UserDTO \}\\
+    \quad | \{ success: false; error: string \};}
+  \end{quote}
+  \item \textbf{Contrato em Route Handlers (HTTP REST):}
+  \begin{itemize}
+    \item Respostas de sucesso emitem status semânticos adequados (200 OK, 201 Created) acompanhadas do payload JSON estruturado: \texttt{\{ success: true, data: [...] \}}.
+    \item Respostas de erro utilizam os códigos de status HTTP apropriados:
+    \begin{itemize}
+      \item \textbf{400 Bad Request:} Falha de validação de schema Zod ou argumentos inválidos.
+      \item \textbf{401 Unauthorized:} Ausência de token JWT válido ou sessão expirada.
+      \item \textbf{404 Not Found:} Sala, notícia ou usuário inexistente.
+      \item \textbf{409 Conflict:} Tentativa de registrar e-mail duplicado ou entrar em sala já finalizada.
+      \item \textbf{500 Internal Server Error:} Falha inesperada tratada pelo logger central.
+    \end{itemize}
+  \end{itemize}
+\end{enumerate}
+
+% ==============================================================================
+% SEÇÃO 9: AUTENTICAÇÃO
+% ==============================================================================
+\section{Autenticação}
+
+\subsection{O que é?}
+A \textbf{Autenticação} no Olimpo é o sistema de identificação, credenciamento, controle de acesso e gerenciamento de sessões de usuários. A arquitetura adota um modelo baseado em credenciais próprias (e-mail e senha) com armazenamento criptográfico irreversível de senhas via \textbf{\texttt{bcryptjs}}, emissão e validação de \textbf{JSON Web Tokens (JWT)} assinados digitalmente com a biblioteca moderna \textbf{\texttt{jose}}, e persistência de sessão de alta segurança através de cookies gerenciados pelo servidor (\textit{Server-Side Cookies}) com as flags \textbf{\texttt{httpOnly}}, \textbf{\texttt{Secure}} e \textbf{\texttt{SameSite=lax}}.
+
+Diferente de sistemas de sessão \textit{stateful} em que cada requisição exige uma consulta ao banco de dados para checar tabelas de sessões ativas, o Olimpo implementa autenticação \textit{stateless}: o token JWT carrega em sua carga útil criptografada a identidade do usuário e suas declarações essenciais (\textit{claims}), permitindo validação imediata em milissegundos sem I/O de rede desnecessário.
+
+\subsection{Por que?}
+A estratégia de autenticação foi projetada para sanar vulnerabilidades críticas e atender aos requisitos de alta concorrência da plataforma gamificada:
+\begin{itemize}
+  \item \textbf{Segurança Contra Roubo de Sessão e XSS (\textit{Cross-Site Scripting}):} Armazenar tokens de autenticação em \texttt{localStorage} ou \texttt{sessionStorage} permite que qualquer script malicioso leia o token diretamente. O uso de cookies protegidos com \textbf{\texttt{httpOnly}} impede que qualquer código JavaScript no navegador tenha acesso ao token de sessão, neutralizando esse vetor de ataque.
+  \item \textbf{Proteção Contra CSRF (\textit{Cross-Site Request Forgery}):} A flag \textbf{\texttt{sameSite: "lax"}} combinada com a invocação das mutações via Server Actions nativas do Next.js anula a possibilidade de comandos forjados a partir de sites terceiros.
+  \item \textbf{Criptografia de Senhas Segura contra Ataques de Dicionário:} O uso de \texttt{bcryptjs} com fator de custo de 10 rounds de salt assegura que, mesmo em caso improvável de vazamento da base de dados relacional, as senhas originais dos participantes não possam ser revertidas via ataques de força bruta ou tabelas pré-computadas (\textit{rainbow tables}).
+  \item \textbf{Escalabilidade e Desempenho Serverless:} Por ser \textit{stateless}, a autenticação baseada em JWT não exige criação, leitura ou deleção de registros de sessão no PostgreSQL a cada Server Action invocada por jogadores no meio de uma partida, preservando as conexões do banco de dados para a dinâmica do jogo.
+  \item \textbf{Prevenção contra Enumeração de Usuários:} Mensagens de erro de autenticação são intencionalmente opacas (ex.: "Credenciais inválidas"), impedindo que atores mal-intencionados descubram se determinado e-mail já está cadastrado no sistema.
+\end{itemize}
+
+\subsection{Como?}
+A arquitetura de autenticação é encapsulada na funcionalidade modular \texttt{src/app/api/auth/} e orquestrada da seguinte forma:
+\begin{enumerate}
+  \item \textbf{Entidade Rica de Domínio (\texttt{entities/user.entity.ts}):}
+  A classe \texttt{UserEntity} encapsula a lógica pura de usuário e suas invariantes:
+  \begin{itemize}
+    \item \texttt{hashPassword(password)}: Gera o hash criptográfico assíncrono com salt de 10 rounds.
+    \item \texttt{verifyPassword(password, hash)}: Compara a senha informada com o hash persistido.
+    \item \texttt{validateEmail(email)}: Valida a conformidade de formato de e-mail com regex rigoroso.
+    \item \texttt{toDTO()}: Serializa o usuário para o formato seguro \texttt{UserDTO} (\texttt{id}, \texttt{email}, \texttt{name}, \texttt{xp}, \texttt{createdAt}), garantindo que o hash de senha jamais seja exposto para camadas externas ou para a interface.
+  \end{itemize}
+  \item \textbf{Assistente Criptográfico e Gestão de Cookies (\texttt{entities/jwt.helper.ts}):}
+  Utiliza a biblioteca de criptografia \texttt{jose}:
+  \begin{itemize}
+    \item \texttt{signSessionToken(payload)}: Gera um JWT assinado com algoritmo HS256 utilizando a chave secreta de ambiente \texttt{AUTH\_SECRET}, com tempo de vida de 7 dias e payload contendo \texttt{\{ sub: userId, email, name \}}.
+    \item \texttt{verifySessionToken(token)}: Deserializa e valida a assinatura e expiração do token de forma criptográfica.
+    \item \texttt{getAuthCookieOptions()}: Centraliza as diretivas de proteção:
+    \begin{quote}
+      \texttt{\{ httpOnly: true, secure: process.env.NODE\_ENV === "production", sameSite: "lax", path: "/", maxAge: 60 * 60 * 24 * 7 \}}
+    \end{quote}
+  \end{itemize}
+  \item \textbf{Casos de Uso Desacoplados (\texttt{usecase/}):}
+  \begin{itemize}
+    \item \texttt{RegisterUseCase}: Normaliza o e-mail, verifica se já existe na base através de \texttt{IUserRepository}, gera o hash da senha, persiste o novo registro com pontuação inicial de 0 XP e retorna a entidade.
+    \item \texttt{LoginUseCase}: Localiza o usuário por e-mail, compara o hash da senha via \texttt{UserEntity.verifyPassword} e gera o token JWT assinado.
+    \item \texttt{LogoutUseCase}: Coordena o fluxo de encerramento da sessão ativa.
+    \item \texttt{GetSessionUseCase}: Extrai e valida a identidade do usuário logado a partir do token.
+  \end{itemize}
+  \item \textbf{Server Actions e Interação com Cookies (\texttt{actions/}):}
+  As ações expostas para o frontend utilizam a API nativa \texttt{cookies()} do Next.js (\texttt{next/headers}):
+  \begin{itemize}
+    \item \texttt{loginAction}: Valida a entrada com Zod, invoca \texttt{LoginUseCase} e grava o cookie:
+    \begin{quote}
+      \texttt{const cookieStore = await cookies();}\\
+      \texttt{cookieStore.set(AUTH\_COOKIE\_NAME, token, getAuthCookieOptions());}
+    \end{quote}
+    \item \texttt{logoutAction}: Remove o cookie do navegador de forma definitiva:
+    \begin{quote}
+      \texttt{const cookieStore = await cookies();}\\
+      \texttt{cookieStore.delete(AUTH\_COOKIE\_NAME);}
+    \end{quote}
+  \end{itemize}
+  \item \textbf{Resolução de Sessão Protegida (\texttt{getCurrentUserSession}):}
+  Helper reutilizável consumido por Server Actions de outras funcionalidades do Olimpo (como criação de salas, início de partidas e submissão de votos na notícia). O helper recupera o cookie da requisição, valida o JWT e injeta o objeto \texttt{UserDTO} no caso de uso, rejeitando imediatamente requisições não autenticadas.
+\end{enumerate}
+
+
+% ==============================================================================
+% SEÇÃO 10: DEPENDENCY INJECTION
+% ==============================================================================
+\section{Dependency Injection}
+
+\subsection{O que é?}
+A \textbf{Injeção de Dependência} (\textit{Dependency Injection} -- DI) é um padrão de projeto de software que concretiza o Princípio da Inversão de Dependência (a letra "D" do acrônimo SOLID). Consiste em fornecer a uma classe ou serviço as suas dependências externas (como clientes de banco de dados, repositórios de dados ou serviços de mensageria) a partir de um agente exterior, geralmente através dos parâmetros de seu método construtor, em vez de permitir que a própria classe crie diretamente suas instâncias concretas.
+
+\subsection{Por que?}
+A aplicação rigorosa de Injeção de Dependência viabiliza benefícios indispensáveis:
+\begin{itemize}
+  \item \textbf{Desacoplamento Arquitetural:} Os casos de uso de negócio conhecem apenas contratos abstratos (interfaces TypeScript), não sabendo se os dados vêm de uma tabela PostgreSQL, de um documento JSONB, do Redis ou de uma API externa.
+  \item \textbf{Testabilidade Extrema (Zero-Database Unit Testing):} Permite testar integralmente fluxos de negócio complexos em milissegundos injetando repositórios em memória ou mocks nos testes com Vitest, sem necessidade de levantar serviços externos ou realizar conexões lentas de rede.
+  \item \textbf{Facilidade de Substituição e Manutenção:} Se a tecnologia de persistência for modificada, basta implementar uma nova classe que cumpra a interface correspondente, sem tocar em uma única linha dos casos de uso.
+\end{itemize}
+
+\subsection{Como?}
+O Olimpo utiliza o padrão de injeção via construtor com valores padrão estratégicos para balancear testabilidade com facilidade de consumo:
+\begin{enumerate}
+  \item \textbf{Definição do Contrato Abstrato (Interface):}
+  \begin{quote}
+    \texttt{export interface IUserRepository \{\\
+    \quad findByEmail(email: string): Promise<UserEntity | null>;\\
+    \quad create(user: UserEntity): Promise<UserEntity>;\\
+    \}}
+  \end{quote}
+  \item \textbf{Injeção no Construtor do Caso de Uso:}
+  \begin{quote}
+    \texttt{export class LoginUseCase \{\\
+    \quad constructor(\\
+    \quad\quad private readonly userRepository: IUserRepository = drizzleUserRepository\\
+    \quad ) \{\}\\
+    \quad async execute(input: LoginInput): Promise<LoginOutput> \{ ... \}\\
+    \}}
+  \end{quote}
+  \item \textbf{Consumo em Produção e em Testes:}
+  \begin{itemize}
+    \item \textbf{Em Produção:} A Server Action simplesmente invoca \texttt{new LoginUseCase()}, assumindo automaticamente o repositório real baseado em Drizzle/Postgres.
+    \item \textbf{Em Testes Unitários:} A suíte de testes instancia \texttt{new LoginUseCase(mockUserRepository)}, controlando as respostas com precisão e testando cenários de erro, credenciais inválidas e conflitos de forma isolada e determinística.
+  \end{itemize}
+\end{enumerate}
+
+% ==============================================================================
+% SEÇÃO 11: LAYERED ARCH (ARQUITETURA EM CAMADAS)
+% ==============================================================================
+\section{Layered Arch (Arquitetura em Camadas)}
+
+\subsection{O que é?}
+A \textbf{Arquitetura em Camadas} (\textit{Layered Architecture}) é um padrão estrutural que organiza o sistema em camadas concêntricas e hierárquicas com responsabilidades bem delimitadas, estabelecendo uma \textbf{Regra de Dependência Unidirecional}: o código de camadas superiores pode depender de camadas inferiores, mas as camadas mais internas jamais podem conhecer ou importar elementos das camadas externas.
+
+\subsection{Por que?}
+Sistemas que misturam consultas a banco de dados diretamente dentro de componentes visuais ou handlers de requisição tornam-se insustentáveis à medida que o escopo cresce:
+\begin{itemize}
+  \item \textbf{Isolamento de Responsabilidades:} Modificações de layout no frontend ou alterações no driver de banco de dados não afetam as regras matemáticas e o domínio do jogo.
+  \item \textbf{Manutenibilidade a Longo Prazo:} Qualquer membro da equipe sabe exatamente onde encontrar ou adicionar um código: entidades em \texttt{entities}, lógica em \texttt{usecase}, banco em \texttt{repositories} e endpoints em \texttt{actions}.
+  \item \textbf{Clareza nos Contratos:} Garante que a camada de domínio permaneça pura, contendo apenas TypeScript puro sem dependências pesadas de bibliotecas de terceiros.
+\end{itemize}
+
+\subsection{Como?}
+No Olimpo, as camadas são organizadas por funcionalidade (\textit{Feature-First}):
+\begin{itemize}
+  \item \textbf{1. Camada de Domínio (\texttt{entities/}):}
+  \begin{itemize}
+    \item Contém entidades ricas, enums e Value Objects.
+    \item Responsável pelas invariantes de negócio e validações puras (ex.: verificar se um PIN tem 6 dígitos, hash e conferência de senhas).
+    \item \textbf{Regra de Ouro:} Dependência zero. Não importa Next.js, React, Drizzle ou bancos de dados.
+  \end{itemize}
+  \item \textbf{2. Camada de Aplicação (\texttt{usecase/}):}
+  \begin{itemize}
+    \item Orquestra a execução das regras de negócio e fluxos do jogo.
+    \item Declara as interfaces de repositórios necessárias para completar suas tarefas.
+    \item Executa validações de estado, aciona serviços e retorna DTOs tipados.
+  \end{itemize}
+  \item \textbf{3. Camada de Infraestrutura (\texttt{repositories/}, \texttt{src/server/shared/}):}
+  \begin{itemize}
+    \item Implementa os contratos de repositório utilizando tecnologias concretas: Drizzle ORM, PostgreSQL, Redis, APIs externas de IA.
+    \item Contém as definições de tabelas e serializadores técnicos.
+  \end{itemize}
+  \item \textbf{4. Camada de Apresentação e Adaptação (\texttt{actions/}, \texttt{route.ts}):}
+  \begin{itemize}
+    \item Converte a entrada bruta do mundo exterior (formulários \texttt{FormData}, parâmetros de rota, cookies HTTP).
+    \item Saneia os dados com esquemas Zod e despacha a execução para os Use Cases.
+    \item Mapeia o resultado e erros para a resposta padronizada de cliente.
+  \end{itemize}
+\end{itemize}
+
+% ==============================================================================
+% SEÇÃO 12: VALIDAÇÃO DE DADOS
+% ==============================================================================
+\section{Validação de Dados}
+
+\subsection{O que é?}
+É a disciplina de verificação, transformação, validação de tipos e saneamento de todas as entradas de dados fornecidas pelo cliente ou por fontes externas antes de permitir qualquer processamento ou persistência no sistema. No projeto Olimpo, o motor canônico de validação de esquemas em tempo de execução e inferência estática é a biblioteca \textbf{Zod v4}.
+
+\subsection{Por que?}
+A máxima fundamental da segurança e confiabilidade de software é: \textit{"Never trust user input"} (Nunca confie na entrada do usuário).
+\begin{itemize}
+  \item \textbf{Prevenção contra Vetores de Ataque:} Validação rigorosa impede ataques de injeção (SQL Injection, Command Injection), estouro de tamanho de payloads, caracteres maliciosos e contaminação de protótipo.
+  \item \textbf{Eliminação de Erros Silenciosos de Runtime:} Sem validação em tempo de execução, valores como \texttt{undefined}, \texttt{null} ou formatos inesperados podem propagar-se profundamente pelas camadas internas, corrompendo o banco de dados.
+  \item \textbf{Ponte Segura entre TypeScript e Tempo de Execução:} O TypeScript realiza checagem de tipos estática que desaparece após a compilação; o Zod valida os dados reais no momento exato em que a requisição chega no servidor.
+\end{itemize}
+
+\subsection{Como?}
+A validação de dados no Olimpo é implementada em múltiplas camadas de proteção:
+\begin{enumerate}
+  \item \textbf{Validação de Borda em Server Actions com Zod:}
+  Cada action define seu esquema estrito de entrada e processa os dados com \texttt{safeParse}:
+  \begin{quote}
+    \texttt{const loginSchema = z.object(\{\\
+    \quad email: z.string().email("Endereço de e-mail inválido"),\\
+    \quad password: z.string().min(6, "A senha deve ter no mínimo 6 caracteres")\\
+    \});\\
+    \\
+    const parsed = loginSchema.safeParse(rawData);\\
+    if (!parsed.success) \{\\
+    \quad return \{ success: false, error: parsed.error.issues[0]?.message \};\\
+    \}}
+  \end{quote}
+  \item \textbf{Inferência Automática de Tipos TypeScript:}
+  Garantia de que os tipos TypeScript derivem automaticamente dos esquemas validados:
+  \begin{quote}
+    \texttt{export type LoginActionInput = z.infer<typeof loginSchema>;}
+  \end{quote}
+  \item \textbf{Validação Intrínseca de Value Objects no Domínio:}
+  Validações de regras invariantes do domínio (como o formato do PIN de 6 dígitos) são encapsuladas em métodos estáticos nos próprios Value Objects (ex.: \texttt{RoomPin.isValid(pin)}), garantindo que nenhum objeto inválido possa existir no domínio.
+  \item \textbf{Validação de Segurança de Rede (Anti-SSRF):}
+  No motor de ingestão de notícias (\texttt{news/extract}), além de Zod, é utilizada a biblioteca \texttt{ipaddr.js} com resolução de DNS pinning via \texttt{undici} para validar e bloquear estritamente requisições direcionadas a faixas de IP privadas (localhost, 127.0.0.1, 10.0.0.0/8, 192.168.0.0/16, etc.), neutralizando vulnerabilidades de SSRF (\textit{Server-Side Request Forgery}).
+\end{enumerate}
+
+% ==============================================================================
+% SEÇÃO 13: PADRÃO DE CÓDIGO
+% ==============================================================================
+\section{Padrão de Código}
+
+\subsection{O que é?}
+O \textbf{Padrão de Código} é o conjunto formal de convenções estilísticas, regras de tipagem estrita, ferramentas de análise estática de código (\textit{linters}), formatadores determinísticos, convenções de commits e esteiras de verificação automática adotadas no projeto para garantir excelência de engenharia.
+
+\subsection{Por que?}
+Em um projeto de grande porte e com múltiplos colaboradores:
+\begin{itemize}
+  \item \textbf{Legibilidade e Coerência Visual:} Um padrão unificado permite que qualquer desenvolvedor navegue e entenda o código instantaneamente, como se tivesse sido escrito por uma única pessoa.
+  \item \textbf{Prevenção Preventiva de Bugs:} Regras estritas de linter identificam variáveis não utilizadas, dependências ausentes em hooks React e potenciais vulnerabilidades de concorrência antes mesmo do código ser executado.
+  \item \textbf{Histórico de Versão Auditável:} O versionamento padronizado através de Conventional Commits simplifica a geração automática de changelogs e o rastreamento de defeitos (\textit{bisect}).
+\end{itemize}
+
+\subsection{Como?}
+O ferramental de governança de código do Olimpo é composto por:
+\begin{itemize}
+  \item \textbf{TypeScript em Modo Estrito (\texttt{strict: true}):} Sem exceções permissivas, com flags ativas para desabilitar retornos implícitos e variáveis não verificadas.
+  \item \textbf{ESLint 9 com Ecossistema Moderno:}
+  \begin{itemize}
+    \item \texttt{eslint-config-next} para melhores práticas de Next.js e React.
+    \item \texttt{eslint-plugin-unused-imports} para remoção automática de imports órfãos.
+    \item \texttt{eslint-plugin-jsx-a11y} para garantia de acessibilidade nas interfaces.
+  \end{itemize}
+  \item \textbf{Prettier com Tailwind Plugin:} Formatação uniforme com largura de linha, aspas duplas, ponto-e-vírgula e o plugin \texttt{prettier-plugin-tailwindcss} para ordenação previsível e canônica de classes de estilo CSS.
+  \item \textbf{Git Hooks com Husky e Lint-Staged:} A cada comando \texttt{git commit}, o Husky intercepta o processo e dispara o \texttt{lint-staged}, que formata e analisa apenas os arquivos alterados na \textit{staging area}.
+  \item \textbf{Conventional Commits com Commitlint:} Validação obrigatória da mensagem de commit seguindo o padrão da indústria:
+  \begin{itemize}
+    \item \texttt{feat:}: Nova funcionalidade.
+    \item \texttt{fix:}: Correção de bug.
+    \item \texttt{docs:}: Alterações exclusivamente em documentação.
+    \item \texttt{refactor:}: Refatoração de código sem alteração de comportamento.
+    \item \texttt{test:}: Adição ou correção de testes.
+    \item \texttt{chore:}: Atualização de tarefas de build ou dependências.
+  \end{itemize}
+  \item \textbf{Observabilidade e Logs Estruturados:} Emprego de \textbf{Pino} (\texttt{pino} e \texttt{pino-pretty}) no backend em vez de \texttt{console.log}, gravando registros estruturados em JSON enriquecidos com nível de severidade, timestamp e identificadores contextuais de requisição.
+\end{itemize}
+
+% ==============================================================================
+% SEÇÃO 14: FSD (FEATURE-SLICED DESIGN)
+% ==============================================================================
+\section{FSD (Feature-Sliced Design)}
+
+\subsection{O que é?}
+O \textbf{Feature-Sliced Design (FSD)} é uma metodologia arquitetural moderna concebida especificamente para estruturar projetos de frontend complexos. Em oposição à abordagem tradicional baseada em tipos técnicos de arquivos (pastas como \texttt{/components}, \texttt{/hooks}, \texttt{/services}, que rapidamente se tornam monolíticas e cheias de referências circulares), o FSD decompõe o código visual da aplicação em camadas hierárquicas claras, fatias de negócio independentes e segmentos técnicos padronizados.
+
+\subsection{Por que?}
+Projetos frontend de larga escala frequentemente sofrem da chamada "crise de acoplamento", onde um componente simples importa acidentalmente regras de negócio globais ou serviços de outras telas, inviabilizando refatorações e testes:
+\begin{itemize}
+  \item \textbf{Fluxo de Importação Controlado e Previsível:} O FSD impõe que uma camada só pode importar elementos de camadas que estejam hierarquicamente abaixo dela, erradicando totalmente dependências circulares.
+  \item \textbf{Reutilização Coerente:} Componentes genéricos de UI permanecem puros e reutilizáveis, enquanto lógicas específicas de negócios ficam estritamente contidas em suas fatias temáticas.
+  \item \textbf{Escalabilidade para Equipes Ágeis:} Múltiplos desenvolvedores podem atuar simultaneamente em diferentes \textit{features} e \textit{widgets} com mínimo risco de conflitos de merge no Git.
+\end{itemize}
+
+\subsection{Como?}
+No ecossistema do Olimpo, o diretório \texttt{web-app/src/} adota o FSD distribuído nas seguintes camadas ordenadas (da mais baixa para a mais alta na hierarquia):
+\begin{enumerate}
+  \item \textbf{Camada Base / Primitivas (\texttt{src/components/ui/}):}
+  Blocos de construção atômicos e agnósticos a qualquer regra de negócio do Olimpo.
+  Exemplos: botões estilizados, inputs de texto, cards, alertas, seletores de tema e ícones Lucide.
+  \item \textbf{Camada de Entidades do Frontend (\texttt{src/entities/}):}
+  Representações conceituais do domínio projetadas para exibição na interface do usuário.
+  Exemplo: \texttt{src/entities/news-article/}, que contém os componentes visuais para renderização de cartões de notícia, badge de categorização e interfaces de dados exibíveis.
+  \item \textbf{Camada de Funcionalidades (\texttt{src/features/}):}
+  Ações interativas completas do usuário que agregam valor direto ao negócio.
+  Exemplo: \texttt{src/features/extract-news/}, encapsulando a caixa de entrada de URL de notícia, o botão de disparo, o tratamento do estado de loading e a invocação da Server Action correspondente.
+  \item \textbf{Camada de Widgets Compostos (\texttt{src/widgets/}):}
+  Grandes blocos visuais autônomos que agrupam entidades e features para compor seções ricas da página.
+  Exemplos: \texttt{src/widgets/app-header/} (barra de navegação superior com perfil e tema) e \texttt{src/widgets/news-extractor/} (painel completo com formulário e pré-visualização de resultados).
+  \item \textbf{Camada de Telas / Páginas (\texttt{src/views/}):}
+  Montagem integral das telas do sistema integrando múltiplos widgets.
+  Exemplos: \texttt{src/views/home/}, \texttt{src/views/olimpo/} e \texttt{src/views/dev-sandbox/}.
+  \item \textbf{Camada de Aplicação do Next.js (\texttt{src/app/}):}
+  Ponto de entrada do roteador Next.js App Router (\texttt{layout.tsx}, \texttt{page.tsx}, \texttt{globals.css}), responsável por injetar fontes, provedores globais de tema e mapear as URLs públicas para as respectivas \textit{views}.
+\end{enumerate}
+
+\textbf{Hierarquia Estrita de Importações no Frontend:}
+$$\text{src/app} \longrightarrow \text{src/views} \longrightarrow \text{src/widgets} \longrightarrow \text{src/features} \longrightarrow \text{src/entities} \longrightarrow \text{src/components/ui}$$
+
+% ==============================================================================
+% SEÇÃO 15: TESTES DE SOFTWARE E GARANTIA DE QUALIDADE
+% ==============================================================================
+\section{Testes de Software e Garantia de Qualidade}
+
+\subsection{O que é?}
+É a estratégia multidisciplinar e automatizada de verificação, validação e aferição de conformidade de código que permeia todas as camadas da plataforma Olimpo. Em vez de depender de testes manuais tardios ou inspecionar apenas a interface visual, o projeto adota uma \textbf{Pirâmide de Testes Abrangente} que cobre desde a menor unidade lógica e invariantes de domínio até a experiência completa do usuário em navegadores reais.
+
+O ecossistema de testes do Olimpo é composto pelas seguintes modalidades:
+\begin{itemize}
+  \item \textbf{Testes Unitários de Domínio e Casos de Uso:} Validação estrita de entidades puras e orquestração de negócios com \textbf{Vitest v4} em tempo de execução ultrarrápido (sub-segundo).
+  \item \textbf{Testes de Integração de Repositórios e Serviços:} Verificação de persistência com \textbf{Drizzle ORM} e mensageria/cache com \textbf{Redis}, além de endpoints de streaming SSE.
+  \item \textbf{Testes de Server Actions e Observabilidade:} Simulação do fluxo de ações mutáveis do Next.js com validação Zod, injeção de sessão e logs estruturados em JSON via Pino.
+  \item \textbf{Testes de Componentes Visuais (UI):} Testes em isolamento de componentes React com \textbf{React Testing Library} e ambiente DOM emulado via \textbf{JSDOM}.
+  \item \textbf{Testes Ponta a Ponta (End-to-End -- E2E):} Simulação realista de jornadas de usuários em múltiplos motores de renderização (Chromium, Firefox e WebKit) através do \textbf{Playwright}.
+  \item \textbf{Testes de Extração e Heurísticas de Notícias:} Validação do motor de extração de conteúdo com \textbf{@mozilla/readability}, fallback com Jina Reader API e segurança de rede anti-SSRF com \textbf{Undici} e \textbf{ipaddr.js}.
+\end{itemize}
+
+\subsection{Por que?}
+Em um sistema gamificado e colaborativo com partidas multiplayer em tempo real e mecânicas de pontuação competitivas:
+\begin{itemize}
+  \item \textbf{Prevenção de Regressões em Regras Críticas:} Pequenas alterações em cálculos de pontuação de blefe, contagem regressiva de rodadas ou transições de status de sala poderiam corromper partidas ativas.
+  \item \textbf{Feedback Imediato para o Desenvolvedor (TDD):} A separação limpa com Injeção de Dependência permite que dezenas de suítes unitárias sejam executadas em menos de 2 segundos, acelerando o ciclo de desenvolvimento e permitindo refatorações com confiança absoluta.
+  \item \textbf{Confiabilidade em Ambientes Serverless e Heterogêneos:} Testes E2E garantem que o empacotamento do Next.js, as hidratações de componentes React no cliente, os cabeçalhos de cookies e os streams SSE funcionem em harmonia antes de qualquer implantação em produção.
+  \item \textbf{Conformidade Contínua e Governança Técnica:} A validação unificada garante que código quebrado, com erros de tipo ou sem testes seja bloqueado antes mesmo do merge no repositório.
+\end{itemize}
+
+\subsection{Como?}
+A estrutura de testes no repositório é organizada e executada conforme a taxonomia abaixo:
+\begin{enumerate}
+  \item \textbf{Testes Unitários de Domínio e Casos de Uso (\texttt{*.usecase.test.ts}, \texttt{*-entity.test.ts}):}
+  \begin{itemize}
+    \item Localizados co-localizados dentro de cada funcionalidade em \texttt{src/app/api/\{feature\}/tests/}.
+    \item Utilizam dublês de teste (mocks de repositórios em memória implementando interfaces como \texttt{IUserRepository}, \texttt{IRoomRepository} ou \texttt{IAIAnalysisService}).
+    \item Exemplos reais: \texttt{login.usecase.test.ts}, \texttt{create-room.usecase.test.ts}, \texttt{submit-vote.usecase.test.ts}, \texttt{ai-analysis-entity.test.ts}.
+    \item Comando: \texttt{pnpm test:unit} (executa via Vitest com compilação instantânea).
+  \end{itemize}
+  \item \textbf{Testes de Integração de Infraestrutura e Repositórios:}
+  \begin{itemize}
+    \item Validam operações reais de leitura, escrita e queries Drizzle (\texttt{drizzle-room.repository.test.ts}, \texttt{drizzle-news-vote.repository.test.ts}).
+    \item Validam comandos em memória e publicações de canal no Redis (\texttt{redis-room.repository.test.ts}, \texttt{redis-vote.repository.test.ts}, \texttt{redis-event.publisher.test.ts}).
+    \item Validam o ciclo de vida do stream SSE (\texttt{sse-route.test.ts}), garantindo que o fechamento da conexão acione o cancelamento do subscriber.
+  \end{itemize}
+  \item \textbf{Testes de Server Actions e Observabilidade (\texttt{*-actions.test.ts}, \texttt{*.e2e.test.ts}):}
+  \begin{itemize}
+    \item Validam a resposta discriminada (\texttt{success: true/false}), rejeição de entradas maliciosas com mensagens amigáveis e gravação correta de cookies no cabeçalho.
+    \item Integração com logs estruturados do Pino testados em \texttt{action-test-logger.test.ts}.
+  \end{itemize}
+  \item \textbf{Testes de Componentes Frontend (\texttt{web-app/tests/components/}):}
+  \begin{itemize}
+    \item Utilizam \texttt{@testing-library/react}, \texttt{@testing-library/jest-dom} e \texttt{@testing-library/user-event}.
+    \item Exemplos: \texttt{extract-news-form.test.tsx} e \texttt{article-preview.test.tsx}, simulando cliques, digitação de URLs, exibição de spinners de carregamento e estados de erro acessíveis.
+  \end{itemize}
+  \item \textbf{Testes End-to-End com Playwright (\texttt{web-app/tests/e2e/}):}
+  \begin{itemize}
+    \item Configurados em \texttt{playwright.config.ts}.
+    \item Inicializam o servidor local Next.js e exercitam fluxos completos de tela (\texttt{home.spec.ts}).
+    \item Comandos: \texttt{pnpm test:e2e} (modo headless para CI) e \texttt{pnpm test:e2e:ui} (modo interativo com depuração visual e time-travel).
+  \end{itemize}
+  \item \textbf{Testes de Pipeline de Notícias e Heurísticas de Segurança (\texttt{web-app/tests/}):}
+  \begin{itemize}
+    \item Executados com \texttt{tsx --test}: \texttt{news.test.ts}, \texttt{jina-text.test.ts}, \texttt{plain-content.test.ts}.
+    \item Validam a extração de manchetes reais, conversão HTML para Markdown e bloqueio de SSRF contra IPs privados via \texttt{ipaddr.js}.
+  \end{itemize}
+  \item \textbf{Cobertura de Código e Validação Completa:}
+  \begin{itemize}
+    \item Cobertura de código via V8 engine: \texttt{pnpm test:coverage}.
+    \item Pipeline de validação unificada pré-commit / pré-deploy:
+    \begin{quote}
+      \texttt{pnpm validate} $\equiv$ \texttt{pnpm lint \&\& pnpm typecheck \&\& pnpm test \&\& pnpm build}
+    \end{quote}
+  \end{itemize}
+\end{enumerate}
+
+% ==============================================================================
+% SEÇÃO 16: CI/CD, VERSIONAMENTO E DEPLOY DO WEB-APP
+% ==============================================================================
+\newpage
+\section{CI/CD, Versionamento e Deploy do Web-App}
+\label{sec:cicd}
+\begingroup
+\sloppy
+
+\subsection{O que é?}
+O ciclo de entrega do \textbf{web-app} combina versionamento em Git, validação automatizada em \textbf{GitHub Actions} e configuração de implantação em \textbf{Vercel} ou contêineres \textbf{Docker}. A integração contínua (CI) verifica qualidade, testes, compilação e segurança das alterações. A entrega e implantação (CD) dependem do ambiente de hospedagem escolhido.
+
+\textbf{Escopo verificado em 7 de outubro de 2026:} o repositório contém quatro workflows de verificação e a configuração de build da Vercel, mas \textbf{não contém um workflow de publicação}, push de imagem para registry ou promoção entre ambientes. Assim, a configuração em código comprova como o aplicativo é preparado para deploy; a conexão Git da Vercel, a branch de produção, os domínios e as variáveis cadastradas no provedor precisam ser conferidos no painel. Também não há evidência local de que um deploy aguarde o sucesso das verificações do GitHub.
+
+\subsection{Por que?}
+\begin{itemize}
+  \item \textbf{Reprodutibilidade:} o lockfile fixa a resolução de dependências e o CI instala com \texttt{--frozen-lockfile}, evitando alterações silenciosas durante a validação.
+  \item \textbf{Rastreabilidade:} branches, pull requests e commits identificam as alterações de aplicação, infraestrutura e migrações de banco de dados.
+  \item \textbf{Qualidade antes da entrega:} formatação, lint, tipos, testes e build são executados em sequência; uma falha interrompe as etapas seguintes do job.
+  \item \textbf{Segurança contínua:} auditoria de pacotes, análise estática e revisão de dependências complementam os testes funcionais.
+  \item \textbf{Separação dos ambientes:} o build adaptado à Vercel e o artefato standalone para Docker atendem formas diferentes de executar a mesma aplicação.
+\end{itemize}
+
+\subsection{Como foi feito o versionamento?}
+\subsubsection{Git, branches e pull requests}
+O histórico local registra branches \texttt{main} e \texttt{dev}, além de branches de trabalho com prefixos como \texttt{feat/} e \texttt{feature/}. A evolução foi integrada por pull requests e merges, inclusive de \texttt{dev} para \texttt{main}. Isso descreve o fluxo observado; não comprova uma política obrigatória de branches ou proteção configurada no GitHub.
+
+Marcos verificáveis da implantação e das pipelines:
+\begin{itemize}
+  \item \texttt{09cf602} (16/09/2026), \texttt{chore(ci): configure github quality gates}: centralizou os workflows na pasta \path{.github/workflows/} da raiz e incluiu CodeQL, Dependency Review e Dependabot.
+  \item \texttt{5984233} (16/09/2026), \texttt{chore(deploy): configure vercel build}: adicionou \path{web-app/vercel.json} com os comandos de instalação e compilação.
+  \item \texttt{fed0e47}, \texttt{chore(config): next config standalone}: registrou a configuração de saída standalone do Next.js.
+  \item \texttt{9445a2b} (06/10/2026), \texttt{chore(deploy): update container setup and docs}: atualizou Dockerfile, Compose e instruções de execução em contêiner.
+\end{itemize}
+
+\subsubsection{Conventional Commits e hooks locais}
+O arquivo \path{web-app/commitlint.config.mjs} utiliza \texttt{@commitlint/config-conventional} e exige tipo, escopo e assunto em letras minúsculas, com limite de 100 caracteres no cabeçalho. Exemplos compatíveis: \texttt{feat(auth): adiciona avatar}, \texttt{fix(deploy): ajusta build} e \texttt{ci(checks): atualiza verificacoes}.
+
+O Husky é instalado pelo script \texttt{prepare}. O hook \texttt{pre-commit} executa \texttt{pnpm exec lint-staged}: arquivos TypeScript recebem ESLint com correção e Prettier; CSS, JSON, Markdown e YAML recebem Prettier. O hook \texttt{commit-msg} valida a mensagem com Commitlint. Esses hooks atuam na estação do desenvolvedor; o \texttt{pre-commit} não executa toda a suíte de testes. O histórico também possui mensagens anteriores ou de merge fora do padrão, portanto a configuração atual não implica conformidade retroativa de todos os commits.
+
+\subsubsection{Versões do pacote, dependências e banco}
+\path{web-app/package.json} declara \texttt{version: 0.1.0}, \texttt{private: true} e \texttt{packageManager: pnpm@11.10.0}. A versão do pacote identifica o projeto, mas não é incrementada por uma pipeline de release. Não foram encontradas tags Git no checkout inspecionado nem automação de changelog ou release; a referência auditável de uma entrega é o commit utilizado.
+
+\path{web-app/pnpm-lock.yaml} versiona as dependências resolvidas. O arquivo \texttt{.nvmrc} fixa Node.js 24 para desenvolvimento e CI, em acordo com \texttt{engines.node} (\texttt{>=24.0.0 <25.0.0}). O Dockerfile atualmente usa \texttt{node:26-alpine}, uma divergência que deve ser considerada ao reproduzir o ambiente; este documento registra o estado existente.
+
+As migrações SQL e os metadados do Drizzle ficam em \path{web-app/drizzle/}. \texttt{pnpm db:generate} gera migrações e \texttt{pnpm db:migrate} as aplica. A alteração de schema deve acompanhar o commit da aplicação, permitindo relacionar código e banco. A reversão do código não desfaz automaticamente migrações já aplicadas.
+
+\subsection{Pipelines de integração contínua}
+\subsubsection{CI: validação completa}
+\path{.github/workflows/ci.yml} é acionado em \textbf{pull requests} e em \textbf{push para main}. O job \texttt{verify} executa em \texttt{ubuntu-latest}, com timeout de 20 minutos e diretório de trabalho \texttt{web-app}. A permissão é \texttt{contents: read}; execuções anteriores do mesmo grupo são canceladas quando há uma atualização.
+
+A sequência implementada é:
+\begin{enumerate}
+  \item Checkout do código, instalação do pnpm 11.10.0 e configuração do Node.js usando \texttt{web-app/.nvmrc}, com cache do pnpm vinculado ao lockfile.
+  \item \texttt{pnpm install --frozen-lockfile} para instalar sem regenerar o lockfile.
+  \item \texttt{pnpm audit --audit-level high} para verificar vulnerabilidades de alta severidade ou superiores.
+  \item \texttt{pnpm check}, que executa, nesta ordem: \texttt{format:check}, \texttt{lint}, \texttt{typecheck}, \texttt{test} e \texttt{build}. O script \texttt{test} reúne Vitest (\texttt{test:unit}) e os testes legados com TSX (\texttt{test:legacy}).
+  \item Instalação do Chromium e dependências de sistema com \texttt{pnpm exec playwright install --with-deps chromium}.
+  \item \texttt{pnpm test:e2e} para os testes de interface com Playwright.
+\end{enumerate}
+
+O workflow define \texttt{NODE\_ENV=test} e a URL pública local. Não provisiona serviços PostgreSQL ou Redis, não aplica migrações e não injeta credenciais de produção. A configuração atual do Playwright executa \textbf{somente Chromium}, inicia \texttt{pnpm dev}, usa até duas novas tentativas no CI e coleta trace na primeira tentativa adicional. Portanto, esses E2E exercitam o servidor de desenvolvimento; o build de produção é verificado em uma etapa separada.
+
+\subsubsection{Automated Code Review}
+\path{.github/workflows/code-review.yml} roda quando uma PR é aberta, atualizada ou reaberta. Prepara Node.js e pnpm, instala com lockfile congelado, publica achados de ESLint via \textbf{reviewdog}, executa \texttt{pnpm typecheck} e \texttt{pnpm test:unit}. O job tem timeout de 20 minutos e permite escrita em pull requests.
+
+Os comentários do reviewdog só são publicados quando a branch da PR pertence ao mesmo repositório; o filtro prioriza linhas adicionadas. A opção \texttt{fail\_level: none} torna essa etapa de comentários informativa. Typecheck e testes continuam sujeitos a falha, e o lint bloqueante está no workflow CI. O script local \texttt{pnpm review:pr}, que usa Acrux, é uma ferramenta distinta: não é executado por esse workflow.
+
+\subsubsection{CodeQL e Dependency Review}
+\begin{itemize}
+  \item \textbf{CodeQL} (\path{.github/workflows/codeql.yml}): analisa JavaScript/TypeScript sem etapa de build, em PRs, pushes para \texttt{main} e semanalmente pelo cron \texttt{30 2 * * 1} (segunda-feira às 02:30 UTC; domingo às 23:30 em São Paulo). A permissão \texttt{security-events: write} permite enviar os resultados à área de segurança do GitHub.
+  \item \textbf{Dependency Review} (\path{.github/workflows/dependency-review.yml}): verifica alterações de dependências em PRs, com timeout de 10 minutos e \texttt{fail-on-severity: high}. Complementa a auditoria do CI ao analisar o delta de dependências.
+  \item \textbf{Dependabot} (\path{.github/dependabot.yml}): verifica semanalmente pacotes npm de \texttt{/web-app}, imagens Docker e GitHub Actions; atualizações npm minor e patch são agrupadas em \texttt{non-major}. Essa configuração cria propostas de atualização, sem configurar merge automático.
+\end{itemize}
+
+As quatro pipelines não formam um único job encadeado: seus gatilhos permitem execuções independentes. Torná-las requisitos obrigatórios para merge depende das regras de proteção do repositório, que não são demonstradas pelos arquivos YAML.
+
+\subsection{Deploy do web-app}
+\subsubsection{Vercel: configuração disponível}
+\path{web-app/vercel.json} identifica o framework \texttt{nextjs} e declara:
+\begin{quote}
+\texttt{installCommand: pnpm install --frozen-lockfile}\\
+\texttt{buildCommand: pnpm build}
+\end{quote}
+
+Em \path{web-app/next.config.ts}, a variável \texttt{VERCEL=1} desativa \texttt{output: standalone}. O comentário do código registra que o adaptador de build da Vercel não precisa desse formato e que sua finalização standalone apresenta incompatibilidade nessa versão do Next.js. Fora da Vercel, o projeto mantém a saída standalone para hospedagem própria e Docker.
+
+Para reproduzir a configuração de hospedagem, o projeto da Vercel deve apontar para o diretório raiz \texttt{web-app}, usar uma versão de Node.js compatível com o pacote e receber as variáveis de cada ambiente. A integração Git pode ser utilizada para publicar revisões; sua ativação, a branch de produção e a existência de previews são configurações externas a confirmar. Não há comando de deploy da Vercel nos workflows inspecionados nem migração de banco no build configurado.
+
+\subsubsection{Docker: artefato de produção e Compose local}
+O Dockerfile utiliza estágios separados: \texttt{base}, \texttt{dependencies}, \texttt{development}, \texttt{migrator}, \texttt{builder} e \texttt{runner}. A instalação usa lockfile congelado; o builder executa \texttt{pnpm build}. O runner copia \texttt{.next/standalone}, \texttt{.next/static} e \texttt{public}, executa como usuário \texttt{nextjs} e inicia \texttt{node server.js} na porta 3000.
+
+\textbf{O Compose atual é de desenvolvimento:} \path{web-app/compose.yaml} seleciona o estágio \texttt{development}, monta o código local e inicia Next.js com Webpack, polling e Fast Refresh. Ele sobe PostgreSQL 18 e Redis 7 com volumes persistentes. O serviço \texttt{migrate} aguarda o PostgreSQL saudável; o aplicativo aguarda PostgreSQL, Redis e a conclusão bem-sucedida das migrações.
+
+Execução local a partir de \texttt{web-app}:
+\begin{verbatim}
+docker compose up -d --build
+docker compose logs -f app
+\end{verbatim}
+
+Para gerar manualmente um artefato de produção, o alvo correto é \texttt{runner}. O roteiro abaixo é uma possibilidade operacional baseada no Dockerfile, \textbf{não uma pipeline de publicação existente}; substitua \texttt{<sha>} pelo commit entregue:
+\begin{verbatim}
+docker build --target runner -t olimpo-web:<sha> .
+docker run --rm --env-file .env.production \
+  -e HOSTNAME=0.0.0.0 -p 3000:3000 olimpo-web:<sha>
+\end{verbatim}
+
+O exemplo usa continuação de linha de shell POSIX; em PowerShell, execute o comando \texttt{docker run} em uma linha. O arquivo \texttt{.env.production} deve ser criado no ambiente de operação e não versionado. Essa execução pressupõe PostgreSQL e Redis acessíveis pelo contêiner e migrações previamente aplicadas; os serviços locais do Compose não são provisionados por \texttt{docker run}.
+
+\subsubsection{Variáveis, migrações e verificação da entrega}
+As variáveis documentadas em \path{web-app/.env.example} incluem:
+\begin{itemize}
+  \item \texttt{DATABASE\_URL}: conexão PostgreSQL do ambiente, com Drizzle e migrações apontando para o mesmo banco.
+  \item \texttt{REDIS\_URL}: conexão do cache e dos eventos Pub/Sub.
+  \item \texttt{AUTH\_SECRET}: segredo de assinatura das sessões; o valor de exemplo é destinado ao desenvolvimento.
+  \item \texttt{NEXT\_PUBLIC\_APP\_URL}: URL pública da aplicação, a definir antes da compilação quando utilizada no código cliente.
+  \item \texttt{JINA\_API\_KEY}: credencial opcional do fallback de extração de notícias.
+\end{itemize}
+
+Na implantação Vercel ou no runner Docker, a aplicação das migrações exige uma etapa operacional separada (\texttt{pnpm db:migrate} em ambiente com dependências e acesso ao banco). O serviço migrator do Compose cobre somente o fluxo ali definido. O pipeline CI não executa migrações contra produção.
+
+Após publicar, \texttt{GET /api/health} retorna \texttt{\{"status":"ok"\}} e permite verificar a resposta HTTP do aplicativo. Esse endpoint não consulta PostgreSQL nem Redis; login, criação/entrada em sala e recebimento de eventos devem ser verificados para avaliar as integrações. Registre o commit entregue, o resultado dos checks e a revisão de hospedagem ou imagem utilizada.
+
+Uma reversão deve selecionar uma revisão ou imagem anterior identificável e avaliar a compatibilidade com o schema vigente. Não há automação de rollback no repositório. A implantação de CD encadeado ao CI, publicação de imagens, promoção de ambientes e releases com tags permanece uma evolução possível, não parte do fluxo implementado.
+
+\par
+\endgroup
+
+% ==============================================================================
+% SEÇÃO 17: ACESSIBILIDADE DIGITAL, VLIBRAS E WCAG
+% ==============================================================================
+\newpage
+\section{Acessibilidade Digital, VLibras e WCAG}
+\label{sec:acessibilidade}
+\begingroup
+\sloppy
+
+\subsection{O que é?}
+A acessibilidade do Olimpo é apoiada por integração com \textbf{VLibras}, HTML semântico, atributos ARIA, foco visível, identificação textual de erros e respeito à preferência de redução de movimento em componentes específicos. Esta seção relaciona essas implementações a critérios da \textbf{WCAG 2.2}, publicada pelo W3C, e apresenta medições reproduzíveis de contraste realizadas em 7 de outubro de 2026.
+
+As WCAG organizam a acessibilidade em quatro princípios: conteúdo perceptível, interface operável, informação compreensível e implementação robusta. O nível AA exige o atendimento dos critérios A e AA aplicáveis às páginas completas e aos processos completos. A referência normativa é a \href{https://www.w3.org/TR/WCAG22/}{recomendação WCAG 2.2 do W3C}.
+
+\textbf{Resultado da análise:} há evidências concretas de recursos de acessibilidade e de pares de cores com contraste adequado. Contudo, também foram identificados pares abaixo dos limiares de referência e uma falha em teste de componente. O levantamento não permite declarar que todas as cores, telas ou funcionalidades atendem integralmente à WCAG AA. Trata-se de documentação de implementação e verificação parcial, com o escopo explicitado a seguir.
+
+\subsection{Por que?}
+O jogo utiliza notícias, formulários, decisões de votação e atualizações em tempo real. Rótulos acessíveis e informações textuais auxiliam usuários de leitores de tela; foco visível e controles nativos favorecem navegação por teclado; contraste ajuda pessoas com baixa visão; a redução de movimento atende preferências de usuários sensíveis a animações. O VLibras acrescenta uma opção de tradução de conteúdo para pessoas que utilizam a Língua Brasileira de Sinais.
+
+\subsection{Como o VLibras foi integrado?}
+\path{web-app/src/components/organisms/vlibras-widget.tsx} implementa o componente cliente \texttt{VlibrasWidget}. Ele é importado e renderizado no layout raiz, \path{web-app/src/app/layout.tsx}, dentro do provedor de tema, junto aos elementos globais da aplicação. Assim, sua montagem está prevista nas rotas que utilizam esse layout.
+
+As evidências de integração são:
+\begin{itemize}
+  \item Carregamento do script oficial \url{https://vlibras.gov.br/app/vlibras-plugin.js} via \texttt{next/script}, com estratégia \texttt{afterInteractive}.
+  \item Inicialização no callback \texttt{onReady}, após verificar a presença de \texttt{window.VLibras}, com \texttt{new window.VLibras.Widget} apontando para \url{https://vlibras.gov.br/app}.
+  \item Marcação de integração com os atributos \texttt{vw}, \texttt{vw-access-button} e \texttt{vw-plugin-wrapper}, e identificação do contêiner como \texttt{Widget de acessibilidade VLibras}.
+\end{itemize}
+
+O uso do script e do construtor está alinhado às formas descritas no \href{https://vlibras.gov.br/doc/widget/installation/webpageintegration.html}{manual oficial de integração do VLibras}. A finalidade de tradução do português para Libras é descrita na \href{https://vlibras.gov.br/doc/widget/introduction/overview.html}{visão geral oficial da ferramenta}.
+
+A inspeção confirma a integração no código, não o carregamento efetivo do serviço em produção nem a qualidade de cada tradução. O widget depende do serviço externo. A presença de tradução para Libras complementa os demais recursos; por si só, não comprova conformidade WCAG, acessibilidade por teclado ou compatibilidade de toda a interface com leitores de tela.
+
+\subsection{Evidências no código e relação com WCAG}
+\subsubsection{Idioma, estrutura e nomes acessíveis}
+\begin{itemize}
+  \item \textbf{Idioma da página (3.1.1, A):} o layout raiz declara \texttt{html lang="pt-BR"}, permitindo identificar o idioma principal.
+  \item \textbf{Informações e relações (1.3.1, A):} \path{src/features/register/ui/registration-field.tsx}, relativo a \texttt{web-app}, associa \texttt{Label htmlFor} ao \texttt{id} do campo. O estado obrigatório tem texto \texttt{sr-only}; os ícones decorativos recebem \texttt{aria-hidden}.
+  \item \textbf{Nomes e estados (4.1.2, A):} o editor de avatar associa título e descrição ao \texttt{dialog} com \texttt{aria-labelledby} e \texttt{aria-describedby}; escolhas usam \texttt{aria-pressed} e nomes de opções. O avatar rotulado utiliza \texttt{role="img"} e \texttt{aria-label} em \path{src/components/organisms/avatar-customizer/avatar-character.tsx}.
+  \item \textbf{Identificação sem depender somente de cor (1.4.1, A):} \path{src/components/molecules/decision-button.tsx} apresenta rótulo textual para cada decisão; erros do cadastro são descritos em texto. A cor reforça a informação, em vez de ser seu único portador nesses componentes.
+\end{itemize}
+
+Esses exemplos demonstram técnicas relacionadas aos critérios indicados. A avaliação de todas as imagens, landmarks, títulos e nomes acessíveis das demais rotas permanece fora deste levantamento.
+
+\subsubsection{Teclado, foco e diálogos}
+Os componentes \path{src/components/atoms/button.tsx} e \path{src/components/atoms/input.tsx} utilizam elementos nativos e classes \texttt{focus-visible}. No cadastro, o foco do botão principal recebe dois contornos, escuro e branco, pela classe \texttt{register-submit-focus} em \texttt{globals.css}. Essas implementações apoiam 2.1.1 (Teclado, A) e 2.4.7 (Foco visível, AA); a \href{https://www.w3.org/WAI/WCAG22/Understanding/focus-visible.html}{orientação do W3C para foco visível} explica sua finalidade.
+
+\path{src/components/organisms/avatar-customizer/avatar-editor-modal.tsx} abre um diálogo nativo com \texttt{showModal()}, guarda o elemento anteriormente focado e devolve o foco ao fechar. O tratamento de \texttt{onCancel} permite fechamento com Escape quando não há salvamento em andamento. \path{tests/e2e/register-avatar.spec.ts} contém cenários que verificam Escape, cancelamento e retorno do foco ao botão de edição. A existência desses cenários é evidência de cobertura planejada; eles não foram executados nesta revisão documental.
+
+Os contornos e o diálogo não bastam para afirmar atendimento integral de 2.1.2 (ausência de bloqueio de teclado), 2.4.3 (ordem de foco) ou 2.4.11 (foco não encoberto). Esses pontos exigem navegação real pelas páginas, inclusive com menus, notificações e o widget VLibras abertos.
+
+\subsubsection{Formulários, erros e atualizações dinâmicas}
+No cadastro, \texttt{registration-field.tsx} utiliza \texttt{aria-invalid} e associa dicas e erros por \texttt{aria-describedby}. As mensagens apresentam a causa do erro em texto; o view model em \path{src/features/register/model/use-register-view-model.ts} direciona o foco ao primeiro campo inválido e ao resumo de erro do servidor. São evidências relacionadas a 3.3.1 (Identificação de erros, A) e 3.3.2 (Rótulos ou instruções, A), conforme a \href{https://www.w3.org/WAI/WCAG22/Understanding/error-identification.html}{orientação do W3C sobre identificação de erros}.
+
+\path{src/features/register/ui/register-form.tsx} declara preenchimento automático para apelido, e-mail e nova senha, além de \texttt{aria-busy} e resumo com \texttt{role="alert"}. \path{src/features/extract-news/ui/extract-news-form.tsx} e \path{src/components/molecules/loading/loading.tsx} incluem \texttt{role="status"} e \texttt{aria-live="polite"}; o indicador de carregamento fornece texto oculto visualmente. Essas marcações apoiam 4.1.3 (Mensagens de status, AA), descrito na \href{https://www.w3.org/WAI/WCAG22/Understanding/status-messages.html}{orientação do W3C sobre mensagens de status}. A qualidade e frequência dos anúncios precisam ser verificadas com tecnologia assistiva.
+
+\subsubsection{Redução de movimento e adaptação da interface}
+\path{src/components/molecules/loading/loading.module.css} desativa animações e oculta a varredura no modo \texttt{prefers-reduced-motion: reduce}. O editor de avatar contém variantes \texttt{motion-reduce}; o lobby consulta essa preferência e remove o atraso de 2,2 segundos antes da navegação, em \path{src/views/room-lobby/ui/room-lobby-view.tsx}. Isso evidencia atenção à redução de animações, relacionada a 2.3.3 (Animação por interações, AAA), sem demonstrar cobertura de todas as animações do sistema.
+
+O teste E2E do editor de avatar verifica ausência de overflow horizontal em viewport de 390 pixels e posicionamento de controles em tamanhos desktop. Essa cobertura é relevante à adaptação da interface, mas não substitui a avaliação de 1.4.10 (Reflow, AA) a 320 pixels CSS, zoom e espaçamento de texto. A escolha de tema claro/escuro, configurada em \texttt{theme-provider.tsx}, também não substitui a medição dos contrastes de cada tema.
+
+\subsection{Contrastes: método e resultados}
+\subsubsection{Método reproduzível}
+O levantamento utiliza as cores reais de \path{web-app/src/app/globals.css} e os tokens Tailwind da dependência instalada em \path{web-app/node_modules/tailwindcss/theme.css}. O script \path{docs/scripts/medir_contraste.py} lê esses arquivos e grava \path{docs/codigo/acessibilidade-contrastes.json}. Execute da raiz do repositório, após instalar as dependências:
+\begin{verbatim}
+python docs/scripts/medir_contraste.py
+\end{verbatim}
+
+A razão é calculada como $(L_{maior}+0{,}05)/(L_{menor}+0{,}05)$, com luminância relativa em sRGB. Os valores OKLCH são convertidos para sRGB com clipping de canais fora do gamut, seguindo as transformações de \href{https://www.w3.org/TR/css-color-4/\#color-conversion-code}{CSS Color 4}. Os números de cores cromáticas são aproximações; o mapeamento de gamut do navegador pode alterar o resultado. A comparação usa o valor sem arredondamento; as tabelas arredondam apenas para apresentação.
+
+O critério 1.4.3 (AA) estabelece \textbf{4,5:1 para texto comum} e \textbf{3:1 para texto grande}, definido como pelo menos 18 pontos ou 14 pontos em negrito. Placeholders também precisam de contraste adequado. O critério 1.4.11 (AA) usa \textbf{3:1} para informação visual necessária a identificar componentes e estados. As fontes são as orientações do W3C para \href{https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html}{contraste de texto} e \href{https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast.html}{contraste não textual}.
+
+\subsubsection{Pares que atingem os limiares medidos}
+\begin{center}
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X r l}
+\hline
+\textbf{Par de cores / uso} & \textbf{Razão} & \textbf{Referência} \\
+\hline
+\texttt{foreground/background}, claro & 19,79:1 & Texto AA \\
+\texttt{foreground/background}, escuro & 18,96:1 & Texto AA \\
+\texttt{card-foreground/card}, escuro & 17,16:1 & Texto AA \\
+\texttt{primary-foreground/primary}, claro & 17,16:1 & Texto AA \\
+\texttt{primary-foreground/primary}, escuro & 14,23:1 & Texto AA \\
+\texttt{muted-foreground/muted}, escuro & 5,83:1 & Texto AA \\
+Cadastro: \texttt{slate-900/slate-50} & 17,05:1 & Texto AA \\
+Placeholder: \texttt{slate-500/slate-50} & 4,55:1 & Texto AA \\
+Botão: \texttt{slate-950/amber-400} & 11,75:1 & Texto AA \\
+Erro: \texttt{red-700/branco} & 6,42:1 & Texto AA \\
+Foco cadastro: \texttt{blue-700/branco} & 6,82:1 & Não textual AA \\
+\hline
+\end{tabularx}
+\end{center}
+
+Os pares de cadastro e botão correspondem às classes em \texttt{input.tsx}, \texttt{button.tsx} e \texttt{registration-field.tsx}. Os pares semânticos são definições de tokens: sua aprovação não significa que todos os elementos usem esse fundo. Por exemplo, o \texttt{body} define texto branco sobre um gradiente azul, em vez do par \texttt{foreground/background} do tema claro.
+
+\subsubsection{Exceções e pontos de atenção encontrados}
+\begin{center}
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X r >{\raggedright\arraybackslash}p{5cm}}
+\hline
+\textbf{Par medido} & \textbf{Razão} & \textbf{Resultado} \\
+\hline
+\texttt{muted-foreground/muted}, claro & 4,34:1 & Abaixo de 4,5:1 para texto comum \\
+\texttt{ring/background}, claro & 2,59:1 & Abaixo de 3:1 para indicador necessário \\
+\texttt{border/background}, claro & 1,26:1 & Abaixo de 3:1; depende da função da borda \\
+Branco / \texttt{\#4387f4} & 3,49:1 & Abaixo de 4,5:1; atinge 3:1 \\
+Branco / \texttt{\#3478ed} & 4,15:1 & Abaixo de 4,5:1; atinge 3:1 \\
+Branco / \texttt{\#2f70e3} & 4,62:1 & Atinge 4,5:1 nesta parada \\
+\hline
+\end{tabularx}
+\end{center}
+
+\path{src/components/atoms/badge.tsx}, relativo a \texttt{web-app}, usa o par \texttt{bg-muted text-muted-foreground} na variante \texttt{secondary}; portanto há um uso concreto do par de 4,34:1. \texttt{input.tsx} na variante padrão e \texttt{decision-button.tsx} usam \texttt{ring-ring}. A borda de baixo contraste só caracteriza falha de 1.4.11 quando é necessária à identificação do componente ou estado; bordas puramente decorativas não são automaticamente uma falha.
+
+Os três pares branco/azul são paradas do gradiente do \texttt{body}, não uma medição de cada pixel atrás de um texto. \path{src/views/olimpo/home/ui/parts/home-intro.tsx} contém um título grande e um parágrafo branco \texttt{text-base} sobre a página. As paradas mais claras atingem a referência de texto grande, mas não a de texto comum. Isso indica necessidade de medir o fundo efetivo sob o parágrafo nos diferentes tamanhos de tela. Gradientes, transparências, sobreposições, hover, estados desabilitados e mudanças de tema precisam de avaliação contextual.
+
+\subsection{Testes existentes e verificação realizada}
+\begin{itemize}
+  \item \path{tests/components/article-preview.test.tsx}: consulta cabeçalho por papel e nível e verifica link de imagem por nome acessível.
+  \item \path{tests/components/register-form.test.tsx}: consulta campos por rótulo, diálogo por papel, botão por nome, erro por \texttt{role="alert"} e seleção por \texttt{aria-pressed}.
+  \item \path{tests/unit/room-lobby-landing.test.tsx}: verifica que a preferência de movimento reduzido elimina o atraso de navegação.
+  \item \path{tests/e2e/register-avatar.spec.ts}: contém cenários de Escape, retorno de foco, estado selecionado e ausência de overflow em viewport mobile.
+\end{itemize}
+
+Os caminhos acima são relativos a \texttt{web-app}. Nesta revisão foram executadas as três suítes de componentes/unidade com Vitest: \textbf{8 testes, 7 aprovados e 1 falha}. A falha ocorreu em \texttt{register-form.test.tsx}, ao procurar o botão com nome acessível \texttt{Mostrar senha}, não encontrado na renderização atual. Esse resultado registra uma divergência entre o teste e o componente; não comprova, isoladamente, violação de um critério WCAG. Os testes E2E foram inspecionados, mas não executados nesta revisão.
+
+O CI existente executa os testes do projeto e lint, porém não foi encontrada integração de auditoria WCAG com axe ou Lighthouse, nem verificação automática de todos os contrastes. O script de medição desta seção é uma ferramenta documental e não foi conectado à pipeline. Consultas por papéis e nomes acessíveis fornecem evidência útil, mas não constituem auditoria completa com leitores de tela.
+
+\subsection{Limites da evidência e continuidade da avaliação}
+O estado documentado permite afirmar que \textbf{o Olimpo implementa recursos relacionados a acessibilidade e WCAG, inclui VLibras e possui diversos pares de cores com contraste adequado}. Para uma declaração de conformidade AA, ainda é necessário avaliar páginas e fluxos completos, corrigir e verificar as exceções identificadas e registrar os resultados.
+
+A avaliação deve abranger teclado e leitores de tela, contraste renderizado em ambos os temas e estados, reflow a 320 pixels CSS, zoom, espaçamento de texto, nomes e alternativas de imagens, foco não encoberto pelo widget ou notificações e tamanho dos alvos de interação. Como o jogo tem rodadas cronometradas, também é necessário avaliar os limites de tempo segundo 2.2.1 (A), incluindo eventual justificativa de exceção aplicável. A preferência de movimento reduzido do lobby não é uma adaptação do tempo para responder à rodada.
+
+As evidências quantitativas ficam preservadas em \path{docs/codigo/acessibilidade-contrastes.json}, com cores de origem, razão, limiar e resultado por par. As fontes normativas e de VLibras estão vinculadas nos tópicos correspondentes, permitindo revisar esta seção quando o código e os testes evoluírem.
+\par
+\endgroup
+
+% ==============================================================================
+% CONCLUSÃO E CONSIDERAÇÕES FINAIS
+% ==============================================================================
+\newpage
+\section{Considerações Finais}
+
+A arquitetura do \textbf{Olimpo — Fake News AI} foi projetada para garantir alto desempenho, segurança e manutenibilidade a longo prazo. A integração entre governança técnica (\textbf{OpenSpec}), desacoplamento de regras de negócio (\textbf{Clean Architecture}), persistência híbrida de baixa latência (\textbf{PostgreSQL} no \textbf{Supabase} e \textbf{Redis}), eventos em tempo real via \textbf{SSE} e organização modular (\textbf{FSD}) estabelece uma base robusta e escalável para o sistema.
+
+A evolução contínua da aplicação deve priorizar a pureza do domínio de negócio, a validação rigorosa de entradas de rede e a cobertura contínua de testes automatizados, sustentando uma experiência multiplayer estável, interativa e segura no combate à desinformação.
+
+\vspace{1.5cm}
+\begin{center}
+  \rule{0.6\textwidth}{0.5pt}\\
+  \textbf{Equipe de Engenharia de Software — Olimpo AI}\\
+  PUCC \& Instituto de Pesquisas Eldorado
+\end{center}
+
+\label{LastPage}
+\end{document}

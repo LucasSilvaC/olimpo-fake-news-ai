@@ -97,7 +97,7 @@ export const documentationPages: IDocumentationPage[] = [
               },
               {
                 label: "Especificações OpenSpec",
-                href: "https://github.com/LucasSilvaC/olimpo-fake-news-ai/tree/feat/linguistic-rules/openspec/specs",
+                href: "https://github.com/LucasSilvaC/olimpo-fake-news-ai/tree/dev/docs/openspec/specs",
                 description: "Contratos de domínio para salas, votação e pontuação.",
               },
             ],
@@ -182,12 +182,12 @@ export const documentationPages: IDocumentationPage[] = [
             items: [
               {
                 label: "Especificação de salas",
-                href: `${repository}/openspec/specs/rooms/spec.md`,
+                href: `https://github.com/LucasSilvaC/olimpo-fake-news-ai/blob/dev/docs/openspec/specs/rooms/spec.md`,
                 description: "PIN, acesso, playlist e início da partida.",
               },
               {
                 label: "Especificação de eventos em tempo real",
-                href: `${repository}/openspec/specs/realtime-events/spec.md`,
+                href: `https://github.com/LucasSilvaC/olimpo-fake-news-ai/blob/dev/docs/openspec/specs/realtime-events/spec.md`,
                 description: "Eventos usados para atualizar o estado da sala.",
               },
             ],
@@ -267,12 +267,12 @@ export const documentationPages: IDocumentationPage[] = [
             items: [
               {
                 label: "Especificação de votação",
-                href: `${repository}/openspec/specs/news-voting/spec.md`,
+                href: `https://github.com/LucasSilvaC/olimpo-fake-news-ai/blob/dev/docs/openspec/specs/news-voting/spec.md`,
                 description: "Opções permitidas, voto único e fechamento da rodada.",
               },
               {
                 label: "Especificação de gamificação",
-                href: `${repository}/openspec/specs/gamification/spec.md`,
+                href: `https://github.com/LucasSilvaC/olimpo-fake-news-ai/blob/dev/docs/openspec/specs/gamification/spec.md`,
                 description: "Pontuação por rodada, ranking e XP ao final da partida.",
               },
             ],
@@ -437,7 +437,7 @@ export const documentationPages: IDocumentationPage[] = [
             items: [
               {
                 label: "Documento de arquitetura (PDF)",
-                href: `${repository}/docs/arquitetura.pdf`,
+                href: `${repository}/docs/codigo/arquitetura.pdf`,
                 description: "Decisões técnicas e limites operacionais do projeto.",
               },
               {
@@ -511,12 +511,12 @@ export const documentationPages: IDocumentationPage[] = [
             items: [
               {
                 label: "Documento de arquitetura (PDF)",
-                href: `${repository}/docs/arquitetura.pdf`,
+                href: `${repository}/docs/codigo/arquitetura.pdf`,
                 description: "Persistência híbrida, Pub/Sub e implementação SSE.",
               },
               {
                 label: "Especificação de eventos em tempo real",
-                href: `${repository}/openspec/specs/realtime-events/spec.md`,
+                href: `https://github.com/LucasSilvaC/olimpo-fake-news-ai/blob/dev/docs/openspec/specs/realtime-events/spec.md`,
                 description: "Eventos de domínio publicados pelas salas.",
               },
             ],
@@ -680,12 +680,12 @@ export const documentationPages: IDocumentationPage[] = [
             items: [
               {
                 label: "Relatório de arquitetura e acessibilidade",
-                href: `${repository}/docs/arquitetura.pdf`,
+                href: `${repository}/docs/codigo/arquitetura.pdf`,
                 description: "Estratégia de qualidade e evidências de acessibilidade.",
               },
               {
                 label: "Medições de contraste",
-                href: `${repository}/docs/acessibilidade-contrastes.json`,
+                href: `${repository}/docs/codigo/acessibilidade-contrastes.json`,
                 description: "Pares medidos, razão de contraste e escopo da auditoria.",
               },
             ],

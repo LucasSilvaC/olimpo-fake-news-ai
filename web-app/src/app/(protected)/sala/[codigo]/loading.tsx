@@ -1,28 +1,13 @@
 import { LoaderCircle, Users } from "lucide-react";
-import Image from "next/image";
 import * as React from "react";
+
+import { PageShell } from "@/components/molecules/page-shell";
+import { Header } from "@/widgets/app-header";
 
 export default function RoomLoading(): React.ReactElement {
   return (
-    <div className="relative flex min-h-screen flex-col overflow-hidden bg-gradient-to-b from-[#3b82f6] via-[#2563eb] to-[#1d4ed8] text-white">
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute -top-32 -left-40 size-[30rem] rounded-full bg-sky-200/20 blur-3xl"
-      />
-
-      <header className="relative z-10 w-full bg-blue-800/15 backdrop-blur-xl">
-        <div className="mx-auto flex h-16 max-w-5xl items-center gap-2.5 px-4 sm:px-6">
-          <Image
-            src="/olimpo-logo.svg"
-            alt="Olimpo"
-            width={36}
-            height={36}
-            priority
-            className="size-9 object-contain"
-          />
-          <span className="text-lg font-extrabold tracking-tight">Olimpo</span>
-        </div>
-      </header>
+    <PageShell>
+      <Header className="relative z-20" />
 
       <main
         aria-busy="true"
@@ -46,6 +31,6 @@ export default function RoomLoading(): React.ReactElement {
           <div className="h-full w-1/2 animate-pulse rounded-full bg-amber-300" />
         </div>
       </main>
-    </div>
+    </PageShell>
   );
 }

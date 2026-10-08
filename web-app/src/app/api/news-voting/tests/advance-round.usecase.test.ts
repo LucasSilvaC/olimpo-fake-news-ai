@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import { INewsVoteRepository } from "../repositories/news-vote.repository.interface";
 import { AdvanceRoundUseCase } from "../usecase/advance-round.usecase";
 import { FinishMatchUseCase } from "../usecase/finish-match.usecase";
 
@@ -12,6 +13,7 @@ describe("AdvanceRoundUseCase", () => {
   let roomRepository: IRoomRepository;
   let redisRoomRepository: IRedisRoomRepository;
   let userRepository: IUserRepository;
+  let newsVoteRepository: INewsVoteRepository;
   let finishMatchUseCase: FinishMatchUseCase;
   let mockEventPublisher: IEventPublisher;
   let useCase: AdvanceRoundUseCase;
@@ -96,14 +98,27 @@ describe("AdvanceRoundUseCase", () => {
       publish: vi.fn(async () => 1),
     };
 
+    newsVoteRepository = {
+      create: vi.fn(),
+      findById: vi.fn(),
+      findByParticipantAndPlaylistItem: vi.fn(),
+      listByPlaylistItem: vi.fn(),
+      listByRoomId: vi.fn().mockResolvedValue([]),
+      countByPlaylistItem: vi.fn(),
+      updateEvaluation: vi.fn(),
+    };
+
     finishMatchUseCase = new FinishMatchUseCase(
       roomRepository,
       redisRoomRepository,
       userRepository,
       mockEventPublisher,
+      newsVoteRepository,
     );
 
-    useCase = new AdvanceRoundUseCase(roomRepository, finishMatchUseCase, mockEventPublisher);
+    useCase = new AdvanceRoundUseCase(roomRepository, finishMatchUseCase, mockEventPublisher, {
+      isRoundCompleted: vi.fn().mockResolvedValue(true),
+    });
   });
 
   it("should advance to next round when currentRound < totalRounds", async () => {
@@ -151,6 +166,18 @@ describe("AdvanceRoundUseCase", () => {
     expect(userRepository.updateXp).toHaveBeenCalledWith("user-2", 50);
   });
 
+  it("rejects advancing an open round even for the host", async () => {
+    const guarded = new AdvanceRoundUseCase(
+      roomRepository,
+      finishMatchUseCase,
+      mockEventPublisher,
+      { isRoundCompleted: vi.fn().mockResolvedValue(false) },
+    );
+    await expect(guarded.execute({ roomId: "room-1", hostId: "host-1" })).rejects.toThrow(
+      "not completed",
+    );
+    expect(roomRepository.updateStatus).not.toHaveBeenCalled();
+  });
   it("should reject advancing if room is not found", async () => {
     vi.mocked(roomRepository.findById).mockResolvedValueOnce(null);
 

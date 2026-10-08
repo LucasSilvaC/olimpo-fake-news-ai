@@ -1,7 +1,6 @@
 "use client";
 
-import { Home, Share2, Trophy } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { Share2, Trophy } from "lucide-react";
 import * as React from "react";
 import { toast } from "sonner";
 
@@ -24,10 +23,7 @@ export interface IMatchScoreboardStageProps {
 export function MatchScoreboardStage({
   totalRounds,
   leaderboard,
-  onExit,
 }: IMatchScoreboardStageProps): React.ReactElement {
-  const router = useRouter();
-
   // Top 3 players
   const first = leaderboard[0] ?? null;
   const second = leaderboard[1] ?? null;
@@ -43,7 +39,7 @@ export function MatchScoreboardStage({
           ? p.accuracy
           : p.correctCount !== undefined && totalRounds > 0
             ? Math.round((p.correctCount / totalRounds) * 100)
-            : 75;
+            : 0;
       return acc + pAcc;
     }, 0);
     return Math.round(totalAcc / leaderboard.length);
@@ -70,14 +66,6 @@ export function MatchScoreboardStage({
     }
   };
 
-  const handleExit = (): void => {
-    if (onExit) {
-      onExit();
-    } else {
-      router.push("/");
-    }
-  };
-
   return (
     <div
       className="flex w-full flex-col items-center py-4 select-none md:py-6"
@@ -101,14 +89,6 @@ export function MatchScoreboardStage({
             <Share2 className="size-3.5 sm:size-4" aria-hidden="true" />
             <span>Compartilhar</span>
           </button>
-          <button
-            type="button"
-            onClick={handleExit}
-            className="flex items-center gap-1.5 rounded-full border border-white/25 bg-white/20 px-3.5 py-1.5 text-xs font-bold text-white shadow-sm backdrop-blur-md transition-all hover:bg-white/30 active:scale-95 sm:text-sm"
-          >
-            <Home className="size-3.5 sm:size-4" aria-hidden="true" />
-            <span>Voltar ao Início</span>
-          </button>
         </div>
       </div>
 
@@ -118,8 +98,9 @@ export function MatchScoreboardStage({
           Classificação da Partida
         </h1>
         <p className="mt-2 text-xs text-blue-100/90 sm:text-sm">
-          Verificação concluída entre {leaderboard.length} participantes. Precisão editorial média
-          de {averageAccuracy}%.
+          Verificação concluída entre {leaderboard.length}{" "}
+          {leaderboard.length === 1 ? "participante" : "participantes"}. Precisão editorial média de{" "}
+          {averageAccuracy}%.
         </p>
       </div>
 
@@ -144,10 +125,14 @@ export function MatchScoreboardStage({
                   </div>
                   <div className="px-1 text-center">
                     <span className="block text-[10px] font-bold text-[#434655] sm:text-xs">
-                      {second.correctCount ?? Math.round(totalRounds * 0.8)}/{totalRounds} acertos
+                      {second.correctCount ?? 0}/{totalRounds} acertos
                     </span>
                     <span className="text-[10px] font-extrabold text-blue-700 sm:text-xs">
-                      {second.accuracy ?? 80}% precisão
+                      {second.accuracy ??
+                        (totalRounds > 0
+                          ? Math.round(((second.correctCount ?? 0) / totalRounds) * 100)
+                          : 0)}
+                      % precisão
                     </span>
                   </div>
                 </div>
@@ -177,7 +162,12 @@ export function MatchScoreboardStage({
                       Campeão
                     </span>
                     <span className="text-xs font-black text-[#261a00] sm:text-sm">
-                      {first.correctCount ?? totalRounds}/{totalRounds} • {first.accuracy ?? 100}%
+                      {first.correctCount ?? 0}/{totalRounds} •{" "}
+                      {first.accuracy ??
+                        (totalRounds > 0
+                          ? Math.round(((first.correctCount ?? 0) / totalRounds) * 100)
+                          : 0)}
+                      %
                     </span>
                   </div>
                 </div>
@@ -203,10 +193,14 @@ export function MatchScoreboardStage({
                   </div>
                   <div className="px-1 text-center">
                     <span className="block text-[10px] font-bold text-white/90 sm:text-xs">
-                      {third.correctCount ?? Math.round(totalRounds * 0.7)}/{totalRounds} acertos
+                      {third.correctCount ?? 0}/{totalRounds} acertos
                     </span>
                     <span className="text-[10px] font-extrabold text-[#ffdf9f] sm:text-xs">
-                      {third.accuracy ?? 70}% precisão
+                      {third.accuracy ??
+                        (totalRounds > 0
+                          ? Math.round(((third.correctCount ?? 0) / totalRounds) * 100)
+                          : 0)}
+                      % precisão
                     </span>
                   </div>
                 </div>
@@ -229,9 +223,7 @@ export function MatchScoreboardStage({
 
           {remaining.map((player, index) => {
             const rank = index + 4;
-            const correctText = `${
-              player.correctCount ?? Math.round(totalRounds * 0.6)
-            }/${totalRounds} corretas`;
+            const correctText = `${player.correctCount ?? 0}/${totalRounds} corretas`;
 
             return (
               <div

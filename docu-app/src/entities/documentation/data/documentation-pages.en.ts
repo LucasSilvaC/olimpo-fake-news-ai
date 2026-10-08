@@ -82,7 +82,7 @@ export const documentationPagesEn: IDocumentationPage[] = [
               },
               {
                 label: "OpenSpec specifications",
-                href: "https://github.com/LucasSilvaC/olimpo-fake-news-ai/tree/feat/linguistic-rules/openspec/specs",
+                href: "https://github.com/LucasSilvaC/olimpo-fake-news-ai/tree/dev/docs/openspec/specs",
                 description: "Domain contracts for rooms, voting, and scoring.",
               },
             ],
@@ -167,12 +167,12 @@ export const documentationPagesEn: IDocumentationPage[] = [
             items: [
               {
                 label: "Room specification",
-                href: `${repository}/openspec/specs/rooms/spec.md`,
+                href: `https://github.com/LucasSilvaC/olimpo-fake-news-ai/blob/dev/docs/openspec/specs/rooms/spec.md`,
                 description: "PINs, access, playlists, and starting a game.",
               },
               {
                 label: "Real-time events specification",
-                href: `${repository}/openspec/specs/realtime-events/spec.md`,
+                href: `https://github.com/LucasSilvaC/olimpo-fake-news-ai/blob/dev/docs/openspec/specs/realtime-events/spec.md`,
                 description: "Events used to update room state.",
               },
             ],
@@ -252,12 +252,12 @@ export const documentationPagesEn: IDocumentationPage[] = [
             items: [
               {
                 label: "Voting specification",
-                href: `${repository}/openspec/specs/news-voting/spec.md`,
+                href: `https://github.com/LucasSilvaC/olimpo-fake-news-ai/blob/dev/docs/openspec/specs/news-voting/spec.md`,
                 description: "Allowed options, one vote per person, and round closure.",
               },
               {
                 label: "Gamification specification",
-                href: `${repository}/openspec/specs/gamification/spec.md`,
+                href: `https://github.com/LucasSilvaC/olimpo-fake-news-ai/blob/dev/docs/openspec/specs/gamification/spec.md`,
                 description: "Round scores, rankings, and XP at the end of a game.",
               },
             ],
@@ -422,7 +422,7 @@ export const documentationPagesEn: IDocumentationPage[] = [
             items: [
               {
                 label: "Architecture document (PDF)",
-                href: `${repository}/docs/arquitetura.pdf`,
+                href: `${repository}/docs/codigo/arquitetura.pdf`,
                 description: "Technical decisions and operational limits of the project.",
               },
               {
@@ -496,12 +496,12 @@ export const documentationPagesEn: IDocumentationPage[] = [
             items: [
               {
                 label: "Architecture document (PDF)",
-                href: `${repository}/docs/arquitetura.pdf`,
+                href: `${repository}/docs/codigo/arquitetura.pdf`,
                 description: "Hybrid persistence, Pub/Sub, and SSE implementation.",
               },
               {
                 label: "Real-time events specification",
-                href: `${repository}/openspec/specs/realtime-events/spec.md`,
+                href: `https://github.com/LucasSilvaC/olimpo-fake-news-ai/blob/dev/docs/openspec/specs/realtime-events/spec.md`,
                 description: "Domain events published by rooms.",
               },
             ],
@@ -665,12 +665,12 @@ export const documentationPagesEn: IDocumentationPage[] = [
             items: [
               {
                 label: "Architecture and accessibility report",
-                href: `${repository}/docs/arquitetura.pdf`,
+                href: `${repository}/docs/codigo/arquitetura.pdf`,
                 description: "Quality strategy and accessibility evidence.",
               },
               {
                 label: "Contrast measurements",
-                href: `${repository}/docs/acessibilidade-contrastes.json`,
+                href: `${repository}/docs/codigo/acessibilidade-contrastes.json`,
                 description: "Measured pairs, contrast ratios, and audit scope.",
               },
             ],

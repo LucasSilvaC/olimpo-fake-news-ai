@@ -8,6 +8,7 @@ import { AuthIntro } from "./auth-intro";
 import styles from "./auth-layout.module.css";
 
 import { buttonVariants } from "@/components/atoms/button";
+import { PageShell } from "@/components/molecules/page-shell";
 import { cn } from "@/lib/utils";
 import { Header } from "@/widgets/app-header";
 
@@ -16,7 +17,7 @@ export function AuthLayout({ children }: { children: ReactNode }) {
   const href = isLogin ? "/register" : "/login";
 
   return (
-    <div className="flex min-h-screen flex-col overflow-x-clip bg-[radial-gradient(120%_120%_at_50%_20%,#1e40af_0%,#1d4ed8_45%,#1e40af_100%)]">
+    <PageShell className="overflow-x-clip">
       <Header>
         <Link
           href={href}
@@ -63,6 +64,6 @@ export function AuthLayout({ children }: { children: ReactNode }) {
           {children}
         </div>
       </main>
-    </div>
+    </PageShell>
   );
 }

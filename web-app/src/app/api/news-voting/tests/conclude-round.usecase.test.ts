@@ -29,7 +29,7 @@ describe("ConcludeRoundUseCase", () => {
     totalRounds: 3,
     hostId: "host-user",
     createdAt: new Date(),
-    updatedAt: new Date(),
+    updatedAt: new Date(Date.now() - 60_000),
   };
 
   const sampleMembers: RoomMember[] = [
@@ -98,6 +98,7 @@ describe("ConcludeRoundUseCase", () => {
       findById: vi.fn(),
       findByParticipantAndPlaylistItem: vi.fn().mockResolvedValue(null),
       listByPlaylistItem: vi.fn(),
+      listByRoomId: vi.fn(),
       countByPlaylistItem: vi.fn(),
       updateEvaluation: vi.fn(),
     };
@@ -122,7 +123,7 @@ describe("ConcludeRoundUseCase", () => {
       updateStatus: vi.fn(),
       updateRoom: vi.fn(),
       addMember: vi.fn(),
-      findMember: vi.fn(),
+      findMember: vi.fn().mockResolvedValue(sampleMembers[0]),
       listMembers: vi.fn().mockResolvedValue(sampleMembers),
       countMembers: vi.fn().mockResolvedValue(2),
       updateMemberScore: vi.fn(),
@@ -171,10 +172,13 @@ describe("ConcludeRoundUseCase", () => {
     const result = await useCase.execute({
       roomId: "room-1",
       round: 1,
+      userId: "user-1",
     });
 
     expect(result.roundCompleted).toBe(true);
-    expect(result.analysis).toEqual(sampleAnalysis);
+    expect(result.officialAnswer).toBe("reliable");
+    expect(result.modelAnalysis).toBeNull();
+    expect(getArticleAnalysisUseCase.execute).not.toHaveBeenCalled();
     expect(redisVoteRepository.markRoundCompleted).toHaveBeenCalledWith("room-1", 1);
 
     // Timeout vote created for user-2
@@ -198,8 +202,9 @@ describe("ConcludeRoundUseCase", () => {
         roomId: "room-1",
         payload: {
           round: 1,
-          leaderboard: [{ userId: "user-1", score: 100 }],
-          analysis: sampleAnalysis,
+          leaderboard: [expect.objectContaining({ userId: "user-1", score: 100 })],
+          officialAnswer: "reliable",
+          modelAnalysis: null,
         },
       }),
     );
@@ -211,6 +216,7 @@ describe("ConcludeRoundUseCase", () => {
     const result = await useCase.execute({
       roomId: "room-1",
       round: 1,
+      userId: "user-1",
     });
 
     expect(result.roundCompleted).toBe(true);
@@ -221,13 +227,32 @@ describe("ConcludeRoundUseCase", () => {
   it("returns roundCompleted false if round order does not match currentRound", async () => {
     const result = await useCase.execute({
       roomId: "room-1",
-      round: 2, // room is at round 1
+      round: 2,
+      userId: "user-1", // room is at round 1
     });
 
     expect(result.roundCompleted).toBe(false);
     expect(mockEventPublisher.publish).not.toHaveBeenCalled();
   });
 
+  it("rejects early closure without invoking inference or marking completion", async () => {
+    vi.mocked(roomRepository.findById).mockResolvedValueOnce({
+      ...sampleRoom,
+      updatedAt: new Date(),
+    });
+    await expect(useCase.execute({ roomId: "room-1", round: 1, userId: "user-1" })).rejects.toThrow(
+      "server deadline",
+    );
+    expect(redisVoteRepository.markRoundCompleted).not.toHaveBeenCalled();
+    expect(getArticleAnalysisUseCase.execute).not.toHaveBeenCalled();
+  });
+  it("rejects outsiders even when server deadline has elapsed", async () => {
+    vi.mocked(roomRepository.findMember).mockResolvedValueOnce(null);
+    await expect(
+      useCase.execute({ roomId: "room-1", round: 1, userId: "outsider" }),
+    ).rejects.toThrow("not a member");
+    expect(redisVoteRepository.markRoundCompleted).not.toHaveBeenCalled();
+  });
   it("throws error if room is not found", async () => {
     vi.mocked(roomRepository.findById).mockResolvedValueOnce(null);
 
@@ -235,6 +260,7 @@ describe("ConcludeRoundUseCase", () => {
       useCase.execute({
         roomId: "missing-room",
         round: 1,
+        userId: "user-1",
       }),
     ).rejects.toThrow('Room with id "missing-room" not found');
   });
@@ -249,6 +275,7 @@ describe("ConcludeRoundUseCase", () => {
       useCase.execute({
         roomId: "room-1",
         round: 1,
+        userId: "user-1",
       }),
     ).rejects.toThrow("Cannot conclude round: room is not in progress");
   });

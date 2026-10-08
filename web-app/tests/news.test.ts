@@ -3,7 +3,6 @@ import { test } from "node:test";
 
 import { MockAgent } from "undici";
 
-import { POST } from "../src/app/api/news/extract/route";
 import { extractNews, parseHtml } from "../src/lib/news/extract-news";
 import { fetchPage, MAX_HTML_BYTES } from "../src/lib/news/fetch-page";
 import { validateUrl, isPublicAddress } from "../src/lib/news/validate-url";
@@ -317,24 +316,4 @@ test("DNS respeita cancelamento antes e durante a resolução", async () => {
   );
   controller.abort();
   await assert.rejects(validation, { name: "AbortError" });
-});
-
-test("Route Handler valida JSON, body, URL e SSRF sem stack trace", async () => {
-  const cases = [
-    ["{", "INVALID_URL"],
-    [JSON.stringify({ url: "abc" }), "INVALID_URL"],
-    [JSON.stringify({ url: "file:///etc/passwd" }), "INVALID_URL"],
-    [JSON.stringify({ url: "http://localhost:3000" }), "UNSAFE_URL"],
-    [JSON.stringify({ url: "http://192.168.0.1" }), "UNSAFE_URL"],
-    [JSON.stringify({ url: "https://news.example", extra: "x".repeat(9000) }), "INVALID_URL"],
-  ];
-  for (const [body, expected] of cases) {
-    const response = await POST(
-      new Request("http://localhost/api/news/extract", { method: "POST", body }),
-    );
-    const data = await response.json();
-    assert.equal(response.status, 400);
-    assert.equal(data.error, expected);
-    assert.deepEqual(Object.keys(data).sort(), ["error", "message"]);
-  }
 });

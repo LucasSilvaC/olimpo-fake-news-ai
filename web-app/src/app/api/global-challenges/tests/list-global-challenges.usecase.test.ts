@@ -7,11 +7,14 @@ import {
 } from "../repositories";
 import { ListGlobalChallengesUseCase } from "../usecase/list-global-challenges.usecase";
 
+import type { INewsAnalysisRepository } from "@/app/api/ai-feedback/repositories/news-analysis.repository.interface";
+import { predictionRecord } from "@/app/api/ai-feedback/tests/supervised-fixture";
 import { GlobalChallengeAnswer } from "@/server/shared/database/schemas";
 
 describe("ListGlobalChallengesUseCase", () => {
   let challengeRepository: IGlobalChallengeRepository;
   let answerRepository: IGlobalChallengeAnswerRepository;
+  let analysisRepository: INewsAnalysisRepository;
   let useCase: ListGlobalChallengesUseCase;
 
   const mockChallenges: GlobalChallengeWithArticle[] = [
@@ -99,7 +102,17 @@ describe("ListGlobalChallengesUseCase", () => {
       listByUser: vi.fn().mockResolvedValue(mockAnswers),
     };
 
-    useCase = new ListGlobalChallengesUseCase(challengeRepository, answerRepository);
+    analysisRepository = {
+      findByArticleId: vi.fn().mockResolvedValue(null),
+      findByIdentity: vi.fn(),
+      create: vi.fn(),
+      withIdentityLock: vi.fn(),
+    };
+    useCase = new ListGlobalChallengesUseCase(
+      challengeRepository,
+      answerRepository,
+      analysisRepository,
+    );
   });
 
   it("should list active challenges without user answer details when userId is not provided", async () => {
@@ -151,4 +164,19 @@ describe("ListGlobalChallengesUseCase", () => {
     const result = await useCase.execute({ userId: "user-1" });
     expect(result).toEqual([]);
   });
+
+  it.each(["ok", "unavailable"])(
+    "does not expose a supervised %s cache row as legacy solo analysis",
+    async (analysisStatus) => {
+      vi.mocked(analysisRepository.findByArticleId).mockResolvedValue({
+        ...predictionRecord,
+        analysisStatus,
+        classification: analysisStatus === "ok" ? "unreliable" : null,
+      });
+      const result = await useCase.execute();
+      expect(result[0]?.article.targetClassification).toBe("reliable");
+      expect(result[0]?.analysis.classification).toBe("reliable");
+      expect(result[0]?.analysis.reasons).not.toEqual(predictionRecord.reasons);
+    },
+  );
 });

@@ -24,6 +24,11 @@ export type AnswerGlobalChallengeActionResult =
       isCorrect: boolean;
       xpAwarded: number;
       targetClassification: MLTargetType;
+      analysis: {
+        classification: MLTargetType;
+        reasons: string[];
+        confidence: number;
+      };
     }
   | {
       success: false;
@@ -64,6 +69,7 @@ export async function answerGlobalChallengeAction(
       isCorrect: result.isCorrect,
       xpAwarded: result.xpAwarded,
       targetClassification: result.targetClassification,
+      analysis: result.analysis,
     };
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Failed to answer global challenge";

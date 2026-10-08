@@ -5,3 +5,9 @@ docs/*.out
 docs/*.toc
 docs/*.log
 docs/*.aux
+
+# Local dependency store and generated training inputs.
+.pnpm-store/
+/machine-learning/supervised-learning/data/Fake.br-Corpus-master/
+/machine-learning/supervised-learning/data/dados_preparados.pkl
+/machine-learning/supervised-learning/data/transformers.pkl

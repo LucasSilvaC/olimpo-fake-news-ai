@@ -1,12 +1,12 @@
 "use client";
 
-import { ArrowLeft, ShieldCheck, WifiOff } from "lucide-react";
-import Link from "next/link";
+import { ArrowLeft, WifiOff } from "lucide-react";
 import { useRouter } from "next/navigation";
 import * as React from "react";
 import { toast } from "sonner";
 
 import { MatchScoreboardStage, type IMatchPlayer } from "./match-scoreboard-stage";
+import { ModelAnalysisPanel } from "./model-analysis-panel";
 import { NewsCheckStage, type INewsArticleData } from "./news-check-stage";
 import { RoundScoreboardStage, type IScoreboardPlayer } from "./round-scoreboard-stage";
 import { VerdictWaitingStage } from "./verdict-waiting-stage";
@@ -18,7 +18,9 @@ import type {
   RoundCompletedPayload,
   RoundStartedPayload,
   RoomEvent,
+  RoundCompletedLeaderboardEntry,
 } from "@/app/api/realtime-events/entities/event.types";
+import { PageShell } from "@/components/molecules/page-shell";
 import type { RoomStatus } from "@/server/shared/database/schemas/enums";
 import { Header } from "@/widgets/app-header";
 
@@ -31,6 +33,7 @@ export interface RoomGameMember {
   role: string;
   score: number;
   avatar?: string;
+  correctCount?: number;
 }
 
 export interface RoomGameRoom {
@@ -40,6 +43,7 @@ export interface RoomGameRoom {
   hostId: string;
   status: RoomStatus;
   roundDurationSeconds: number;
+  roundStartedAt?: string;
   currentRound: number;
   totalRounds: number;
 }
@@ -53,9 +57,7 @@ export interface IUserVoteState {
   pointsAwarded?: number;
   isCorrect?: boolean | null;
   officialAnswer?: "reliable" | "unreliable" | "uncertain" | null;
-  reliabilityScore?: number;
   timeTakenSeconds?: number;
-  reasons?: string[];
   isTimeout?: boolean;
 }
 
@@ -78,6 +80,7 @@ export interface IRoomGameViewProps {
   currentUserId: string;
   initialStage?: GameStage;
   initialVote?: IUserVoteState | null;
+  initialRoundClosed?: boolean;
 }
 
 const FALLBACK_ARTICLE: INewsArticleData = {
@@ -89,6 +92,30 @@ const FALLBACK_ARTICLE: INewsArticleData = {
   imageUrl: null,
 };
 
+const ANSWER_LABELS = { reliable: "Verdadeiro", unreliable: "Falso", uncertain: "Incerto" };
+
+function deadlineFor(startedAt: string | undefined, durationSeconds: number): number {
+  const start = startedAt ? Date.parse(startedAt) : Number.NaN;
+  return (Number.isFinite(start) ? start : Date.now()) + (durationSeconds || 30) * 1000;
+}
+
+function secondsUntil(deadline: number): number {
+  return Math.max(0, Math.ceil((deadline - Date.now()) / 1000));
+}
+
+// Presentation mirrors the game's score only after its registered answer is disclosed.
+function closedVoteResult(
+  vote: IUserVoteState | null,
+  answer: IUserVoteState["vote"] | null,
+): {
+  isCorrect: boolean;
+  pointsAwarded: number;
+} {
+  if (!vote || vote.isTimeout || !answer) return { isCorrect: false, pointsAwarded: 0 };
+  const isCorrect = vote.vote === answer;
+  return { isCorrect, pointsAwarded: isCorrect ? 100 : vote.vote === "uncertain" ? 25 : 0 };
+}
+
 export function RoomGameView({
   room,
   members,
@@ -96,6 +123,7 @@ export function RoomGameView({
   currentUserId,
   initialStage,
   initialVote = null,
+  initialRoundClosed = false,
 }: IRoomGameViewProps): React.ReactElement {
   const router = useRouter();
 
@@ -103,26 +131,26 @@ export function RoomGameView({
   const defaultStage: GameStage = React.useMemo(() => {
     if (initialStage) return initialStage;
     if (room.status === "finished") return "MATCH_FINALE";
+    if (initialRoundClosed) return "ROUND_SCOREBOARD";
     if (initialVote) return "WAITING";
     return "CHECKING";
-  }, [initialStage, initialVote, room.status]);
+  }, [initialStage, initialVote, initialRoundClosed, room.status]);
 
   const [stage, setStage] = React.useState<GameStage>(defaultStage);
   const [currentRound, setCurrentRound] = React.useState<number>(room.currentRound || 1);
-  const [timeRemaining, setTimeRemaining] = React.useState<number | null>(
-    room.roundDurationSeconds || 30,
+  const [roundDeadline, setRoundDeadline] = React.useState(() =>
+    deadlineFor(room.roundStartedAt, room.roundDurationSeconds),
+  );
+  const [timeRemaining, setTimeRemaining] = React.useState<number | null>(() =>
+    secondsUntil(roundDeadline),
   );
   const [lastVote, setLastVote] = React.useState<IUserVoteState | null>(initialVote);
   const [votedCount, setVotedCount] = React.useState<number>(initialVote ? 1 : 0);
   const [isConnected, setIsConnected] = React.useState(true);
 
-  // Verdict reading countdown state and official AI analysis
+  // The server completion marker controls prediction access separately from a vote.
+  const [roundClosed, setRoundClosed] = React.useState(initialRoundClosed);
   const [verdictCountdown, setVerdictCountdown] = React.useState<number | null>(null);
-  const [roundAnalysis, setRoundAnalysis] = React.useState<{
-    classification: "reliable" | "unreliable" | "uncertain";
-    reasons: string[];
-    confidence: number;
-  } | null>(null);
 
   // Maintain players scores and streaks
   const [players, setPlayers] = React.useState<IRoomPlayerState[]>(() =>
@@ -132,10 +160,12 @@ export function RoomGameView({
       score: m.score,
       roundDelta: 0,
       streak: 0,
-      correctCount: 0,
+      correctCount: m.correctCount ?? 0,
       avatar: m.avatar,
     })),
   );
+
+  const lastCompletedRoundRef = React.useRef<number>(initialRoundClosed ? room.currentRound : 0);
 
   const isHost = room.hostId === currentUserId;
 
@@ -166,59 +196,80 @@ export function RoomGameView({
     };
   }, [playlistArticles, currentRound]);
 
-  // Update leaderboard scores when server broadcasts
-  const updateLeaderboardFromEntries = React.useCallback(
-    (entries: Array<{ userId: string; score: number }>) => {
+  // Apply each completed round once across action responses and SSE delivery.
+  const applyRoundCompleted = React.useCallback(
+    (
+      round: number,
+      entries: RoundCompletedLeaderboardEntry[],
+      officialAnswer: IUserVoteState["vote"] | null,
+      submittedVote?: IUserVoteState,
+    ) => {
+      if (round !== currentRound || lastCompletedRoundRef.current >= round) return;
+      lastCompletedRoundRef.current = round;
       setPlayers((prev) =>
         prev.map((player) => {
-          const entry = entries.find((e) => e.userId === player.userId);
+          const entry = entries.find((item) => item.userId === player.userId);
           if (!entry) return player;
-
-          const delta = Math.max(0, entry.score - player.score);
-          const scored = delta > 0;
-
-          // For the current user, prefer our recorded vote details if available
-          const isCurrentUser = player.userId === currentUserId;
-          const isCorrect = isCurrentUser ? (lastVote?.isCorrect ?? scored) : scored;
-          const earnedDelta = isCurrentUser ? (lastVote?.pointsAwarded ?? delta) : delta;
-
+          const recordedVote = submittedVote ?? lastVote;
+          const disclosedResult =
+            player.userId === currentUserId ? closedVoteResult(recordedVote, officialAnswer) : null;
+          const roundDelta =
+            entry.roundDelta ??
+            disclosedResult?.pointsAwarded ??
+            Math.max(0, entry.score - player.score);
+          const isCorrect = entry.isCorrect ?? disclosedResult?.isCorrect ?? roundDelta === 100;
           return {
             ...player,
             score: entry.score,
-            roundDelta: earnedDelta,
-            streak: isCorrect ? player.streak + 1 : 0,
+            roundDelta,
             isCorrect,
-            correctCount: isCorrect ? player.correctCount + 1 : player.correctCount,
+            streak: isCorrect ? player.streak + 1 : 0,
+            correctCount: player.correctCount + (isCorrect ? 1 : 0),
           };
         }),
       );
+      setRoundClosed(true);
+      setLastVote((prev) => {
+        const vote = submittedVote ?? prev;
+        const entry = entries.find((item) => item.userId === currentUserId);
+        const result = closedVoteResult(vote, officialAnswer);
+        return {
+          vote: vote?.vote ?? "uncertain",
+          officialAnswer,
+          isCorrect: entry?.isCorrect ?? result.isCorrect,
+          pointsAwarded: entry?.roundDelta ?? result.pointsAwarded,
+          timeTakenSeconds: vote?.timeTakenSeconds ?? (room.roundDurationSeconds || 30),
+          isTimeout: vote?.isTimeout ?? vote === null,
+        };
+      });
+      setVotedCount(members.length);
+      setStage((prev) =>
+        prev === "MATCH_FINALE" || prev === "ROUND_SCOREBOARD" ? prev : "WAITING",
+      );
+      setVerdictCountdown(10);
     },
-    [currentUserId, lastVote],
+    [currentRound, currentUserId, lastVote, members.length, room.roundDurationSeconds],
   );
 
-  // Round countdown timer (active only during CHECKING stage)
+  // Recompute from the server's deadline, including after suspended tabs or a reload.
   React.useEffect(() => {
-    if (stage !== "CHECKING" || timeRemaining === null || timeRemaining <= 0) {
+    if (roundClosed || (stage !== "CHECKING" && stage !== "WAITING")) {
       return;
     }
 
     const interval = setInterval(() => {
-      setTimeRemaining((prev) => {
-        if (prev === null || prev <= 1) {
-          clearInterval(interval);
-          return 0;
-        }
-        return prev - 1;
-      });
+      const remaining = secondsUntil(roundDeadline);
+      setTimeRemaining(remaining);
+      if (remaining === 0) clearInterval(interval);
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [stage, timeRemaining]);
+  }, [stage, roundDeadline, roundClosed]);
 
   // When round duration expires (timeRemaining === 0), force-conclude the round
   // (host concludes at 1.2s; participants have a fallback at 3.5s)
   React.useEffect(() => {
-    if (timeRemaining !== 0 || stage !== "CHECKING") {
+    if (timeRemaining !== 0 || roundClosed || (stage !== "CHECKING" && stage !== "WAITING")) {
       return;
     }
 
@@ -232,7 +283,7 @@ export function RoomGameView({
     }, delay);
 
     return () => clearTimeout(timeoutId);
-  }, [timeRemaining, stage, isHost, room.id, currentRound]);
+  }, [timeRemaining, stage, roundClosed, isHost, room.id, currentRound]);
 
   // Countdown timer for reading the official verdict (10 seconds)
   React.useEffect(() => {
@@ -277,13 +328,19 @@ export function RoomGameView({
         const messageEvent = event as MessageEvent<string>;
         const data = JSON.parse(messageEvent.data) as RoomEvent<RoundStartedPayload>;
         const nextRound = data.payload?.currentRound ?? currentRound + 1;
+        if (nextRound <= currentRound) return;
 
         setCurrentRound(nextRound);
         setLastVote(null);
-        setRoundAnalysis(null);
+        setPlayers((prev) =>
+          prev.map((player) => ({ ...player, roundDelta: 0, isCorrect: undefined })),
+        );
+        setRoundClosed(false);
         setVerdictCountdown(null);
         setVotedCount(0);
-        setTimeRemaining(room.roundDurationSeconds || 30);
+        const nextDeadline = deadlineFor(data.timestamp, room.roundDurationSeconds);
+        setRoundDeadline(nextDeadline);
+        setTimeRemaining(secondsUntil(nextDeadline));
         setStage("CHECKING");
 
         toast.info(`Rodada ${nextRound} iniciada!`, {
@@ -298,45 +355,14 @@ export function RoomGameView({
       try {
         const messageEvent = event as MessageEvent<string>;
         const data = JSON.parse(messageEvent.data) as RoomEvent<RoundCompletedPayload>;
-        if (data.payload?.leaderboard) {
-          updateLeaderboardFromEntries(data.payload.leaderboard);
-        }
-
-        const analysis = data.payload?.analysis;
-        if (analysis) {
-          const confidenceScore =
-            analysis.confidence > 1
-              ? Math.round(analysis.confidence)
-              : Math.round(analysis.confidence * 100);
-
-          setRoundAnalysis({
-            classification: analysis.classification,
-            reasons: analysis.reasons || [],
-            confidence: confidenceScore,
-          });
-
-          setLastVote((prev) => {
-            const isCorrect = prev?.vote ? prev.vote === analysis.classification : false;
-            return {
-              vote: prev?.vote ?? "uncertain",
-              pointsAwarded: prev?.pointsAwarded ?? 0,
-              isCorrect: prev?.isCorrect ?? isCorrect,
-              officialAnswer: analysis.classification,
-              reliabilityScore: confidenceScore,
-              reasons: analysis.reasons || [],
-              timeTakenSeconds: prev?.timeTakenSeconds ?? (room.roundDurationSeconds || 30),
-              isTimeout: prev?.isTimeout ?? prev === null,
-            };
-          });
-        }
-
-        setVotedCount(members.length);
-        // Retain players in WAITING stage for verdict reveal reading period
-        setStage("WAITING");
-        setVerdictCountdown(10);
+        applyRoundCompleted(
+          data.payload.round,
+          data.payload.leaderboard ?? [],
+          data.payload.officialAnswer ?? null,
+        );
 
         toast.success("Rodada finalizada!", {
-          description: "Confira o gabarito oficial e os argumentos da IA.",
+          description: "Confira o gabarito oficial da rodada e reflita sobre sua resposta.",
         });
       } catch {
         setStage("ROUND_SCOREBOARD");
@@ -348,7 +374,17 @@ export function RoomGameView({
         const messageEvent = event as MessageEvent<string>;
         const data = JSON.parse(messageEvent.data) as RoomEvent<MatchFinishedPayload>;
         if (data.payload?.leaderboard) {
-          updateLeaderboardFromEntries(data.payload.leaderboard);
+          setPlayers((prev) =>
+            prev.map((player) => {
+              const entry = data.payload.leaderboard.find((e) => e.userId === player.userId);
+              if (!entry) return player;
+              return {
+                ...player,
+                score: entry.score,
+                correctCount: entry.correctCount ?? player.correctCount,
+              };
+            }),
+          );
         }
         setStage("MATCH_FINALE");
 
@@ -370,13 +406,7 @@ export function RoomGameView({
       source.removeEventListener("MATCH_FINISHED", handleMatchFinished);
       source.close();
     };
-  }, [
-    currentRound,
-    members.length,
-    room.pin,
-    room.roundDurationSeconds,
-    updateLeaderboardFromEntries,
-  ]);
+  }, [applyRoundCompleted, currentRound, room.pin, room.roundDurationSeconds]);
 
   // Handle vote submission from NewsCheckStage
   const handleVoteSubmitted = React.useCallback(
@@ -387,47 +417,42 @@ export function RoomGameView({
       isTimeout?: boolean;
     }): void => {
       if (data.result.success) {
-        const analysis = data.result.analysis;
-        const confidenceScore = analysis
-          ? analysis.confidence > 1
-            ? Math.round(analysis.confidence)
-            : Math.round(analysis.confidence * 100)
-          : 85;
-
         const voteState: IUserVoteState = {
           vote: data.vote,
           pointsAwarded: data.result.vote.pointsAwarded,
           isCorrect: data.result.vote.isCorrect,
-          officialAnswer: analysis?.classification ?? null,
-          reliabilityScore: confidenceScore,
-          reasons: analysis?.reasons,
+          officialAnswer: data.result.roundCompleted ? (data.result.officialAnswer ?? null) : null,
           timeTakenSeconds: data.timeTakenSeconds,
           isTimeout: data.isTimeout,
         };
 
-        setLastVote(voteState);
-        setStage("WAITING");
+        setLastVote((prev) => {
+          const officialAnswer = voteState.officialAnswer ?? prev?.officialAnswer ?? null;
+          return {
+            ...voteState,
+            ...(officialAnswer ? closedVoteResult(voteState, officialAnswer) : {}),
+            officialAnswer,
+          };
+        });
+        setStage((prev) =>
+          prev === "MATCH_FINALE" || prev === "ROUND_SCOREBOARD" ? prev : "WAITING",
+        );
         setVotedCount((prev) => Math.min(members.length, prev + 1));
 
         // If everyone voted and round completed on this action
-        if (data.result.roundCompleted && analysis) {
-          if (data.result.leaderboard) {
-            updateLeaderboardFromEntries(data.result.leaderboard);
-          }
-          setRoundAnalysis({
-            classification: analysis.classification,
-            reasons: analysis.reasons || [],
-            confidence: confidenceScore,
-          });
-          setVotedCount(members.length);
-          // Standardized 10-second countdown for reading the verdict and AI reasons
-          setVerdictCountdown(10);
+        if (data.result.roundCompleted) {
+          applyRoundCompleted(
+            currentRound,
+            data.result.leaderboard ?? [],
+            data.result.officialAnswer ?? null,
+            voteState,
+          );
         }
       } else {
         toast.error(data.result.error || "Não foi possível registrar o seu voto.");
       }
     },
-    [members.length, updateLeaderboardFromEntries],
+    [applyRoundCompleted, currentRound, members.length],
   );
 
   // Prepare leaderboard data for RoundScoreboardStage
@@ -471,37 +496,15 @@ export function RoomGameView({
   }, [router]);
 
   return (
-    <div className="relative flex min-h-screen flex-col overflow-x-hidden bg-gradient-to-b from-[#3b82f6] via-[#2563eb] to-[#1d4ed8] text-white selection:bg-amber-300 selection:text-slate-900">
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute -top-32 -left-40 size-[30rem] rounded-full bg-sky-200/20 blur-3xl"
-      />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute right-[-12rem] bottom-1/4 size-[34rem] rounded-full bg-indigo-300/20 blur-3xl"
-      />
-
-      <Header
-        className="relative z-20"
-        logo={
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2.5 text-lg font-extrabold tracking-tight text-white transition-opacity hover:opacity-85 sm:text-xl"
-          >
-            <span className="flex size-9 items-center justify-center rounded-xl bg-white text-blue-600 shadow-lg shadow-blue-950/20">
-              <ShieldCheck className="size-5" aria-hidden="true" />
-            </span>
-            Olimpo
-          </Link>
-        }
-      >
+    <PageShell className="overflow-x-hidden">
+      <Header className="relative z-20">
         <button
           type="button"
           onClick={handleExitGame}
           className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-white/20 bg-white/15 px-4 py-2 text-sm font-semibold text-white shadow-sm backdrop-blur-sm transition-colors hover:border-white/50 hover:bg-white/25 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-300"
         >
           <ArrowLeft className="size-4" aria-hidden="true" />
-          Sair da sala
+          {stage === "MATCH_FINALE" ? "Voltar ao início" : "Sair da sala"}
         </button>
       </Header>
 
@@ -533,14 +536,33 @@ export function RoomGameView({
             pointsAwarded={lastVote?.pointsAwarded ?? 0}
             timeTakenSeconds={lastVote?.timeTakenSeconds ?? 0}
             isCorrect={lastVote?.isCorrect ?? null}
-            officialAnswer={lastVote?.officialAnswer ?? roundAnalysis?.classification ?? null}
-            reliabilityScore={lastVote?.reliabilityScore ?? roundAnalysis?.confidence ?? 85}
-            reasons={lastVote?.reasons ?? roundAnalysis?.reasons}
+            officialAnswer={roundClosed ? (lastVote?.officialAnswer ?? null) : null}
             verdictCountdownSeconds={verdictCountdown}
             onSkipCountdown={handleSkipVerdictCountdown}
             isTimeout={lastVote?.isTimeout ?? false}
             votedCount={votedCount}
             totalPlayers={members.length}
+          />
+        )}
+
+        {roundClosed && stage !== "WAITING" && lastVote?.officialAnswer && (
+          <section
+            aria-label="Resultado do jogo"
+            className="mt-6 w-full max-w-2xl rounded-3xl bg-white p-6 text-slate-800"
+          >
+            <h2 className="text-lg font-bold">Resultado do jogo</h2>
+            <p className="mt-2 text-sm">
+              Gabarito cadastrado: <strong>{ANSWER_LABELS[lastVote.officialAnswer]}</strong>
+            </p>
+            <p className="mt-1 text-sm">Seu voto: {ANSWER_LABELS[lastVote.vote]}</p>
+          </section>
+        )}
+
+        {roundClosed && (
+          <ModelAnalysisPanel
+            key={`${room.id}:${currentRound}`}
+            roomId={room.id}
+            round={currentRound}
           />
         )}
 
@@ -551,18 +573,13 @@ export function RoomGameView({
             totalRounds={room.totalRounds}
             isHost={isHost}
             leaderboard={scoreboardPlayers}
-            onLeave={handleExitGame}
           />
         )}
 
         {stage === "MATCH_FINALE" && (
-          <MatchScoreboardStage
-            totalRounds={room.totalRounds}
-            leaderboard={matchPlayers}
-            onExit={handleExitGame}
-          />
+          <MatchScoreboardStage totalRounds={room.totalRounds} leaderboard={matchPlayers} />
         )}
       </main>
-    </div>
+    </PageShell>
   );
 }

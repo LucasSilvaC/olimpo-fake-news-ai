@@ -30,5 +30,3 @@ export {
 } from "./ui/match-scoreboard-stage";
 
 export { VerometroGauge, type IVerometroGaugeProps } from "./ui/verometro-gauge";
-
-export { SocraticReflection, type ISocraticReflectionProps } from "./ui/socratic-reflection";

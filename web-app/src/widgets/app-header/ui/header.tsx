@@ -23,16 +23,19 @@ export function Header({
             <Link
               href="/"
               aria-label="Olimpo — página inicial"
-              className="inline-flex items-center"
+              className="group inline-flex items-center gap-2.5 rounded-lg transition-transform hover:scale-105 focus-visible:ring-2 focus-visible:ring-amber-300 focus-visible:outline-none"
             >
               <Image
                 src="/olimpo-logo.svg"
-                alt="Olimpo"
-                width={44}
-                height={44}
+                alt=""
+                width={40}
+                height={40}
                 priority
-                className="size-11 object-contain"
+                className="size-10 object-contain"
               />
+              <span className="text-xl font-black tracking-tight text-white drop-shadow-sm sm:text-2xl">
+                Olimpo
+              </span>
             </Link>
           )}
         </div>

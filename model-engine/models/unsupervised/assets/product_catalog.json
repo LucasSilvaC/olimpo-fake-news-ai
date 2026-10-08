@@ -1,0 +1,1470 @@
+{
+  "catalogVersion": "sintaxe-ampliada-descriptive-comparison-v3",
+  "sourceRun": "fp-growth-metadados-ampliados-20261008T002311Z",
+  "variant": "sintaxe_ampliada",
+  "runtimeFeaturesSha256": "55f09b0aefb02af217c4dd612b417fab07188b7d4a78daadb56a0ecb9449acca",
+  "runtimeLayoutVersion": "model-engine-v1",
+  "sourceCatalogSha256": "c1dcf31e1d51fbe19a3da2a8c53934b15511d3ec901da48949fcb5c0898673bd",
+  "sourceDiscretizationSha256": "8a483241b8d17afb21f318d9d2aeb9bbd79e09f47cb93b8da74c88468ff19848",
+  "characterLimit": 300,
+  "normalization": "NFKC; strip leading BOM; first 300 characters",
+  "extractorVersion": "collected-features-v1/spacy-3.8.16/pt_core_news_sm-3.8.0",
+  "extractorSourceSha256": "ceedd26bd9e62c8f1a8837c06a73f4f482045dc0222df042cbcc613d55106dfa",
+  "baseExtractionSourceSha256": "7ccd329258fca25ad3374368ef351863f44073974aae078bff5db9af386262a0",
+  "discretizationSourceSha256": "be2d3e21b783e81d384b159b1bd4105993dab14de58d4596047d5b0f302bf230",
+  "comparisonEnabled": true,
+  "status": "experimental_descriptive_comparison",
+  "review": {
+    "reviewType": "agent_technical_review",
+    "humanEditorialApproval": false,
+    "notes": [
+      "Observações descrevem as medidas do trecho; anotações automáticas podem errar.",
+      "Frequências usam a combinação completa na partição validation/all do Fake.br-Corpus.",
+      "As duas classes são exibidas com seus próprios denominadores de 720 notícias.",
+      "Rótulos históricos descrevem o corpus, não a veracidade da notícia analisada.",
+      "Seleção mantém prioridades e famílias congeladas, sem usar diferenças entre classes.",
+      "Não contém composição por classe, probabilidades ou classificação."
+    ]
+  },
+  "discretization": [
+    {
+      "feature": "diversidade",
+      "item": "diversidade_baixo",
+      "direction": "baixo",
+      "threshold": 0.7647058823529411,
+      "omitted": false
+    },
+    {
+      "feature": "diversidade",
+      "item": "diversidade_alto",
+      "direction": "alto",
+      "threshold": 0.8541666666666666,
+      "omitted": false
+    },
+    {
+      "feature": "linkDensity",
+      "item": "linkDensity_baixo",
+      "direction": "baixo",
+      "threshold": 0.0,
+      "omitted": true
+    },
+    {
+      "feature": "linkDensity",
+      "item": "linkDensity_alto",
+      "direction": "alto",
+      "threshold": 0.0,
+      "omitted": true
+    },
+    {
+      "feature": "uppercaseRatio",
+      "item": "uppercaseRatio_baixo",
+      "direction": "baixo",
+      "threshold": 0.0,
+      "omitted": false
+    },
+    {
+      "feature": "uppercaseRatio",
+      "item": "uppercaseRatio_alto",
+      "direction": "alto",
+      "threshold": 0.038461538461538464,
+      "omitted": false
+    },
+    {
+      "feature": "punctuationDensity_spacy",
+      "item": "punctuationDensity_spacy_baixo",
+      "direction": "baixo",
+      "threshold": 0.09615384615384616,
+      "omitted": false
+    },
+    {
+      "feature": "punctuationDensity_spacy",
+      "item": "punctuationDensity_spacy_alto",
+      "direction": "alto",
+      "threshold": 0.15873015873015872,
+      "omitted": false
+    },
+    {
+      "feature": "POS_ADJ_rate",
+      "item": "POS_ADJ_rate_baixo",
+      "direction": "baixo",
+      "threshold": 0.020833333333333332,
+      "omitted": false
+    },
+    {
+      "feature": "POS_ADJ_rate",
+      "item": "POS_ADJ_rate_alto",
+      "direction": "alto",
+      "threshold": 0.06818181818181818,
+      "omitted": false
+    },
+    {
+      "feature": "POS_ADV_rate",
+      "item": "POS_ADV_rate_baixo",
+      "direction": "baixo",
+      "threshold": 0.0,
+      "omitted": false
+    },
+    {
+      "feature": "POS_ADV_rate",
+      "item": "POS_ADV_rate_alto",
+      "direction": "alto",
+      "threshold": 0.041666666666666664,
+      "omitted": false
+    },
+    {
+      "feature": "POS_NOUN_rate",
+      "item": "POS_NOUN_rate_baixo",
+      "direction": "baixo",
+      "threshold": 0.19148936170212766,
+      "omitted": false
+    },
+    {
+      "feature": "POS_NOUN_rate",
+      "item": "POS_NOUN_rate_alto",
+      "direction": "alto",
+      "threshold": 0.2653061224489796,
+      "omitted": false
+    },
+    {
+      "feature": "POS_PROPN_rate",
+      "item": "POS_PROPN_rate_baixo",
+      "direction": "baixo",
+      "threshold": 0.10416666666666667,
+      "omitted": false
+    },
+    {
+      "feature": "POS_PROPN_rate",
+      "item": "POS_PROPN_rate_alto",
+      "direction": "alto",
+      "threshold": 0.21568627450980393,
+      "omitted": false
+    },
+    {
+      "feature": "POS_VERB_rate",
+      "item": "POS_VERB_rate_baixo",
+      "direction": "baixo",
+      "threshold": 0.09615384615384616,
+      "omitted": false
+    },
+    {
+      "feature": "POS_VERB_rate",
+      "item": "POS_VERB_rate_alto",
+      "direction": "alto",
+      "threshold": 0.15217391304347827,
+      "omitted": false
+    },
+    {
+      "feature": "POS_PRON_rate",
+      "item": "POS_PRON_rate_baixo",
+      "direction": "baixo",
+      "threshold": 0.0,
+      "omitted": false
+    },
+    {
+      "feature": "POS_PRON_rate",
+      "item": "POS_PRON_rate_alto",
+      "direction": "alto",
+      "threshold": 0.04081632653061224,
+      "omitted": false
+    },
+    {
+      "feature": "DEP_nsubj_rate",
+      "item": "DEP_nsubj_rate_baixo",
+      "direction": "baixo",
+      "threshold": 0.05660377358490566,
+      "omitted": false
+    },
+    {
+      "feature": "DEP_nsubj_rate",
+      "item": "DEP_nsubj_rate_alto",
+      "direction": "alto",
+      "threshold": 0.09090909090909091,
+      "omitted": false
+    },
+    {
+      "feature": "DEP_obj_rate",
+      "item": "DEP_obj_rate_baixo",
+      "direction": "baixo",
+      "threshold": 0.04,
+      "omitted": false
+    },
+    {
+      "feature": "DEP_obj_rate",
+      "item": "DEP_obj_rate_alto",
+      "direction": "alto",
+      "threshold": 0.08163265306122448,
+      "omitted": false
+    },
+    {
+      "feature": "DEP_amod_rate",
+      "item": "DEP_amod_rate_baixo",
+      "direction": "baixo",
+      "threshold": 0.0196078431372549,
+      "omitted": false
+    },
+    {
+      "feature": "DEP_amod_rate",
+      "item": "DEP_amod_rate_alto",
+      "direction": "alto",
+      "threshold": 0.061224489795918366,
+      "omitted": false
+    },
+    {
+      "feature": "DEP_advmod_rate",
+      "item": "DEP_advmod_rate_baixo",
+      "direction": "baixo",
+      "threshold": 0.0,
+      "omitted": false
+    },
+    {
+      "feature": "DEP_advmod_rate",
+      "item": "DEP_advmod_rate_alto",
+      "direction": "alto",
+      "threshold": 0.04081632653061224,
+      "omitted": false
+    },
+    {
+      "feature": "DEP_ccomp_rate",
+      "item": "DEP_ccomp_rate_baixo",
+      "direction": "baixo",
+      "threshold": 0.0,
+      "omitted": false
+    },
+    {
+      "feature": "DEP_ccomp_rate",
+      "item": "DEP_ccomp_rate_alto",
+      "direction": "alto",
+      "threshold": 0.020833333333333332,
+      "omitted": false
+    },
+    {
+      "feature": "DEP_advcl_rate",
+      "item": "DEP_advcl_rate_baixo",
+      "direction": "baixo",
+      "threshold": 0.0,
+      "omitted": false
+    },
+    {
+      "feature": "DEP_advcl_rate",
+      "item": "DEP_advcl_rate_alto",
+      "direction": "alto",
+      "threshold": 0.02040816326530612,
+      "omitted": false
+    },
+    {
+      "feature": "POS_ADP_rate",
+      "item": "POS_ADP_rate_baixo",
+      "direction": "baixo",
+      "threshold": 0.1509433962264151,
+      "omitted": false
+    },
+    {
+      "feature": "POS_ADP_rate",
+      "item": "POS_ADP_rate_alto",
+      "direction": "alto",
+      "threshold": 0.22448979591836735,
+      "omitted": false
+    },
+    {
+      "feature": "POS_AUX_rate",
+      "item": "POS_AUX_rate_baixo",
+      "direction": "baixo",
+      "threshold": 0.0,
+      "omitted": false
+    },
+    {
+      "feature": "POS_AUX_rate",
+      "item": "POS_AUX_rate_alto",
+      "direction": "alto",
+      "threshold": 0.041666666666666664,
+      "omitted": false
+    },
+    {
+      "feature": "POS_NUM_rate",
+      "item": "POS_NUM_rate_baixo",
+      "direction": "baixo",
+      "threshold": 0.0,
+      "omitted": false
+    },
+    {
+      "feature": "POS_NUM_rate",
+      "item": "POS_NUM_rate_alto",
+      "direction": "alto",
+      "threshold": 0.04081632653061224,
+      "omitted": false
+    },
+    {
+      "feature": "DEP_obl_rate",
+      "item": "DEP_obl_rate_baixo",
+      "direction": "baixo",
+      "threshold": 0.037037037037037035,
+      "omitted": false
+    },
+    {
+      "feature": "DEP_obl_rate",
+      "item": "DEP_obl_rate_alto",
+      "direction": "alto",
+      "threshold": 0.07547169811320754,
+      "omitted": false
+    },
+    {
+      "feature": "DEP_cc_rate",
+      "item": "DEP_cc_rate_baixo",
+      "direction": "baixo",
+      "threshold": 0.0,
+      "omitted": false
+    },
+    {
+      "feature": "DEP_cc_rate",
+      "item": "DEP_cc_rate_alto",
+      "direction": "alto",
+      "threshold": 0.0392156862745098,
+      "omitted": false
+    },
+    {
+      "feature": "DEP_acl:relcl_rate",
+      "item": "DEP_acl:relcl_rate_baixo",
+      "direction": "baixo",
+      "threshold": 0.0,
+      "omitted": false
+    },
+    {
+      "feature": "DEP_acl:relcl_rate",
+      "item": "DEP_acl:relcl_rate_alto",
+      "direction": "alto",
+      "threshold": 0.02040816326530612,
+      "omitted": false
+    },
+    {
+      "feature": "DEP_nsubj:pass_rate",
+      "item": "DEP_nsubj:pass_rate_baixo",
+      "direction": "baixo",
+      "threshold": 0.0,
+      "omitted": false
+    },
+    {
+      "feature": "DEP_nsubj:pass_rate",
+      "item": "DEP_nsubj:pass_rate_alto",
+      "direction": "alto",
+      "threshold": 0.018867924528301886,
+      "omitted": false
+    }
+  ],
+  "patterns": [
+    {
+      "patternId": "8715ac5b8fc2",
+      "items": [
+        {
+          "item": "DEP_acl:relcl_rate_baixo",
+          "feature": "DEP_acl:relcl_rate",
+          "operator": "<=",
+          "threshold": 0.0,
+          "denominator": "tokens_lexical",
+          "annotation_label": "orações relativas",
+          "displayLabel": "descrições ligadas a nomes, como 'que chegou' em 'a pessoa que chegou'",
+          "summarySingular": "descrição como “a pessoa que chegou”",
+          "summaryPlural": "descrições como “a pessoa que chegou”"
+        },
+        {
+          "item": "POS_PRON_rate_baixo",
+          "feature": "POS_PRON_rate",
+          "operator": "<=",
+          "threshold": 0.0,
+          "denominator": "tokens_lexical",
+          "annotation_label": "pronomes",
+          "displayLabel": "pronomes, como 'ele', 'ela' e 'isso'",
+          "summarySingular": "pronome como “ele” ou “ela”",
+          "summaryPlural": "pronomes como “ele” ou “ela”"
+        }
+      ],
+      "priority": 0,
+      "observationTitle": "Pronomes e descrições ligadas a nomes",
+      "observationTemplate": "Neste trecho, a leitura automática {summary}.",
+      "reflectionQuestions": [],
+      "redundancyFamily": "referenciacao",
+      "displayStatus": "descriptive_comparison",
+      "comparisonEnabled": true,
+      "comparison": {
+        "kind": "descriptive_corpus_frequency",
+        "referenceDataset": "Fake.br-Corpus",
+        "partition": "validation",
+        "authorScope": "all",
+        "sourceRun": "fp-growth-metadados-ampliados-20261008T002311Z",
+        "variant": "sintaxe_ampliada",
+        "scope": "matched_pattern",
+        "fake": {
+          "count": 185,
+          "total": 720,
+          "frequency": 0.2569444444444444
+        },
+        "true": {
+          "count": 256,
+          "total": 720,
+          "frequency": 0.35555555555555557
+        }
+      }
+    },
+    {
+      "patternId": "afaef19656e5",
+      "items": [
+        {
+          "item": "DEP_advmod_rate_baixo",
+          "feature": "DEP_advmod_rate",
+          "operator": "<=",
+          "threshold": 0.0,
+          "denominator": "tokens_lexical",
+          "annotation_label": "modificadores adverbiais",
+          "displayLabel": "palavras que detalham uma ação ou qualidade, como 'rapidamente' e 'muito'",
+          "summarySingular": "detalhe como “rapidamente” em “chegou rapidamente”",
+          "summaryPlural": "detalhes como “rapidamente” em “chegou rapidamente”"
+        },
+        {
+          "item": "POS_ADV_rate_baixo",
+          "feature": "POS_ADV_rate",
+          "operator": "<=",
+          "threshold": 0.0,
+          "denominator": "tokens_lexical",
+          "annotation_label": "advérbios",
+          "displayLabel": "advérbios, como 'hoje', 'aqui' e 'rapidamente'",
+          "summarySingular": "palavra como “hoje”, “aqui” ou “rapidamente”",
+          "summaryPlural": "palavras como “hoje”, “aqui” ou “rapidamente”"
+        }
+      ],
+      "priority": 1,
+      "observationTitle": "Palavras que detalham as ações",
+      "observationTemplate": "Neste trecho, a leitura automática {summary}.",
+      "reflectionQuestions": [],
+      "redundancyFamily": "modificacao_adverbial",
+      "displayStatus": "descriptive_comparison",
+      "comparisonEnabled": true,
+      "comparison": {
+        "kind": "descriptive_corpus_frequency",
+        "referenceDataset": "Fake.br-Corpus",
+        "partition": "validation",
+        "authorScope": "all",
+        "sourceRun": "fp-growth-metadados-ampliados-20261008T002311Z",
+        "variant": "sintaxe_ampliada",
+        "scope": "matched_pattern",
+        "fake": {
+          "count": 149,
+          "total": 720,
+          "frequency": 0.20694444444444443
+        },
+        "true": {
+          "count": 267,
+          "total": 720,
+          "frequency": 0.37083333333333335
+        }
+      }
+    },
+    {
+      "patternId": "8c3cebc0601d",
+      "items": [
+        {
+          "item": "DEP_nsubj:pass_rate_baixo",
+          "feature": "DEP_nsubj:pass_rate",
+          "operator": "<=",
+          "threshold": 0.0,
+          "denominator": "tokens_lexical",
+          "annotation_label": "sujeitos de construções passivas",
+          "displayLabel": "referências a quem recebe a ação, como 'a proposta' em 'a proposta foi aprovada'",
+          "summarySingular": "referência como “a proposta” em “a proposta foi aprovada”",
+          "summaryPlural": "referências como “a proposta” em “a proposta foi aprovada”"
+        },
+        {
+          "item": "POS_AUX_rate_baixo",
+          "feature": "POS_AUX_rate",
+          "operator": "<=",
+          "threshold": 0.0,
+          "denominator": "tokens_lexical",
+          "annotation_label": "verbos auxiliares",
+          "displayLabel": "verbos de apoio, como 'foi' em 'foi aprovado'",
+          "summarySingular": "verbo de apoio como “foi” em “foi aprovado”",
+          "summaryPlural": "verbos de apoio como “foi” em “foi aprovado”"
+        }
+      ],
+      "priority": 2,
+      "observationTitle": "Verbos de apoio e quem recebe a ação",
+      "observationTemplate": "Neste trecho, a leitura automática {summary}.",
+      "reflectionQuestions": [],
+      "redundancyFamily": "construcoes_verbais",
+      "displayStatus": "descriptive_comparison",
+      "comparisonEnabled": true,
+      "comparison": {
+        "kind": "descriptive_corpus_frequency",
+        "referenceDataset": "Fake.br-Corpus",
+        "partition": "validation",
+        "authorScope": "all",
+        "sourceRun": "fp-growth-metadados-ampliados-20261008T002311Z",
+        "variant": "sintaxe_ampliada",
+        "scope": "matched_pattern",
+        "fake": {
+          "count": 145,
+          "total": 720,
+          "frequency": 0.2013888888888889
+        },
+        "true": {
+          "count": 242,
+          "total": 720,
+          "frequency": 0.33611111111111114
+        }
+      }
+    },
+    {
+      "patternId": "d1280945c7ef",
+      "items": [
+        {
+          "item": "DEP_nsubj:pass_rate_baixo",
+          "feature": "DEP_nsubj:pass_rate",
+          "operator": "<=",
+          "threshold": 0.0,
+          "denominator": "tokens_lexical",
+          "annotation_label": "sujeitos de construções passivas",
+          "displayLabel": "referências a quem recebe a ação, como 'a proposta' em 'a proposta foi aprovada'",
+          "summarySingular": "referência como “a proposta” em “a proposta foi aprovada”",
+          "summaryPlural": "referências como “a proposta” em “a proposta foi aprovada”"
+        },
+        {
+          "item": "DEP_nsubj_rate_alto",
+          "feature": "DEP_nsubj_rate",
+          "operator": ">=",
+          "threshold": 0.09090909090909091,
+          "denominator": "tokens_lexical",
+          "annotation_label": "sujeitos nominais",
+          "displayLabel": "referências a quem age, como 'a equipe' em 'a equipe publicou'",
+          "summarySingular": "referência a quem age, como “a equipe” em “a equipe publicou”",
+          "summaryPlural": "referências a quem age, como “a equipe” em “a equipe publicou”"
+        }
+      ],
+      "priority": 3,
+      "observationTitle": "Quem realiza ou recebe a ação",
+      "observationTemplate": "Neste trecho, a leitura automática {summary}.",
+      "reflectionQuestions": [],
+      "redundancyFamily": "agentes",
+      "displayStatus": "descriptive_comparison",
+      "comparisonEnabled": true,
+      "comparison": {
+        "kind": "descriptive_corpus_frequency",
+        "referenceDataset": "Fake.br-Corpus",
+        "partition": "validation",
+        "authorScope": "all",
+        "sourceRun": "fp-growth-metadados-ampliados-20261008T002311Z",
+        "variant": "sintaxe_ampliada",
+        "scope": "matched_pattern",
+        "fake": {
+          "count": 195,
+          "total": 720,
+          "frequency": 0.2708333333333333
+        },
+        "true": {
+          "count": 157,
+          "total": 720,
+          "frequency": 0.21805555555555556
+        }
+      }
+    },
+    {
+      "patternId": "8b970151f163",
+      "items": [
+        {
+          "item": "DEP_nsubj:pass_rate_baixo",
+          "feature": "DEP_nsubj:pass_rate",
+          "operator": "<=",
+          "threshold": 0.0,
+          "denominator": "tokens_lexical",
+          "annotation_label": "sujeitos de construções passivas",
+          "displayLabel": "referências a quem recebe a ação, como 'a proposta' em 'a proposta foi aprovada'",
+          "summarySingular": "referência como “a proposta” em “a proposta foi aprovada”",
+          "summaryPlural": "referências como “a proposta” em “a proposta foi aprovada”"
+        },
+        {
+          "item": "DEP_obj_rate_alto",
+          "feature": "DEP_obj_rate",
+          "operator": ">=",
+          "threshold": 0.08163265306122448,
+          "denominator": "tokens_lexical",
+          "annotation_label": "objetos diretos",
+          "displayLabel": "referências ao alvo da ação, como 'o relatório' em 'publicou o relatório'",
+          "summarySingular": "alvo da ação, como “o relatório” em “publicou o relatório”",
+          "summaryPlural": "alvos da ação, como “o relatório” em “publicou o relatório”"
+        }
+      ],
+      "priority": 4,
+      "observationTitle": "A quem ou a que as ações se dirigem",
+      "observationTemplate": "Neste trecho, a leitura automática {summary}.",
+      "reflectionQuestions": [],
+      "redundancyFamily": "objetos",
+      "displayStatus": "descriptive_comparison",
+      "comparisonEnabled": true,
+      "comparison": {
+        "kind": "descriptive_corpus_frequency",
+        "referenceDataset": "Fake.br-Corpus",
+        "partition": "validation",
+        "authorScope": "all",
+        "sourceRun": "fp-growth-metadados-ampliados-20261008T002311Z",
+        "variant": "sintaxe_ampliada",
+        "scope": "matched_pattern",
+        "fake": {
+          "count": 211,
+          "total": 720,
+          "frequency": 0.29305555555555557
+        },
+        "true": {
+          "count": 133,
+          "total": 720,
+          "frequency": 0.18472222222222223
+        }
+      }
+    },
+    {
+      "patternId": "3542b427d129",
+      "items": [
+        {
+          "item": "DEP_acl:relcl_rate_baixo",
+          "feature": "DEP_acl:relcl_rate",
+          "operator": "<=",
+          "threshold": 0.0,
+          "denominator": "tokens_lexical",
+          "annotation_label": "orações relativas",
+          "displayLabel": "descrições ligadas a nomes, como 'que chegou' em 'a pessoa que chegou'",
+          "summarySingular": "descrição como “a pessoa que chegou”",
+          "summaryPlural": "descrições como “a pessoa que chegou”"
+        },
+        {
+          "item": "DEP_nsubj:pass_rate_baixo",
+          "feature": "DEP_nsubj:pass_rate",
+          "operator": "<=",
+          "threshold": 0.0,
+          "denominator": "tokens_lexical",
+          "annotation_label": "sujeitos de construções passivas",
+          "displayLabel": "referências a quem recebe a ação, como 'a proposta' em 'a proposta foi aprovada'",
+          "summarySingular": "referência como “a proposta” em “a proposta foi aprovada”",
+          "summaryPlural": "referências como “a proposta” em “a proposta foi aprovada”"
+        },
+        {
+          "item": "POS_PRON_rate_baixo",
+          "feature": "POS_PRON_rate",
+          "operator": "<=",
+          "threshold": 0.0,
+          "denominator": "tokens_lexical",
+          "annotation_label": "pronomes",
+          "displayLabel": "pronomes, como 'ele', 'ela' e 'isso'",
+          "summarySingular": "pronome como “ele” ou “ela”",
+          "summaryPlural": "pronomes como “ele” ou “ela”"
+        }
+      ],
+      "priority": 5,
+      "observationTitle": "Pronomes, descrições e quem recebe a ação",
+      "observationTemplate": "Neste trecho, a leitura automática {summary}.",
+      "reflectionQuestions": [],
+      "redundancyFamily": "referenciacao",
+      "displayStatus": "descriptive_comparison",
+      "comparisonEnabled": true,
+      "comparison": {
+        "kind": "descriptive_corpus_frequency",
+        "referenceDataset": "Fake.br-Corpus",
+        "partition": "validation",
+        "authorScope": "all",
+        "sourceRun": "fp-growth-metadados-ampliados-20261008T002311Z",
+        "variant": "sintaxe_ampliada",
+        "scope": "matched_pattern",
+        "fake": {
+          "count": 140,
+          "total": 720,
+          "frequency": 0.19444444444444445
+        },
+        "true": {
+          "count": 179,
+          "total": 720,
+          "frequency": 0.24861111111111112
+        }
+      }
+    },
+    {
+      "patternId": "d0c4306ce66c",
+      "items": [
+        {
+          "item": "DEP_nsubj:pass_rate_baixo",
+          "feature": "DEP_nsubj:pass_rate",
+          "operator": "<=",
+          "threshold": 0.0,
+          "denominator": "tokens_lexical",
+          "annotation_label": "sujeitos de construções passivas",
+          "displayLabel": "referências a quem recebe a ação, como 'a proposta' em 'a proposta foi aprovada'",
+          "summarySingular": "referência como “a proposta” em “a proposta foi aprovada”",
+          "summaryPlural": "referências como “a proposta” em “a proposta foi aprovada”"
+        },
+        {
+          "item": "POS_ADP_rate_baixo",
+          "feature": "POS_ADP_rate",
+          "operator": "<=",
+          "threshold": 0.1509433962264151,
+          "denominator": "tokens_lexical",
+          "annotation_label": "preposições",
+          "displayLabel": "palavras de ligação, como 'de', 'em' e 'para'",
+          "summarySingular": "palavra de ligação como “de”, “em” ou “para”",
+          "summaryPlural": "palavras de ligação como “de”, “em” ou “para”"
+        }
+      ],
+      "priority": 6,
+      "observationTitle": "Palavras de ligação e quem recebe a ação",
+      "observationTemplate": "Neste trecho, a leitura automática {summary}.",
+      "reflectionQuestions": [],
+      "redundancyFamily": "contexto",
+      "displayStatus": "descriptive_comparison",
+      "comparisonEnabled": true,
+      "comparison": {
+        "kind": "descriptive_corpus_frequency",
+        "referenceDataset": "Fake.br-Corpus",
+        "partition": "validation",
+        "authorScope": "all",
+        "sourceRun": "fp-growth-metadados-ampliados-20261008T002311Z",
+        "variant": "sintaxe_ampliada",
+        "scope": "matched_pattern",
+        "fake": {
+          "count": 212,
+          "total": 720,
+          "frequency": 0.29444444444444445
+        },
+        "true": {
+          "count": 88,
+          "total": 720,
+          "frequency": 0.12222222222222222
+        }
+      }
+    },
+    {
+      "patternId": "58bd81f28dc3",
+      "items": [
+        {
+          "item": "DEP_amod_rate_baixo",
+          "feature": "DEP_amod_rate",
+          "operator": "<=",
+          "threshold": 0.0196078431372549,
+          "denominator": "tokens_lexical",
+          "annotation_label": "modificadores adjetivais",
+          "displayLabel": "palavras que caracterizam nomes, como 'importante' em 'decisão importante'",
+          "summarySingular": "descrição de um nome, como “decisão importante”",
+          "summaryPlural": "descrições de nomes, como “decisão importante”"
+        },
+        {
+          "item": "POS_ADJ_rate_baixo",
+          "feature": "POS_ADJ_rate",
+          "operator": "<=",
+          "threshold": 0.020833333333333332,
+          "denominator": "tokens_lexical",
+          "annotation_label": "adjetivos",
+          "displayLabel": "adjetivos, como 'importante' e 'novo'",
+          "summarySingular": "palavra que caracteriza algo, como “novo” ou “importante”",
+          "summaryPlural": "palavras que caracterizam algo, como “novo” ou “importante”"
+        }
+      ],
+      "priority": 7,
+      "observationTitle": "Palavras que caracterizam nomes",
+      "observationTemplate": "Neste trecho, a leitura automática {summary}.",
+      "reflectionQuestions": [],
+      "redundancyFamily": "adjetivacao",
+      "displayStatus": "descriptive_comparison",
+      "comparisonEnabled": true,
+      "comparison": {
+        "kind": "descriptive_corpus_frequency",
+        "referenceDataset": "Fake.br-Corpus",
+        "partition": "validation",
+        "authorScope": "all",
+        "sourceRun": "fp-growth-metadados-ampliados-20261008T002311Z",
+        "variant": "sintaxe_ampliada",
+        "scope": "matched_pattern",
+        "fake": {
+          "count": 154,
+          "total": 720,
+          "frequency": 0.21388888888888888
+        },
+        "true": {
+          "count": 145,
+          "total": 720,
+          "frequency": 0.2013888888888889
+        }
+      }
+    },
+    {
+      "patternId": "340698e8be61",
+      "items": [
+        {
+          "item": "DEP_advmod_rate_baixo",
+          "feature": "DEP_advmod_rate",
+          "operator": "<=",
+          "threshold": 0.0,
+          "denominator": "tokens_lexical",
+          "annotation_label": "modificadores adverbiais",
+          "displayLabel": "palavras que detalham uma ação ou qualidade, como 'rapidamente' e 'muito'",
+          "summarySingular": "detalhe como “rapidamente” em “chegou rapidamente”",
+          "summaryPlural": "detalhes como “rapidamente” em “chegou rapidamente”"
+        },
+        {
+          "item": "DEP_nsubj:pass_rate_baixo",
+          "feature": "DEP_nsubj:pass_rate",
+          "operator": "<=",
+          "threshold": 0.0,
+          "denominator": "tokens_lexical",
+          "annotation_label": "sujeitos de construções passivas",
+          "displayLabel": "referências a quem recebe a ação, como 'a proposta' em 'a proposta foi aprovada'",
+          "summarySingular": "referência como “a proposta” em “a proposta foi aprovada”",
+          "summaryPlural": "referências como “a proposta” em “a proposta foi aprovada”"
+        },
+        {
+          "item": "POS_ADV_rate_baixo",
+          "feature": "POS_ADV_rate",
+          "operator": "<=",
+          "threshold": 0.0,
+          "denominator": "tokens_lexical",
+          "annotation_label": "advérbios",
+          "displayLabel": "advérbios, como 'hoje', 'aqui' e 'rapidamente'",
+          "summarySingular": "palavra como “hoje”, “aqui” ou “rapidamente”",
+          "summaryPlural": "palavras como “hoje”, “aqui” ou “rapidamente”"
+        }
+      ],
+      "priority": 8,
+      "observationTitle": "Detalhes das ações e quem as recebe",
+      "observationTemplate": "Neste trecho, a leitura automática {summary}.",
+      "reflectionQuestions": [],
+      "redundancyFamily": "modificacao_adverbial",
+      "displayStatus": "descriptive_comparison",
+      "comparisonEnabled": true,
+      "comparison": {
+        "kind": "descriptive_corpus_frequency",
+        "referenceDataset": "Fake.br-Corpus",
+        "partition": "validation",
+        "authorScope": "all",
+        "sourceRun": "fp-growth-metadados-ampliados-20261008T002311Z",
+        "variant": "sintaxe_ampliada",
+        "scope": "matched_pattern",
+        "fake": {
+          "count": 112,
+          "total": 720,
+          "frequency": 0.15555555555555556
+        },
+        "true": {
+          "count": 182,
+          "total": 720,
+          "frequency": 0.25277777777777777
+        }
+      }
+    },
+    {
+      "patternId": "dcc82376b8a6",
+      "items": [
+        {
+          "item": "DEP_ccomp_rate_baixo",
+          "feature": "DEP_ccomp_rate",
+          "operator": "<=",
+          "threshold": 0.0,
+          "denominator": "tokens_lexical",
+          "annotation_label": "complementos oracionais",
+          "displayLabel": "afirmações ligadas a um verbo, como 'o prazo acabou' em 'disse que o prazo acabou'",
+          "summarySingular": "afirmação como “o prazo acabou” em “disse que o prazo acabou”",
+          "summaryPlural": "afirmações como “o prazo acabou” em “disse que o prazo acabou”"
+        },
+        {
+          "item": "DEP_nsubj_rate_baixo",
+          "feature": "DEP_nsubj_rate",
+          "operator": "<=",
+          "threshold": 0.05660377358490566,
+          "denominator": "tokens_lexical",
+          "annotation_label": "sujeitos nominais",
+          "displayLabel": "referências a quem age, como 'a equipe' em 'a equipe publicou'",
+          "summarySingular": "referência a quem age, como “a equipe” em “a equipe publicou”",
+          "summaryPlural": "referências a quem age, como “a equipe” em “a equipe publicou”"
+        }
+      ],
+      "priority": 9,
+      "observationTitle": "Quem age e as afirmações ligadas a verbos",
+      "observationTemplate": "Neste trecho, a leitura automática {summary}.",
+      "reflectionQuestions": [],
+      "redundancyFamily": "agentes",
+      "displayStatus": "descriptive_comparison",
+      "comparisonEnabled": true,
+      "comparison": {
+        "kind": "descriptive_corpus_frequency",
+        "referenceDataset": "Fake.br-Corpus",
+        "partition": "validation",
+        "authorScope": "all",
+        "sourceRun": "fp-growth-metadados-ampliados-20261008T002311Z",
+        "variant": "sintaxe_ampliada",
+        "scope": "matched_pattern",
+        "fake": {
+          "count": 114,
+          "total": 720,
+          "frequency": 0.15833333333333333
+        },
+        "true": {
+          "count": 180,
+          "total": 720,
+          "frequency": 0.25
+        }
+      }
+    },
+    {
+      "patternId": "044b4a18072c",
+      "items": [
+        {
+          "item": "DEP_ccomp_rate_baixo",
+          "feature": "DEP_ccomp_rate",
+          "operator": "<=",
+          "threshold": 0.0,
+          "denominator": "tokens_lexical",
+          "annotation_label": "complementos oracionais",
+          "displayLabel": "afirmações ligadas a um verbo, como 'o prazo acabou' em 'disse que o prazo acabou'",
+          "summarySingular": "afirmação como “o prazo acabou” em “disse que o prazo acabou”",
+          "summaryPlural": "afirmações como “o prazo acabou” em “disse que o prazo acabou”"
+        },
+        {
+          "item": "POS_VERB_rate_baixo",
+          "feature": "POS_VERB_rate",
+          "operator": "<=",
+          "threshold": 0.09615384615384616,
+          "denominator": "tokens_lexical",
+          "annotation_label": "verbos",
+          "displayLabel": "verbos, como 'publicou' e 'informou'",
+          "summarySingular": "verbo como “publicou” ou “informou”",
+          "summaryPlural": "verbos como “publicou” ou “informou”"
+        }
+      ],
+      "priority": 10,
+      "observationTitle": "Verbos e afirmações que se conectam",
+      "observationTemplate": "Neste trecho, a leitura automática {summary}.",
+      "reflectionQuestions": [],
+      "redundancyFamily": "construcoes_verbais",
+      "displayStatus": "descriptive_comparison",
+      "comparisonEnabled": true,
+      "comparison": {
+        "kind": "descriptive_corpus_frequency",
+        "referenceDataset": "Fake.br-Corpus",
+        "partition": "validation",
+        "authorScope": "all",
+        "sourceRun": "fp-growth-metadados-ampliados-20261008T002311Z",
+        "variant": "sintaxe_ampliada",
+        "scope": "matched_pattern",
+        "fake": {
+          "count": 88,
+          "total": 720,
+          "frequency": 0.12222222222222222
+        },
+        "true": {
+          "count": 193,
+          "total": 720,
+          "frequency": 0.26805555555555555
+        }
+      }
+    },
+    {
+      "patternId": "a33f9be1d445",
+      "items": [
+        {
+          "item": "DEP_nsubj:pass_rate_baixo",
+          "feature": "DEP_nsubj:pass_rate",
+          "operator": "<=",
+          "threshold": 0.0,
+          "denominator": "tokens_lexical",
+          "annotation_label": "sujeitos de construções passivas",
+          "displayLabel": "referências a quem recebe a ação, como 'a proposta' em 'a proposta foi aprovada'",
+          "summarySingular": "referência como “a proposta” em “a proposta foi aprovada”",
+          "summaryPlural": "referências como “a proposta” em “a proposta foi aprovada”"
+        },
+        {
+          "item": "POS_PRON_rate_alto",
+          "feature": "POS_PRON_rate",
+          "operator": ">=",
+          "threshold": 0.04081632653061224,
+          "denominator": "tokens_lexical",
+          "annotation_label": "pronomes",
+          "displayLabel": "pronomes, como 'ele', 'ela' e 'isso'",
+          "summarySingular": "pronome como “ele” ou “ela”",
+          "summaryPlural": "pronomes como “ele” ou “ela”"
+        }
+      ],
+      "priority": 11,
+      "observationTitle": "Pronomes e quem recebe a ação",
+      "observationTemplate": "Neste trecho, a leitura automática {summary}.",
+      "reflectionQuestions": [],
+      "redundancyFamily": "referenciacao",
+      "displayStatus": "descriptive_comparison",
+      "comparisonEnabled": true,
+      "comparison": {
+        "kind": "descriptive_corpus_frequency",
+        "referenceDataset": "Fake.br-Corpus",
+        "partition": "validation",
+        "authorScope": "all",
+        "sourceRun": "fp-growth-metadados-ampliados-20261008T002311Z",
+        "variant": "sintaxe_ampliada",
+        "scope": "matched_pattern",
+        "fake": {
+          "count": 182,
+          "total": 720,
+          "frequency": 0.25277777777777777
+        },
+        "true": {
+          "count": 116,
+          "total": 720,
+          "frequency": 0.16111111111111112
+        }
+      }
+    },
+    {
+      "patternId": "23b2cdc9d31e",
+      "items": [
+        {
+          "item": "DEP_nsubj:pass_rate_baixo",
+          "feature": "DEP_nsubj:pass_rate",
+          "operator": "<=",
+          "threshold": 0.0,
+          "denominator": "tokens_lexical",
+          "annotation_label": "sujeitos de construções passivas",
+          "displayLabel": "referências a quem recebe a ação, como 'a proposta' em 'a proposta foi aprovada'",
+          "summarySingular": "referência como “a proposta” em “a proposta foi aprovada”",
+          "summaryPlural": "referências como “a proposta” em “a proposta foi aprovada”"
+        },
+        {
+          "item": "punctuationDensity_spacy_alto",
+          "feature": "punctuationDensity_spacy",
+          "operator": ">=",
+          "threshold": 0.15873015873015872,
+          "denominator": "tokens_nonspace",
+          "annotation_label": "pontuação",
+          "displayLabel": "sinais de pontuação",
+          "summarySingular": "sinal de pontuação",
+          "summaryPlural": "sinais de pontuação"
+        }
+      ],
+      "priority": 12,
+      "observationTitle": "Pontuação e quem recebe a ação",
+      "observationTemplate": "Neste trecho, a leitura automática {summary}.",
+      "reflectionQuestions": [],
+      "redundancyFamily": "pontuacao",
+      "displayStatus": "descriptive_comparison",
+      "comparisonEnabled": true,
+      "comparison": {
+        "kind": "descriptive_corpus_frequency",
+        "referenceDataset": "Fake.br-Corpus",
+        "partition": "validation",
+        "authorScope": "all",
+        "sourceRun": "fp-growth-metadados-ampliados-20261008T002311Z",
+        "variant": "sintaxe_ampliada",
+        "scope": "matched_pattern",
+        "fake": {
+          "count": 223,
+          "total": 720,
+          "frequency": 0.30972222222222223
+        },
+        "true": {
+          "count": 64,
+          "total": 720,
+          "frequency": 0.08888888888888889
+        }
+      }
+    },
+    {
+      "patternId": "1d57b1df1486",
+      "items": [
+        {
+          "item": "DEP_acl:relcl_rate_baixo",
+          "feature": "DEP_acl:relcl_rate",
+          "operator": "<=",
+          "threshold": 0.0,
+          "denominator": "tokens_lexical",
+          "annotation_label": "orações relativas",
+          "displayLabel": "descrições ligadas a nomes, como 'que chegou' em 'a pessoa que chegou'",
+          "summarySingular": "descrição como “a pessoa que chegou”",
+          "summaryPlural": "descrições como “a pessoa que chegou”"
+        },
+        {
+          "item": "DEP_advcl_rate_baixo",
+          "feature": "DEP_advcl_rate",
+          "operator": "<=",
+          "threshold": 0.0,
+          "denominator": "tokens_lexical",
+          "annotation_label": "orações adverbiais",
+          "displayLabel": "trechos que acrescentam circunstâncias à ação, como 'quando chegou'",
+          "summarySingular": "trecho que indica circunstância, como “quando chegou”",
+          "summaryPlural": "trechos que indicam circunstâncias, como “quando chegou”"
+        },
+        {
+          "item": "POS_PRON_rate_baixo",
+          "feature": "POS_PRON_rate",
+          "operator": "<=",
+          "threshold": 0.0,
+          "denominator": "tokens_lexical",
+          "annotation_label": "pronomes",
+          "displayLabel": "pronomes, como 'ele', 'ela' e 'isso'",
+          "summarySingular": "pronome como “ele” ou “ela”",
+          "summaryPlural": "pronomes como “ele” ou “ela”"
+        }
+      ],
+      "priority": 13,
+      "observationTitle": "Pronomes e relações entre partes da frase",
+      "observationTemplate": "Neste trecho, a leitura automática {summary}.",
+      "reflectionQuestions": [],
+      "redundancyFamily": "referenciacao",
+      "displayStatus": "descriptive_comparison",
+      "comparisonEnabled": true,
+      "comparison": {
+        "kind": "descriptive_corpus_frequency",
+        "referenceDataset": "Fake.br-Corpus",
+        "partition": "validation",
+        "authorScope": "all",
+        "sourceRun": "fp-growth-metadados-ampliados-20261008T002311Z",
+        "variant": "sintaxe_ampliada",
+        "scope": "matched_pattern",
+        "fake": {
+          "count": 101,
+          "total": 720,
+          "frequency": 0.14027777777777778
+        },
+        "true": {
+          "count": 174,
+          "total": 720,
+          "frequency": 0.24166666666666667
+        }
+      }
+    },
+    {
+      "patternId": "6f18c83ea455",
+      "items": [
+        {
+          "item": "DEP_acl:relcl_rate_baixo",
+          "feature": "DEP_acl:relcl_rate",
+          "operator": "<=",
+          "threshold": 0.0,
+          "denominator": "tokens_lexical",
+          "annotation_label": "orações relativas",
+          "displayLabel": "descrições ligadas a nomes, como 'que chegou' em 'a pessoa que chegou'",
+          "summarySingular": "descrição como “a pessoa que chegou”",
+          "summaryPlural": "descrições como “a pessoa que chegou”"
+        },
+        {
+          "item": "DEP_nsubj_rate_baixo",
+          "feature": "DEP_nsubj_rate",
+          "operator": "<=",
+          "threshold": 0.05660377358490566,
+          "denominator": "tokens_lexical",
+          "annotation_label": "sujeitos nominais",
+          "displayLabel": "referências a quem age, como 'a equipe' em 'a equipe publicou'",
+          "summarySingular": "referência a quem age, como “a equipe” em “a equipe publicou”",
+          "summaryPlural": "referências a quem age, como “a equipe” em “a equipe publicou”"
+        }
+      ],
+      "priority": 14,
+      "observationTitle": "Quem age e as descrições ligadas a nomes",
+      "observationTemplate": "Neste trecho, a leitura automática {summary}.",
+      "reflectionQuestions": [],
+      "redundancyFamily": "agentes",
+      "displayStatus": "descriptive_comparison",
+      "comparisonEnabled": true,
+      "comparison": {
+        "kind": "descriptive_corpus_frequency",
+        "referenceDataset": "Fake.br-Corpus",
+        "partition": "validation",
+        "authorScope": "all",
+        "sourceRun": "fp-growth-metadados-ampliados-20261008T002311Z",
+        "variant": "sintaxe_ampliada",
+        "scope": "matched_pattern",
+        "fake": {
+          "count": 105,
+          "total": 720,
+          "frequency": 0.14583333333333334
+        },
+        "true": {
+          "count": 170,
+          "total": 720,
+          "frequency": 0.2361111111111111
+        }
+      }
+    },
+    {
+      "patternId": "19c77db982d8",
+      "items": [
+        {
+          "item": "DEP_advcl_rate_baixo",
+          "feature": "DEP_advcl_rate",
+          "operator": "<=",
+          "threshold": 0.0,
+          "denominator": "tokens_lexical",
+          "annotation_label": "orações adverbiais",
+          "displayLabel": "trechos que acrescentam circunstâncias à ação, como 'quando chegou'",
+          "summarySingular": "trecho que indica circunstância, como “quando chegou”",
+          "summaryPlural": "trechos que indicam circunstâncias, como “quando chegou”"
+        },
+        {
+          "item": "POS_VERB_rate_baixo",
+          "feature": "POS_VERB_rate",
+          "operator": "<=",
+          "threshold": 0.09615384615384616,
+          "denominator": "tokens_lexical",
+          "annotation_label": "verbos",
+          "displayLabel": "verbos, como 'publicou' e 'informou'",
+          "summarySingular": "verbo como “publicou” ou “informou”",
+          "summaryPlural": "verbos como “publicou” ou “informou”"
+        }
+      ],
+      "priority": 15,
+      "observationTitle": "Verbos e as circunstâncias das ações",
+      "observationTemplate": "Neste trecho, a leitura automática {summary}.",
+      "reflectionQuestions": [],
+      "redundancyFamily": "construcoes_verbais",
+      "displayStatus": "descriptive_comparison",
+      "comparisonEnabled": true,
+      "comparison": {
+        "kind": "descriptive_corpus_frequency",
+        "referenceDataset": "Fake.br-Corpus",
+        "partition": "validation",
+        "authorScope": "all",
+        "sourceRun": "fp-growth-metadados-ampliados-20261008T002311Z",
+        "variant": "sintaxe_ampliada",
+        "scope": "matched_pattern",
+        "fake": {
+          "count": 86,
+          "total": 720,
+          "frequency": 0.11944444444444445
+        },
+        "true": {
+          "count": 186,
+          "total": 720,
+          "frequency": 0.25833333333333336
+        }
+      }
+    },
+    {
+      "patternId": "9193a887d511",
+      "items": [
+        {
+          "item": "DEP_acl:relcl_rate_baixo",
+          "feature": "DEP_acl:relcl_rate",
+          "operator": "<=",
+          "threshold": 0.0,
+          "denominator": "tokens_lexical",
+          "annotation_label": "orações relativas",
+          "displayLabel": "descrições ligadas a nomes, como 'que chegou' em 'a pessoa que chegou'",
+          "summarySingular": "descrição como “a pessoa que chegou”",
+          "summaryPlural": "descrições como “a pessoa que chegou”"
+        },
+        {
+          "item": "DEP_ccomp_rate_baixo",
+          "feature": "DEP_ccomp_rate",
+          "operator": "<=",
+          "threshold": 0.0,
+          "denominator": "tokens_lexical",
+          "annotation_label": "complementos oracionais",
+          "displayLabel": "afirmações ligadas a um verbo, como 'o prazo acabou' em 'disse que o prazo acabou'",
+          "summarySingular": "afirmação como “o prazo acabou” em “disse que o prazo acabou”",
+          "summaryPlural": "afirmações como “o prazo acabou” em “disse que o prazo acabou”"
+        },
+        {
+          "item": "POS_PRON_rate_baixo",
+          "feature": "POS_PRON_rate",
+          "operator": "<=",
+          "threshold": 0.0,
+          "denominator": "tokens_lexical",
+          "annotation_label": "pronomes",
+          "displayLabel": "pronomes, como 'ele', 'ela' e 'isso'",
+          "summarySingular": "pronome como “ele” ou “ela”",
+          "summaryPlural": "pronomes como “ele” ou “ela”"
+        }
+      ],
+      "priority": 16,
+      "observationTitle": "Pronomes e trechos ligados a nomes e verbos",
+      "observationTemplate": "Neste trecho, a leitura automática {summary}.",
+      "reflectionQuestions": [],
+      "redundancyFamily": "referenciacao",
+      "displayStatus": "descriptive_comparison",
+      "comparisonEnabled": true,
+      "comparison": {
+        "kind": "descriptive_corpus_frequency",
+        "referenceDataset": "Fake.br-Corpus",
+        "partition": "validation",
+        "authorScope": "all",
+        "sourceRun": "fp-growth-metadados-ampliados-20261008T002311Z",
+        "variant": "sintaxe_ampliada",
+        "scope": "matched_pattern",
+        "fake": {
+          "count": 108,
+          "total": 720,
+          "frequency": 0.15
+        },
+        "true": {
+          "count": 162,
+          "total": 720,
+          "frequency": 0.225
+        }
+      }
+    },
+    {
+      "patternId": "11e010b31664",
+      "items": [
+        {
+          "item": "DEP_advcl_rate_baixo",
+          "feature": "DEP_advcl_rate",
+          "operator": "<=",
+          "threshold": 0.0,
+          "denominator": "tokens_lexical",
+          "annotation_label": "orações adverbiais",
+          "displayLabel": "trechos que acrescentam circunstâncias à ação, como 'quando chegou'",
+          "summarySingular": "trecho que indica circunstância, como “quando chegou”",
+          "summaryPlural": "trechos que indicam circunstâncias, como “quando chegou”"
+        },
+        {
+          "item": "DEP_advmod_rate_baixo",
+          "feature": "DEP_advmod_rate",
+          "operator": "<=",
+          "threshold": 0.0,
+          "denominator": "tokens_lexical",
+          "annotation_label": "modificadores adverbiais",
+          "displayLabel": "palavras que detalham uma ação ou qualidade, como 'rapidamente' e 'muito'",
+          "summarySingular": "detalhe como “rapidamente” em “chegou rapidamente”",
+          "summaryPlural": "detalhes como “rapidamente” em “chegou rapidamente”"
+        }
+      ],
+      "priority": 17,
+      "observationTitle": "Detalhes e circunstâncias das ações",
+      "observationTemplate": "Neste trecho, a leitura automática {summary}.",
+      "reflectionQuestions": [],
+      "redundancyFamily": "modificacao_adverbial",
+      "displayStatus": "descriptive_comparison",
+      "comparisonEnabled": true,
+      "comparison": {
+        "kind": "descriptive_corpus_frequency",
+        "referenceDataset": "Fake.br-Corpus",
+        "partition": "validation",
+        "authorScope": "all",
+        "sourceRun": "fp-growth-metadados-ampliados-20261008T002311Z",
+        "variant": "sintaxe_ampliada",
+        "scope": "matched_pattern",
+        "fake": {
+          "count": 97,
+          "total": 720,
+          "frequency": 0.13472222222222222
+        },
+        "true": {
+          "count": 198,
+          "total": 720,
+          "frequency": 0.275
+        }
+      }
+    },
+    {
+      "patternId": "2465ffe4f09d",
+      "items": [
+        {
+          "item": "DEP_acl:relcl_rate_baixo",
+          "feature": "DEP_acl:relcl_rate",
+          "operator": "<=",
+          "threshold": 0.0,
+          "denominator": "tokens_lexical",
+          "annotation_label": "orações relativas",
+          "displayLabel": "descrições ligadas a nomes, como 'que chegou' em 'a pessoa que chegou'",
+          "summarySingular": "descrição como “a pessoa que chegou”",
+          "summaryPlural": "descrições como “a pessoa que chegou”"
+        },
+        {
+          "item": "DEP_advmod_rate_baixo",
+          "feature": "DEP_advmod_rate",
+          "operator": "<=",
+          "threshold": 0.0,
+          "denominator": "tokens_lexical",
+          "annotation_label": "modificadores adverbiais",
+          "displayLabel": "palavras que detalham uma ação ou qualidade, como 'rapidamente' e 'muito'",
+          "summarySingular": "detalhe como “rapidamente” em “chegou rapidamente”",
+          "summaryPlural": "detalhes como “rapidamente” em “chegou rapidamente”"
+        },
+        {
+          "item": "POS_ADV_rate_baixo",
+          "feature": "POS_ADV_rate",
+          "operator": "<=",
+          "threshold": 0.0,
+          "denominator": "tokens_lexical",
+          "annotation_label": "advérbios",
+          "displayLabel": "advérbios, como 'hoje', 'aqui' e 'rapidamente'",
+          "summarySingular": "palavra como “hoje”, “aqui” ou “rapidamente”",
+          "summaryPlural": "palavras como “hoje”, “aqui” ou “rapidamente”"
+        }
+      ],
+      "priority": 18,
+      "observationTitle": "Detalhes das ações e descrições ligadas a nomes",
+      "observationTemplate": "Neste trecho, a leitura automática {summary}.",
+      "reflectionQuestions": [],
+      "redundancyFamily": "modificacao_adverbial",
+      "displayStatus": "descriptive_comparison",
+      "comparisonEnabled": true,
+      "comparison": {
+        "kind": "descriptive_corpus_frequency",
+        "referenceDataset": "Fake.br-Corpus",
+        "partition": "validation",
+        "authorScope": "all",
+        "sourceRun": "fp-growth-metadados-ampliados-20261008T002311Z",
+        "variant": "sintaxe_ampliada",
+        "scope": "matched_pattern",
+        "fake": {
+          "count": 91,
+          "total": 720,
+          "frequency": 0.12638888888888888
+        },
+        "true": {
+          "count": 175,
+          "total": 720,
+          "frequency": 0.24305555555555555
+        }
+      }
+    },
+    {
+      "patternId": "9865be178551",
+      "items": [
+        {
+          "item": "DEP_ccomp_rate_baixo",
+          "feature": "DEP_ccomp_rate",
+          "operator": "<=",
+          "threshold": 0.0,
+          "denominator": "tokens_lexical",
+          "annotation_label": "complementos oracionais",
+          "displayLabel": "afirmações ligadas a um verbo, como 'o prazo acabou' em 'disse que o prazo acabou'",
+          "summarySingular": "afirmação como “o prazo acabou” em “disse que o prazo acabou”",
+          "summaryPlural": "afirmações como “o prazo acabou” em “disse que o prazo acabou”"
+        },
+        {
+          "item": "POS_ADP_rate_alto",
+          "feature": "POS_ADP_rate",
+          "operator": ">=",
+          "threshold": 0.22448979591836735,
+          "denominator": "tokens_lexical",
+          "annotation_label": "preposições",
+          "displayLabel": "palavras de ligação, como 'de', 'em' e 'para'",
+          "summarySingular": "palavra de ligação como “de”, “em” ou “para”",
+          "summaryPlural": "palavras de ligação como “de”, “em” ou “para”"
+        }
+      ],
+      "priority": 19,
+      "observationTitle": "Palavras de ligação e afirmações ligadas a verbos",
+      "observationTemplate": "Neste trecho, a leitura automática {summary}.",
+      "reflectionQuestions": [],
+      "redundancyFamily": "contexto",
+      "displayStatus": "descriptive_comparison",
+      "comparisonEnabled": true,
+      "comparison": {
+        "kind": "descriptive_corpus_frequency",
+        "referenceDataset": "Fake.br-Corpus",
+        "partition": "validation",
+        "authorScope": "all",
+        "sourceRun": "fp-growth-metadados-ampliados-20261008T002311Z",
+        "variant": "sintaxe_ampliada",
+        "scope": "matched_pattern",
+        "fake": {
+          "count": 74,
+          "total": 720,
+          "frequency": 0.10277777777777777
+        },
+        "true": {
+          "count": 190,
+          "total": 720,
+          "frequency": 0.2638888888888889
+        }
+      }
+    }
+  ]
+}

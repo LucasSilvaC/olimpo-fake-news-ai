@@ -5,6 +5,10 @@ import Image from "next/image";
 import * as React from "react";
 import { toast } from "sonner";
 
+import { useNewsInsights } from "../hooks/use-news-insights";
+
+import { NewsInsightsPanel } from "./news-insights-panel";
+
 import {
   submitVoteAction,
   type SubmitVoteActionResult,
@@ -23,11 +27,15 @@ export interface INewsArticleData {
 }
 
 export interface INewsCheckStageProps {
-  roomId: string;
+  roomId?: string;
   currentRound: number;
   totalRounds: number;
   article: INewsArticleData;
   timeRemainingSeconds?: number | null;
+  onCustomVote?: (
+    vote: "reliable" | "unreliable" | "uncertain",
+    isTimeout?: boolean,
+  ) => Promise<SubmitVoteActionResult>;
   onVoteSubmitted: (data: {
     vote: "reliable" | "unreliable" | "uncertain";
     result: SubmitVoteActionResult;
@@ -36,14 +44,29 @@ export interface INewsCheckStageProps {
   }) => void;
 }
 
-export function NewsCheckStage({
+export function NewsCheckStage(props: INewsCheckStageProps): React.ReactElement {
+  return (
+    <NewsCheckRound
+      key={`${props.roomId}:${props.currentRound}:${props.article.id ?? props.article.url}`}
+      {...props}
+    />
+  );
+}
+
+function NewsCheckRound({
   roomId,
   currentRound,
   totalRounds,
-  article,
+  article: initialArticle,
   timeRemainingSeconds,
+  onCustomVote,
   onVoteSubmitted,
 }: INewsCheckStageProps): React.ReactElement {
+  const insightsState = useNewsInsights(roomId, currentRound);
+  const article: INewsArticleData =
+    insightsState.status === "ready"
+      ? { ...insightsState.response.article, id: initialArticle.id }
+      : initialArticle;
   const [selectedVote, setSelectedVote] = React.useState<
     "reliable" | "unreliable" | "uncertain" | null
   >(null);
@@ -51,11 +74,17 @@ export function NewsCheckStage({
   const [imageError, setImageError] = React.useState(false);
   const startTimeRef = React.useRef<number>(0);
   const hasAutoSubmittedRef = React.useRef(false);
+  const mountedRef = React.useRef(false);
+  const voteInFlightRef = React.useRef(false);
 
   React.useEffect(() => {
+    mountedRef.current = true;
     startTimeRef.current = Date.now();
     hasAutoSubmittedRef.current = false;
-  }, [article.id]);
+    return () => {
+      mountedRef.current = false;
+    };
+  }, [initialArticle.id, currentRound, roomId]);
 
   // Extract friendly publisher tag or hostname fallback
   const publisherName = React.useMemo(() => {
@@ -104,7 +133,8 @@ export function NewsCheckStage({
 
   const handleVote = React.useCallback(
     async (vote: "reliable" | "unreliable" | "uncertain", isTimeout = false): Promise<void> => {
-      if (isSubmitting) return;
+      if (voteInFlightRef.current) return;
+      voteInFlightRef.current = true;
 
       setSelectedVote(vote);
       setIsSubmitting(true);
@@ -113,11 +143,22 @@ export function NewsCheckStage({
         : Math.max(1, Math.round((Date.now() - startTimeRef.current) / 1000));
 
       try {
-        const result = await submitVoteAction({
-          roomId,
-          vote,
-          isTimeout,
-        });
+        let result: SubmitVoteActionResult;
+        if (onCustomVote) {
+          result = await onCustomVote(vote, isTimeout);
+        } else if (roomId) {
+          result = await submitVoteAction({
+            roomId,
+            vote,
+            isTimeout,
+          });
+        } else {
+          result = {
+            success: false,
+            error: "Identificador da sala ou manipulador customizado não fornecido.",
+          };
+        }
+        if (!mountedRef.current) return;
 
         if (!result.success) {
           toast.error("Erro ao registrar voto", {
@@ -125,6 +166,7 @@ export function NewsCheckStage({
           });
           setIsSubmitting(false);
           setSelectedVote(null);
+          voteInFlightRef.current = false;
           return;
         }
 
@@ -141,14 +183,16 @@ export function NewsCheckStage({
           isTimeout,
         });
       } catch {
+        if (!mountedRef.current) return;
         toast.error("Erro ao registrar voto", {
           description: "Falha de conexão. Tente novamente.",
         });
         setIsSubmitting(false);
         setSelectedVote(null);
+        voteInFlightRef.current = false;
       }
     },
-    [isSubmitting, onVoteSubmitted, roomId],
+    [onCustomVote, onVoteSubmitted, roomId],
   );
 
   // Automatically submit neutral timeout vote when round duration expires
@@ -271,7 +315,20 @@ export function NewsCheckStage({
             article.content?.slice(0, 320) ||
             "Leia com atenção os detalhes da publicação e pondere se os fatos relatados possuem respaldo em veículos de imprensa e fontes primárias idôneas."}
         </p>
+
+        {article.content && (
+          <details className="mt-4 rounded-xl border border-slate-200 p-3 text-sm">
+            <summary className="cursor-pointer font-semibold text-blue-700 focus-visible:outline-2 focus-visible:outline-blue-600">
+              Ler o corpo da notícia
+            </summary>
+            <div className="mt-3 max-h-80 overflow-y-auto pr-2 leading-relaxed whitespace-pre-wrap text-slate-700">
+              {article.content}
+            </div>
+          </details>
+        )}
       </article>
+
+      {roomId && <NewsInsightsPanel state={insightsState} />}
 
       {/* Answer Decision Buttons */}
       <div
@@ -289,7 +346,7 @@ export function NewsCheckStage({
           }
           onClick={() => void handleVote("reliable")}
           aria-label="Classificar notícia como Verdadeira"
-          className={`flex w-full items-center gap-3.5 rounded-2xl border border-white/60 bg-white p-3.5 text-slate-800 shadow-md transition-all duration-200 hover:-translate-y-0.5 hover:bg-slate-50 hover:shadow-xl focus:ring-4 focus:ring-emerald-300 focus:outline-none active:translate-y-0.5 md:rounded-3xl md:p-4 ${
+          className={`flex w-full cursor-pointer items-center gap-3.5 rounded-2xl border border-white/60 bg-white p-3.5 text-slate-800 shadow-md transition-all duration-200 hover:-translate-y-0.5 hover:bg-slate-50 hover:shadow-xl focus:ring-4 focus:ring-emerald-300 focus:outline-none active:translate-y-0.5 md:rounded-3xl md:p-4 ${
             selectedVote === "reliable" ? "ring-4 ring-emerald-400" : ""
           } ${isSubmitting && selectedVote !== "reliable" ? "opacity-50" : ""}`}
         >
@@ -319,7 +376,7 @@ export function NewsCheckStage({
           }
           onClick={() => void handleVote("unreliable")}
           aria-label="Classificar notícia como Falsa"
-          className={`flex w-full items-center gap-3.5 rounded-2xl border border-white/60 bg-white p-3.5 text-slate-800 shadow-md transition-all duration-200 hover:-translate-y-0.5 hover:bg-slate-50 hover:shadow-xl focus:ring-4 focus:ring-rose-300 focus:outline-none active:translate-y-0.5 md:rounded-3xl md:p-4 ${
+          className={`flex w-full cursor-pointer items-center gap-3.5 rounded-2xl border border-white/60 bg-white p-3.5 text-slate-800 shadow-md transition-all duration-200 hover:-translate-y-0.5 hover:bg-slate-50 hover:shadow-xl focus:ring-4 focus:ring-rose-300 focus:outline-none active:translate-y-0.5 md:rounded-3xl md:p-4 ${
             selectedVote === "unreliable" ? "ring-4 ring-rose-400" : ""
           } ${isSubmitting && selectedVote !== "unreliable" ? "opacity-50" : ""}`}
         >
@@ -349,7 +406,7 @@ export function NewsCheckStage({
           }
           onClick={() => void handleVote("uncertain")}
           aria-label="Classificar notícia como Incerta"
-          className={`flex w-full items-center gap-3.5 rounded-2xl border border-white/60 bg-white p-3.5 text-slate-800 shadow-md transition-all duration-200 hover:-translate-y-0.5 hover:bg-slate-50 hover:shadow-xl focus:ring-4 focus:ring-amber-300 focus:outline-none active:translate-y-0.5 md:rounded-3xl md:p-4 ${
+          className={`flex w-full cursor-pointer items-center gap-3.5 rounded-2xl border border-white/60 bg-white p-3.5 text-slate-800 shadow-md transition-all duration-200 hover:-translate-y-0.5 hover:bg-slate-50 hover:shadow-xl focus:ring-4 focus:ring-amber-300 focus:outline-none active:translate-y-0.5 md:rounded-3xl md:p-4 ${
             selectedVote === "uncertain" ? "ring-4 ring-amber-400" : ""
           } ${isSubmitting && selectedVote !== "uncertain" ? "opacity-50" : ""}`}
         >

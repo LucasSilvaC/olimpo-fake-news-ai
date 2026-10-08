@@ -7,6 +7,7 @@ import { JoinMatchCard } from "./parts/join-match-card";
 import { ModeCard } from "./parts/mode-card";
 
 import { getSessionUseCase } from "@/app/api/auth/usecase/get-session.usecase";
+import { PageShell } from "@/components/molecules/page-shell";
 import { Header, ProfileProgress } from "@/widgets/app-header";
 
 export async function OlimpoHomePage(): Promise<React.ReactElement> {
@@ -14,16 +15,7 @@ export async function OlimpoHomePage(): Promise<React.ReactElement> {
   const user = await getSessionUseCase.execute();
 
   return (
-    <div className="relative flex min-h-screen flex-col overflow-hidden bg-[#2563eb] text-white selection:bg-amber-400 selection:text-slate-900">
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute -top-20 -left-32 -z-10 size-96 rounded-full bg-blue-300/20 blur-3xl"
-      />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute right-[-8rem] bottom-1/4 -z-10 size-96 rounded-full bg-indigo-400/20 blur-3xl"
-      />
-
+    <PageShell>
       <Header className="relative z-20">
         <ProfileProgress name={user.name} xp={user.xp} avatar={user.avatar} />
       </Header>
@@ -43,9 +35,10 @@ export async function OlimpoHomePage(): Promise<React.ReactElement> {
             description="Aprimore seu faro contra fake news com quizzes temáticos diários, missões investigativas e ranking global individual."
             footer="Modo Solo & Quizzes"
             title="Fazer desafios"
+            href="/challenge"
           />
         </section>
       </main>
-    </div>
+    </PageShell>
   );
 }

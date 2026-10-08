@@ -1,90 +1,101 @@
 import crypto from "node:crypto";
 
-import { AIAnalysisDTO, AIAnalysisEntity } from "../entities/ai-analysis.entity";
-import { IAIAnalysisService } from "../repositories/ai-analysis-service.interface";
+import { AIAnalysisEntity, type AIAnalysisDTO } from "../entities/ai-analysis.entity";
+import type {
+  AIAnalysisResult,
+  IAIAnalysisService,
+  SupervisedIdentity,
+} from "../repositories/ai-analysis-service.interface";
 import { drizzleNewsAnalysisRepository } from "../repositories/drizzle-news-analysis.repository";
 import { drizzleNewsArticleRepository } from "../repositories/drizzle-news-article.repository";
-import { mockAIAnalysisService } from "../repositories/mock-ai-analysis.service";
-import { INewsAnalysisRepository } from "../repositories/news-analysis.repository.interface";
-import { INewsArticleRepository } from "../repositories/news-article.repository.interface";
+import {
+  httpAIAnalysisService,
+  unavailableSupervisedAnalysis,
+} from "../repositories/http-ai-analysis.service";
+import type { INewsAnalysisRepository } from "../repositories/news-analysis.repository.interface";
+import type { INewsArticleRepository } from "../repositories/news-article.repository.interface";
+import { supervisedAnalysisSchema } from "../repositories/supervised-contract";
 
-import { MLTargetType } from "@/server/shared/database/schemas/enums";
+import { extractNews } from "@/lib/news/extract-news";
 
 export interface GetArticleAnalysisInput {
   articleId: string;
-  forceRefresh?: boolean;
-  article?: {
-    id?: string;
-    title: string;
-    content: string;
-    targetClassification?: MLTargetType;
-    source?: string | null;
-    author?: string | null;
-  };
 }
-
 export type GetArticleAnalysisOutput = AIAnalysisDTO;
-
 export class GetArticleAnalysisUseCase {
+  private readonly inFlight = new Map<string, Promise<AIAnalysisDTO>>();
   constructor(
     private readonly newsAnalysisRepository: INewsAnalysisRepository = drizzleNewsAnalysisRepository,
     private readonly newsArticleRepository: INewsArticleRepository = drizzleNewsArticleRepository,
-    private readonly aiAnalysisService: IAIAnalysisService = mockAIAnalysisService,
+    private readonly aiAnalysisService: IAIAnalysisService = httpAIAnalysisService,
+    private readonly extractNewsFn = extractNews,
   ) {}
-
-  async execute(input: GetArticleAnalysisInput): Promise<GetArticleAnalysisOutput> {
-    if (!input.articleId || input.articleId.trim() === "") {
-      throw new Error("articleId cannot be empty");
-    }
-
-    if (!input.forceRefresh) {
-      const existing = await this.newsAnalysisRepository.findByArticleId(input.articleId);
-      if (existing) {
-        const entity = new AIAnalysisEntity(existing);
-        return entity.toDTO();
+  async execute(input: GetArticleAnalysisInput): Promise<AIAnalysisDTO> {
+    if (!input.articleId?.trim()) throw new Error("articleId cannot be empty");
+    const article = await this.newsArticleRepository.findById(input.articleId);
+    if (!article) throw new Error("Article not found");
+    let text = article.article.content ?? "";
+    if (!text.trim()) {
+      try {
+        text = (await this.extractNewsFn(article.article.url)).content;
+      } catch {
+        /* Safe parser failure becomes an explicit unavailable state. */
+        return this.unavailable(input.articleId);
       }
     }
-
-    let articleData = input.article;
-    if (!articleData) {
-      const articleRecord = await this.newsArticleRepository.findById(input.articleId);
-      if (!articleRecord) {
-        throw new Error(`Article with id "${input.articleId}" not found`);
-      }
-      articleData = {
-        id: articleRecord.id,
-        title: articleRecord.article.title ?? "Untitled News",
-        content: articleRecord.article.content ?? "",
-        targetClassification: articleRecord.targetClassification as MLTargetType,
-        source: articleRecord.article.publisher ?? null,
-        author: articleRecord.article.authors?.length
-          ? articleRecord.article.authors.join(", ")
-          : null,
-      };
+    let identity: SupervisedIdentity;
+    try {
+      identity = await this.aiAnalysisService.getIdentity();
+    } catch {
+      return this.unavailable(input.articleId);
     }
-
-    const analysisResult = await this.aiAnalysisService.analyze({
+    const cacheIdentity = {
+      ...identity,
       articleId: input.articleId,
-      title: articleData.title,
-      content: articleData.content,
-      targetClassification: articleData.targetClassification,
-      source: articleData.source,
-      author: articleData.author,
+      bodySha256: crypto.createHash("sha256").update(text, "utf8").digest("hex"),
+    };
+    const key = JSON.stringify(cacheIdentity);
+    const pending = this.inFlight.get(key);
+    if (pending) return pending;
+    const work = this.newsAnalysisRepository.withIdentityLock(cacheIdentity, async (repository) => {
+      const existing = await repository.findByIdentity(cacheIdentity);
+      if (existing) return new AIAnalysisEntity(existing).toDTO();
+      let result: AIAnalysisResult;
+      try {
+        result = supervisedAnalysisSchema.parse(await this.aiAnalysisService.analyze(text));
+        if (
+          Object.entries(identity).some(
+            ([name, value]) => result[name as keyof SupervisedIdentity] !== value,
+          )
+        )
+          throw new Error("Model identity changed during analysis");
+      } catch {
+        return this.unavailable(input.articleId, identity);
+      }
+      if (result.analysisStatus === "unavailable")
+        return this.unavailable(input.articleId, identity);
+      const saved = await repository.create({
+        id: crypto.randomUUID(),
+        ...cacheIdentity,
+        ...result,
+        createdAt: new Date(),
+      });
+      return new AIAnalysisEntity(saved).toDTO();
     });
-
-    const saved = await this.newsAnalysisRepository.create({
+    this.inFlight.set(key, work);
+    try {
+      return await work;
+    } finally {
+      this.inFlight.delete(key);
+    }
+  }
+  private unavailable(articleId: string, identity?: SupervisedIdentity): AIAnalysisDTO {
+    return {
+      ...unavailableSupervisedAnalysis(identity),
       id: crypto.randomUUID(),
-      articleId: input.articleId,
-      classification: analysisResult.classification,
-      confidence: analysisResult.confidence.toString(),
-      reasons: analysisResult.reasons,
-      modelVersion: analysisResult.modelVersion,
+      articleId,
       createdAt: new Date(),
-    });
-
-    const entity = new AIAnalysisEntity(saved);
-    return entity.toDTO();
+    };
   }
 }
-
 export const getArticleAnalysisUseCase = new GetArticleAnalysisUseCase();

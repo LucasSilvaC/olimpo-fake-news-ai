@@ -1,3 +1,6 @@
+import { redisVoteRepository } from "../repositories/redis-vote.repository";
+import type { IRedisVoteRepository } from "../repositories/redis-vote.repository.interface";
+
 import {
   finishMatchUseCase as defaultFinishMatchUseCase,
   FinishMatchUseCase,
@@ -7,8 +10,8 @@ import {
   IEventPublisher,
   redisEventPublisher as defaultRedisEventPublisher,
 } from "@/app/api/realtime-events";
+import { MatchFinishedLeaderboardEntry } from "@/app/api/realtime-events/entities/event.types";
 import { drizzleRoomRepository as defaultRoomRepository } from "@/app/api/rooms/repositories/drizzle-room.repository";
-import { LeaderboardEntry } from "@/app/api/rooms/repositories/redis-room.repository.interface";
 import { IRoomRepository } from "@/app/api/rooms/repositories/room.repository.interface";
 import { RoomStatus } from "@/server/shared/database/schemas/enums";
 
@@ -23,7 +26,7 @@ export interface AdvanceRoundOutput {
   currentRound: number;
   totalRounds: number;
   isMatchFinished: boolean;
-  leaderboard?: LeaderboardEntry[];
+  leaderboard?: MatchFinishedLeaderboardEntry[];
 }
 
 export class AdvanceRoundUseCase {
@@ -31,6 +34,10 @@ export class AdvanceRoundUseCase {
     private readonly roomRepository: IRoomRepository = defaultRoomRepository,
     private readonly finishMatchUseCase: FinishMatchUseCase = defaultFinishMatchUseCase,
     private readonly eventPublisher: IEventPublisher = defaultRedisEventPublisher,
+    private readonly roundRepository: Pick<
+      IRedisVoteRepository,
+      "isRoundCompleted"
+    > = redisVoteRepository,
   ) {}
 
   async execute(input: AdvanceRoundInput): Promise<AdvanceRoundOutput> {
@@ -45,6 +52,10 @@ export class AdvanceRoundUseCase {
 
     if (room.status !== "in_progress") {
       throw new Error("Cannot advance round: room is not in progress");
+    }
+
+    if (!(await this.roundRepository.isRoundCompleted(input.roomId, room.currentRound))) {
+      throw new Error("Cannot advance: current round is not completed");
     }
 
     if (room.currentRound >= room.totalRounds) {

@@ -1,0 +1,114 @@
+{
+  "versao_modelo": "svm-spacy-chi2k10k-svd500-v1",
+  "arquivo": "olimpo-svm-spacy-chi2k10k-svd500-v1.joblib",
+  "sha256": "123763864725531f12aa0503530edce432ca6e59853d36ef472559790207df27",
+  "tamanho_mb": 20.4,
+  "criado_em": "2026-10-06T21:57:56+00:00",
+  "dados_treino_final": "X_tr + X_te (7.200 notícias)",
+  "rotulos": {
+    "0": "real",
+    "1": "fake"
+  },
+  "entrada": "texto bruto da notícia (corpo; o modelo normaliza e usa as 100 primeiras palavras)",
+  "saida": "predict_proba[:, 1] = P(fake); modelo_olimpo.analisar() devolve o formato AIAnalysisResult",
+  "hiperparametros": {
+    "C": 1.0,
+    "w_meta": 0.03,
+    "k_chi2": 10000,
+    "d_svd": 500,
+    "n_palavras": 100,
+    "calibracao": "sigmoide, StratifiedKFold(5, seed 42), ensemble=False",
+    "meta_spacy": [
+      "pos_ADJ",
+      "pos_ADP",
+      "pos_AUX",
+      "pos_CCONJ",
+      "pos_DET",
+      "pos_NOUN",
+      "pos_NUM",
+      "pos_PRON",
+      "pos_PROPN",
+      "pos_PUNCT",
+      "pos_VERB",
+      "dep_nsubj",
+      "dep_obj",
+      "dep_obl",
+      "dep_nmod",
+      "dep_advmod",
+      "dep_amod",
+      "dep_ccomp",
+      "dep_xcomp",
+      "dep_mark",
+      "taxa_sentencas",
+      "tam_medio_sentenca_sp",
+      "verbo_subjuntivo",
+      "pessoa_1_2"
+    ]
+  },
+  "metricas_teste_interno_modelo_treinado_em_X_tr": {
+    "f1_macro": 0.9208,
+    "roc_auc": 0.9789,
+    "brier": 0.0569,
+    "f1_macro_sem_calibracao": 0.9243,
+    "calibracao_por_faixa": {
+      "(-0.001, 0.2]": {
+        "n": 613.0,
+        "p_media": 0.0359,
+        "taxa_fake": 0.0326
+      },
+      "(0.2, 0.35]": {
+        "n": 54.0,
+        "p_media": 0.2756,
+        "taxa_fake": 0.3148
+      },
+      "(0.35, 0.5]": {
+        "n": 49.0,
+        "p_media": 0.4262,
+        "taxa_fake": 0.3673
+      },
+      "(0.5, 0.65]": {
+        "n": 46.0,
+        "p_media": 0.5773,
+        "taxa_fake": 0.4783
+      },
+      "(0.65, 0.8]": {
+        "n": 49.0,
+        "p_media": 0.7324,
+        "taxa_fake": 0.7347
+      },
+      "(0.8, 1.0]": {
+        "n": 629.0,
+        "p_media": 0.9728,
+        "taxa_fake": 0.965
+      }
+    }
+  },
+  "metricas_cv_notebook_12": {
+    "f1_cv": 0.9295,
+    "f1_cv_std": 0.0081,
+    "gap": 0.0422
+  },
+  "referencia_externa_fakerecogna_titulos": {
+    "auc": 0.6774,
+    "obs": "espiada, notebook 12"
+  },
+  "versoes": {
+    "python": "3.14.2",
+    "scikit_learn": "1.9.1",
+    "numpy": "2.5.3",
+    "scipy": "1.18.1",
+    "pandas": "3.0.6",
+    "spacy": "3.8.16",
+    "pt_core_news_sm": "3.8.0",
+    "joblib": "1.6.0"
+  },
+  "exemplo_analisar": {
+    "classification": "reliable",
+    "confidence": 0.82,
+    "reasons": [
+      "Termos mais associados a notícias verdadeiras no treino: 'diz', 'por que', 'tiros'.",
+      "Probabilidade estimada de ser falsa: 18% (modelo treinado no corpus Fake.br)."
+    ],
+    "modelVersion": "svm-spacy-chi2k10k-svd500-v1"
+  }
+}
