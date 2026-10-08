@@ -72,9 +72,12 @@ services:
     command: ["pnpm", "db:seed"]
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-root}@postgres:5432/${POSTGRES_DB:-olimpo}
+      NEWS_PREDICTION_SERVICE_URL: ${NEWS_PREDICTION_SERVICE_URL:-http://127.0.0.1:8010}
     depends_on:
       migrate:
         condition: service_completed_successfully
+      news-insights:
+        condition: service_healthy
     restart: "no"
 
   app:

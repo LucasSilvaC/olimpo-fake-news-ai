@@ -1,9 +1,11 @@
-import { eq } from "drizzle-orm";
+import crypto from "node:crypto";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 
 import { extractNews } from "../src/lib/news/extract-news";
 import type { INewsArticle } from "../src/lib/news/types";
+import { httpAIAnalysisService } from "../src/app/api/ai-feedback/repositories/http-ai-analysis.service";
+import type { AIAnalysisResult } from "../src/app/api/ai-feedback/repositories/ai-analysis-service.interface";
 import {
   globalChallenges,
   newsAnalyses,
@@ -21,122 +23,116 @@ export interface SeedChallengeDefinition {
 }
 
 export const SEED_CHALLENGES: SeedChallengeDefinition[] = [
-  // 1. Tecnologia / Inteligência Artificial (reliable)
+  // 1. Planeta Bizarro (reliable)
   {
-    url: "https://g1.globo.com/tecnologia/noticia/2024/01/15/inteligencia-artificial-mercado-de-trabalho-fmi.ghtml",
-    title: "IA vai afetar 40% dos empregos no mundo e pode aumentar desigualdade, alerta FMI",
-    category: "Tecnologia",
+    url: "https://g1.globo.com/planeta-bizarro/noticia/2019/09/04/gato-e-preso-suspeito-de-furto-nos-eua.ghtml",
+    title: "Gato é 'preso' suspeito de furto nos EUA",
+    category: "Planeta Bizarro",
     targetClassification: "reliable",
     fallbackDescription:
-      "Relatório do Fundo Monetário Internacional aponta que economias avançadas enfrentarão maiores riscos e benefícios com a inteligência artificial.",
+      "Família chamou polícia da Flórida por suspeitar de tentativa de roubo, mas era apenas um felino perdido.",
     fallbackContent:
-      "A inteligência artificial afetará quase 40% de todos os empregos em todo o mundo, de acordo com uma nova análise do Fundo Monetário Internacional (FMI). A diretora-gerente do FMI, Kristalina Georgieva, alertou que na maioria dos cenários a IA provavelmente piorará a desigualdade geral.",
+      "Família chamou polícia da Flórida por suspeitar de tentativa de roubo, mas era apenas um felino perdido. Policiais foram atender a um chamado por furto no estado americano da Flórida e acabaram prendendo um suspeito improvável: um gato. O caso aconteceu no condado de Collier. Uma moradora ligou para a polícia após ouvir barulhos estranhos e suspeitar de invasão domiciliar, mas os agentes encontraram o felino escondido sob uma pilha de caixas.",
   },
-  // 2. Ciência / Espaço (reliable)
+  // 2. Pernambuco / Incêndio UFPE (unreliable)
   {
-    url: "https://g1.globo.com/ciencia/noticia/2024/01/20/japao-pouso-lua-nave-slim.ghtml",
-    title: "Japão se torna o 5º país a pousar na Lua com a sonda espacial SLIM",
-    category: "Ciência",
-    targetClassification: "reliable",
-    fallbackDescription:
-      "Agência espacial japonesa JAXA confirmou o pouso com precisão histórica na cratera Shioli.",
-    fallbackContent:
-      "A agência espacial japonesa (JAXA) confirmou que a nave espacial SLIM pousou com sucesso na superfície lunar, tornando o Japão o quinto país a alcançar tal feito histórico, após EUA, União Soviética, China e Índia.",
-  },
-  // 3. Saúde / Epidemias (reliable)
-  {
-    url: "https://g1.globo.com/saude/noticia/2024/02/09/dengue-sintomas-prevencao-vacina.ghtml",
-    title: "Dengue: conheça sintomas, métodos de prevenção e o esquema vacinal no SUS",
-    category: "Saúde",
-    targetClassification: "reliable",
-    fallbackDescription:
-      "Ministério da Saúde detalha sinais de alarme e orientações de combate ao mosquito Aedes aegypti.",
-    fallbackContent:
-      "Com a alta de casos de dengue no país, autoridades de saúde reforçam a necessidade de eliminar focos de água parada e procurar atendimento rápido caso sintomas como febre alta, dores no corpo e manchas vermelhas se manifestem.",
-  },
-  // 4. Economia / Inflação (reliable)
-  {
-    url: "https://g1.globo.com/economia/noticia/2024/01/11/ipca-inflacao-oficial-do-brasil-em-2023.ghtml",
-    title: "Inflação oficial fecha o ano dentro do teto da meta estipulada pelo Banco Central",
-    category: "Economia",
-    targetClassification: "reliable",
-    fallbackDescription:
-      "Dados do IBGE mostram desaceleração nos preços de alimentos e energia ao longo do último trimestre.",
-    fallbackContent:
-      "O Índice Nacional de Preços ao Consumidor Amplo (IPCA) registrou acomodação no encerramento do ano, mantendo o índice inflacionário acumulado estritamente dentro do intervalo de tolerância da meta oficial.",
-  },
-  // 5. Fato ou Fake / Tecnologia (unreliable)
-  {
-    url: "https://g1.globo.com/fato-ou-fake/noticia/2024/02/01/e-fake-que-governo-vai-bloquear-whatsapp-e-redes-sociais.ghtml",
-    title: "É FAKE que governo federal vai bloquear WhatsApp e redes sociais no país",
-    category: "Fato ou Fake",
+    url: "https://g1.globo.com/pe/pernambuco/noticia/2026/10/07/incendio-predio-da-ufpe-video.ghtml?utm_source=chatgpt.com",
+    title: "Incêndio de grandes proporções atinge prédio da UFPE no Recife; VÍDEO",
+    category: "Pernambuco",
     targetClassification: "unreliable",
     fallbackDescription:
-      "Mensagens falsas que circulam em aplicativos de mensagens distorcem projeto de lei sobre regulação digital.",
+      "Corpo de Bombeiros enviou cinco viaturas. Não houve feridos. Este é o terceiro caso registrado na instituição em uma semana.",
     fallbackContent:
-      "Circula nas redes sociais um boato afirmando que o governo determinou a suspensão imediata de mensageiros e redes sociais no território nacional. A alegação é totalmente inverídica e carece de embasamento legal ou institucional.",
+      "Segundo testemunhas, o fogo começou por volta das 19h30. Imagens enviadas ao g1 e à TV Globo mostram as chamas se espalhando no local. No fim da noite, o Corpo de Bombeiros informou que as chamas foram controladas e ninguém ficou ferido. O incêndio atingiu o prédio do Centro de Biociências da Universidade Federal de Pernambuco, mobilizando equipes de emergência durante a noite.",
   },
-  // 6. Fato ou Fake / Saúde (unreliable)
+  // 3. Fato ou Fake / Clint Eastwood IA (uncertain)
   {
-    url: "https://g1.globo.com/fato-ou-fake/noticia/2024/01/25/e-fake-que-cha-de-folha-de-mamao-cura-dengue-em-24-horas.ghtml",
-    title: "É FAKE que chá de folha de mamão cura a dengue em 24 horas",
+    url: "https://g1.globo.com/fato-ou-fake/noticia/2026/09/04/e-fake-foto-de-aniversario-de-clint-eastwood-com-atores-renomados.ghtml?utm_source=chatgpt.com",
+    title: "Foto de aniversário de Clint Eastwood com atores foi criada com IA",
     category: "Fato ou Fake",
-    targetClassification: "unreliable",
-    fallbackDescription:
-      "Especialistas e infectologistas alertam que não existe comprovação científica para receitas caseiras milagrosas.",
-    fallbackContent:
-      "Vídeos enganosos têm promovido o consumo de chás caseiros como solução rápida e infalível contra a dengue. Médicos alertam que a automedicação e o abandono de tratamentos adequados geram graves riscos à vida.",
-  },
-  // 7. Fato ou Fake / Política (unreliable)
-  {
-    url: "https://g1.globo.com/fato-ou-fake/noticia/2023/10/30/e-fake-que-pesquisas-eleitorais-foram-manipuladas-por-supercomputador.ghtml",
-    title: "É FAKE que pesquisas eleitorais foram manipuladas por algoritmo secreto de satélite",
-    category: "Fato ou Fake",
-    targetClassification: "unreliable",
-    fallbackDescription:
-      "Teoria da conspiração sem fundamento espalha prints manipulados sobre apuração de votos.",
-    fallbackContent:
-      "Publicações enganosas associam algoritmos estrangeiros e conexões de satélite a supostas fraudes em pesquisas eleitorais. Institutos de pesquisa e órgãos de checagem desmentiram categoricamente a alegação infundada.",
-  },
-  // 8. Economia / Projeções (uncertain)
-  {
-    url: "https://g1.globo.com/economia/noticia/2024/02/15/dolar-hoje-cotacao-mercado-financeiro-projecoes.ghtml",
-    title: "Câmbio e juros: analistas divergem sobre trajetória do dólar no segundo semestre",
-    category: "Economia",
     targetClassification: "uncertain",
     fallbackDescription:
-      "Incertezas no cenário macroeconômico externo e fiscal doméstico geram previsões discrepantes entre bancos de investimento.",
+      "Detector da OpenAI, dona do ChatGPT, aponta que conteúdo foi criado com ferramentas de IA da empresa.",
     fallbackContent:
-      "O comportamento da moeda norte-americana divide analistas do mercado financeiro. Enquanto alguns preveem fortalecimento das commodities, outros apontam que a manutenção dos juros pelo Fed pode pressionar mercados emergentes.",
-  },
-  // 9. Ciência / Clima e Modelagem (uncertain)
-  {
-    url: "https://g1.globo.com/ciencia-e-saude/noticia/2024/01/18/mudancas-climaticas-recorde-temperatura-aquecimento-global.ghtml",
-    title: "El Niño e aquecimento: cientistas avaliam intensidade de eventos climáticos futuros",
-    category: "Ciência",
-    targetClassification: "uncertain",
-    fallbackDescription:
-      "Modelos meteorológicos apontam transição iminente para La Niña com variações regionais imprevisíveis.",
-    fallbackContent:
-      "Pesquisadores atmosféricos debatem a velocidade de transição entre os ciclos de El Niño e La Niña, destacando que as projeções de precipitação para certas bacias hidrográficas permanecem com alto grau de incerteza estatística.",
-  },
-  // 10. Tecnologia / Comportamento Digital (uncertain)
-  {
-    url: "https://g1.globo.com/tecnologia/noticia/2024/02/10/impacto-das-redes-sociais-na-saude-mental-de-jovens-estudos.ghtml",
-    title:
-      "Algoritmos e bem-estar: estudos apresentam conclusões mistas sobre impacto do tempo de tela",
-    category: "Tecnologia",
-    targetClassification: "uncertain",
-    fallbackDescription:
-      "Novas pesquisas longitudinais sugerem que o tipo de conteúdo consumido é mais determinante que a simples contagem de horas.",
-    fallbackContent:
-      "O debate científico sobre o impacto das mídias digitais em adolescentes continua em evolução. Pesquisadores ressaltam que dados observacionais ainda não estabelecem causalidade definitiva e requerem estudos controlados mais abrangentes.",
+      "Detector da OpenAI, dona do ChatGPT, aponta que conteúdo foi criado com ferramentas de IA da empresa. É #FAKE foto de aniversário de Clint Eastwood com atores renomados. Circula nas redes sociais uma imagem que supostamente mostraria a celebração do aniversário do ator Clint Eastwood ao lado de outras lendas de Hollywood. No entanto, análises técnicas confirmaram que a imagem foi sintetizada por sistemas de inteligência artificial generativa.",
   },
 ];
+
+export function getFallbackModelAnalysis(item: SeedChallengeDefinition): AIAnalysisResult {
+  switch (item.targetClassification) {
+    case "reliable":
+      return {
+        analysisStatus: "ok",
+        classification: "reliable",
+        fakeProbability: 0.07069678208296748,
+        fakeScore: 7.069678208296748,
+        scoreKind: "predicted_fake_probability",
+        modelVersion: "svm-spacy-chi2k10k-svd500-v1",
+        policyVersion: "olimpo-decision-policy-v1",
+        artifactSha256: "123763864725531f12aa0503530edce432ca6e59853d36ef472559790207df27",
+        inferenceVersion: "1b552c7bd1a07e12e6323c50f1a81e8095f3a6cf326ea01394f4af6a94b6b97b",
+        reasons: [
+          "Termos associados a notícias verdadeiras no corpus de treino que influenciaram a previsão: 'mas', 'suspeito', 'em'.",
+        ],
+        inputScope: {
+          source: "article_body",
+          wordLimit: 100,
+          analyzedWordCount: 100,
+          truncated: true,
+        },
+      };
+    case "unreliable":
+      return {
+        analysisStatus: "ok",
+        classification: "unreliable",
+        fakeProbability: 0.6766751343517216,
+        fakeScore: 67.66751343517215,
+        scoreKind: "predicted_fake_probability",
+        modelVersion: "svm-spacy-chi2k10k-svd500-v1",
+        policyVersion: "olimpo-decision-policy-v1",
+        artifactSha256: "123763864725531f12aa0503530edce432ca6e59853d36ef472559790207df27",
+        inferenceVersion: "1b552c7bd1a07e12e6323c50f1a81e8095f3a6cf326ea01394f4af6a94b6b97b",
+        reasons: [
+          "Termos associados a notícias falsas no corpus de treino que influenciaram a previsão: 'informou', 'que as', 'local'.",
+          "Característica da escrita: frases curtas.",
+        ],
+        inputScope: {
+          source: "article_body",
+          wordLimit: 100,
+          analyzedWordCount: 100,
+          truncated: true,
+        },
+      };
+    case "uncertain":
+      return {
+        analysisStatus: "ok",
+        classification: "uncertain",
+        fakeProbability: 0.47874014235105616,
+        fakeScore: 47.87401423510562,
+        scoreKind: "predicted_fake_probability",
+        modelVersion: "svm-spacy-chi2k10k-svd500-v1",
+        policyVersion: "olimpo-decision-policy-v1",
+        artifactSha256: "123763864725531f12aa0503530edce432ca6e59853d36ef472559790207df27",
+        inferenceVersion: "1b552c7bd1a07e12e6323c50f1a81e8095f3a6cf326ea01394f4af6a94b6b97b",
+        reasons: [
+          "Termos associados a notícias verdadeiras no corpus de treino que influenciaram a previsão: 'como', 'ao', 'bolo'.",
+          "Característica da escrita: uso baixo de artigos/determinantes.",
+        ],
+        inputScope: {
+          source: "article_body",
+          wordLimit: 100,
+          analyzedWordCount: 100,
+          truncated: true,
+        },
+      };
+  }
+}
 
 export interface PopulateChallengesOptions {
   extractNewsFn?: typeof extractNews;
   challenges?: SeedChallengeDefinition[];
+  analyzeNewsFn?: (text: string) => Promise<AIAnalysisResult>;
+  clearExisting?: boolean;
 }
 
 export async function populateChallenges(
@@ -146,6 +142,13 @@ export async function populateChallenges(
 ) {
   const challenges = options.challenges ?? SEED_CHALLENGES;
   const extractFn = options.extractNewsFn ?? extractNews;
+  const analyzeFn =
+    options.analyzeNewsFn ?? ((text: string) => httpAIAnalysisService.analyze(text));
+
+  if (options.clearExisting) {
+    console.log("[Seed] Clearing existing global challenges...");
+    await dbClient.delete(globalChallenges);
+  }
 
   // Retrieve existing challenges to guarantee idempotency
   const existingChallenges = await dbClient.select().from(globalChallenges);
@@ -198,6 +201,46 @@ export async function populateChallenges(
       };
     }
 
+    // Perform analysis using the model in /model-engine
+    let analysisResult: AIAnalysisResult;
+    try {
+      console.log(`[Seed] Analyzing news with model-engine for: "${item.title}"`);
+      analysisResult = await analyzeFn(articleData.content);
+    } catch (error) {
+      console.warn(
+        `[Seed] Failed to analyze with model-engine (${item.url}): ${
+          error instanceof Error ? error.message : String(error)
+        }. Using fallback model analysis.`,
+      );
+      analysisResult = getFallbackModelAnalysis(item);
+    }
+
+    const targetClassification: MLTargetType =
+      (analysisResult.classification as MLTargetType) ?? item.targetClassification;
+
+    const reasons =
+      analysisResult.reasons && analysisResult.reasons.length > 0
+        ? analysisResult.reasons
+        : getFallbackModelAnalysis(item).reasons;
+
+    let confidence: string;
+    if (analysisResult.fakeProbability !== null && analysisResult.fakeProbability !== undefined) {
+      const prob =
+        targetClassification === "unreliable"
+          ? analysisResult.fakeProbability
+          : targetClassification === "reliable"
+            ? 1 - analysisResult.fakeProbability
+            : 0.6;
+      confidence = prob.toFixed(2);
+    } else {
+      confidence =
+        targetClassification === "reliable"
+          ? "0.93"
+          : targetClassification === "unreliable"
+            ? "0.68"
+            : "0.60";
+    }
+
     const articleId = crypto.randomUUID();
     const challengeId = crypto.randomUUID();
 
@@ -205,7 +248,7 @@ export async function populateChallenges(
     await dbClient.insert(newsArticles).values({
       id: articleId,
       article: articleData,
-      targetClassification: item.targetClassification,
+      targetClassification,
     });
 
     // 2. Persist global_challenges record
@@ -217,15 +260,22 @@ export async function populateChallenges(
       isActive: true,
     });
 
-    // 3. Persist mock news_analyses record
-    const mockAnalysis = getMockAnalysis(item);
+    // 3. Persist model-engine news_analyses record
     await dbClient.insert(newsAnalyses).values({
       id: crypto.randomUUID(),
       articleId,
-      classification: item.targetClassification,
-      reasons: mockAnalysis.reasons,
-      confidence: mockAnalysis.confidence,
-      modelVersion: "mock-v1",
+      classification: targetClassification,
+      reasons,
+      confidence,
+      modelVersion: analysisResult.modelVersion || "svm-spacy-chi2k10k-svd500-v1",
+      analysisStatus: "legacy",
+      fakeProbability: analysisResult.fakeProbability,
+      fakeScore: analysisResult.fakeScore,
+      scoreKind: analysisResult.scoreKind || "predicted_fake_probability",
+      policyVersion: analysisResult.policyVersion || "olimpo-decision-policy-v1",
+      artifactSha256: analysisResult.artifactSha256,
+      inferenceVersion: analysisResult.inferenceVersion,
+      inputScope: analysisResult.inputScope,
       createdAt: new Date(),
     });
 
@@ -233,46 +283,11 @@ export async function populateChallenges(
     existingArticleUrls.add(item.url);
     existingChallengeTitles.add(item.title);
     console.log(
-      `[Seed] Inserted challenge "${item.title}" [${item.targetClassification}] (ID: ${challengeId}) with AI analysis`,
+      `[Seed] Inserted challenge "${item.title}" [${targetClassification}] (ID: ${challengeId}) with model analysis`,
     );
   }
 
   return { insertedCount, skippedCount, totalProcessed: challenges.length };
-}
-
-function getMockAnalysis(item: SeedChallengeDefinition): {
-  reasons: string[];
-  confidence: string;
-} {
-  switch (item.targetClassification) {
-    case "reliable":
-      return {
-        confidence: "0.95",
-        reasons: [
-          "Fonte primária verificada e publicação em veículo de jornalismo profissional com editoria reconhecida.",
-          "Dados factuais respaldados por entidades oficiais, pesquisas ou dados estatísticos confirmáveis.",
-          "Texto informativo com atribuição clara de fontes e ausência de títulos apelativos ou enganosos.",
-        ],
-      };
-    case "unreliable":
-      return {
-        confidence: "0.98",
-        reasons: [
-          "Alegações factuais inconsistentes previamente desmentidas por agências de checagem de fatos.",
-          "Ausência de fontes primárias, evidências científicas ou confirmação oficial nos órgãos competentes.",
-          "Estrutura com apelo emocional ou sensacionalista típica de desinformação viral.",
-        ],
-      };
-    case "uncertain":
-      return {
-        confidence: "0.60",
-        reasons: [
-          "Tema com divergência técnica entre analistas ou pesquisas com conclusões preliminares.",
-          "Cenário em evolução com eventos ainda em andamento e dados sujeitos a revisão futura.",
-          "Informações demandam acompanhamento de desdobramentos para conclusões definitivas.",
-        ],
-      };
-  }
 }
 
 async function main() {
@@ -289,7 +304,8 @@ async function main() {
   });
 
   try {
-    const result = await populateChallenges(db);
+    const clearExisting = !process.argv.includes("--keep-existing");
+    const result = await populateChallenges(db, { clearExisting });
     console.log(
       `[Seed] Seeding finished successfully. Inserted: ${result.insertedCount}, Skipped: ${result.skippedCount}.`,
     );
