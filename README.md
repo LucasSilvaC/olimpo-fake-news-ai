@@ -141,10 +141,10 @@ O projeto adota uma esteira completa de garantia de qualidade automatizada:
 olimpo-fake-news-ai/
 ├── docs/
 │   ├── codigo/                            # Arquitetura, acessibilidade e decisões técnicas
-│   └── machine-learning/                  # Protocolos, modelos e entregáveis de ML
-├── openspec/                              # Governança OpenSpec (Spec-Driven Development)
-│   ├── specs/                             # Capacidades canônicas (auth, rooms, news-voting, sse, etc.)
-│   └── changes/                           # Histórico e propostas ativas de mudanças
+│   ├── machine-learning/                  # Protocolos, modelos e entregáveis de ML
+│   └── openspec/                         # Governança OpenSpec (Spec-Driven Development)
+│       ├── specs/                        # Capacidades canônicas (auth, rooms, news-voting, sse, etc.)
+│       └── changes/                      # Histórico e propostas ativas de mudanças
 ├── machine-learning/                      # Experimentos e pipelines de dados com scikit-learn
 │   ├── supervised-learning/               # Classificação supervisionada e modelos de baseline
 │   └── unsupervised-learning/             # Detecção de anomalias (K-Means, DBSCAN, Isolation Forest)
