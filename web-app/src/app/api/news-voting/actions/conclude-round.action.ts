@@ -6,7 +6,7 @@ import { concludeRoundUseCase } from "../usecase/conclude-round.usecase";
 
 import { AIAnalysisDTO } from "@/app/api/ai-feedback";
 import { getSessionUseCase } from "@/app/api/auth/usecase/get-session.usecase";
-import { LeaderboardEntry } from "@/app/api/rooms/repositories";
+import { RoundCompletedLeaderboardEntry } from "@/app/api/realtime-events/entities/event.types";
 
 const concludeRoundSchema = z.object({
   roomId: z.string().min(1, "Room ID is required"),
@@ -20,7 +20,7 @@ export type ConcludeRoundActionResult =
       success: true;
       roundCompleted: boolean;
       analysis?: AIAnalysisDTO;
-      leaderboard?: LeaderboardEntry[];
+      leaderboard?: RoundCompletedLeaderboardEntry[];
     }
   | {
       success: false;

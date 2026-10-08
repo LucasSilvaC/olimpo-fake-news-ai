@@ -98,6 +98,7 @@ describe("ConcludeRoundUseCase", () => {
       findById: vi.fn(),
       findByParticipantAndPlaylistItem: vi.fn().mockResolvedValue(null),
       listByPlaylistItem: vi.fn(),
+      listByRoomId: vi.fn(),
       countByPlaylistItem: vi.fn(),
       updateEvaluation: vi.fn(),
     };
@@ -198,7 +199,7 @@ describe("ConcludeRoundUseCase", () => {
         roomId: "room-1",
         payload: {
           round: 1,
-          leaderboard: [{ userId: "user-1", score: 100 }],
+          leaderboard: [expect.objectContaining({ userId: "user-1", score: 100 })],
           analysis: sampleAnalysis,
         },
       }),

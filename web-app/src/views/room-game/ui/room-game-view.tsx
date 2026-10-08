@@ -17,6 +17,7 @@ import type {
   RoundCompletedPayload,
   RoundStartedPayload,
   RoomEvent,
+  RoundCompletedLeaderboardEntry,
 } from "@/app/api/realtime-events/entities/event.types";
 import { PageShell } from "@/components/molecules/page-shell";
 import type { RoomStatus } from "@/server/shared/database/schemas/enums";
@@ -31,6 +32,7 @@ export interface RoomGameMember {
   role: string;
   score: number;
   avatar?: string;
+  correctCount?: number;
 }
 
 export interface RoomGameRoom {
@@ -132,10 +134,12 @@ export function RoomGameView({
       score: m.score,
       roundDelta: 0,
       streak: 0,
-      correctCount: 0,
+      correctCount: m.correctCount ?? 0,
       avatar: m.avatar,
     })),
   );
+
+  const lastCompletedRoundRef = React.useRef<number>(0);
 
   const isHost = room.hostId === currentUserId;
 
@@ -166,34 +170,70 @@ export function RoomGameView({
     };
   }, [playlistArticles, currentRound]);
 
-  // Update leaderboard scores when server broadcasts
-  const updateLeaderboardFromEntries = React.useCallback(
-    (entries: Array<{ userId: string; score: number }>) => {
+  // Idempotent handler to apply round completion results
+  const applyRoundCompleted = React.useCallback(
+    (
+      round: number,
+      entries: RoundCompletedLeaderboardEntry[],
+      analysis?: RoundCompletedPayload["analysis"],
+    ) => {
+      if (lastCompletedRoundRef.current >= round) {
+        return;
+      }
+      lastCompletedRoundRef.current = round;
+
       setPlayers((prev) =>
         prev.map((player) => {
           const entry = entries.find((e) => e.userId === player.userId);
           if (!entry) return player;
 
-          const delta = Math.max(0, entry.score - player.score);
-          const scored = delta > 0;
-
-          // For the current user, prefer our recorded vote details if available
-          const isCurrentUser = player.userId === currentUserId;
-          const isCorrect = isCurrentUser ? (lastVote?.isCorrect ?? scored) : scored;
-          const earnedDelta = isCurrentUser ? (lastVote?.pointsAwarded ?? delta) : delta;
+          const roundDelta = entry.roundDelta ?? Math.max(0, entry.score - player.score);
+          const isCorrect = entry.isCorrect ?? roundDelta > 0;
 
           return {
             ...player,
             score: entry.score,
-            roundDelta: earnedDelta,
+            roundDelta,
             streak: isCorrect ? player.streak + 1 : 0,
             isCorrect,
             correctCount: isCorrect ? player.correctCount + 1 : player.correctCount,
           };
         }),
       );
+
+      if (analysis) {
+        const confidenceScore =
+          analysis.confidence > 1
+            ? Math.round(analysis.confidence)
+            : Math.round(analysis.confidence * 100);
+
+        setRoundAnalysis({
+          classification: analysis.classification,
+          reasons: analysis.reasons || [],
+          confidence: confidenceScore,
+        });
+
+        setLastVote((prev) => {
+          const isCorrect = prev?.vote ? prev.vote === analysis.classification : false;
+          return {
+            vote: prev?.vote ?? "uncertain",
+            pointsAwarded: prev?.pointsAwarded ?? 0,
+            isCorrect: prev?.isCorrect ?? isCorrect,
+            officialAnswer: analysis.classification,
+            reliabilityScore: confidenceScore,
+            reasons: analysis.reasons || [],
+            timeTakenSeconds: prev?.timeTakenSeconds ?? (room.roundDurationSeconds || 30),
+            isTimeout: prev?.isTimeout ?? prev === null,
+          };
+        });
+      }
+
+      setVotedCount(members.length);
+      // Retain players in WAITING stage for verdict reveal reading period
+      setStage("WAITING");
+      setVerdictCountdown(10);
     },
-    [currentUserId, lastVote],
+    [members.length, room.roundDurationSeconds],
   );
 
   // Round countdown timer (active only during CHECKING stage)
@@ -299,41 +339,8 @@ export function RoomGameView({
         const messageEvent = event as MessageEvent<string>;
         const data = JSON.parse(messageEvent.data) as RoomEvent<RoundCompletedPayload>;
         if (data.payload?.leaderboard) {
-          updateLeaderboardFromEntries(data.payload.leaderboard);
+          applyRoundCompleted(data.payload.round, data.payload.leaderboard, data.payload.analysis);
         }
-
-        const analysis = data.payload?.analysis;
-        if (analysis) {
-          const confidenceScore =
-            analysis.confidence > 1
-              ? Math.round(analysis.confidence)
-              : Math.round(analysis.confidence * 100);
-
-          setRoundAnalysis({
-            classification: analysis.classification,
-            reasons: analysis.reasons || [],
-            confidence: confidenceScore,
-          });
-
-          setLastVote((prev) => {
-            const isCorrect = prev?.vote ? prev.vote === analysis.classification : false;
-            return {
-              vote: prev?.vote ?? "uncertain",
-              pointsAwarded: prev?.pointsAwarded ?? 0,
-              isCorrect: prev?.isCorrect ?? isCorrect,
-              officialAnswer: analysis.classification,
-              reliabilityScore: confidenceScore,
-              reasons: analysis.reasons || [],
-              timeTakenSeconds: prev?.timeTakenSeconds ?? (room.roundDurationSeconds || 30),
-              isTimeout: prev?.isTimeout ?? prev === null,
-            };
-          });
-        }
-
-        setVotedCount(members.length);
-        // Retain players in WAITING stage for verdict reveal reading period
-        setStage("WAITING");
-        setVerdictCountdown(10);
 
         toast.success("Rodada finalizada!", {
           description: "Confira o gabarito oficial e os argumentos da IA.",
@@ -348,7 +355,17 @@ export function RoomGameView({
         const messageEvent = event as MessageEvent<string>;
         const data = JSON.parse(messageEvent.data) as RoomEvent<MatchFinishedPayload>;
         if (data.payload?.leaderboard) {
-          updateLeaderboardFromEntries(data.payload.leaderboard);
+          setPlayers((prev) =>
+            prev.map((player) => {
+              const entry = data.payload.leaderboard.find((e) => e.userId === player.userId);
+              if (!entry) return player;
+              return {
+                ...player,
+                score: entry.score,
+                correctCount: entry.correctCount ?? player.correctCount,
+              };
+            }),
+          );
         }
         setStage("MATCH_FINALE");
 
@@ -370,13 +387,7 @@ export function RoomGameView({
       source.removeEventListener("MATCH_FINISHED", handleMatchFinished);
       source.close();
     };
-  }, [
-    currentRound,
-    members.length,
-    room.pin,
-    room.roundDurationSeconds,
-    updateLeaderboardFromEntries,
-  ]);
+  }, [applyRoundCompleted, currentRound, room.pin, room.roundDurationSeconds]);
 
   // Handle vote submission from NewsCheckStage
   const handleVoteSubmitted = React.useCallback(
@@ -410,24 +421,14 @@ export function RoomGameView({
         setVotedCount((prev) => Math.min(members.length, prev + 1));
 
         // If everyone voted and round completed on this action
-        if (data.result.roundCompleted && analysis) {
-          if (data.result.leaderboard) {
-            updateLeaderboardFromEntries(data.result.leaderboard);
-          }
-          setRoundAnalysis({
-            classification: analysis.classification,
-            reasons: analysis.reasons || [],
-            confidence: confidenceScore,
-          });
-          setVotedCount(members.length);
-          // Standardized 10-second countdown for reading the verdict and AI reasons
-          setVerdictCountdown(10);
+        if (data.result.roundCompleted && data.result.leaderboard) {
+          applyRoundCompleted(currentRound, data.result.leaderboard, analysis);
         }
       } else {
         toast.error(data.result.error || "Não foi possível registrar o seu voto.");
       }
     },
-    [members.length, updateLeaderboardFromEntries],
+    [applyRoundCompleted, currentRound, members.length],
   );
 
   // Prepare leaderboard data for RoundScoreboardStage
