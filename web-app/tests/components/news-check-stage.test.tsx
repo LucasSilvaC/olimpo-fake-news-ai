@@ -100,6 +100,20 @@ afterEach(() => {
 });
 
 describe("investigação socrática durante a rodada", () => {
+  it("uses the solo handler without requesting room insights or submitting a room vote", async () => {
+    const onCustomVote = vi.fn().mockResolvedValue({ success: false, error: "Solo failed" });
+    render(<NewsCheckStage {...baseProps} roomId={undefined} onCustomVote={onCustomVote} />);
+    expect(mocks.fetch).not.toHaveBeenCalled();
+    expect(screen.queryByRole("button", { name: "Abrir observações sobre a escrita" })).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: "Classificar notícia como Verdadeira" }));
+    expect(onCustomVote).toHaveBeenCalledWith("reliable", false);
+    await waitFor(() =>
+      expect(
+        screen.getByRole("button", { name: "Classificar notícia como Verdadeira" }),
+      ).toBeEnabled(),
+    );
+    expect(mocks.submitVote).not.toHaveBeenCalled();
+  });
   it("requests the authoritative round article and keeps voting enabled during extraction", () => {
     mocks.fetch.mockReturnValue(new Promise(() => {}));
     render(<NewsCheckStage {...baseProps} />);

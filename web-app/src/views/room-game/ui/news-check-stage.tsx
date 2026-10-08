@@ -27,11 +27,15 @@ export interface INewsArticleData {
 }
 
 export interface INewsCheckStageProps {
-  roomId: string;
+  roomId?: string;
   currentRound: number;
   totalRounds: number;
   article: INewsArticleData;
   timeRemainingSeconds?: number | null;
+  onCustomVote?: (
+    vote: "reliable" | "unreliable" | "uncertain",
+    isTimeout?: boolean,
+  ) => Promise<SubmitVoteActionResult>;
   onVoteSubmitted: (data: {
     vote: "reliable" | "unreliable" | "uncertain";
     result: SubmitVoteActionResult;
@@ -55,6 +59,7 @@ function NewsCheckRound({
   totalRounds,
   article: initialArticle,
   timeRemainingSeconds,
+  onCustomVote,
   onVoteSubmitted,
 }: INewsCheckStageProps): React.ReactElement {
   const insightsState = useNewsInsights(roomId, currentRound);
@@ -138,11 +143,21 @@ function NewsCheckRound({
         : Math.max(1, Math.round((Date.now() - startTimeRef.current) / 1000));
 
       try {
-        const result = await submitVoteAction({
-          roomId,
-          vote,
-          isTimeout,
-        });
+        let result: SubmitVoteActionResult;
+        if (onCustomVote) {
+          result = await onCustomVote(vote, isTimeout);
+        } else if (roomId) {
+          result = await submitVoteAction({
+            roomId,
+            vote,
+            isTimeout,
+          });
+        } else {
+          result = {
+            success: false,
+            error: "Identificador da sala ou manipulador customizado não fornecido.",
+          };
+        }
         if (!mountedRef.current) return;
 
         if (!result.success) {
@@ -177,7 +192,7 @@ function NewsCheckRound({
         voteInFlightRef.current = false;
       }
     },
-    [onVoteSubmitted, roomId],
+    [onCustomVote, onVoteSubmitted, roomId],
   );
 
   // Automatically submit neutral timeout vote when round duration expires
@@ -313,7 +328,7 @@ function NewsCheckRound({
         )}
       </article>
 
-      <NewsInsightsPanel state={insightsState} />
+      {roomId && <NewsInsightsPanel state={insightsState} />}
 
       {/* Answer Decision Buttons */}
       <div

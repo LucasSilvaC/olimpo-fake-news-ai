@@ -9,11 +9,12 @@ export type NewsInsightsState =
   | { status: "ready"; response: NewsInsightsResponse }
   | { status: "unavailable"; response?: never };
 
-export function useNewsInsights(roomId: string, round: number): NewsInsightsState {
+export function useNewsInsights(roomId: string | undefined, round: number): NewsInsightsState {
   const requestKey = `${roomId}:${round}`;
   const [result, setResult] = useState<{ key: string; state: NewsInsightsState } | null>(null);
 
   useEffect(() => {
+    if (!roomId) return;
     const controller = new AbortController();
     let active = true;
     async function load(): Promise<void> {
@@ -42,5 +43,6 @@ export function useNewsInsights(roomId: string, round: number): NewsInsightsStat
     };
   }, [requestKey, roomId, round]);
 
+  if (!roomId) return { status: "unavailable" };
   return result?.key === requestKey ? result.state : { status: "loading" };
 }
