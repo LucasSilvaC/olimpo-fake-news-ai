@@ -8,9 +8,9 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 REPO = ROOT.parents[1]
-PRINCIPAL = ROOT / "12_selectk_svd_svm_spacy.ipynb"
+PRINCIPAL = ROOT / "support/notebooks/12_selectk_svd_svm_spacy.ipynb"
 
 
 def notebook_code(path):
@@ -31,7 +31,7 @@ class NotebookPathsTests(unittest.TestCase):
                     self.assertEqual(namespace["HISTORY_RESULTS"], ROOT / "history/resultados")
                     self.assertIn(str(ROOT), sys.path)
 
-    def test_principal_uses_shared_inputs_and_writes_only_current_results_at_root(self):
+    def test_principal_uses_shared_inputs_and_writes_current_results_under_data(self):
         source = "\n".join(notebook_code(PRINCIPAL))
         paths = set()
         namespace = {"ROOT": ROOT, "DATA": ROOT / "data", "HISTORY_RESULTS": ROOT / "history/resultados"}
@@ -41,8 +41,9 @@ class NotebookPathsTests(unittest.TestCase):
         self.assertIn(ROOT / "data/dados_preparados.pkl", paths)
         self.assertIn(ROOT / "data/metadados_spacy.parquet", paths)
         self.assertIn(ROOT / "history/resultados/resultados_svm_meta_cv.csv", paths)
-        self.assertIn(ROOT / "resultados_selectk_svd500_cv.csv", paths)
-        self.assertIn(ROOT / "resultados_selectk_svd500_teste.csv", paths)
+        self.assertIn(ROOT / "data/resultados/resultados_selectk_svd500_cv.csv", paths)
+        self.assertIn(ROOT / "data/resultados/resultados_selectk_svd500_teste.csv", paths)
+        self.assertNotIn(ROOT / "resultados_selectk_svd500_cv.csv", paths)
         self.assertNotIn(ROOT / "history/resultados/resultados_selectk_svd500_cv.csv", paths)
 
     def test_outside_repository_fails_before_any_data_load(self):
@@ -58,7 +59,7 @@ class ExporterPathsTests(unittest.TestCase):
         import pandas as pd
 
         with patch.object(sys, "path", [str(ROOT), *sys.path]):
-            spec = importlib.util.spec_from_file_location("research_exporter", ROOT / "exportar_modelo.py")
+            spec = importlib.util.spec_from_file_location("research_exporter", ROOT / "support/exportar_modelo.py")
             exporter = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(exporter)
         self.assertEqual(exporter.DATA, ROOT / "data")

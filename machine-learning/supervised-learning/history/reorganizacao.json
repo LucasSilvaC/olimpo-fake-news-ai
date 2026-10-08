@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "principal": "12_selectk_svd_svm_spacy.ipynb",
+  "principal": "support/notebooks/12_selectk_svd_svm_spacy.ipynb",
   "duplicatesConsolidated": [
     {
       "removed": "10_svm_metadados_spacy.ipynb",
@@ -40,24 +40,62 @@
     },
     {
       "removed": "history/resultados/resultados_selectk_svd500_cv.csv",
-      "canonical": "resultados_selectk_svd500_cv.csv",
+      "canonical": "data/resultados/resultados_selectk_svd500_cv.csv",
       "removedSha256": "ec798be5fecb03a11ee5ef372d03a7a627ac49d7b5ff5452ee0679ed918a19f6",
       "reason": "byte_identical_duplicate"
     },
     {
       "removed": "history/resultados/resultados_selectk_svd500_teste.csv",
-      "canonical": "resultados_selectk_svd500_teste.csv",
+      "canonical": "data/resultados/resultados_selectk_svd500_teste.csv",
       "removedSha256": "374b6eef46355d1dbcf6f8beeadfcd84f489c926336d86e0b34b5782f8a92878",
       "reason": "byte_identical_duplicate"
     },
     {
       "removed": "history/modelo-final/12_selectk_svd_svm_spacy.ipynb",
-      "canonical": "12_selectk_svd_svm_spacy.ipynb",
+      "canonical": "support/notebooks/12_selectk_svd_svm_spacy.ipynb",
       "removedSha256": "3108ccbe27f5d0433a5655951de4a135f17bfff2d5128c504a9e7a59244c9e80",
       "reason": "duplicate_outputs_and_metadata_with_old_paths"
+    },
+    {
+      "removed": "metadados_spacy.parquet",
+      "canonical": "data/metadados_spacy.parquet",
+      "removedSha256": "70e1bfa70c85908749c15e5097a358fdfb139ee6d937a6c0eb3ac3cbd116b1a6",
+      "reason": "byte_identical_duplicate"
+    },
+    {
+      "removed": "metadados_spacy_fakerecogna.parquet",
+      "canonical": "data/metadados_spacy_fakerecogna.parquet",
+      "removedSha256": "bd9878dde7823bb31bcf2fa1da12636f42abc89797a8c79de880d1377ccd5018",
+      "reason": "byte_identical_duplicate"
     }
   ],
   "preserved": "Notebook cell outputs, execution counts and metadata; all CSV values; fitted artifact and serving sources.",
   "sourceRevision": "6041ed1d59a273f045e6e23f05bfb9a81a4cc012",
-  "hashRepresentation": "original Git blob bytes, independent of checkout line endings"
+  "hashRepresentation": "original Git blob bytes, independent of checkout line endings",
+  "supportRelocations": [
+    {
+      "from": "12_selectk_svd_svm_spacy.ipynb",
+      "to": "support/notebooks/12_selectk_svd_svm_spacy.ipynb"
+    },
+    {
+      "from": "exportar_modelo.py",
+      "to": "support/exportar_modelo.py"
+    },
+    {
+      "from": "metadados_spacy.py",
+      "to": "support/metadados_spacy.py"
+    },
+    {
+      "from": "resultados_selectk_svd500_cv.csv",
+      "to": "data/resultados/resultados_selectk_svd500_cv.csv"
+    },
+    {
+      "from": "resultados_selectk_svd500_teste.csv",
+      "to": "data/resultados/resultados_selectk_svd500_teste.csv"
+    },
+    {
+      "from": "tests/test_research_paths.py",
+      "to": "support/tests/test_research_paths.py"
+    }
+  ]
 }

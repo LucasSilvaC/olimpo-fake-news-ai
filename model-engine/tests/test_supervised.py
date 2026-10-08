@@ -65,8 +65,9 @@ class SupervisedTests(unittest.TestCase):
         research = HERE.parent / 'machine-learning/supervised-learning'
         if not (research / 'modelo_olimpo.py').exists():
             self.skipTest('Research source is intentionally absent from standalone image; mount it for equivalence validation')
-        original = load_source('research_model', research / 'modelo_olimpo.py')
-        original.ms = load_source('research_linguistic', research / 'metadados_spacy.py')
+        with patch.object(sys, 'path', [str(research), *sys.path]):
+            original = load_source('research_model', research / 'modelo_olimpo.py')
+        original.ms = load_source('research_linguistic', research / 'support/metadados_spacy.py')
         with patch.dict(sys.modules, {'modelo_olimpo': original}):
             model = joblib.load(research / 'modelos/olimpo-svm-spacy-chi2k10k-svd500-v1.joblib')
         original_pipe = original._pipeline_interno(model)
@@ -81,6 +82,16 @@ class SupervisedTests(unittest.TestCase):
             self.assertEqual(result['classification'], original.analisar(model, text)['classification'])
             for actual, expected in zip(pipeline.explicar(self.engine.model, frozen_frame), original.explicar(model, original_frame)):
                 pd.testing.assert_series_equal(actual, expected, check_exact=False, rtol=0, atol=1e-12)
+
+    def test_research_support_layout_preserves_frozen_packaging_sources(self):
+        research = HERE.parent / 'machine-learning/supervised-learning'
+        if not (research / 'modelo_olimpo.py').exists():
+            self.skipTest('Mount research sources to validate packaging equivalence')
+        from tools.import_supervised_artifact import frozen_source
+        self.assertEqual(frozen_source(research / 'modelo_olimpo.py'),
+                         (HERE / 'models/supervised/pipeline.py').read_bytes())
+        self.assertEqual(frozen_source(research / 'support/metadados_spacy.py'),
+                         (HERE / 'models/supervised/linguistic_features.py').read_bytes())
 
     def test_threshold_boundaries_and_null_scores(self):
         for p, label in [(0, 'reliable'), (0.35, 'reliable'), (np.nextafter(0.35, 1), 'uncertain'),

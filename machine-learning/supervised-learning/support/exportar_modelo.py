@@ -1,8 +1,8 @@
 """Treina e exporta o classificador Olimpo (M2 + χ² 10 mil + SVD 500) para .joblib.
 
 Uso (a partir da raiz do repositório):
-    python machine-learning/supervised-learning/exportar_modelo.py
-    python machine-learning/supervised-learning/exportar_modelo.py --somente-treino
+    python machine-learning/supervised-learning/support/exportar_modelo.py
+    python machine-learning/supervised-learning/support/exportar_modelo.py --somente-treino
 
 Pré-requisitos: data/dados_preparados.pkl e data/Fake.br-Corpus-master/ (gerados pelo notebook
 history/baselines/01_Data_Prep.ipynb)
@@ -39,10 +39,12 @@ import spacy
 from sklearn.metrics import brier_score_loss, f1_score, roc_auc_score
 from sklearn.model_selection import StratifiedKFold
 
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+
 import modelo_olimpo as mo
 
 F1_TESTE_NB12 = 0.9243
-ROOT = Path(__file__).resolve().parent
 DATA = ROOT / "data"
 SAIDA = ROOT / "modelos"
 
