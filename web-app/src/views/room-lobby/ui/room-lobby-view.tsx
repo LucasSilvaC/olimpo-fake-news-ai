@@ -27,6 +27,7 @@ import { joinRoomAction } from "@/app/api/rooms/actions/join-room.action";
 import { startGameAction } from "@/app/api/rooms/actions/start-game.action";
 import type { RoomDTO, RoomMemberDTO } from "@/app/api/rooms/entities";
 import { Avatar } from "@/components/atoms/avatar";
+import { PageShell } from "@/components/molecules/page-shell";
 import type { AvatarConfig } from "@/lib/avatar";
 import { getJoinRoomErrorMessage } from "@/lib/room-messages";
 import { Header } from "@/widgets/app-header";
@@ -335,16 +336,7 @@ export function RoomLobbyView({
         : "Partida encerrada";
 
   return (
-    <div className="relative flex min-h-screen flex-col overflow-hidden bg-gradient-to-b from-[#3b82f6] via-[#2563eb] to-[#1d4ed8] text-white selection:bg-amber-300 selection:text-slate-900">
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute -top-32 -left-40 size-[30rem] rounded-full bg-sky-200/20 blur-3xl"
-      />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute right-[-12rem] bottom-1/4 size-[34rem] rounded-full bg-indigo-300/20 blur-3xl"
-      />
-
+    <PageShell>
       <Header className="relative z-20">
         <Link
           href="/"
@@ -696,6 +688,6 @@ export function RoomLobbyView({
           </div>
         </section>
       </main>
-    </div>
+    </PageShell>
   );
 }

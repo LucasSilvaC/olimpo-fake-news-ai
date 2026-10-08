@@ -1,8 +1,15 @@
 # Olimpo — Fake News AI (Kahoot de Combate à Desinformação)
 
 > **Status do Projeto**: Em desenvolvimento ativo.  
-> **Fase Atual**: Motor de Ingestão e Extração de Notícias implementado e validado + Base arquitetural Next.js 16 com Clean Architecture.  
-> **Próxima Fase**: Implementação da interface do jogo (modos multiplayer e solo) com salas, dinâmica de perguntas e ranking.
+> **Fase Atual**: Jogo multiplayer e desafio solo, motores de análise linguística e previsão supervisionada, placares sincronizados e apresentação executiva integrados.
+
+## Interface e apresentação
+
+A rota pública `/pitch` contém a apresentação executiva, com navegação pelas setas, Page Up/Down, início/fim e tela cheia pela tecla F. O deck mantém seus estilos e escala próprios, com controles compactos no celular para manter os botões de navegação visíveis.
+
+As telas do aplicativo compartilham fundo e cabeçalho por `PageShell` e `Header`. O resultado da rodada mostra o gabarito cadastrado e os pontos recebidos; a análise do modelo aparece em painel separado após o encerramento confirmado pelo servidor. O score do modelo continua sendo `100 × P(Fake)`.
+
+Os placares usam os pontos e acertos persistidos. Respostas de ações e eventos SSE repetidos não acumulam novamente os acertos; pontos parciais por voto incerto não contam como acerto. As perguntas gerais de leitura crítica ficam no painel linguístico, sem repetir esse bloco na tela de veredito. Veja os [contratos de interface e placar](../docs/codigo/arquitetura-web-app.md).
 
 ---
 

@@ -20,7 +20,16 @@ vi.mock("@/views/room-game/ui/round-scoreboard-stage", () => ({
   RoundScoreboardStage: () => <p>Placar da rodada</p>,
 }));
 vi.mock("@/views/room-game/ui/match-scoreboard-stage", () => ({
-  MatchScoreboardStage: () => <p>Placar final</p>,
+  MatchScoreboardStage: ({
+    leaderboard,
+  }: {
+    leaderboard: Array<{ userId: string; correctCount?: number }>;
+  }) => (
+    <>
+      <p>Placar final</p>
+      <output aria-label="Acertos finais">{JSON.stringify(leaderboard)}</output>
+    </>
+  ),
 }));
 
 class MockEventSource {
@@ -80,6 +89,65 @@ afterEach(() => {
 });
 
 describe("prediction disclosure in the room", () => {
+  it("applies duplicate completion events once and keeps partial points separate from correct answers", async () => {
+    mockFetch.mockReturnValue(new Promise(() => {}));
+    render(
+      <RoomGameView
+        {...props}
+        initialVote={{ vote: "uncertain" }}
+        members={[
+          ...props.members,
+          { id: "member-2", userId: "user-2", name: "Bruno", role: "participant", score: 0 },
+        ]}
+      />,
+    );
+    const payload = {
+      round: 1,
+      officialAnswer: "reliable",
+      leaderboard: [
+        { userId: "host-1", score: 25, roundDelta: 25, isCorrect: false },
+        { userId: "user-2", score: 100, roundDelta: 100, isCorrect: true },
+      ],
+    };
+    await act(async () => MockEventSource.latest.emit("ROUND_COMPLETED", payload));
+    await act(async () => MockEventSource.latest.emit("ROUND_COMPLETED", payload));
+    await act(async () =>
+      MockEventSource.latest.emit("MATCH_FINISHED", { leaderboard: payload.leaderboard }),
+    );
+    const entries = JSON.parse(screen.getByLabelText("Acertos finais").textContent!) as Array<{
+      userId: string;
+      correctCount: number;
+    }>;
+    expect(entries.find((entry) => entry.userId === "host-1")?.correctCount).toBe(0);
+    expect(entries.find((entry) => entry.userId === "user-2")?.correctCount).toBe(1);
+  });
+
+  it("does not recount a restored closed round when its SSE completion is replayed", async () => {
+    mockFetch.mockReturnValue(new Promise(() => {}));
+    render(
+      <RoomGameView
+        {...props}
+        initialRoundClosed
+        initialVote={{ vote: "reliable", officialAnswer: "reliable" }}
+        members={props.members.map((member) => ({ ...member, score: 100, correctCount: 1 }))}
+      />,
+    );
+    await act(async () =>
+      MockEventSource.latest.emit("ROUND_COMPLETED", {
+        round: 1,
+        officialAnswer: "reliable",
+        leaderboard: [{ userId: "host-1", score: 100, roundDelta: 100, isCorrect: true }],
+      }),
+    );
+    expect(screen.getByText("Placar da rodada")).toBeVisible();
+    await act(async () =>
+      MockEventSource.latest.emit("MATCH_FINISHED", {
+        leaderboard: [{ userId: "host-1", score: 100 }],
+      }),
+    );
+    expect(screen.getByLabelText("Acertos finais")).toHaveTextContent('"correctCount":1');
+  });
+
   it("restores only the remaining server duration and preserves its deadline on a score rerender", async () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date("2026-10-08T12:00:20Z"));
@@ -139,9 +207,9 @@ describe("prediction disclosure in the room", () => {
       }),
     );
     expect(await screen.findByText("Estimada como falsa")).toBeVisible();
-    const officialLabel = screen.getByText("Gabarito Oficial");
-    expect(officialLabel.parentElement).toHaveTextContent("VERDADEIRO");
-    expect(officialLabel.parentElement).not.toHaveTextContent("FALSO");
+    const officialResult = screen.getByRole("region", { name: "Gabarito oficial da rodada" });
+    expect(officialResult).toHaveTextContent("VERDADEIRO");
+    expect(officialResult).not.toHaveTextContent("FALSO");
   });
 
   it("ignores old completion events after starting the next round", async () => {

@@ -346,7 +346,7 @@ function NewsCheckRound({
           }
           onClick={() => void handleVote("reliable")}
           aria-label="Classificar notícia como Verdadeira"
-          className={`flex w-full items-center gap-3.5 rounded-2xl border border-white/60 bg-white p-3.5 text-slate-800 shadow-md transition-all duration-200 hover:-translate-y-0.5 hover:bg-slate-50 hover:shadow-xl focus:ring-4 focus:ring-emerald-300 focus:outline-none active:translate-y-0.5 md:rounded-3xl md:p-4 ${
+          className={`flex w-full cursor-pointer items-center gap-3.5 rounded-2xl border border-white/60 bg-white p-3.5 text-slate-800 shadow-md transition-all duration-200 hover:-translate-y-0.5 hover:bg-slate-50 hover:shadow-xl focus:ring-4 focus:ring-emerald-300 focus:outline-none active:translate-y-0.5 md:rounded-3xl md:p-4 ${
             selectedVote === "reliable" ? "ring-4 ring-emerald-400" : ""
           } ${isSubmitting && selectedVote !== "reliable" ? "opacity-50" : ""}`}
         >
@@ -376,7 +376,7 @@ function NewsCheckRound({
           }
           onClick={() => void handleVote("unreliable")}
           aria-label="Classificar notícia como Falsa"
-          className={`flex w-full items-center gap-3.5 rounded-2xl border border-white/60 bg-white p-3.5 text-slate-800 shadow-md transition-all duration-200 hover:-translate-y-0.5 hover:bg-slate-50 hover:shadow-xl focus:ring-4 focus:ring-rose-300 focus:outline-none active:translate-y-0.5 md:rounded-3xl md:p-4 ${
+          className={`flex w-full cursor-pointer items-center gap-3.5 rounded-2xl border border-white/60 bg-white p-3.5 text-slate-800 shadow-md transition-all duration-200 hover:-translate-y-0.5 hover:bg-slate-50 hover:shadow-xl focus:ring-4 focus:ring-rose-300 focus:outline-none active:translate-y-0.5 md:rounded-3xl md:p-4 ${
             selectedVote === "unreliable" ? "ring-4 ring-rose-400" : ""
           } ${isSubmitting && selectedVote !== "unreliable" ? "opacity-50" : ""}`}
         >
@@ -406,7 +406,7 @@ function NewsCheckRound({
           }
           onClick={() => void handleVote("uncertain")}
           aria-label="Classificar notícia como Incerta"
-          className={`flex w-full items-center gap-3.5 rounded-2xl border border-white/60 bg-white p-3.5 text-slate-800 shadow-md transition-all duration-200 hover:-translate-y-0.5 hover:bg-slate-50 hover:shadow-xl focus:ring-4 focus:ring-amber-300 focus:outline-none active:translate-y-0.5 md:rounded-3xl md:p-4 ${
+          className={`flex w-full cursor-pointer items-center gap-3.5 rounded-2xl border border-white/60 bg-white p-3.5 text-slate-800 shadow-md transition-all duration-200 hover:-translate-y-0.5 hover:bg-slate-50 hover:shadow-xl focus:ring-4 focus:ring-amber-300 focus:outline-none active:translate-y-0.5 md:rounded-3xl md:p-4 ${
             selectedVote === "uncertain" ? "ring-4 ring-amber-400" : ""
           } ${isSubmitting && selectedVote !== "uncertain" ? "opacity-50" : ""}`}
         >

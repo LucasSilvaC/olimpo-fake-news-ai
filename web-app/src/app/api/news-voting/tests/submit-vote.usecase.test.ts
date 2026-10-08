@@ -88,6 +88,7 @@ describe("SubmitVoteUseCase", () => {
       findById: vi.fn(),
       findByParticipantAndPlaylistItem: vi.fn().mockResolvedValue(null),
       listByPlaylistItem: vi.fn(),
+      listByRoomId: vi.fn(),
       countByPlaylistItem: vi.fn(),
       updateEvaluation: vi.fn(),
     };
@@ -153,6 +154,42 @@ describe("SubmitVoteUseCase", () => {
       newsArticleRepository,
       getArticleAnalysisUseCase,
       mockEventPublisher,
+    );
+  });
+
+  it("publishes round points independently of cumulative scores without invoking ML", async () => {
+    vi.mocked(roomRepository.countMembers).mockResolvedValue(1);
+    vi.mocked(redisRoomRepository.getLeaderboard).mockResolvedValue([
+      { userId: "user-1", score: 225 },
+    ]);
+    vi.mocked(newsVoteRepository.listByPlaylistItem).mockResolvedValue([
+      {
+        id: "vote-1",
+        roomId: "room-1",
+        playlistItemId: "item-1",
+        userId: "user-1",
+        vote: "uncertain",
+        isCorrect: false,
+        pointsAwarded: 25,
+        createdAt: new Date(),
+      },
+    ]);
+    const result = await useCase.execute({ roomId: "room-1", userId: "user-1", vote: "uncertain" });
+    expect(result.leaderboard).toEqual([
+      { userId: "user-1", score: 225, roundDelta: 25, isCorrect: false },
+    ]);
+    expect(result.officialAnswer).toBe("reliable");
+    expect(result.modelAnalysis).toBeNull();
+    expect(getArticleAnalysisUseCase.execute).not.toHaveBeenCalled();
+    expect(mockEventPublisher.publish).toHaveBeenCalledWith(
+      "123 456",
+      expect.objectContaining({
+        payload: expect.objectContaining({
+          officialAnswer: "reliable",
+          modelAnalysis: null,
+          leaderboard: result.leaderboard,
+        }),
+      }),
     );
   });
 
@@ -316,7 +353,7 @@ describe("SubmitVoteUseCase", () => {
     expect(result.roundCompleted).toBe(true);
     expect(result.officialAnswer).toBe("reliable");
     expect(result.modelAnalysis).toBeNull();
-    expect(result.leaderboard).toEqual([{ userId: "user-1", score: 100 }]);
+    expect(result.leaderboard).toEqual([expect.objectContaining({ userId: "user-1", score: 100 })]);
     expect(getArticleAnalysisUseCase.execute).not.toHaveBeenCalled();
     expect(redisRoomRepository.getLeaderboard).toHaveBeenCalledWith("room-1");
     expect(mockEventPublisher.publish).toHaveBeenCalledWith(
@@ -327,7 +364,7 @@ describe("SubmitVoteUseCase", () => {
         pin: "123 456",
         payload: {
           round: 1,
-          leaderboard: [{ userId: "user-1", score: 100 }],
+          leaderboard: [expect.objectContaining({ userId: "user-1", score: 100 })],
           officialAnswer: "reliable",
           modelAnalysis: null,
         },

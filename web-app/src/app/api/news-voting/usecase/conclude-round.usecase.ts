@@ -13,12 +13,12 @@ import {
   IEventPublisher,
   redisEventPublisher as defaultRedisEventPublisher,
 } from "@/app/api/realtime-events";
+import { RoundCompletedLeaderboardEntry } from "@/app/api/realtime-events/entities/event.types";
 import {
   drizzleRoomRepository as defaultRoomRepository,
   IRoomRepository,
   redisRoomRepository as defaultRedisRoomRepository,
   IRedisRoomRepository,
-  LeaderboardEntry,
 } from "@/app/api/rooms/repositories";
 import type { MLTargetType } from "@/server/shared/database/schemas/enums";
 
@@ -32,7 +32,7 @@ export interface ConcludeRoundOutput {
   roundCompleted: boolean;
   officialAnswer?: MLTargetType;
   modelAnalysis?: AIAnalysisDTO | null;
-  leaderboard?: LeaderboardEntry[];
+  leaderboard?: RoundCompletedLeaderboardEntry[];
 }
 
 export class ConcludeRoundUseCase {
@@ -92,12 +92,26 @@ export class ConcludeRoundUseCase {
 
     if (!isFirstToComplete) {
       const leaderboard = await this.redisRoomRepository.getLeaderboard(input.roomId);
+      const roundVotes =
+        typeof this.newsVoteRepository.listByPlaylistItem === "function"
+          ? ((await this.newsVoteRepository.listByPlaylistItem(currentItem.id)) ?? [])
+          : [];
+      const roundVotesMap = new Map(roundVotes.map((v) => [v.userId, v]));
+      const enrichedLeaderboard: RoundCompletedLeaderboardEntry[] = leaderboard.map((entry) => {
+        const vote = roundVotesMap.get(entry.userId);
+        return {
+          userId: entry.userId,
+          score: entry.score,
+          roundDelta: vote?.pointsAwarded ?? 0,
+          isCorrect: vote?.isCorrect ?? false,
+        };
+      });
 
       return {
         roundCompleted: true,
         officialAnswer: article.targetClassification,
         modelAnalysis: null,
-        leaderboard,
+        leaderboard: enrichedLeaderboard,
       };
     }
 
@@ -139,6 +153,20 @@ export class ConcludeRoundUseCase {
     }
 
     const leaderboard = await this.redisRoomRepository.getLeaderboard(input.roomId);
+    const roundVotes =
+      typeof this.newsVoteRepository.listByPlaylistItem === "function"
+        ? ((await this.newsVoteRepository.listByPlaylistItem(currentItem.id)) ?? [])
+        : [];
+    const roundVotesMap = new Map(roundVotes.map((v) => [v.userId, v]));
+    const enrichedLeaderboard: RoundCompletedLeaderboardEntry[] = leaderboard.map((entry) => {
+      const vote = roundVotesMap.get(entry.userId);
+      return {
+        userId: entry.userId,
+        score: entry.score,
+        roundDelta: vote?.pointsAwarded ?? 0,
+        isCorrect: vote?.isCorrect ?? false,
+      };
+    });
 
     await this.eventPublisher.publish(room.pin, {
       type: "ROUND_COMPLETED",
@@ -146,7 +174,7 @@ export class ConcludeRoundUseCase {
       pin: room.pin,
       payload: {
         round: room.currentRound,
-        leaderboard,
+        leaderboard: enrichedLeaderboard,
         officialAnswer: article.targetClassification,
         modelAnalysis: null,
       },
@@ -157,7 +185,7 @@ export class ConcludeRoundUseCase {
       roundCompleted: true,
       officialAnswer: article.targetClassification,
       modelAnalysis: null,
-      leaderboard,
+      leaderboard: enrichedLeaderboard,
     };
   }
 }

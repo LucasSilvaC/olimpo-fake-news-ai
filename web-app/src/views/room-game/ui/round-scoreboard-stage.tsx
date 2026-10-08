@@ -1,15 +1,6 @@
 "use client";
 
-import {
-  ArrowRight,
-  CheckCircle2,
-  Flame,
-  Loader2,
-  LogOut,
-  Sparkles,
-  Trophy,
-  XCircle,
-} from "lucide-react";
+import { ArrowRight, CheckCircle2, Flame, Loader2, Sparkles, Trophy, XCircle } from "lucide-react";
 import * as React from "react";
 import { toast } from "sonner";
 
@@ -43,7 +34,6 @@ export function RoundScoreboardStage({
   isHost,
   leaderboard,
   onAdvance,
-  onLeave,
 }: IRoundScoreboardStageProps): React.ReactElement {
   const [isAdvancing, setIsAdvancing] = React.useState(false);
 
@@ -89,20 +79,6 @@ export function RoundScoreboardStage({
       className="flex w-full flex-col items-center py-2 text-slate-800"
       data-purpose="round-scoreboard-stage"
     >
-      {/* Top Exit button if onLeave provided */}
-      {onLeave && (
-        <div className="mb-2 flex w-full max-w-2xl justify-end">
-          <button
-            type="button"
-            onClick={onLeave}
-            className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-3.5 py-1.5 text-xs font-semibold text-white backdrop-blur-md transition-all hover:bg-white/20 active:scale-95"
-          >
-            <LogOut className="size-3.5" aria-hidden="true" />
-            <span>Sair da Sala</span>
-          </button>
-        </div>
-      )}
-
       {/* Top Announcement / Streak Spotlight Alert */}
       {streakLeader && (
         <div className="mb-4 flex w-full max-w-2xl items-center justify-between gap-3 rounded-2xl border border-white/25 bg-white/20 p-3 text-white shadow-md backdrop-blur-md">
@@ -255,7 +231,7 @@ export function RoundScoreboardStage({
             type="button"
             disabled={isAdvancing}
             onClick={() => void handleAdvance()}
-            className="flex w-full items-center justify-center gap-2 rounded-full bg-amber-400 px-8 py-3.5 text-base font-extrabold text-amber-950 shadow-xl transition-all duration-200 hover:bg-amber-300 hover:shadow-2xl active:scale-95 disabled:opacity-60 sm:w-auto"
+            className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-full bg-amber-400 px-8 py-3.5 text-base font-extrabold text-amber-950 shadow-xl transition-all duration-200 hover:bg-amber-300 hover:shadow-2xl active:scale-95 disabled:opacity-60 sm:w-auto"
           >
             {isAdvancing ? (
               <>

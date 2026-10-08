@@ -114,35 +114,35 @@ export function PitchDeck(): React.ReactElement {
 
       <nav
         aria-label="Navegação da apresentação"
-        className="absolute inset-x-0 bottom-0 z-10 flex h-14 items-center justify-center gap-4 px-4"
+        className="absolute inset-x-0 bottom-0 z-10 flex h-14 items-center justify-center gap-2 px-2 sm:gap-4 sm:px-4"
       >
         <button
           onClick={() => go(index - 1)}
           disabled={index === 0}
           aria-label="Slide anterior"
-          className="rounded-[12px] bg-white/20 px-4 py-1.5 text-sm font-bold text-white ring-1 ring-white/30 backdrop-blur transition hover:bg-white/30 focus-visible:ring-2 focus-visible:ring-amber-300 focus-visible:outline-none disabled:opacity-40"
+          className="shrink-0 rounded-[12px] bg-white/20 px-2 py-1.5 text-sm font-bold text-white ring-1 ring-white/30 backdrop-blur transition hover:bg-white/30 focus-visible:ring-2 focus-visible:ring-amber-300 focus-visible:outline-none disabled:opacity-40 sm:px-4"
         >
           ←
         </button>
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1 sm:gap-1.5">
           {SLIDES.map((s, i) => (
             <button
               key={s.title}
               onClick={() => go(i)}
               aria-label={`Ir para ${i + 1}: ${s.title}`}
               aria-current={i === index ? "step" : undefined}
-              className={`h-2.5 rounded-full transition-all focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none ${i === index ? "w-8 bg-amber-400" : "w-2.5 bg-white/50 hover:bg-white"}`}
+              className={`h-1.5 shrink-0 rounded-full transition-all focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none sm:h-2.5 ${i === index ? "w-4 bg-amber-400 sm:w-8" : "w-1.5 bg-white/50 hover:bg-white sm:w-2.5"}`}
             />
           ))}
         </div>
-        <span className="min-w-14 text-center text-sm font-bold text-white tabular-nums">
+        <span className="min-w-10 shrink-0 text-center text-xs font-bold text-white tabular-nums sm:min-w-14 sm:text-sm">
           {index + 1} / {SLIDES.length}
         </span>
         <button
           onClick={() => go(index + 1)}
           disabled={index === SLIDES.length - 1}
           aria-label="Próximo slide"
-          className="rounded-[12px] bg-amber-400 px-4 py-1.5 text-sm font-extrabold text-slate-950 shadow-[0_8px_15px_-4px_rgba(251,191,36,0.5)] transition hover:bg-amber-300 focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none disabled:opacity-40"
+          className="shrink-0 rounded-[12px] bg-amber-400 px-2 py-1.5 text-sm font-extrabold text-slate-950 shadow-[0_8px_15px_-4px_rgba(251,191,36,0.5)] transition hover:bg-amber-300 focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none disabled:opacity-40 sm:px-4"
         >
           →
         </button>

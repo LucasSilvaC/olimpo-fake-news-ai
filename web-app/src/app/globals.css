@@ -62,12 +62,12 @@
   body {
     min-height: 100vh;
     color: white;
-    background: radial-gradient(120% 120% at 50% 20%, #4387f4 0%, #3478ed 45%, #2f70e3 100%);
+    background: #2563eb;
   }
 
   .dark body {
     color: var(--foreground);
-    background: radial-gradient(120% 120% at 50% 20%, #3b82f6 0%, #3478ed 45%, #2f70e3 100%);
+    background: #2563eb;
   }
 }
 
@@ -77,5 +77,19 @@
     box-shadow:
       0 0 0 2px #0f172a,
       0 0 0 4px #ffffff;
+  }
+
+  @keyframes floatingRocket {
+    0%,
+    100% {
+      transform: translateY(0px) rotate(-2deg);
+    }
+    50% {
+      transform: translateY(-10px) rotate(3deg);
+    }
+  }
+
+  .animate-float {
+    animation: floatingRocket 4s ease-in-out infinite;
   }
 }
