@@ -51,17 +51,8 @@ vi.mock("../usecase/submit-vote.usecase", () => ({
             pointsAwarded: 100,
           },
           roundCompleted: input.roomId === "last-vote-room",
-          analysis:
-            input.roomId === "last-vote-room"
-              ? {
-                  id: "analysis-1",
-                  articleId: "art-1",
-                  classification: "reliable" as const,
-                  confidence: 0.95,
-                  reasons: ["Fact-checked"],
-                  modelVersion: "mock-ai-v1",
-                }
-              : undefined,
+          officialAnswer: input.roomId === "last-vote-room" ? "reliable" : undefined,
+          modelAnalysis: input.roomId === "last-vote-room" ? null : undefined,
           leaderboard:
             input.roomId === "last-vote-room" ? [{ userId: input.userId, score: 100 }] : undefined,
         };
@@ -108,14 +99,8 @@ vi.mock("../usecase/conclude-round.usecase", () => ({
       }
       return {
         roundCompleted: true,
-        analysis: {
-          id: "analysis-1",
-          articleId: "art-1",
-          classification: "reliable" as const,
-          confidence: 0.95,
-          reasons: ["Fact-checked"],
-          modelVersion: "mock-ai-v1",
-        },
+        officialAnswer: "reliable",
+        modelAnalysis: null,
         leaderboard: [{ userId: "user-1", score: 100 }],
       };
     }),
@@ -140,6 +125,10 @@ describe("News Voting Server Actions", () => {
         expect(result.vote.vote).toBe("reliable");
         expect(result.vote.userId).toBe("user-session-1");
         expect(result.roundCompleted).toBe(false);
+        expect(result.vote.isCorrect).toBeNull();
+        expect(result.vote.pointsAwarded).toBe(0);
+        expect(result.officialAnswer).toBeUndefined();
+        expect(result.modelAnalysis).toBeUndefined();
       }
     });
 
@@ -165,7 +154,8 @@ describe("News Voting Server Actions", () => {
       expect(result.success).toBe(true);
       if (result.success) {
         expect(result.roundCompleted).toBe(true);
-        expect(result.analysis).toBeDefined();
+        expect(result.officialAnswer).toBe("reliable");
+        expect(result.modelAnalysis).toBeNull();
         expect(result.leaderboard).toBeDefined();
       }
     });
@@ -282,7 +272,8 @@ describe("News Voting Server Actions", () => {
       expect(result.success).toBe(true);
       if (result.success) {
         expect(result.roundCompleted).toBe(true);
-        expect(result.analysis).toBeDefined();
+        expect(result.officialAnswer).toBe("reliable");
+        expect(result.modelAnalysis).toBeNull();
         expect(result.leaderboard).toBeDefined();
       }
     });

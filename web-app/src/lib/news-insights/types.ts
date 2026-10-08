@@ -7,6 +7,27 @@ export interface NewsInsightMeasurement {
   denominator: string;
   count?: number;
   denominatorCount?: number;
+  displayLabel?: string;
+  displayText?: string;
+}
+
+export interface NewsInsightClassFrequency {
+  count: number;
+  total: number;
+  frequency: number;
+}
+
+/** Frequency of the complete matched pattern within each reference corpus class. */
+export interface NewsInsightComparison {
+  kind: "descriptive_corpus_frequency";
+  referenceDataset: string;
+  partition: "validation";
+  authorScope: "all";
+  sourceRun: string;
+  variant: string;
+  scope: "matched_pattern";
+  fake: NewsInsightClassFrequency;
+  true: NewsInsightClassFrequency;
 }
 
 export interface NewsInsight {
@@ -16,6 +37,7 @@ export interface NewsInsight {
   reflectionQuestions: string[];
   redundancyFamily: string;
   measurements: NewsInsightMeasurement[];
+  comparison: NewsInsightComparison;
 }
 
 export interface NewsInsightsAnalysis {

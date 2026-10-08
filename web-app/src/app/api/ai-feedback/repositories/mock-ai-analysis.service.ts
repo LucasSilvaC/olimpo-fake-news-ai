@@ -1,10 +1,19 @@
-import {
-  AIAnalysisResult,
-  ArticleAnalysisInput,
-  IAIAnalysisService,
-} from "./ai-analysis-service.interface";
-
+// Legacy mock retained only for historical tests; production never imports it.
 import { MLTargetType } from "@/server/shared/database/schemas/enums";
+interface ArticleAnalysisInput {
+  articleId?: string;
+  title: string;
+  content: string;
+  targetClassification?: MLTargetType;
+  source?: string | null;
+  author?: string | null;
+}
+interface AIAnalysisResult {
+  classification: MLTargetType;
+  confidence: number;
+  reasons: string[];
+  modelVersion: string;
+}
 
 const UNRELIABLE_KEYWORDS = [
   /\bchocante\b/i,
@@ -59,7 +68,7 @@ const REASONS_MAP: Record<MLTargetType, { reasons: string[]; confidence: number 
   },
 };
 
-export class MockAIAnalysisService implements IAIAnalysisService {
+export class MockAIAnalysisService {
   async analyze(article: ArticleAnalysisInput): Promise<AIAnalysisResult> {
     const classification = this.determineClassification(article);
     const template = REASONS_MAP[classification];

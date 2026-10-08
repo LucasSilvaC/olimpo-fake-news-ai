@@ -1,203 +1,124 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { IAIAnalysisService } from "../repositories/ai-analysis-service.interface";
-import { INewsAnalysisRepository } from "../repositories/news-analysis.repository.interface";
-import { INewsArticleRepository } from "../repositories/news-article.repository.interface";
+import type {
+  IAIAnalysisService,
+  SupervisedIdentity,
+} from "../repositories/ai-analysis-service.interface";
+import type {
+  AnalysisCacheIdentity,
+  INewsAnalysisRepository,
+} from "../repositories/news-analysis.repository.interface";
+import type { INewsArticleRepository } from "../repositories/news-article.repository.interface";
 import { GetArticleAnalysisUseCase } from "../usecase/get-article-analysis.usecase";
 
-import { NewsAnalysis, NewNewsAnalysis } from "@/server/shared/database/schemas/news-analyses";
-import { NewsArticle, NewNewsArticle } from "@/server/shared/database/schemas/news-articles";
+import { prediction } from "./supervised-fixture";
 
-describe("GetArticleAnalysisUseCase", () => {
-  const createMockRepositories = () => {
-    const analysisDb: Map<string, NewsAnalysis> = new Map();
-    const articleDb: Map<string, NewsArticle> = new Map();
+import type { NewsAnalysis } from "@/server/shared/database/schemas/news-analyses";
+import type { NewsArticle } from "@/server/shared/database/schemas/news-articles";
 
-    const analysisRepo: INewsAnalysisRepository = {
-      findByArticleId: vi.fn(async (articleId: string) => analysisDb.get(articleId) ?? null),
-      create: vi.fn(async (data: NewNewsAnalysis) => {
-        const item: NewsAnalysis = {
-          id: data.id,
-          articleId: data.articleId,
-          classification: data.classification,
-          confidence: data.confidence ?? null,
-          reasons: data.reasons,
-          modelVersion: data.modelVersion ?? "mock-v1",
-          createdAt: data.createdAt ?? new Date(),
-        };
-        analysisDb.set(data.articleId, item);
-        return item;
-      }),
-    };
-
-    const articleRepo: INewsArticleRepository = {
-      findById: vi.fn(async (id: string) => articleDb.get(id) ?? null),
-      create: vi.fn(async (data: NewNewsArticle) => {
-        const item: NewsArticle = {
-          id: data.id,
-          article: data.article,
-          targetClassification: data.targetClassification ?? "uncertain",
-          createdAt: new Date(),
-        };
-        articleDb.set(data.id, item);
-        return item;
-      }),
-    };
-
-    const aiService: IAIAnalysisService = {
-      analyze: vi.fn(async (article) => ({
-        classification: article.targetClassification ?? "reliable",
-        confidence: 0.95,
-        reasons: ["Análise mock detalhada", "Fonte confiável"],
-        modelVersion: "mock-v1",
-      })),
-    };
-
-    return { analysisRepo, articleRepo, aiService, analysisDb, articleDb };
+function fixture() {
+  const rows: NewsAnalysis[] = [];
+  const article = {
+    id: "article-1",
+    article: {
+      content: "corpo original ".repeat(50),
+      url: "https://example.com/news",
+      title: "gabarito secreto",
+    },
+    targetClassification: "unreliable",
+  } as NewsArticle;
+  const identity: SupervisedIdentity = {
+    modelVersion: prediction.modelVersion,
+    policyVersion: prediction.policyVersion,
+    artifactSha256: prediction.artifactSha256,
+    inferenceVersion: prediction.inferenceVersion,
   };
-
-  it("returns cached analysis if already present in repository", async () => {
-    const { analysisRepo, articleRepo, aiService, analysisDb } = createMockRepositories();
-
-    analysisDb.set("article-1", {
-      id: "analysis-existing-1",
-      articleId: "article-1",
-      classification: "unreliable",
-      confidence: "0.85",
-      reasons: ["Razão salva em cache"],
-      modelVersion: "mock-v1",
-      createdAt: new Date(),
-    });
-
-    const usecase = new GetArticleAnalysisUseCase(analysisRepo, articleRepo, aiService);
-    const result = await usecase.execute({ articleId: "article-1" });
-
-    expect(result.id).toBe("analysis-existing-1");
-    expect(result.classification).toBe("unreliable");
-    expect(result.confidence).toBe(0.85);
-    expect(result.reasons).toEqual(["Razão salva em cache"]);
-    expect(aiService.analyze).not.toHaveBeenCalled();
-    expect(analysisRepo.create).not.toHaveBeenCalled();
-  });
-
-  it("generates and persists analysis if not already cached", async () => {
-    const { analysisRepo, articleRepo, aiService, articleDb } = createMockRepositories();
-
-    articleDb.set("article-2", {
-      id: "article-2",
-      article: {
-        url: "https://noticia.com/artigo",
-        canonicalUrl: "https://noticia.com/artigo",
-        title: "Descoberta Científica Relevante",
-        description: null,
-        authors: ["Dra. Maria"],
-        publishedAt: new Date().toISOString(),
-        modifiedAt: null,
-        content: "Pesquisa detalhada sobre avanços médicos.",
-        imageUrl: null,
-        publisher: "Revista Científica",
-        language: "pt",
-        extractionMethod: "local",
-        usedFallback: false,
-      },
-      targetClassification: "reliable",
-      createdAt: new Date(),
-    });
-
-    const usecase = new GetArticleAnalysisUseCase(analysisRepo, articleRepo, aiService);
-    const result = await usecase.execute({ articleId: "article-2" });
-
-    expect(result.articleId).toBe("article-2");
-    expect(result.classification).toBe("reliable");
-    expect(result.confidence).toBe(0.95);
-    expect(aiService.analyze).toHaveBeenCalledTimes(1);
-    expect(analysisRepo.create).toHaveBeenCalledTimes(1);
-  });
-
-  it("forces re-generation when forceRefresh is true even if cached", async () => {
-    const { analysisRepo, articleRepo, aiService, analysisDb, articleDb } =
-      createMockRepositories();
-
-    analysisDb.set("article-3", {
-      id: "old-analysis",
-      articleId: "article-3",
-      classification: "uncertain",
-      confidence: "0.50",
-      reasons: ["Razão antiga"],
-      modelVersion: "mock-v0",
-      createdAt: new Date(),
-    });
-
-    articleDb.set("article-3", {
-      id: "article-3",
-      article: {
-        url: "https://noticia.com/artigo-3",
-        canonicalUrl: "https://noticia.com/artigo-3",
-        title: "Artigo Atualizado",
-        description: null,
-        authors: ["Editor"],
-        publishedAt: new Date().toISOString(),
-        modifiedAt: null,
-        content: "Novo conteúdo verificado.",
-        imageUrl: null,
-        publisher: "Agência",
-        language: "pt",
-        extractionMethod: "local",
-        usedFallback: false,
-      },
-      targetClassification: "reliable",
-      createdAt: new Date(),
-    });
-
-    const usecase = new GetArticleAnalysisUseCase(analysisRepo, articleRepo, aiService);
-    const result = await usecase.execute({ articleId: "article-3", forceRefresh: true });
-
-    expect(result.classification).toBe("reliable");
-    expect(aiService.analyze).toHaveBeenCalledTimes(1);
-    expect(analysisRepo.create).toHaveBeenCalledTimes(1);
-  });
-
-  it("uses provided inline article without querying articleRepository", async () => {
-    const { analysisRepo, articleRepo, aiService } = createMockRepositories();
-
-    const usecase = new GetArticleAnalysisUseCase(analysisRepo, articleRepo, aiService);
-    const result = await usecase.execute({
-      articleId: "inline-art-1",
-      article: {
-        title: "Notícia Inline",
-        content: "Texto direto passado no usecase",
-        targetClassification: "unreliable",
-      },
-    });
-
-    expect(result.classification).toBe("unreliable");
-    expect(articleRepo.findById).not.toHaveBeenCalled();
-    expect(aiService.analyze).toHaveBeenCalledWith(
-      expect.objectContaining({
-        title: "Notícia Inline",
-        targetClassification: "unreliable",
-      }),
+  const matches = (row: NewsAnalysis, key: AnalysisCacheIdentity) =>
+    Object.entries(key).every(([field, value]) => row[field as keyof NewsAnalysis] === value);
+  const repository: INewsAnalysisRepository = {
+    findByArticleId: vi.fn(async () => rows[0] ?? null),
+    findByIdentity: vi.fn(async (key) => rows.find((row) => matches(row, key)) ?? null),
+    create: vi.fn(async (data) => {
+      const row = { ...data, confidence: null } as NewsAnalysis;
+      rows.push(row);
+      return row;
+    }),
+    withIdentityLock: async (_key, work) => work(repository),
+  };
+  const articles: INewsArticleRepository = {
+    findById: vi.fn(async () => article),
+    create: vi.fn(),
+  };
+  const service: IAIAnalysisService = {
+    getIdentity: vi.fn(async () => ({ ...identity })),
+    analyze: vi.fn(async () => ({ ...prediction, ...identity })),
+  };
+  const parser = vi.fn(async () => ({
+    ...article.article,
+    content: "safe parsed body ".repeat(50),
+  }));
+  const useCase = new GetArticleAnalysisUseCase(repository, articles, service, parser as never);
+  return { rows, article, identity, repository, service, parser, useCase };
+}
+describe("Versioned supervised cache", () => {
+  it("sends only raw body, caches exact identity, and shares concurrent inference", async () => {
+    const f = fixture();
+    const results = await Promise.all(
+      Array.from({ length: 8 }, () => f.useCase.execute({ articleId: "article-1" })),
     );
+    expect(f.service.analyze).toHaveBeenCalledTimes(1);
+    expect(f.service.analyze).toHaveBeenCalledWith(f.article.article.content);
+    expect(new Set(results.map((value) => value.id)).size).toBe(1);
+    expect(f.rows).toHaveLength(1);
+    await f.useCase.execute({ articleId: "article-1" });
+    expect(f.service.analyze).toHaveBeenCalledTimes(1);
+    expect(f.repository.findByArticleId).not.toHaveBeenCalled();
   });
-
-  it("throws error when article is not found and no inline article provided", async () => {
-    const { analysisRepo, articleRepo, aiService } = createMockRepositories();
-
-    const usecase = new GetArticleAnalysisUseCase(analysisRepo, articleRepo, aiService);
-
-    await expect(usecase.execute({ articleId: "non-existing-article" })).rejects.toThrow(
-      'Article with id "non-existing-article" not found',
-    );
+  it.each(["body", "artifact", "code"])("invalidates when %s changes", async (kind) => {
+    const f = fixture();
+    await f.useCase.execute({ articleId: "article-1" });
+    if (kind === "body") f.article.article.content += " changed";
+    if (kind === "artifact") f.identity.artifactSha256 = "b".repeat(64);
+    if (kind === "code") f.identity.inferenceVersion = "serving-v2";
+    await f.useCase.execute({ articleId: "article-1" });
+    expect(f.service.analyze).toHaveBeenCalledTimes(2);
+    expect(f.rows).toHaveLength(2);
   });
-
-  it("throws error when articleId is empty", async () => {
-    const { analysisRepo, articleRepo, aiService } = createMockRepositories();
-
-    const usecase = new GetArticleAnalysisUseCase(analysisRepo, articleRepo, aiService);
-
-    await expect(usecase.execute({ articleId: "" })).rejects.toThrow("articleId cannot be empty");
-    await expect(usecase.execute({ articleId: "   " })).rejects.toThrow(
-      "articleId cannot be empty",
+  it("does not reuse historical mock rows", async () => {
+    const f = fixture();
+    f.rows.push({ articleId: "article-1", modelVersion: "mock-v1" } as NewsAnalysis);
+    expect((await f.useCase.execute({ articleId: "article-1" })).modelVersion).toBe(
+      prediction.modelVersion,
     );
+    expect(f.service.analyze).toHaveBeenCalledTimes(1);
+  });
+  it("transient failure has no fake score, is not cached, and allows retry", async () => {
+    const f = fixture();
+    vi.mocked(f.service.analyze).mockRejectedValueOnce(new Error("worker offline"));
+    expect(await f.useCase.execute({ articleId: "article-1" })).toMatchObject({
+      analysisStatus: "unavailable",
+      classification: null,
+      fakeScore: null,
+    });
+    expect(f.rows).toHaveLength(0);
+    expect((await f.useCase.execute({ articleId: "article-1" })).analysisStatus).toBe("ok");
+  });
+  it("rejects stale identity or contradictory score from the motor without caching", async () => {
+    const f = fixture();
+    vi.mocked(f.service.analyze).mockResolvedValueOnce({
+      ...prediction,
+      inferenceVersion: "other-code",
+    });
+    expect((await f.useCase.execute({ articleId: "article-1" })).analysisStatus).toBe(
+      "unavailable",
+    );
+    expect(f.rows).toHaveLength(0);
+  });
+  it("uses the saved URL safe parser only when body is empty", async () => {
+    const f = fixture();
+    f.article.article.content = "";
+    await f.useCase.execute({ articleId: "article-1" });
+    expect(f.parser).toHaveBeenCalledWith(f.article.article.url);
+    expect(f.service.analyze).toHaveBeenCalledWith("safe parsed body ".repeat(50));
   });
 });

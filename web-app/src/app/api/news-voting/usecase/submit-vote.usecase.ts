@@ -6,11 +6,7 @@ import { INewsVoteRepository } from "../repositories/news-vote.repository.interf
 import { redisVoteRepository as defaultRedisVoteRepository } from "../repositories/redis-vote.repository";
 import { IRedisVoteRepository } from "../repositories/redis-vote.repository.interface";
 
-import {
-  AIAnalysisDTO,
-  getArticleAnalysisUseCase as defaultGetArticleAnalysisUseCase,
-  GetArticleAnalysisUseCase,
-} from "@/app/api/ai-feedback";
+import type { AIAnalysisDTO } from "@/app/api/ai-feedback/entities/ai-analysis.entity";
 import { drizzleNewsArticleRepository as defaultNewsArticleRepository } from "@/app/api/ai-feedback/repositories/drizzle-news-article.repository";
 import { INewsArticleRepository } from "@/app/api/ai-feedback/repositories/news-article.repository.interface";
 import {
@@ -24,6 +20,7 @@ import {
   IRedisRoomRepository,
   LeaderboardEntry,
 } from "@/app/api/rooms/repositories";
+import type { MLTargetType } from "@/server/shared/database/schemas/enums";
 import { VoteOptionType } from "@/server/shared/database/schemas/enums";
 
 export interface SubmitVoteInput {
@@ -36,7 +33,8 @@ export interface SubmitVoteInput {
 export interface SubmitVoteOutput {
   vote: NewsVoteDTO;
   roundCompleted: boolean;
-  analysis?: AIAnalysisDTO;
+  officialAnswer?: MLTargetType;
+  modelAnalysis?: AIAnalysisDTO | null;
   leaderboard?: LeaderboardEntry[];
 }
 
@@ -47,7 +45,7 @@ export class SubmitVoteUseCase {
     private readonly roomRepository: IRoomRepository = defaultRoomRepository,
     private readonly redisRoomRepository: IRedisRoomRepository = defaultRedisRoomRepository,
     private readonly newsArticleRepository: INewsArticleRepository = defaultNewsArticleRepository,
-    private readonly getArticleAnalysisUseCase: GetArticleAnalysisUseCase = defaultGetArticleAnalysisUseCase,
+    _legacyAnalysisDependency?: unknown,
     private readonly eventPublisher: IEventPublisher = defaultRedisEventPublisher,
   ) {}
 
@@ -76,6 +74,10 @@ export class SubmitVoteUseCase {
     const currentItem = playlistItems.find((item) => item.roundOrder === room.currentRound);
     if (!currentItem) {
       throw new Error(`Playlist item not found for round ${room.currentRound}`);
+    }
+
+    if (await this.redisVoteRepository.isRoundCompleted(input.roomId, room.currentRound)) {
+      throw new Error("Cannot submit vote: round is completed");
     }
 
     const hasVotedRedis = await this.redisVoteRepository.hasUserVoted(
@@ -149,9 +151,6 @@ export class SubmitVoteUseCase {
         room.currentRound,
       );
 
-      const analysis = await this.getArticleAnalysisUseCase.execute({
-        articleId: currentItem.articleId,
-      });
       const leaderboard = await this.redisRoomRepository.getLeaderboard(input.roomId);
 
       if (isFirstToComplete) {
@@ -162,7 +161,8 @@ export class SubmitVoteUseCase {
           payload: {
             round: room.currentRound,
             leaderboard,
-            analysis,
+            officialAnswer: article.targetClassification,
+            modelAnalysis: null,
           },
           timestamp: new Date().toISOString(),
         });
@@ -171,13 +171,14 @@ export class SubmitVoteUseCase {
       return {
         vote: evaluatedVote.toDTO(),
         roundCompleted: true,
-        analysis,
+        officialAnswer: article.targetClassification,
+        modelAnalysis: null,
         leaderboard,
       };
     }
 
     return {
-      vote: evaluatedVote.toDTO(),
+      vote: { ...evaluatedVote.toDTO(), isCorrect: null, pointsAwarded: 0 },
       roundCompleted: false,
     };
   }

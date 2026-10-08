@@ -1,6 +1,8 @@
 import Redis from "ioredis";
 
 import { getSessionUseCase } from "@/app/api/auth/usecase/get-session.usecase";
+import { redisVoteRepository } from "@/app/api/news-voting/repositories/redis-vote.repository";
+import type { IRedisVoteRepository } from "@/app/api/news-voting/repositories/redis-vote.repository.interface";
 import {
   createPresenceEvent,
   type IRoomPresence,
@@ -20,6 +22,7 @@ export interface SSERouteDependencies {
   createSubscriber?: () => Redis;
   getUserId?: () => Promise<string>;
   presence?: IRoomPresence;
+  roundRepository?: Pick<IRedisVoteRepository, "isRoundCompleted">;
 }
 
 export async function createSSEResponse(
@@ -65,6 +68,10 @@ export async function createSSEResponse(
       status: 404,
       headers: { "Content-Type": "application/json" },
     });
+  }
+
+  if (!(await roomRepository.findMember(room.id, userId))) {
+    return Response.json({ error: "User is not a member of this room" }, { status: 403 });
   }
 
   const channel = `room:${normalizedPin}`;
@@ -122,15 +129,35 @@ export async function createSSEResponse(
       send(": connected\n\n");
 
       subscriber.on("message", (msgChannel, message) => {
-        if (msgChannel === channel && !isCleanedUp) {
+        if (msgChannel !== channel || isCleanedUp) return;
+        void (async () => {
           try {
             const eventData = JSON.parse(message);
-            const eventType = eventData.type || "message";
-            send(`event: ${eventType}\ndata: ${message}\n\n`);
+            if (eventData.roomId !== room.id) return;
+            if (eventData.type === "ROUND_COMPLETED") {
+              const round = eventData.payload?.round;
+              if (
+                !Number.isInteger(round) ||
+                round < 1 ||
+                !(await (deps.roundRepository ?? redisVoteRepository).isRoundCompleted(
+                  room.id,
+                  round,
+                ))
+              )
+                return;
+              // Predictions are requested through the authenticated route, never pushed over SSE.
+              eventData.payload = {
+                round,
+                leaderboard: eventData.payload.leaderboard,
+                officialAnswer: eventData.payload.officialAnswer,
+                modelAnalysis: null,
+              };
+            }
+            send(`event: ${eventData.type || "message"}\ndata: ${JSON.stringify(eventData)}\n\n`);
           } catch {
-            send(`data: ${message}\n\n`);
+            /* Drop malformed or unauthorized events. */
           }
-        }
+        })();
       });
 
       subscriber.on("error", () => {

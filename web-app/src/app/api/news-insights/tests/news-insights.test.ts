@@ -193,6 +193,17 @@ function serviceAnalysis(text: string): NewsInsightsAnalysis {
         observation: "Há verbos no trecho.",
         reflectionQuestions: ["Quem realizou a ação?"],
         redundancyFamily: "verbs",
+        comparison: {
+          kind: "descriptive_corpus_frequency",
+          referenceDataset: "Fake.br-Corpus",
+          partition: "validation",
+          authorScope: "all",
+          sourceRun: "reference-run",
+          variant: "sintaxe_ampliada",
+          scope: "matched_pattern",
+          fake: { count: 288, total: 720, frequency: 0.4 },
+          true: { count: 252, total: 720, frequency: 0.35 },
+        },
         measurements: [
           {
             feature: "verbs",
@@ -201,6 +212,8 @@ function serviceAnalysis(text: string): NewsInsightsAnalysis {
             operator: "<=",
             threshold: 0.2,
             denominator: "tokens",
+            displayLabel: "Uso de verbos",
+            displayText: "Neste trecho, 1 de 10 palavras é um verbo.",
           },
         ],
       },
@@ -221,6 +234,17 @@ describe("news insights HTTP service", () => {
         insights: data.insights.map((insight) => ({
           ...insight,
           classComparison: { Fake: 90 },
+          comparison: {
+            ...insight.comparison,
+            classification: "fake",
+            confidence: 0.99,
+            fake: {
+              ...insight.comparison.fake,
+              composition: 0.9,
+              confidence: 0.99,
+              fakePercent: 90,
+            },
+          },
           measurements: insight.measurements.map((m) => ({ ...m, confidence: 0.99 })),
         })),
       }),
@@ -236,6 +260,95 @@ describe("news insights HTTP service", () => {
         cache: "no-store",
       }),
     );
+  });
+
+  it("preserves within-class frequencies and provenance without treating them as probabilities", async () => {
+    const data = serviceAnalysis(article.content);
+    data.insights[0]!.reflectionQuestions = [];
+    const repository = new HttpNewsInsightsRepository(
+      "http://model",
+      vi.fn<typeof fetch>().mockResolvedValue(Response.json(data)),
+    );
+    const result = await repository.analyze(article.content);
+    expect(result.insights[0]!.comparison).toEqual(data.insights[0]!.comparison);
+    expect(result.insights[0]!.measurements[0]!.displayText).toBe(
+      "Neste trecho, 1 de 10 palavras é um verbo.",
+    );
+    // Each class has its own denominator; these frequencies need not sum to one.
+    expect(result.insights[0]!.comparison.fake.frequency).toBe(0.4);
+    expect(result.insights[0]!.comparison.true.frequency).toBe(0.35);
+    expect(result.insights[0]!.reflectionQuestions).toEqual([]);
+  });
+
+  it.each([
+    { count: -1, total: 720, frequency: 0.4 },
+    { count: 288.5, total: 720, frequency: 0.4 },
+    { count: 288, total: 0, frequency: 0.4 },
+    { count: 721, total: 720, frequency: 1 },
+    { count: 288, total: 720, frequency: 40 },
+    { count: 288, total: 720, frequency: -0.4 },
+    { count: 288, total: 720, frequency: 0.9 },
+    { count: 288, total: Number.MAX_SAFE_INTEGER + 1, frequency: 0.4 },
+  ])("rejects invalid reference class statistics %j", async (invalidFrequency) => {
+    for (const referenceClass of ["fake", "true"] as const) {
+      const data = serviceAnalysis(article.content);
+      data.insights[0]!.comparison[referenceClass] = invalidFrequency;
+      const repository = new HttpNewsInsightsRepository(
+        "http://model",
+        vi.fn<typeof fetch>().mockResolvedValue(Response.json(data)),
+      );
+      expect(await repository.analyze(article.content)).toEqual(
+        unavailableAnalysis(article.content),
+      );
+    }
+  });
+
+  it.each([
+    { partition: "train" },
+    { scope: "individual_feature" },
+    { kind: "classification_probability" },
+    { referenceDataset: "" },
+    { sourceRun: "" },
+  ])("rejects comparisons with ambiguous or unsupported provenance %j", async (override) => {
+    const data = serviceAnalysis(article.content);
+    const repository = new HttpNewsInsightsRepository(
+      "http://model",
+      vi.fn<typeof fetch>().mockResolvedValue(
+        Response.json({
+          ...data,
+          insights: data.insights.map((insight) => ({
+            ...insight,
+            comparison: { ...insight.comparison, ...override },
+          })),
+        }),
+      ),
+    );
+    expect(await repository.analyze(article.content)).toEqual(unavailableAnalysis(article.content));
+  });
+
+  it("requires both class references and rejects non-finite frequencies", async () => {
+    for (const comparison of [
+      undefined,
+      { ...serviceAnalysis(article.content).insights[0]!.comparison, true: undefined },
+      {
+        ...serviceAnalysis(article.content).insights[0]!.comparison,
+        fake: { count: 288, total: 720, frequency: Infinity },
+      },
+    ]) {
+      const data = serviceAnalysis(article.content);
+      const repository = new HttpNewsInsightsRepository(
+        "http://model",
+        vi.fn<typeof fetch>().mockResolvedValue(
+          Response.json({
+            ...data,
+            insights: data.insights.map((insight) => ({ ...insight, comparison })),
+          }),
+        ),
+      );
+      expect(await repository.analyze(article.content)).toEqual(
+        unavailableAnalysis(article.content),
+      );
+    }
   });
 
   it("returns at most three distinct observation families", async () => {

@@ -1,0 +1,14 @@
+import type { AIAnalysisResult } from "../repositories/ai-analysis-service.interface";
+export const prediction: AIAnalysisResult = {
+  analysisStatus: "ok",
+  classification: "reliable",
+  fakeProbability: 0.18,
+  fakeScore: 18,
+  scoreKind: "predicted_fake_probability",
+  modelVersion: "svm-spacy-chi2k10k-svd500-v1",
+  policyVersion: "olimpo-decision-policy-v1",
+  artifactSha256: "a".repeat(64),
+  inferenceVersion: "serving-v1",
+  reasons: ["Termos medidos no texto influenciaram a previsão."],
+  inputScope: { source: "article_body", wordLimit: 100, analyzedWordCount: 50, truncated: false },
+};
