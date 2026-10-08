@@ -1,10 +1,10 @@
 # Integração do FP-Growth ao jogo
 
-Plano atualizado em 7 de outubro de 2026, conforme a autorização para implementação faseada com subagentes. O fluxo inicial é a rodada em `/sala/[codigo]`.
+Plano atualizado em 8 de outubro de 2026, conforme a autorização para implementação com subagentes de comparações descritivas por classe. O fluxo inicial é a rodada em `/sala/[codigo]`.
 
 ## Propósito
 
-Mostrar características observáveis do corpo de uma notícia e perguntas socráticas sobre suas afirmações e evidências. O padrão linguístico não verifica os fatos. O motor não recebe gabarito, não classifica a notícia e não altera a pontuação.
+Mostrar características observáveis do trecho de uma notícia e a frequência da mesma combinação nas duas classes do corpus. A apresentação descreve os dados: o padrão linguístico não verifica os fatos. O motor não recebe gabarito, não classifica a notícia e não altera a pontuação.
 
 ## Principal e artefatos congelados
 
@@ -25,11 +25,13 @@ Os antigos R05, R21 e R22 e o painel de 93 padrões pertencem à referência his
 
 Gerar offline um catálogo experimental separado, com os candidatos observáveis da fila atual. Preservar identidade estável, regras de origem, operadores, limiares com precisão original, denominadores e hashes dos insumos.
 
-Traduzir medidas em observações limitadas ao trecho e perguntas revisadas tecnicamente durante a implementação. Registrar `observation_only` e a natureza experimental; não alegar aprovação editorial humana, validação linguística humana ou estudo com usuários realizados.
+Traduzir medidas em observações simples limitadas ao trecho, com contagens quando disponíveis. Registrar `descriptive_comparison` e a natureza experimental; não alegar aprovação editorial humana, validação linguística humana ou estudo com usuários realizados. Usar os mesmos 20 candidatos e preservar a prioridade; não adicionar um padrão apenas porque um atributo foi citado como exemplo na discussão.
 
 Não interpretar advérbios ou adjetivos como intenção de manipulação, alarmismo, emoção ou falsidade. `baixo` pode representar contagem zero. POS e DEP podem descrever os mesmos tokens e não representam evidências independentes.
 
-A comparação por classe fica desabilitada em todas as respostas do MVP, inclusive após o voto. Sua futura habilitação depende de revisão própria, intervalos da associação por classe, análise complementar de autoria e avaliação com usuários e textos externos. Intervalos de coocorrência gramatical não substituem essas análises.
+A comparação por classe foi autorizada como descrição do corpus. Exportar somente `validation/all`, com os campos `frequency_in_fake` e `frequency_in_true`, suas contagens e populações. Cada frequência é o número de notícias da classe que satisfazem todos os critérios dividido pelo total de notícias dessa classe. Não usar a composição entre ocorrências como probabilidade de falsidade. Indicar corpus, partição, variante e run de origem.
+
+As frequências descrevem a amostra observada; não possuem intervalos de associação por classe neste catálogo. Revisão editorial humana, análise complementar de autoria, compreensão por usuários e avaliação externa permanecem pendentes. A descoberta e o ranking permanecem sem rótulos de classe; a comparação é posterior à descoberta.
 
 ## Fase 2 — Motor Python
 
@@ -45,7 +47,7 @@ Para cada corpo:
 
 Não executar notebook, carregar spaCy por requisição, recalcular quantis ou minerar regras online. Cache deve depender do trecho efetivamente analisado e das versões do catálogo e extrator. Qualquer alteração desses insumos invalida a entrada.
 
-Contrato interno: `POST /analyze` recebe somente `{text}`; `GET /health` informa saúde e versões. O retorno contém `analysisStatus`, `catalogVersion`, `extractorVersion`, `analyzedText`, `characterLimit`, `quality` e `insights[]`. Cada insight contém identidade, observação, perguntas, família e medidas com valores, limites e denominadores.
+Contrato interno: `POST /analyze` recebe somente `{text}`; `GET /health` informa saúde e versões. O retorno contém `analysisStatus`, `catalogVersion`, `extractorVersion`, `analyzedText`, `characterLimit`, `quality` e `insights[]`. Cada insight contém identidade, observação, família, medidas e `comparison`. Esta registra `kind: descriptive_corpus_frequency`, referência do corpus, partição, escopo da combinação completa e `fake/true` com `count`, `total` e `frequency`. As medidas preservam valores, limites e denominadores, com textos simples para apresentação.
 
 Estados: `ok`, `no_match`, `invalid_text` e `unavailable`. Texto vazio ou sem tokens elegíveis não é avaliado como verdadeiro. Texto longo é analisado somente no recorte. Não inventar um comprimento mínimo validado.
 
@@ -55,24 +57,23 @@ O parser compartilhado `extractNews` já é executado em `AddPlaylistNewsUseCase
 
 `POST /api/news-insights` recebe `{roomId, round}`. O servidor verifica sessão, participação na sala e rodada permitida; resolve o artigo da playlist e usa seu corpo persistido. Se não houver corpo, executa o parser seguro da URL cadastrada e devolve o corpo extraído para exibição.
 
-Título, autoria, fonte e descrição não são concatenados ao corpo. O cliente não escolhe uma URL arbitrária nem fornece gabarito ao matcher. O retorno inclui a notícia resolvida e a análise estruturada. A projeção do DTO exclui classificação, confiança e comparação por classe mesmo se o serviço retornar campos adicionais.
+Título, autoria, fonte e descrição não são concatenados ao corpo. O cliente não escolhe uma URL arbitrária nem fornece gabarito ao matcher. O retorno inclui a notícia resolvida e a análise estruturada. O DTO preserva somente a comparação descritiva validada e exclui classificação, confiança, composição e outros campos adicionais. Validar contagens inteiras, populações positivas, contagem não superior à população e frequência consistente com a divisão.
 
 Seguir as camadas de `docs/codigo/arquitetura-web-app.md`: caso de uso com dependências injetáveis, adaptador HTTP e validação de entrada/saída. O frontend consome a rota e não importa banco, parser ou serviço Python.
 
 Falha do parser ou motor gera estado explícito e não impede a votação. Não persistir percentuais do corpus em `news_analyses.confidence`.
 
-## Fase 4 — Apresentação socrática durante a rodada
+## Fase 4 — Apresentação descritiva durante a rodada
 
-Enquanto a rodada está em leitura, solicitar a análise e mostrar até três observações com perguntas específicas. Permitir consultar o trecho normalizado efetivamente analisado e o corpo completo. Exibir a limitação de 300 caracteres.
+Enquanto a rodada está em leitura, mostrar até três observações simples sobre a escrita e as frequências nas notícias rotuladas como falsas e verdadeiras. Os dois grupos têm a mesma hierarquia visual, sem cores de julgamento. Apresentar a frequência da combinação inteira, sem atribuí-la a um item isolado. Contagens, origem e metodologia ficam disponíveis em detalhes.
 
-Perguntas possíveis, quando relacionadas aos atributos medidos:
+O conteúdo fica em um painel lateral aberto por um ícone, inicialmente recolhido
+a cada rodada. O painel tem rolagem interna, fechamento por botão, Esc ou clique
+fora, e devolve o foco ao ícone ao fechar. A leitura principal permanece compacta.
 
-- Qual afirmação deste trecho você gostaria de verificar?
-- Quem realiza a ação descrita e que fonte sustenta essa informação?
-- Qual é a origem dos números mencionados e o que eles medem?
-- Quais palavras modificam a afirmação? Que evidência ajudaria a confirmá-la ou refutá-la?
+Permitir consultar o trecho normalizado efetivamente analisado e o corpo completo. A área principal utiliza a palavra "trecho"; a limitação de 300 caracteres e as medidas técnicas ficam nos detalhes da análise. Não expor tokens, POS/DEP e operadores no texto principal. Remover dos cartões com correspondência as perguntas genéricas de checagem factual.
 
-Não usar selos de risco, probabilidades de falsidade ou votação de regras. Perguntas genéricas nos estados sem correspondência/indisponibilidade são identificadas como guia de investigação, e não como observações produzidas pelo modelo.
+Não usar selos de risco, probabilidades de falsidade ou votação de regras. Orientações genéricas nos estados sem correspondência/indisponibilidade são identificadas como guia de leitura, e não como observações produzidas pelo modelo.
 
 Cancelar requisições ao trocar de rodada e rejeitar respostas atrasadas. Reiniciar estado de voto e cronômetro de leitura por rodada. Os botões continuam disponíveis durante carregamento ou indisponibilidade.
 
@@ -80,11 +81,11 @@ Remover a estatística fixa de 78% e a apresentação de confiança/razões do m
 
 ## Fase 5 — Verificação e avaliação
 
-Critérios técnicos: reprodução dos atributos e ocorrências de registros congelados; igualdade nos limites; itens omitidos; zero versus ausência; união completa; famílias distintas; invalidação de cache; entrada inadequada; autenticação; participação; rodadas indevidas; serviço indisponível; campos de classe excluídos; troca de rodada sem respostas antigas; votação preservada.
+Critérios técnicos: reprodução dos atributos e ocorrências de registros congelados; igualdade nos limites; itens omitidos; zero versus ausência; união completa; famílias distintas; entrada inadequada; autenticação; participação; rodadas indevidas; serviço indisponível; comparação fiel aos 20 registros científicos de validação; rejeição de frequências inconsistentes; classificação/confiança excluídas; troca de rodada sem respostas antigas; votação preservada.
 
-Verificar o caminho parser/corpo salvo → API → serviço real → perguntas. Usar testes de contrato para erros e teste de integração com o serviço Python real.
+Verificar o caminho parser/corpo salvo → API → serviço real → observações e comparações. Usar testes de contrato para erros e teste de integração com o serviço Python real.
 
-Pendências de pesquisa após a implementação: revisão editorial humana, avaliação das anotações linguísticas, estudo de compreensão e indução, e textos externos variados em época, tema e origem. Comparar perguntas sem estatísticas, estatísticas opcionais e exposição direta somente em estudo planejado. Não otimizar apenas acertos Fake/True ou cliques em avisos.
+Pendências de pesquisa após a implementação: revisão editorial humana, avaliação das anotações linguísticas, estudo de compreensão e indução, e textos externos variados em época, tema e origem. Avaliar como a exposição direta das frequências afeta a compreensão e a decisão dos jogadores. Não otimizar apenas acertos Fake/True ou cliques em avisos.
 
 ## Operação
 

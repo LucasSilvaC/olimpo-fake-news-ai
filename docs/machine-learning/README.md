@@ -7,7 +7,9 @@ Os scripts de extração e análise de atributos linguísticos estão catalogado
 ## Planos e protocolos
 
 - [Planos de comparação de modelos](comparacao-modelos/README.md)
-- [Plano de integração do FP-Growth ao produto](plano-integracao-fp-growth.md)
+- [Plano de integração do FP-Growth ao produto](../../model-engine/docs/plano-integracao-fp-growth.md)
+- [Plano de integração do supervisionado ao motor e ao jogo](../../model-engine/docs/plano-integracao-supervisionado.md)
+- [Validação da integração supervisionada com o web app](validacao-integracao-supervisionado.md)
 
 ## Entregáveis
 

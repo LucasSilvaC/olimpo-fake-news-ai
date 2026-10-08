@@ -1,0 +1,14 @@
+{
+  "status": "passed",
+  "parser": "real_html",
+  "model": "real",
+  "isolatedDatabase": true,
+  "accessBeforeCollectiveClose": "blocked",
+  "concurrentRequests": 5,
+  "records": 1,
+  "fakeProbability": 0.9906075753196464,
+  "modelVersion": "svm-spacy-chi2k10k-svd500-v1",
+  "artifactSha256": "123763864725531f12aa0503530edce432ca6e59853d36ef472559790207df27",
+  "desktopMobileReloadNextRound": "passed",
+  "modelFailureVotesScoreAndMatchCompletion": "passed"
+}
