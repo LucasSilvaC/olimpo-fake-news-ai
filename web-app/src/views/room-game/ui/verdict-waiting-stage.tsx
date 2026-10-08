@@ -3,7 +3,6 @@
 import { ArrowRight, Check, Clock, HelpCircle, Sparkles, X } from "lucide-react";
 import * as React from "react";
 
-import { SocraticReflection } from "./socratic-reflection";
 import { VerometroGauge } from "./verometro-gauge";
 
 export interface IVerdictWaitingStageProps {
@@ -331,9 +330,6 @@ export function VerdictWaitingStage({
             </div>
           </div>
         )}
-
-        {/* Socratic Questions / Critical Thinking Section */}
-        <SocraticReflection />
 
         {/* AI Explanation & Reasons Card (when official answer is available) */}
         {officialAnswer && reasons && reasons.length > 0 && (
