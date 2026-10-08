@@ -1,7 +1,6 @@
 "use client";
 
-import { ArrowLeft, ShieldCheck, WifiOff } from "lucide-react";
-import Link from "next/link";
+import { ArrowLeft, WifiOff } from "lucide-react";
 import { useRouter } from "next/navigation";
 import * as React from "react";
 import { toast } from "sonner";
@@ -481,27 +480,14 @@ export function RoomGameView({
         className="pointer-events-none absolute right-[-12rem] bottom-1/4 size-[34rem] rounded-full bg-indigo-300/20 blur-3xl"
       />
 
-      <Header
-        className="relative z-20"
-        logo={
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2.5 text-lg font-extrabold tracking-tight text-white transition-opacity hover:opacity-85 sm:text-xl"
-          >
-            <span className="flex size-9 items-center justify-center rounded-xl bg-white text-blue-600 shadow-lg shadow-blue-950/20">
-              <ShieldCheck className="size-5" aria-hidden="true" />
-            </span>
-            Olimpo
-          </Link>
-        }
-      >
+      <Header className="relative z-20">
         <button
           type="button"
           onClick={handleExitGame}
           className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-white/20 bg-white/15 px-4 py-2 text-sm font-semibold text-white shadow-sm backdrop-blur-sm transition-colors hover:border-white/50 hover:bg-white/25 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-300"
         >
           <ArrowLeft className="size-4" aria-hidden="true" />
-          Sair da sala
+          {stage === "MATCH_FINALE" ? "Voltar ao início" : "Sair da sala"}
         </button>
       </Header>
 
@@ -551,16 +537,11 @@ export function RoomGameView({
             totalRounds={room.totalRounds}
             isHost={isHost}
             leaderboard={scoreboardPlayers}
-            onLeave={handleExitGame}
           />
         )}
 
         {stage === "MATCH_FINALE" && (
-          <MatchScoreboardStage
-            totalRounds={room.totalRounds}
-            leaderboard={matchPlayers}
-            onExit={handleExitGame}
-          />
+          <MatchScoreboardStage totalRounds={room.totalRounds} leaderboard={matchPlayers} />
         )}
       </main>
     </div>

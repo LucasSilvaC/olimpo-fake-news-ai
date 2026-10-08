@@ -1,7 +1,6 @@
 "use client";
 
-import { Home, Share2, Trophy } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { Share2, Trophy } from "lucide-react";
 import * as React from "react";
 import { toast } from "sonner";
 
@@ -24,10 +23,7 @@ export interface IMatchScoreboardStageProps {
 export function MatchScoreboardStage({
   totalRounds,
   leaderboard,
-  onExit,
 }: IMatchScoreboardStageProps): React.ReactElement {
-  const router = useRouter();
-
   // Top 3 players
   const first = leaderboard[0] ?? null;
   const second = leaderboard[1] ?? null;
@@ -70,14 +66,6 @@ export function MatchScoreboardStage({
     }
   };
 
-  const handleExit = (): void => {
-    if (onExit) {
-      onExit();
-    } else {
-      router.push("/");
-    }
-  };
-
   return (
     <div
       className="flex w-full flex-col items-center py-4 select-none md:py-6"
@@ -100,14 +88,6 @@ export function MatchScoreboardStage({
           >
             <Share2 className="size-3.5 sm:size-4" aria-hidden="true" />
             <span>Compartilhar</span>
-          </button>
-          <button
-            type="button"
-            onClick={handleExit}
-            className="flex items-center gap-1.5 rounded-full border border-white/25 bg-white/20 px-3.5 py-1.5 text-xs font-bold text-white shadow-sm backdrop-blur-md transition-all hover:bg-white/30 active:scale-95 sm:text-sm"
-          >
-            <Home className="size-3.5 sm:size-4" aria-hidden="true" />
-            <span>Voltar ao Início</span>
           </button>
         </div>
       </div>

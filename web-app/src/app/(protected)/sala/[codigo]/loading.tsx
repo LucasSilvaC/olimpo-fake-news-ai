@@ -1,6 +1,7 @@
 import { LoaderCircle, Users } from "lucide-react";
-import Image from "next/image";
 import * as React from "react";
+
+import { Header } from "@/widgets/app-header";
 
 export default function RoomLoading(): React.ReactElement {
   return (
@@ -10,19 +11,7 @@ export default function RoomLoading(): React.ReactElement {
         className="pointer-events-none absolute -top-32 -left-40 size-[30rem] rounded-full bg-sky-200/20 blur-3xl"
       />
 
-      <header className="relative z-10 w-full bg-blue-800/15 backdrop-blur-xl">
-        <div className="mx-auto flex h-16 max-w-5xl items-center gap-2.5 px-4 sm:px-6">
-          <Image
-            src="/olimpo-logo.svg"
-            alt="Olimpo"
-            width={36}
-            height={36}
-            priority
-            className="size-9 object-contain"
-          />
-          <span className="text-lg font-extrabold tracking-tight">Olimpo</span>
-        </div>
-      </header>
+      <Header className="relative z-20" />
 
       <main
         aria-busy="true"
