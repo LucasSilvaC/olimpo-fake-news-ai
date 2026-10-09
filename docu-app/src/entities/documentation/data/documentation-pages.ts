@@ -1,3 +1,4 @@
+import { getPlatformJourneyPage } from "./platform-journey-page";
 import { getMachineLearningPages } from "./machine-learning-pages";
 import type { DocumentationNavigationGroup, IDocumentationPage } from "../model/types";
 
@@ -773,5 +774,6 @@ export const documentationPages: IDocumentationPage[] = [
       },
     ],
   },
+  getPlatformJourneyPage("pt-BR"),
   ...getMachineLearningPages("pt-BR"),
 ];

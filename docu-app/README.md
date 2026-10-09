@@ -21,6 +21,8 @@ O conteúdo usa como fontes o README principal, as especificações OpenSpec, o 
 
 ## Como manter os artigos
 
+O guia **Fluxo da plataforma · usuário, sistema e IA**, em `/{pt-BR,en,es}/docs/fluxo-da-plataforma`, apresenta a jornada da partida em sala em oito etapas. Cada etapa reúne tela esquemática, ação do usuário, resposta do sistema e papel dos dois modelos. O botão **Apresentar** abre uma visão dedicada, navegável com as setas do teclado e fechada com Esc. O conteúdo traduzido está em `src/entities/documentation/data/platform-journey-page.ts`; a interação visual está em `src/views/document/ui/journey-flow.tsx`.
+
 Os guias **Modelo supervisionado · SVM Olimpo** e **Modelo não supervisionado · FP-Growth** estão na área Engenharia, com conteúdo completo em português, inglês e espanhol. Rotas: `/{pt-BR,en,es}/docs/modelo-supervisionado` e `/{pt-BR,en,es}/docs/modelo-nao-supervisionado`.
 
 `src/entities/documentation/data/machine-learning-pages.ts` reúne as três traduções; `model-evidence.json` preserva os dados numéricos conferidos nos CSVs e manifestos. Os catálogos dos três idiomas importam essas páginas. Os guias abrangem dados, atributos e denominadores, preparo, parâmetros, equações, validação, métricas, limitações, contratos HTTP, operação, reprodução e perguntas técnicas. A [conferência de tech-questions](docs/tech-questions-review.md) registra as correções do dossiê usado para formular as perguntas.
