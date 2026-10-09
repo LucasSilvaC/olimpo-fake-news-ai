@@ -1,0 +1,27 @@
+{
+  "status": "passed",
+  "twoPlayers": true,
+  "rounds": [
+    {
+      "round": 1,
+      "classification": "reliable",
+      "fakeProbability": 0.19886002836551395
+    },
+    {
+      "round": 2,
+      "classification": "unreliable",
+      "fakeProbability": 0.779352080600847
+    },
+    {
+      "round": 3,
+      "classification": "reliable",
+      "fakeProbability": 0.011449677334930804
+    }
+  ],
+  "modelNetworkRequests": 0,
+  "reload": true,
+  "mobile": true,
+  "fictionImage": true,
+  "preRevealAccess": "blocked",
+  "matchFinished": true
+}

@@ -1,0 +1,41 @@
+[
+  {
+    "id": "3ba0e68e-30b2-4a26-8921-2d17c4e40101",
+    "title": "Gato é 'preso' suspeito de furto nos EUA",
+    "description": "Policiais atenderam um chamado na Flórida e encontraram um gato perdido.",
+    "url": "https://g1.globo.com/planeta-bizarro/noticia/2019/09/04/gato-e-preso-suspeito-de-furto-nos-eua.ghtml",
+    "publishedAt": "2019-09-04T00:00:00-03:00",
+    "publisher": "G1 — Planeta Bizarro",
+    "content": "Policiais foram atender a um chamado por furto no estado americano da Flórida e acabaram encontrando um gato. O caso ocorreu no condado de Collier, na noite de domingo, 1º de setembro de 2019. Quatro agentes foram à casa depois que barulhos fizeram os moradores suspeitar de um furto. O animal foi levado a um abrigo. A identificação por microchip mostrou que ele se chamava Bones e havia fugido. Depois, o gato foi devolvido ao dono.",
+    "imageUrl": "https://s2-g1.glbimg.com/9CA_0YJ7llAixTf8koVJVjyzu6Q=/0x0:1700x2267/984x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_59edd422c0c84a879bd37670ae4f538a/internal_photos/bs/2019/B/q/3X8o6MT8AhXgnuxP01bQ/gato.jpg",
+    "targetClassification": "reliable",
+    "explanation": "Verdadeira. A expressão 'preso' é figurada: o gato Bones foi encontrado pelos policiais, identificado pelo microchip e devolvido ao dono. Este é um resumo preparado para o desafio, baseado na reportagem indicada e corroborado pela reprodução da notícia em uma prova oficial da Prefeitura de Bauru.",
+    "sourceUrl": "https://g1.globo.com/planeta-bizarro/noticia/2019/09/04/gato-e-preso-suspeito-de-furto-nos-eua.ghtml"
+  },
+  {
+    "id": "3ba0e68e-30b2-4a26-8921-2d17c4e40102",
+    "title": "Santa Aurora testa calçada que recarrega celulares com os passos dos pedestres",
+    "description": "Placas no passeio alimentam entradas USB; projeto promete carga completa após quarenta passos.",
+    "url": "https://santa-aurora.example/noticias/calcada-energia",
+    "publishedAt": "2026-10-08T09:00:00-03:00",
+    "publisher": "Jornal de Santa Aurora",
+    "content": "Você já imaginou carregar o celular enquanto caminha? Essa ideia acaba de se tornar realidade em Santa Aurora. Uma calçada inteligente promete carga completa com apenas quarenta passos, sem precisar de tomada. A tecnologia usa placas que aproveitam a pressão dos pés e envia a energia diretamente para entradas USB. Segundo os responsáveis, o sistema vai acabar com a falta de bateria nas ruas. Agora qualquer pessoa pode obter energia gratuita, mesmo sem sol. Os testes começam amanhã e os moradores já comemoram a novidade.",
+    "imageUrl": "/demo/challenge-street.png",
+    "targetClassification": "unreliable",
+    "explanation": "Falsa. A cidade, o veículo, o projeto e a notícia foram inventados exclusivamente para este desafio educativo. A imagem é sintética e não documenta um evento real. Embora pavimentos possam captar pequenas quantidades de energia dos passos, isso não comprova a promessa apresentada. O texto foi escolhido após testar variantes no modelo real; o resultado salvo não foi alterado. Aparência jornalística e fotografia convincente não substituem uma fonte verificável.",
+    "sourceUrl": null
+  },
+  {
+    "id": "3ba0e68e-30b2-4a26-8921-2d17c4e40103",
+    "title": "Incêndio atinge prédio da Universidade Federal de Pernambuco",
+    "description": "Bombeiros enviaram cinco viaturas ao campus do Recife; não houve feridos.",
+    "url": "https://g1.globo.com/pe/pernambuco/noticia/2026/10/07/incendio-predio-da-ufpe-video.ghtml",
+    "publishedAt": "2026-10-07T00:00:00-03:00",
+    "publisher": "G1 — Pernambuco",
+    "content": "Um incêndio atingiu um prédio da Universidade Federal de Pernambuco na noite de quarta-feira, 7 de outubro de 2026, no campus do Recife. O Corpo de Bombeiros enviou cinco viaturas para combater o fogo. Segundo a corporação, ninguém ficou ferido. O prédio abrigava laboratórios de pesquisa e ficava perto da Casa do Estudante, na Cidade Universitária. A universidade informou que os produtos armazenados no local contribuíram para a propagação das chamas e que os danos seriam avaliados. As atividades acadêmicas de quinta-feira foram mantidas.",
+    "imageUrl": null,
+    "targetClassification": "reliable",
+    "explanation": "Verdadeira. O incêndio no campus Recife da UFPE em 7 de outubro de 2026 foi noticiado por vários veículos. Este é um resumo preparado para o desafio, com informações corroboradas pela cobertura do ocorrido. O link indicado permite conferir a reportagem; a previsão da IA considera somente o texto resumido exibido, não a origem ou o link.",
+    "sourceUrl": "https://g1.globo.com/pe/pernambuco/noticia/2026/10/07/incendio-predio-da-ufpe-video.ghtml"
+  }
+]

@@ -4,9 +4,15 @@ import { useEffect, useState } from "react";
 
 import type { AIAnalysisDTO } from "@/app/api/ai-feedback/entities/ai-analysis.entity";
 
+export interface DemonstrationDisclosure {
+  explanation: string;
+  sourceUrl: string | null;
+  capturedAt: string;
+}
+
 export type NewsPredictionState =
   | { status: "loading" }
-  | { status: "ready"; analysis: AIAnalysisDTO }
+  | { status: "ready"; analysis: AIAnalysisDTO; demonstration?: DemonstrationDisclosure }
   | { status: "unavailable"; retryable: boolean };
 
 const MAX_ATTEMPTS = 3;
@@ -46,12 +52,20 @@ export function useNewsPrediction(
           roomId: string;
           round: number;
           modelAnalysis: AIAnalysisDTO;
+          demonstration?: DemonstrationDisclosure;
         };
         if (data.roomId !== roomId || data.round !== round || !data.modelAnalysis) {
           throw new Error("Unexpected round prediction");
         }
         if (active && !controller.signal.aborted) {
-          setResult({ key: requestKey, state: { status: "ready", analysis: data.modelAnalysis } });
+          setResult({
+            key: requestKey,
+            state: {
+              status: "ready",
+              analysis: data.modelAnalysis,
+              demonstration: data.demonstration,
+            },
+          });
         }
       } catch {
         if (active) {

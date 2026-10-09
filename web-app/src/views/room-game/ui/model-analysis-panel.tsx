@@ -22,6 +22,7 @@ export function ModelAnalysisPanel({
 }): React.ReactElement {
   const { state, retry, canRetry } = useNewsPrediction(roomId, round);
   const analysis = state.status === "ready" ? state.analysis : null;
+  const demonstration = state.status === "ready" ? state.demonstration : undefined;
   const unavailable = state.status === "unavailable" || analysis?.analysisStatus === "unavailable";
   const score = analysis?.analysisStatus === "ok" ? analysis.fakeScore : null;
 
@@ -37,6 +38,22 @@ export function ModelAnalysisPanel({
       <p className="mt-2 text-sm text-slate-600">
         Esta previsão usa a escrita da notícia. O resultado do jogo segue o gabarito cadastrado.
       </p>
+      {demonstration && (
+        <div className="mt-4 rounded-xl bg-blue-50 p-4 text-sm text-slate-700">
+          <p className="font-semibold">Análise pré-calculada</p>
+          <p className="mt-2">{demonstration.explanation}</p>
+          {demonstration.sourceUrl && (
+            <a
+              href={demonstration.sourceUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-2 inline-block font-semibold text-blue-700 underline"
+            >
+              Consultar a fonte
+            </a>
+          )}
+        </div>
+      )}
       <div role="status" aria-live="polite" className="mt-4">
         {state.status === "loading" && <p>Analisando o texto da rodada…</p>}
         {unavailable && <p>A análise do modelo está indisponível. Você pode continuar o jogo.</p>}
@@ -98,6 +115,12 @@ export function ModelAnalysisPanel({
             {analysis.inputScope.truncated ? "; o restante do texto ficou fora da análise" : ""}.
           </p>
           <dl className="mt-3 space-y-2 text-xs break-words text-slate-600">
+            {demonstration && (
+              <div>
+                <dt className="font-semibold">Execução registrada</dt>
+                <dd>{demonstration.capturedAt}</dd>
+              </div>
+            )}
             <div>
               <dt className="font-semibold">Modelo</dt>
               <dd>{analysis.modelVersion}</dd>
