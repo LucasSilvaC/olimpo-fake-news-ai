@@ -180,8 +180,8 @@ olimpo-fake-news-ai/
 
 O serviço de análise dos modelos está separado em [`model-engine/`](model-engine/README.md).
 Ele aplica os padrões do FP-Growth e apresenta comparações descritivas do corpus sem importar os scripts de
-experimento de `machine-learning/`. Novos modelos de execução, incluindo o
-supervisionado, podem ser adicionados como módulos próprios nessa camada.
+experimento de `machine-learning/`. O classificador supervisionado também está integrado nessa camada,
+com previsão exibida após o encerramento coletivo da rodada.
 
 ### Pré-requisitos
 

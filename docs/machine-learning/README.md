@@ -4,6 +4,8 @@ Documentação de dados, experimentos e modelos. Os notebooks e implementações
 
 Os scripts de extração e análise de atributos linguísticos estão catalogados em [`../../machine-learning/metadados/README.md`](../../machine-learning/metadados/README.md).
 
+- [Conferência da documentação e resultados (09/10/2026)](auditoria-documentacao-modelos.md)
+
 ## Planos e protocolos
 
 - [Planos de comparação de modelos](comparacao-modelos/README.md)
@@ -13,10 +15,10 @@ Os scripts de extração e análise de atributos linguísticos estão catalogado
 
 ## Entregáveis
 
-- [Metodologias e planejamento da etapa final](entregaveis/entregavel-semana-final.md)
-- [Relatório técnico consolidado (Markdown)](entregaveis/entregavel-final-completo.md)
-- [Fonte LaTeX do relatório](entregaveis/entregavel-final-completo.tex)
-- As figuras usadas pelo relatório estão em [`entregaveis/entregavel-final-img/`](entregaveis/entregavel-final-img/).
+- [Metodologias e planejamento da etapa final](../entregaveis/entregavel-semana-final.md)
+- [Relatório técnico consolidado (Markdown)](../entregaveis/entregavel-final-completo.md)
+- [Fonte LaTeX do relatório](../entregaveis/entregavel-final-completo.tex)
+- As figuras usadas pelo relatório estão em [`entregaveis/entregavel-final-img/`](../entregaveis/entregavel-final-img/).
 
 O LaTeX encontra as figuras quando compilado da raiz do repositório ou de `docs/entregaveis/`.
 
