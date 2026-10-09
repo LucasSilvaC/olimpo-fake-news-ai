@@ -25,6 +25,7 @@ export interface DocumentationNavigationGroup {
 }
 
 export type DocumentationBlock =
+  | { type: "journey"; journey: DocumentationJourney }
   | { type: "paragraph"; text: string }
   | { type: "callout"; title: string; text: string; tone?: "info" | "warning" }
   | {
@@ -50,6 +51,22 @@ export type DocumentationBlock =
       type: "references";
       items: Array<{ label: string; href: string; description?: string }>;
     };
+
+export interface DocumentationJourney {
+  labels: {
+    title: string; subtitle: string; present: string; close: string;
+    previous: string; next: string; navigation: string; keyboard: string;
+    user: string; system: string; fp: string; svm: string;
+    active: string; inactive: string; screen: string; takeaway: string;
+    step: string; of: string;
+  };
+  stages: Array<{
+    id: string; title: string; subtitle: string; icon: DocumentationIconName;
+    user: string; system: string; fp: string; svm: string;
+    fpActive: boolean; svmActive: boolean; takeaway: string;
+    screen: { badge: string; title: string; lines: string[]; choices?: string[]; note: string };
+  }>;
+}
 
 export interface DocumentationSection {
   id: string;
