@@ -182,6 +182,11 @@ describe("prediction disclosure in the room", () => {
         JSON.stringify({
           roomId: "room-1",
           round: 1,
+          demonstration: {
+            explanation: "Esta notícia foi criada para o desafio educativo.",
+            sourceUrl: "https://example.com/verification",
+            capturedAt: "2026-10-08T12:00:00Z",
+          },
           modelAnalysis: {
             analysisStatus: "ok",
             classification: "unreliable",
@@ -199,6 +204,8 @@ describe("prediction disclosure in the room", () => {
       ),
     );
     render(<RoomGameView {...props} initialVote={{ vote: "reliable" }} />);
+    expect(screen.queryByText("Análise pré-calculada")).toBeNull();
+    expect(screen.queryByText("Esta notícia foi criada para o desafio educativo.")).toBeNull();
     await act(async () =>
       MockEventSource.latest.emit("ROUND_COMPLETED", {
         round: 1,
@@ -207,6 +214,12 @@ describe("prediction disclosure in the room", () => {
       }),
     );
     expect(await screen.findByText("Estimada como falsa")).toBeVisible();
+    expect(screen.getByText("Análise pré-calculada")).toBeVisible();
+    expect(screen.getByText("Esta notícia foi criada para o desafio educativo.")).toBeVisible();
+    expect(screen.getByRole("link", { name: "Consultar a fonte" })).toHaveAttribute(
+      "href",
+      "https://example.com/verification",
+    );
     const officialResult = screen.getByRole("region", { name: "Gabarito oficial da rodada" });
     expect(officialResult).toHaveTextContent("VERDADEIRO");
     expect(officialResult).not.toHaveTextContent("FALSO");

@@ -18,8 +18,10 @@ import { RoomLobbyView, type RoomLobbyMember } from "@/views/room-lobby";
 
 export default async function RoomPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ codigo: string }>;
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 }): Promise<React.ReactElement> {
   const [{ codigo }, user] = await Promise.all([params, getSessionUseCase.execute()]);
   let decodedCodigo: string;
@@ -165,6 +167,18 @@ export default async function RoomPage({
         )
       : [];
 
+  const query = await searchParams;
+  const preparationNews =
+    room.hostId === user.id &&
+    room.status === "waiting" &&
+    query?.p === "3" &&
+    process.env.DEMO_CHALLENGES_ENABLED !== "false"
+      ? (await import("@/server/demo/demo-news")).demoNewsFixtures.map((fixture) => ({
+          id: fixture.id,
+          title: fixture.article.title ?? "Notícia preparada",
+        }))
+      : [];
+
   return (
     <RoomLobbyView
       room={{
@@ -180,6 +194,7 @@ export default async function RoomPage({
       members={members}
       playlistCount={playlistItems.length}
       newsPreviews={newsPreviews}
+      preparationNews={preparationNews}
       currentUserId={user.id}
     />
   );

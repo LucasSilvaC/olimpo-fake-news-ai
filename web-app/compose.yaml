@@ -97,6 +97,7 @@ services:
       NEWS_INSIGHTS_SERVICE_URL: http://news-insights:8010
       NEWS_PREDICTION_SERVICE_URL: http://news-insights:8010
       NEWS_PREDICTION_TIMEOUT_MS: ${NEWS_PREDICTION_TIMEOUT_MS:-15000}
+      DEMO_CHALLENGES_ENABLED: ${DEMO_CHALLENGES_ENABLED:-true}
     volumes:
       - .:/app
       - app-node-modules:/app/node_modules
