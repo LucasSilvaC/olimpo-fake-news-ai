@@ -15,6 +15,7 @@ const mocks = vi.hoisted(() => ({
   findArticleById: vi.fn(),
   findVote: vi.fn(),
   isRoundCompleted: vi.fn(async () => false),
+  session: vi.fn(async () => ({ id: "host-1" })),
 }));
 
 vi.mock("next/navigation", () => ({
@@ -23,7 +24,7 @@ vi.mock("next/navigation", () => ({
   },
 }));
 vi.mock("@/app/api/auth/usecase/get-session.usecase", () => ({
-  getSessionUseCase: { execute: vi.fn(async () => ({ id: "host-1" })) },
+  getSessionUseCase: { execute: mocks.session },
 }));
 vi.mock("@/app/api/auth/repositories/drizzle-user.repository", () => ({
   drizzleUserRepository: {
@@ -53,12 +54,17 @@ vi.mock("@/views/room-game", () => ({
     return null;
   },
 }));
+vi.mock("@/server/demo/demo-news", () => ({
+  demoNewsFixtures: [{ id: "cat", article: { title: "Gato preso" }, prediction: "private" }],
+}));
 
 import RoomPage from "@/app/(protected)/sala/[codigo]/page";
 
 describe("Room page PIN routing", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.unstubAllEnvs();
+    mocks.session.mockResolvedValue({ id: "host-1" });
     mocks.findVote.mockResolvedValue(null);
     mocks.isRoundCompleted.mockResolvedValue(false);
     mocks.findByPin.mockResolvedValue({
@@ -72,6 +78,31 @@ describe("Room page PIN routing", () => {
       totalRounds: 1,
     });
   });
+
+  it("passes only prepared titles and IDs to the host with the discreet parameter", async () => {
+    const page = await RoomPage({
+      params: Promise.resolve({ codigo: "709707" }),
+      searchParams: Promise.resolve({ p: "3" }),
+    });
+    const element = page as React.ReactElement<{ preparationNews: unknown[] }>;
+    expect(element.props.preparationNews).toEqual([{ id: "cat", title: "Gato preso" }]);
+  });
+
+  it.each(["participant", "disabled", "absent", "repeated"])(
+    "does not disclose preparation options when %s",
+    async (condition) => {
+      if (condition === "participant") mocks.session.mockResolvedValue({ id: "guest" });
+      if (condition === "disabled") vi.stubEnv("DEMO_CHALLENGES_ENABLED", "false");
+      const page = await RoomPage({
+        params: Promise.resolve({ codigo: "709707" }),
+        searchParams: Promise.resolve({
+          p: condition === "absent" ? undefined : condition === "repeated" ? ["3", "3"] : "3",
+        }),
+      });
+      const element = page as React.ReactElement<{ preparationNews: unknown[] }>;
+      expect(element.props.preparationNews).toEqual([]);
+    },
+  );
 
   it.each(["709%20707", "709 707", "709707"])("loads the room for %s", async (codigo) => {
     const page = await RoomPage({ params: Promise.resolve({ codigo }) });

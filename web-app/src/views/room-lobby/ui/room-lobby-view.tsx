@@ -24,6 +24,7 @@ import styles from "./room-lobby.module.css";
 
 import { addPlaylistNewsAction } from "@/app/api/rooms/actions/add-playlist-news.action";
 import { joinRoomAction } from "@/app/api/rooms/actions/join-room.action";
+import { loadDemoNewsAction } from "@/app/api/rooms/actions/load-demo-news.action";
 import { startGameAction } from "@/app/api/rooms/actions/start-game.action";
 import type { RoomDTO, RoomMemberDTO } from "@/app/api/rooms/entities";
 import { Avatar } from "@/components/atoms/avatar";
@@ -54,6 +55,7 @@ interface IRoomLobbyViewProps {
     url: string;
   }[];
   currentUserId: string;
+  preparationNews?: { id: string; title: string }[];
 }
 
 const memberCardColors = [
@@ -69,11 +71,14 @@ export function RoomLobbyView({
   playlistCount,
   newsPreviews = [],
   currentUserId,
+  preparationNews = [],
 }: IRoomLobbyViewProps): React.ReactElement {
   const router = useRouter();
   const [newsUrl, setNewsUrl] = React.useState("");
   const [rounds, setRounds] = React.useState(playlistCount);
   const [isAddingNews, setIsAddingNews] = React.useState(false);
+  const [isLoadingPrepared, setIsLoadingPrepared] = React.useState(false);
+  const preparedAttempt = React.useRef<string | null>(null);
   const [isStarting, setIsStarting] = React.useState(false);
   const [isLanding, setIsLanding] = React.useState(false);
   const landingTimer = React.useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -328,6 +333,34 @@ export function RoomLobbyView({
     }
   };
 
+  React.useEffect(() => {
+    if (!isHost || !roomIsWaiting || !preparationNews.length || preparedAttempt.current === room.id)
+      return;
+    preparedAttempt.current = room.id;
+    setIsLoadingPrepared(true);
+    void (async () => {
+      try {
+        const result = await loadDemoNewsAction({
+          roomId: room.id,
+          fixtureIds: preparationNews.map((news) => news.id),
+        });
+        if (!result.success) {
+          toast.error(result.error, { description: "Atualize a página para tentar novamente." });
+          return;
+        }
+        setRounds(result.totalRounds);
+        router.replace("/sala/" + encodeURIComponent(room.pin), { scroll: false });
+        router.refresh();
+      } catch {
+        toast.error("Não foi possível carregar as notícias preparadas.", {
+          description: "Atualize a página para tentar novamente.",
+        });
+      } finally {
+        setIsLoadingPrepared(false);
+      }
+    })();
+  }, [isHost, roomIsWaiting, preparationNews, room.id, room.pin, router]);
+
   const statusLabel =
     room.status === "waiting"
       ? "Aguardando jogadores"
@@ -549,6 +582,12 @@ export function RoomLobbyView({
                 </span>
               </div>
 
+              {isLoadingPrepared && (
+                <p role="status" className="text-sm text-slate-500">
+                  Preparando notícias...
+                </p>
+              )}
+
               {isHost && roomIsWaiting ? (
                 <form
                   noValidate
@@ -599,7 +638,7 @@ export function RoomLobbyView({
                 <button
                   type="button"
                   onClick={() => void handleStartGame()}
-                  disabled={!roomIsWaiting || isStarting || isLanding}
+                  disabled={!roomIsWaiting || isStarting || isLanding || isLoadingPrepared}
                   className="inline-flex h-14 cursor-pointer items-center justify-center gap-2 rounded-2xl bg-amber-400 px-6 text-sm font-black tracking-wide text-slate-950 shadow-lg shadow-amber-400/30 transition-all hover:-translate-y-0.5 hover:bg-amber-300 disabled:cursor-not-allowed disabled:opacity-55 disabled:hover:translate-y-0"
                 >
                   {isStarting ? (

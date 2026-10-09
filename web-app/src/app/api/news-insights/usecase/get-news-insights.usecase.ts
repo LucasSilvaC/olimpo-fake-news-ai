@@ -9,6 +9,7 @@ import type { IRoomRepository } from "@/app/api/rooms/repositories/room.reposito
 import type { extractNews } from "@/lib/news/extract-news";
 import type { INewsArticle } from "@/lib/news/types";
 import type { NewsInsightsResponse } from "@/lib/news-insights/types";
+import { verifyDemoArticle } from "@/server/demo/replay";
 
 export class NewsInsightsAccessError extends Error {
   constructor(
@@ -61,6 +62,24 @@ export class GetNewsInsightsUseCase {
     if (!item) throw new NewsInsightsAccessError(409, "Notícia da rodada não encontrada.");
     const saved = await this.articleRepository.findById(item.articleId);
     if (!saved) throw new NewsInsightsAccessError(404, "Notícia não encontrada.");
+    const fixture = verifyDemoArticle(saved);
+    if (fixture) {
+      return {
+        round: input.round,
+        playlistItemId: item.id,
+        article: {
+          title: saved.article.title,
+          description: saved.article.description,
+          publisher: saved.article.publisher,
+          authors: saved.article.authors,
+          publishedAt: saved.article.publishedAt,
+          imageUrl: saved.article.imageUrl,
+          url: saved.article.url,
+          content: saved.article.content,
+        },
+        analysis: fixture.insights,
+      };
+    }
 
     let article: INewsArticle = saved.article;
     if (!article.content.trim()) {
