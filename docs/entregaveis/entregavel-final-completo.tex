@@ -130,7 +130,7 @@
 \tableofcontents
 }
 Parceria: PUC-Campinas + Instituto de Pesquisas ELDORADO · Repositório: \texttt{olimpo-fake-news-ai}
-Estado de referência, em 06/10/2026: branch \texttt{dev} (web-app e aprendizado não supervisionado) e branch \texttt{feat/svm-metadados-spacy} (aprendizado supervisionado e pipeline de produção \texttt{modelo\_olimpo.py}).
+Estado conferido em 09/10/2026 nesta branch \texttt{docs/entregavel-final}: pesquisa em \texttt{machine-learning/} e execução integrada em \texttt{model-engine/}. Os experimentos anteriores permanecem em \texttt{history/}.
 
 \begin{quote}
 \textbf{Como ler este documento.} A ordem é a do raciocínio técnico (problema → método → dados → exploração → modelos → resultados → produto), e não a cronológica. Dois tipos de aviso aparecem no texto:
@@ -463,7 +463,7 @@ Fornecer o \emph{pipeline}
 
 \subsection{2.10 Protocolo comum de comparação}\label{protocolo-comum-de-comparauxe7uxe3o}
 
-O repositório define um protocolo comum para que métodos supervisionados e não supervisionados sejam comparáveis (\texttt{docs/machine-learning/comparacao-modelos/comparison-protocol.md}):
+O repositório define um protocolo comum para que métodos supervisionados e não supervisionados sejam comparáveis (\path{docs/machine-learning/comparacao-modelos/comparison-protocol.md}):
 
 \begin{itemize}
 \tightlist
@@ -487,7 +487,7 @@ O repositório define um protocolo comum para que métodos supervisionados e nã
 
 \subsection{3.1 Fake.br-Corpus}\label{fake.br-corpus}
 
-O corpus utilizado é o \textbf{Fake.br-Corpus} (NILC/USP, em revisão fixa \texttt{780f5516c4ae070761632d98ac3368f3ded09d35}, validada por SHA-256 nos experimentos não supervisionados): \textbf{7.200 notícias em português, 3.600 falsas e 3.600 verdadeiras}, com texto completo, metadados e meta-informação linguística de cada uma. As falsas são, em geral, muito mais curtas (mediana de 157 palavras contra 918 nas verdadeiras), diferença que contamina qualquer atributo sensível a tamanho e motivou o truncamento descrito na seção 5.2.
+O corpus utilizado é o \textbf{Fake.br-Corpus} (NILC/USP, em revisão fixa \path{780f5516c4ae070761632d98ac3368f3ded09d35}, validada por SHA-256 nos experimentos não supervisionados): \textbf{7.200 notícias em português, 3.600 falsas e 3.600 verdadeiras}, com texto completo, metadados e meta-informação linguística de cada uma. As falsas são, em geral, muito mais curtas (mediana de 157 palavras contra 918 nas verdadeiras), diferença que contamina qualquer atributo sensível a tamanho e motivou o truncamento descrito na seção 5.2.
 
 \subsection{3.2 Seleção de campos}\label{seleuxe7uxe3o-de-campos}
 
@@ -646,7 +646,7 @@ Para os Outliers, utilizamos principalmente o boxplot para identificá-los, no e
 
 Estamos comunicando os resultados por meio desse documento sobre a nossa análise exploratória de dados com foco no dataset escolhido do Fake.br Corpus, nossos resultados até agora foi um treinamento do modelo de regressão logística de 92\% de acurácia com apenas o texto cortado em 200 palavras e tratado pelo método TF-IDF, e 95\% de acurácia com o texto (tratado pelo TF-IDF) junto com os metadados da notícia.
 
-Treinamos um modelo não supervisionado também, porém apontou piores resultados do que o modelo supervisionado.
+O FP-Growth principal descreve padrões recorrentes, enquanto o supervisionado estima uma classe. Seus protocolos e medidas não permitem afirmar que um seja pior que o outro.
 
 \begin{quote}
 \textbf{Observação.} Os resultados citados na etapa "Comunicar resultados" (92\% de acurácia só com texto e 95\% com metadados) são das primeiras rodadas, com corte em 200 palavras e sem normalização, na Regressão Logística. Em rodadas posteriores os metadados pioraram a LR (−2,4 pontos de F1 em word+meta, protocolo anterior), o que levou a não adotá-los como bloco principal; a evidência no pipeline atual é conflitante (seção 5.6).
@@ -1397,7 +1397,7 @@ Limitações dessa extração: é \textbf{agregada por classe} (não por notíci
 
 \subsubsection{Metadados morfossintáticos por notícia (spaCy; notebooks 10 a 12)}\label{metadados-morfossintuxe1ticos-por-notuxedcia-spacy-notebooks-10-a-12}
 
-O módulo \texttt{machine-learning/supervised-learning/metadados\_spacy.py} transforma a ideia acima em atributos utilizáveis pelo modelo. Decisões de projeto:
+O módulo \path{machine-learning/supervised-learning/metadados_spacy.py} transforma a ideia acima em atributos utilizáveis pelo modelo. Decisões de projeto:
 
 \begin{itemize}
 \tightlist
@@ -1914,9 +1914,12 @@ Termos como feira, nesta, quarta e segundo concentram-se nas notícias verdadeir
 
 \subsection{5.11 Modelo de produção}\label{modelo-de-produuxe7uxe3o}
 
+\textbf{Distinção das métricas.} As métricas do notebook 12 são do pipeline sem calibração. O manifesto registra F1 interno calibrado de 0,9208, AUC de 0,9789 e Brier de 0,0569, antes do reajuste final em 7.200 notícias. Elas não são avaliação independente do artefato final. O contrato de pesquisa usa \texttt{confidence}; o serviço HTTP do app usa \texttt{fakeProbability}, \texttt{fakeScore} e \texttt{analysisStatus}, com scores nulos para menos de 30 palavras.
+
+
 \textbf{O modelo adotado para o app é o M2 + χ² (10 mil) + SVD(500)}, definido em \texttt{modelo\_olimpo.py} e exportado por \texttt{exportar\_modelo.py} (\texttt{modelVersion\ =\ "svm-spacy-chi2k10k-svd500-v1"}). O word+char completo sem spaCy (B0) é mantido como baseline de referência.
 
-\textbf{Por que este modelo.} Na validação cruzada ele iguala o F1 do B0 (0,9295) com gap de treino--validação bem menor, e o teste interno não perde desempenho. Além disso, seus atributos de estilo podem ser calculados para qualquer texto novo, sem os metadados do corpus, e sua pontuação se decompõe exatamente em n-gramas e atributos, o que alimenta as justificativas exibidas ao jogador.
+\textbf{Por que este modelo.} Na validação cruzada ele iguala o F1 do B0 (0,9295) com gap de treino--validação bem menor, e o teste interno sem calibração registra F1 0,9243. A versão calibrada registra 0,9208; isso não demonstra ganho estatisticamente significativo. Além disso, seus atributos de estilo podem ser calculados para qualquer texto novo, sem os metadados do corpus, e sua pontuação se decompõe exatamente em n-gramas e atributos, o que alimenta as justificativas exibidas ao jogador.
 
 {\def\LTcaptype{none} % do not increment counter
 \begin{longtable}[]{@{}
@@ -1937,7 +1940,8 @@ M2 + χ² 10 mil + SVD(500) (produção)
 \endlastfoot
 F1 CV (5 folds) & 0,9295 & 0,9295 \\
 Gap treino−CV & 0,0705 & 0,042 \\
-F1 teste interno & 0,9222 & 0,9243 \\
+F1 teste interno, sem calibração & 0,9222 & 0,9243 \\
+F1 teste interno, calibrado & não reportado & 0,9208 \\
 AUC externo (FakeRecogna, títulos) & 0,707 & 0,677 \\
 Explicação & coeficientes por n-grama & decomposição exata por n-grama e por atributo spaCy \\
 \end{longtable}
@@ -1960,13 +1964,13 @@ Explicação & coeficientes por n-grama & decomposição exata por n-grama e por
   \texttt{LinearSVC(C=1,\ class\_weight="balanced")} com calibração sigmoide (\texttt{CalibratedClassifierCV}, \texttt{StratifiedKFold(5)}, \texttt{ensemble=False}), que dá \texttt{P(fake)}.
 \end{enumerate}
 
-\textbf{Explicação por notícia} (\texttt{explicar}): como o bloco de texto é \texttt{z\ =\ V·x\ /\ ‖V·x‖}, o score de texto se decompõe exatamente em contribuições por n-grama selecionado, e o bloco spaCy em contribuições por atributo. \texttt{analisar} devolve o formato do contrato do backend (\texttt{classification}, \texttt{confidence}, \texttt{reasons}, \texttt{modelVersion}): \texttt{reliable} se P(fake) ≤ 0,35, \texttt{unreliable} se ≥ 0,65 e \texttt{uncertain} entre os dois. Os limiares são decisão de produto. Os motivos combinam os n-gramas de maior contribuição e frases descritivas dos atributos de estilo mais influentes.
+\textbf{Explicação por notícia} (\texttt{explicar}): como o bloco de texto é \texttt{z\ =\ V·x\ /\ ‖V·x‖}, o score de texto se decompõe exatamente em contribuições por n-grama selecionado, e o bloco spaCy em contribuições por atributo. \texttt{analisar} devolve o contrato histórico da pesquisa (\texttt{classification}, \texttt{confidence}, \texttt{reasons}, \texttt{modelVersion}): \texttt{reliable} se P(fake) ≤ 0,35, \texttt{unreliable} se ≥ 0,65 e \texttt{uncertain} entre os dois. Os limiares são decisão de produto. Os motivos combinam os n-gramas de maior contribuição e frases descritivas dos atributos de estilo mais influentes.
 
-\textbf{Exportação} (\texttt{exportar\_modelo.py}): confere que o pré-processamento reproduz o split oficial e que o pipeline não calibrado reproduz o F1 de teste do notebook 12 (0,9243, tolerância 0,002); avalia o modelo calibrado; treina o modelo final em treino+teste (7.200 notícias; \texttt{-\/-somente-treino} evita isso); salva o \texttt{.joblib} com um \texttt{.json} de metadados (versões de Python, scikit-learn, numpy, scipy, spaCy e \texttt{pt\_core\_news\_sm}, hiperparâmetros, métricas e sha256) e confere que o arquivo recarregado dá as mesmas probabilidades. O artefato fica em \texttt{modelos/} (ignorado pelo git) e só carrega se \texttt{modelo\_olimpo.py} estiver importável e as versões forem as registradas.
+\textbf{Exportação} (\texttt{exportar\_modelo.py}): confere que o pré-processamento reproduz o split oficial e que o pipeline não calibrado reproduz o F1 de teste do notebook 12 (0,9243, tolerância 0,002); avalia o modelo calibrado; treina o modelo final em treino+teste (7.200 notícias; \texttt{-\/-somente-treino} evita isso); salva o \texttt{.joblib} com um \texttt{.json} de metadados (versões de Python, scikit-learn, numpy, scipy, spaCy e \texttt{pt\_core\_news\_sm}, hiperparâmetros, métricas e sha256) e confere que o arquivo recarregado dá as mesmas probabilidades. O artefato principal fica em \path{machine-learning/supervised-learning/modelos/}, com cópia congelada em \path{model-engine/models/supervised/assets/} e só carrega se \texttt{modelo\_olimpo.py} estiver importável e as versões forem as registradas.
 
 \section{6. Aprendizado não supervisionado}\label{aprendizado-nuxe3o-supervisionado}
 
-A linha não supervisionada está documentada no repositório em \texttt{machine-learning/unsupervised-learning/} (branch \texttt{dev}): sete métodos de detecção de anomalias, agrupamento e aprendizado semi-supervisionado, uma comparação externa com o Jev (LLM) e, como método final de descoberta, a \textbf{mineração de padrões frequentes com FP-Growth}. As seções a seguir seguem o relatório técnico do instituto, com as referências \texttt{{[}n{]}} listadas ao final desta seção.
+A linha não supervisionada está documentada no repositório em \path{machine-learning/unsupervised-learning/} (branch \texttt{dev}): sete métodos de detecção de anomalias, agrupamento e aprendizado semi-supervisionado, uma comparação externa com o Jev (LLM) e, como método final de descoberta, a \textbf{mineração de padrões frequentes com FP-Growth}. As seções a seguir seguem o relatório técnico do instituto, com as referências \texttt{{[}n{]}} listadas ao final desta seção.
 
 \subsection{6.1 Análise de classificadores não supervisionados}\label{anuxe1lise-de-classificadores-nuxe3o-supervisionados}
 
@@ -2081,7 +2085,7 @@ Pontos negativos
 
 \subsection{6.2 Resumo do relatório}\label{resumo-do-relatuxf3rio}
 
-Este relatório documenta a jornada de aprendizado não supervisionado do projeto Olimpo Fake News AI. Foram examinados detectores de anomalias, métodos de agrupamento e uma linha complementar de aprendizado positivo não rotulado no corpus Fake.br. As altas acurácias de alguns detectores motivaram uma leitura inicial como classificadores, depois revista diante do viés de autoria e dos limites do conjunto. O método final de descoberta é o FP-Growth sem autoria, com controles: no treino de 4.320 notícias, ele produziu 18 conjuntos frequentes, 20 regras brutas, oito regras destacadas e dez padrões textuais. O baseline com autoria foi preservado para comparação. A avaliação posterior inclui o treino e, portanto, descreve o corpus sem medir generalização. As regras servem para formular perguntas e orientar análise humana, sem comprovar a veracidade de uma notícia.
+O modelo principal atual é o FP-Growth sem autoria da raiz de \path{machine-learning/unsupervised-learning/}: \texttt{fp\_growth\_principal.py} e \path{fp_growth_principal_sem_autoria.ipynb}, variante \texttt{sintaxe\_ampliada}. No run \path{fp-growth-metadados-ampliados-20261008T002311Z}, são 22 atributos ativos, 44 itens, 523 regras direcionais elegíveis e 345 padrões distintos. Na validação, 422 regras mantêm os filtros e 347 também têm redescoberta $\geq$80\% em 100 reamostragens dos grupos de treino. O teste conhecido é exploratório. O método descreve coocorrências e não classifica a veracidade de notícias.
 
 Palavras-chave: aprendizado não supervisionado; mineração de padrões; FP-Growth; notícias falsas; viés de autoria.
 
@@ -2186,33 +2190,38 @@ O corpus é limitado para essa inferência. A autoria é praticamente separada p
 
 O controle de autoria anterior já apontava o problema: no split por notícia, o recall anotado caía de 0,9733 com autoria para 0,6700 sem autoria; no split pareado, de 0,9750 para 0,7069. Esses números pertencem a protocolos diferentes e servem como evidência histórica de sensibilidade à feature, sem comparação direta com a Tabela 1 {[}8{]}.
 
-\subsection{6.7 Mineração FP-Growth e extração de regras}\label{minerauxe7uxe3o-fp-growth-e-extrauxe7uxe3o-de-regras}
+\subsection{6.7 Mineração FP-Growth e extração de regras}
 
-O FP-Growth sem autoria e com controles foi escolhido como método final de descoberta por produzir conjuntos de atributos recorrentes e regras de associação auditáveis, reduzindo a influência direta do metadado de autoria. O notebook com autoria permanece como baseline. O resultado principal é uma coleção de hipóteses sobre estilos de escrita, não uma acurácia de classificação {[}2, 6, 9{]}.
+O modelo principal atual é o FP-Growth sem autoria da raiz de \path{machine-learning/unsupervised-learning/}: \texttt{fp\_growth\_principal.py} e \path{fp_growth_principal_sem_autoria.ipynb}, variante \texttt{sintaxe\_ampliada}. No run \path{fp-growth-metadados-ampliados-20261008T002311Z}, são 22 atributos ativos, 44 itens, 523 regras direcionais elegíveis e 345 padrões distintos. Na validação, 422 regras mantêm os filtros e 347 também têm redescoberta $\geq$80\% em 100 reamostragens dos grupos de treino. O teste conhecido é exploratório. O método descreve coocorrências e não classifica a veracidade de notícias.
 
-\subsubsection{6.7.1 Preparação e execução}\label{preparauxe7uxe3o-e-execuuxe7uxe3o}
+\subsubsection{6.7.1 Preparação e execução}
 
-Os notebooks Jupyter fp\_growth\_baseline\_com\_autoria.ipynb e fp\_growth\_principal\_sem\_autoria\_controles.ipynb validam o corpus e usam os IDs do treino canônico. O baseline inclui com\_autor e sem\_autor; o principal retira autoria da descoberta e reaproveita os mesmos limites dos itens textuais. As medidas numéricas são discretizadas pelos quantis 25\% e 75\% do treino. A densidade de links foi omitida porque ambos os quantis eram zero. O suporte mínimo é 0,08, com itemsets de até três itens; para destacar regras, os filtros exigem confidence 0,50, lift 1,05 e Jaccard 0,10 {[}6, 9{]}.
+O corpus congelado contém 7.200 notícias. A partição canônica mantém pares e duplicatas juntos: 4.320 notícias de treino, 1.440 de validação e 1.440 de teste. A extração normaliza em NFKC, remove BOM inicial e usa os primeiros 300 caracteres. As taxas POS/DEP usam tokens lexicais; a pontuação usa tokens não espaciais. Ausência de tokens elegíveis não equivale a taxa zero.
 
-No baseline com autoria, a execução congelada encontrou 41 itemsets, 82 regras brutas, 28 elegíveis e 31 padrões consolidados. No principal sem autoria, foram 18 itemsets, 20 regras brutas, oito destacadas e dez padrões textuais. Os CSVs e manifestos preservam itens, métricas, cobertura e parâmetros; o notebook principal reúne descoberta, avaliação e controles de autoria {[}6, 9, 11{]}.
+Os quantis 25\% e 75\% e as regras são aprendidos somente no treino. O suporte mínimo é 0,08, com até três itens; os filtros são confidence $\geq$0,50, lift $\geq$1,05 e Jaccard $\geq$0,10. Autoria e classe não entram na mineração nem no ranking dos candidatos; entram nas descrições posteriores. As famílias de atributos foram informadas por análises exploratórias anteriores.
 
-\subsubsection{6.7.2 Como ler as regras}\label{como-ler-as-regras}
+A referência corrigida tem 152 regras elegíveis e 93 padrões; POS ampliado tem 189 e 118; sintaxe ampliada, o principal, tem 523 e 345; a ablação ampla tem 4.350 e 2.546. Esses números vêm de \texttt{variant\_summary.csv}, conferidos com os CSVs de cada variante. A versão antiga de estilo (18 itemsets, 20 regras brutas e oito elegíveis) permanece apenas no histórico.
 
-Support informa a fração do treino que contém os dois lados de uma regra; confidence, a fração que contém o consequente entre as notícias com antecedente; lift compara essa proporção com a frequência geral do consequente. No experimento principal sem autoria, diversidade\_baixo → typeTokenRatio\_baixo tem support 0,172, confidence 0,684, lift 2,692 e Jaccard 0,516. O valor de Jaccard expressa a sobreposição das coberturas dos dois itens. Trata-se de coocorrência lexical, não de uma regra de falsidade {[}6, 11{]}.
+\subsubsection{6.7.2 Como ler as regras}
 
-A combinação punctuationDensity\_alto e typeTokenRatio\_baixo também gera duas regras direcionais. Ambas têm support 0,138 e lift 2,137, mas confidence diferente conforme o antecedente escolhido. O Apêndice C apresenta as 20 regras brutas, identifica as oito que passaram nos filtros e registra uma possível utilidade analítica para cada direção {[}11{]}.
+Support mede a frequência da combinação; confidence mede a frequência do consequente entre os registros com antecedente; lift compara essa frequência com a frequência marginal do consequente; Jaccard mede a interseção dividida pela união das coberturas. Regras inversas podem representar o mesmo padrão com confidences diferentes: 523 regras não são 523 padrões independentes.
+
+A fila de revisão contém 20 candidatos selecionados sem classe ou autoria no ranking e cobre 1.346 notícias da validação. A união de todos os 345 padrões cobre 1.439/1.440, incluindo padrões instáveis; isso não mede eficácia pedagógica. A combinação \texttt{DEP\_acl:relcl\_rate\_baixo + POS\_PRON\_rate\_baixo}, por exemplo, ocorre em 441 notícias da validação e sua direção representativa tem redescoberta de 100\%. \texttt{baixo} pode incluir zero: a anotação automática no trecho não comprova ausência do fenômeno no documento completo.
 
 \subsection{6.8 Avaliação externa e controles}\label{avaliauxe7uxe3o-externa-e-controles}
 
-O notebook principal aplica os limites textuais congelados ao corpus, confere se a cobertura do treino reproduz o membership persistido e só então calcula as proporções por classe. O notebook histórico avaliou, em separado, o baseline com autoria. As avaliações abrangem as 7.200 notícias, inclusive as 4.320 usadas para descobrir padrões: são descrições do mesmo corpus, não testes independentes de generalização {[}6, 7, 9{]}.
+Os valores de composição e controles de autoria abaixo pertencem ao experimento histórico de estilo. Para o principal atual, as tabelas separam treino, validação e teste: na validação, 105 padrões têm maior frequência em Fake, 235 em True e cinco empatam. Não há validação externa nem intervalos de associação por classe. O catálogo de pesquisa permanece \texttt{research\_only}; o catálogo do app é uma cópia distinta com status \path{experimental_descriptive_comparison}, sem aprovação editorial humana.
 
-Na avaliação dos padrões sem autoria, punctuationDensity\_alto com typeTokenRatio\_baixo aparece em 1.007 notícias, com 70,3\% Fake, perante baseline global de 50\%. Diversidade\_baixo com typeTokenRatio\_baixo aparece em 1.242 notícias, com 61,6\% Fake. Em sentido oposto, diversidade\_alto com typeTokenRatio\_alto tem 31,2\% Fake em 1.199 ocorrências. Esse lift Fake de classe difere do lift de associação calculado durante a mineração {[}6, 11{]}.
+
+No experimento histórico de estilo, o notebook aplica os limites textuais congelados ao corpus, confere se a cobertura do treino reproduz o membership persistido e só então calcula as proporções por classe. O notebook histórico avaliou, em separado, o baseline com autoria. As avaliações abrangem as 7.200 notícias, inclusive as 4.320 usadas para descobrir padrões: são descrições do mesmo corpus, não testes independentes de generalização {[}6, 7, 9{]}.
+
+Na avaliação histórica dos padrões de estilo sem autoria, punctuationDensity\_alto com typeTokenRatio\_baixo aparece em 1.007 notícias, com 70,3\% Fake, perante baseline global de 50\%. Diversidade\_baixo com typeTokenRatio\_baixo aparece em 1.242 notícias, com 61,6\% Fake. Em sentido oposto, diversidade\_alto com typeTokenRatio\_alto tem 31,2\% Fake em 1.199 ocorrências. Esse lift Fake de classe difere do lift de associação calculado durante a mineração {[}6, 11{]}.
 
 \subsubsection{6.8.1 Controle da autoria}\label{controle-da-autoria}
 
 O controle de autoria mostra que 3.528 de 3.601 notícias sem autor são Fake, enquanto 3.527 de 3.599 com autor são Real; o Cramér V é 0,960. Dos 31 padrões do baseline, 21 contêm autoria. Portanto, um padrão com sem\_autor pode herdar quase toda a associação ao rótulo da composição do corpus. A análise principal exclui essa variável da mineração textual {[}6, 9, 11{]}.
 
-No notebook principal, a mineração sem autoria preserva IDs e limites textuais do baseline, e as coberturas são examinadas dentro dos estratos com\_autor e sem\_autor. O padrão punctuationDensity\_alto com typeTokenRatio\_baixo tem 70,3\% Fake no agregado; no estrato com autor, tem 0,7\% perante baseline de 2,0\%; no estrato sem autor, 98,9\% perante baseline de 98,0\%. A associação agregada não pode ser atribuída isoladamente ao texto {[}6, 11{]}.
+No notebook histórico de estilo, a mineração sem autoria preserva IDs e limites textuais do baseline, e as coberturas são examinadas dentro dos estratos com\_autor e sem\_autor. O padrão punctuationDensity\_alto com typeTokenRatio\_baixo tem 70,3\% Fake no agregado; no estrato com autor, tem 0,7\% perante baseline de 2,0\%; no estrato sem autor, 98,9\% perante baseline de 98,0\%. A associação agregada não pode ser atribuída isoladamente ao texto {[}6, 11{]}.
 
 Há associações que merecem nova investigação, como punctuationDensity\_baixo com uppercaseRatio\_baixo entre notícias com autor: 32 Fake em 524 ocorrências, contra 72 Fake em 3.599 notícias desse estrato. O número de exemplos minoritários é pequeno; o resultado não estabelece causalidade, robustez por fonte ou validade fora do Fake.br {[}9{]}.
 
@@ -2226,7 +2235,7 @@ A prioridade seguinte de validação é aplicar critérios previamente congelado
 
 \subsection{6.10 Conclusão}\label{conclusuxe3o}
 
-Os experimentos de anomalia e agrupamento mapearam métodos e revelaram sinais fortes, mas alta acurácia neste corpus não equivale a detecção confiável de falsidade. O FP-Growth sem autoria e com controles respondeu melhor à pergunta científica: quais combinações textuais são frequentes, quais regras direcionais elas geram e como sua leitura muda ao controlar a autoria. O Jaccard acrescentou uma medida explícita de sobreposição na etapa final. O resultado é uma base reproduzível para investigação guiada, com limites quanto a causalidade e generalização {[}6, 11{]}.
+Os experimentos de anomalia e agrupamento mapearam métodos e revelaram sinais fortes, mas alta acurácia neste corpus não equivale a detecção confiável de falsidade. O FP-Growth sem autoria foi escolhido para investigar a pergunta científica: quais combinações textuais são frequentes, quais regras direcionais elas geram e como sua leitura muda ao controlar a autoria. O Jaccard acrescentou uma medida explícita de sobreposição na etapa final. O resultado é uma base reproduzível para investigação guiada, com limites quanto a causalidade e generalização {[}6, 11{]}.
 
 \begin{quote}
 \textbf{Observação.} As avaliações do FP-Growth (7.200 notícias) incluem o treino de descoberta e portanto \textbf{descrevem o corpus, sem medir generalização}. As acurácias altas de Isolation Forest e DBSCAN (0,97) foram reinterpretadas no próprio relatório: os detectores aprendem desvio em relação às notícias verdadeiras, e a autoria separa as classes quase por completo. Por isso o Isolation Forest, escolhido na primeira análise (seção 6.1), deixou de ser o método final.
@@ -2240,25 +2249,25 @@ Os experimentos de anomalia e agrupamento mapearam métodos e revelaram sinais f
 
 {[}1{]} APRENDIZADO NÃO SUPERVISIONADO. Briefing em PDF, uma página. Arquivo AprendizadoNaoSupervisionado.pdf, projeto Olimpo Fake News AI.
 
-{[}2{]} OLIMPO FAKE NEWS AI. Experimentos não supervisionados. machine-learning/unsupervised-learning/README.md. Consulta em: 30 set. 2026.
+{[}2{]} OLIMPO FAKE NEWS AI. Experimentos não supervisionados. \path{machine-learning/unsupervised-learning/README.md.} Consulta em: 30 set. 2026.
 
-{[}3{]} OLIMPO FAKE NEWS AI. Comparação histórica dos experimentos. machine-learning/unsupervised-learning/history/RESULTADOS.md. Consulta em: 30 set. 2026.
+{[}3{]} OLIMPO FAKE NEWS AI. Comparação histórica dos experimentos. \path{machine-learning/unsupervised-learning/history/RESULTADOS.md.} Consulta em: 30 set. 2026.
 
-{[}4{]} OLIMPO FAKE NEWS AI. Documentação de DBSCAN e K-means. machine-learning/unsupervised-learning/docs/modelos/dbscan.md e history/modelos/kmeans.md. Consulta em: 30 set. 2026.
+{[}4{]} OLIMPO FAKE NEWS AI. Documentação de DBSCAN e K-means. \path{machine-learning/unsupervised-learning/docs/modelos/dbscan.md} e history/modelos/kmeans.md. Consulta em: 30 set. 2026.
 
-{[}5{]} OLIMPO FAKE NEWS AI. Documentação de HDBSCAN e PU Learning. machine-learning/unsupervised-learning/docs/modelos/hdbscan.md e history/modelos/pu-learning.md. Consulta em: 30 set. 2026.
+{[}5{]} OLIMPO FAKE NEWS AI. Documentação de HDBSCAN e PU Learning. \path{machine-learning/unsupervised-learning/docs/modelos/hdbscan.md} e history/modelos/pu-learning.md. Consulta em: 30 set. 2026.
 
-{[}6{]} OLIMPO FAKE NEWS AI. Notebook principal FP-Growth sem autoria e controles. machine-learning/unsupervised-learning/fp\_growth\_principal\_sem\_autoria\_controles.ipynb; run fp-growth-controls-20260929T215211Z. Consulta em: 30 set. 2026.
+{[}6{]} OLIMPO FAKE NEWS AI. Notebook histórico FP-Growth sem autoria e controles. \path{machine-learning/unsupervised-learning/history/mineracao-de-padroes/fp-growth-legado/fp_growth_principal_sem_autoria_controles.ipynb}; run fp-growth-controls-20260929T215211Z. Consulta em: 30 set. 2026.
 
-{[}7{]} OLIMPO FAKE NEWS AI. Notebook histórico de avaliação do FP-Growth com autoria. machine-learning/unsupervised-learning/history/mineracao-de-padroes/avaliacao\_fp\_growth\_com\_autoria.ipynb; run fp-growth-evaluation-20260929T213741Z. Consulta em: 30 set. 2026.
+{[}7{]} OLIMPO FAKE NEWS AI. Notebook histórico de avaliação do FP-Growth com autoria. \path{machine-learning/unsupervised-learning/history/mineracao-de-padroes/avaliacao_fp_growth_com_autoria.ipynb}; run fp-growth-evaluation-20260929T213741Z. Consulta em: 30 set. 2026.
 
-{[}8{]} OLIMPO FAKE NEWS AI. Modelos e experimentos anteriores. machine-learning/unsupervised-learning/history/consulta-modelos-anteriores/README.md. Consulta em: 30 set. 2026.
+{[}8{]} OLIMPO FAKE NEWS AI. Modelos e experimentos anteriores. \path{machine-learning/unsupervised-learning/history/consulta-modelos-anteriores/README.md.} Consulta em: 30 set. 2026.
 
-{[}9{]} OLIMPO FAKE NEWS AI. Notebook baseline FP-Growth com autoria. machine-learning/unsupervised-learning/fp\_growth\_baseline\_com\_autoria.ipynb; run fp-growth-20260929T212058Z. Consulta em: 30 set. 2026.
+{[}9{]} OLIMPO FAKE NEWS AI. Notebook baseline FP-Growth com autoria. \path{machine-learning/unsupervised-learning/history/mineracao-de-padroes/fp-growth-legado/fp_growth_baseline_com_autoria.ipynb}; run fp-growth-20260929T212058Z. Consulta em: 30 set. 2026.
 
 {[}10{]} INSTITUTO DE PESQUISAS ELDORADO. Logotipo institucional. Disponível em: \url{https://www.eldorado.org.br/wp-content/themes/eldorado/assets/img/logo_eldorado.svg}. Acesso em: 30 set. 2026.
 
-{[}11{]} OLIMPO FAKE NEWS AI. Regras extraídas pelo FP-Growth e utilidade para o projeto. machine-learning/unsupervised-learning/REGRAS\_FP\_GROWTH.md. Consulta em: 30 set. 2026.
+{[}11{]} OLIMPO FAKE NEWS AI. Regras extraídas pelo FP-Growth e utilidade para o projeto. \path{machine-learning/unsupervised-learning/REGRAS_FP_GROWTH.md.} Consulta em: 30 set. 2026.
 
 \section{7. Resultados e discussão integrada}\label{resultados-e-discussuxe3o-integrada}
 
@@ -2294,7 +2303,7 @@ Metadados do corpus & LR (protocolo anterior) / SVM (grid search, 3 folds) & −
 Metadados spaCy (M2) & CV 5 folds, C=1, w=0,03 & F1 0,9344 (+0,005; 5/5 folds); teste interno +0,0014; AUC externo 0,707 → 0,662 & ganho pequeno e frágil; piora a transferência \\
 \textbf{M2 + χ² 10 mil + SVD(500) (modelo de produção)} & CV 5 folds & F1 0,9295, gap 0,042 (B0: 0,9295, 0,0705); AUC externo 0,677 & menos ajuste ao treino, sem ganho de generalização \\
 Isolation Forest / LOF / DBSCAN & split canônico, q95 & acurácia 0,97 / 0,95 / 0,97 & descreve o corpus; reinterpretado \\
-FP-Growth sem autoria & treino canônico & 18 itemsets, 8 regras destacadas, 10 padrões & hipóteses, não classificador \\
+FP-Growth principal, sintaxe ampliada & treino canônico e validação por grupos & 523 regras elegíveis, 345 padrões; 422 sustentadas, 347 também estáveis & descrição, não classificador \\
 \end{longtable}
 }
 
@@ -2364,12 +2373,12 @@ flowchart LR
 Regras de dependência: aplicação → domínio; infraestrutura → aplicação e domínio; domínio não importa Next.js, Drizzle nem React; o frontend nunca acessa a infraestrutura.
 
 \begin{quote}
-\textbf{Observação.} O \texttt{docs/codigo/arquitetura-web-app.md} e o README descrevem as camadas em \texttt{src/server/}. No código atual, cada módulo vive em \texttt{src/app/api/\textless{}módulo\textgreater{}/} (\texttt{entities}, \texttt{repositories}, \texttt{usecase}, \texttt{actions}, \texttt{tests}) e \texttt{src/server/shared} guarda apenas banco, Redis e logger. Essa organização por funcionalidade é a descrita corretamente em \texttt{docs/codigo/arquitetura.tex} (documentação de arquitetura do repositório), usada como fonte das decisões abaixo; o \texttt{architecture.md} e o README devem ser atualizados.
+\textbf{Observação.} O \path{docs/codigo/arquitetura-web-app.md} e o README descrevem as camadas em \texttt{src/server/}. No código atual, cada módulo vive em \texttt{src/app/api/\textless{}módulo\textgreater{}/} (\texttt{entities}, \texttt{repositories}, \texttt{usecase}, \texttt{actions}, \texttt{tests}) e \texttt{src/server/shared} guarda apenas banco, Redis e logger. Essa organização por funcionalidade é a descrita corretamente em \path{docs/codigo/arquitetura.tex} (documentação de arquitetura do repositório), usada como fonte das decisões abaixo; o \texttt{architecture.md} e o README devem ser atualizados.
 \end{quote}
 
 \subsubsection{Decisões de arquitetura e trade-offs}\label{decisuxf5es-de-arquitetura-e-trade-offs}
 
-Cada decisão segue o formato contexto, pontos positivos, pontos negativos e resolução. Fonte: \texttt{docs/codigo/arquitetura.tex} e o registro de decisões do grupo.
+Cada decisão segue o formato contexto, pontos positivos, pontos negativos e resolução. Fonte: \path{docs/codigo/arquitetura.tex} e o registro de decisões do grupo.
 
 \paragraph{Next.js como plataforma full-stack}\label{next.js-como-plataforma-full-stack}
 
@@ -2598,56 +2607,77 @@ Função
 \end{longtable}
 }
 
-Dados: \texttt{users}, \texttt{user\_avatars}, \texttt{rooms}, \texttt{room\_members}, \texttt{room\_playlist\_items}, \texttt{news\_articles} (com carga \texttt{jsonb}), \texttt{news\_analyses}, \texttt{news\_votes}, \texttt{global\_challenges}, \texttt{global\_challenge\_answers}. A construção seguiu o fluxo de especificação com OpenSpec (specs arquivadas e ativas por módulo) e TDD nos casos de uso.
+Dados: \texttt{users}, \texttt{user\_avatars}, \texttt{rooms}, \texttt{room\_members}, \texttt{room\_playlist\_items}, \texttt{news\_articles} (com carga \texttt{jsonb}), \texttt{news\_analyses}, \texttt{news\_votes}, \texttt{global\_challenges}, \path{global_challenge_answers}. A construção seguiu o fluxo de especificação com OpenSpec (specs arquivadas e ativas por módulo) e TDD nos casos de uso.
 
 \textbf{Qualidade.} Aproximadamente 40 arquivos de teste (Vitest) e testes ponta a ponta de ações com logs \texttt{pino}; Playwright para a interface; CI com \texttt{pnpm\ audit}, \texttt{pnpm\ check} e testes E2E; CodeQL, \emph{dependency review}, Dependabot e um revisor automatizado de \emph{pull requests} (Acrux).
 
 \textbf{Interface (Next.js, Feature-Sliced Design).} As telas implementadas cobrem o fluxo principal: página inicial com os modos de jogo, criação e entrada em sala por PIN, lobby, \textbf{jogo por etapas} (checagem da notícia, aguardando o veredito com a reflexão socrática, placar da rodada e placar final), ranking, submissão de notícia ou desafio autoral, cadastro/login e extração de notícia por URL. Os eventos da sala chegam à tela por SSE.
 
-\subsection{8.4 Estado do componente de IA}\label{estado-do-componente-de-ia}
+\subsection{8.4 Estado do componente de IA}
 
-O contrato do serviço de análise é uma interface de domínio (\texttt{IAIAnalysisService}): recebe título, conteúdo, fonte e autor e devolve \texttt{classification} (\texttt{reliable\ \textbar{}\ uncertain\ \textbar{}\ unreliable}), \texttt{confidence}, uma lista de \texttt{reasons} e \texttt{modelVersion}. A implementação atual (\texttt{MockAIAnalysisService}, \texttt{modelVersion:\ "mock-v1"}) classifica por palavras-chave (por exemplo "chocante", "bomba", "fraude" para não confiável; "universidade", "ministério", "dados oficiais" para confiável) e devolve motivos e confiança fixos por classe. A especificação já prevê o \emph{fallback} para o mock quando o serviço externo estiver indisponível.
+Os dois componentes de IA são executados pelo \path{model-engine/}, um serviço HTTP em Python separado do app Next.js e acessado apenas pelo servidor. \path{machine-learning/} continua responsável por experimentos, treinamento e resultados; o motor contém só o que é necessário para analisar um texto. Os componentes têm funções e saídas distintas e \textbf{não são combinados em um único escore}:
 
-Isso significa que o resultado das seções 5 e 6 \textbf{ainda não chega ao usuário}; a camada de domínio, porém, já isola a troca de implementação.
+\begin{longtable}{p{0.19\linewidth}p{0.43\linewidth}p{0.30\linewidth}}
+\toprule
+Componente & Função & Onde aparece no jogo \\
+\midrule
+Observação de escrita (FP-Growth, \path{POST /analyze}) & Mostra padrões gramaticais presentes no trecho e a frequência da mesma combinação em cada classe do corpus & Painel ``Observe a escrita'', durante a leitura \\
+Modelo supervisionado (\path{POST /supervised/analyze}) & Estima P(fake) com explicação por n-grama e atributo & ``Análise do modelo'', após o fechamento comum da rodada \\
+Reflexão socrática & Perguntas gerais fixas, não pontuação dos jogadores & Devolutiva da rodada, distinta da previsão \\
+\bottomrule
+\end{longtable}
 
-\textbf{Consumo pela interface.} A tela do jogo já lê o campo \texttt{analysis} (classificação, motivos e confiança) do evento de fim de rodada e o exibe, incluindo um verômetro de confiabilidade. Ou seja, o front está pronto para receber a saída do modelo real: hoje o conteúdo exibido vem do mock.
+\subsubsection{Modelo supervisionado}
 
-\begin{quote}
-\textbf{Observação.} Há textos e valores \textbf{fixos} na interface, sem origem no modelo nem nos experimentos: a dica da reflexão socrática ("notícias alarmistas com títulos em maiúsculas e sem autoria clara têm 78\% mais chances de serem desinformação") e a margem de erro padrão do verômetro ("±1.8\%"). Como o modelo não foi avaliado para esses números, eles devem ser substituídos por valores medidos ou removidos antes de qualquer demonstração.
-\end{quote}
+O serviço recebe somente o corpo da notícia extraído pelo parser (até 100 mil caracteres) e não registra o conteúdo. Devolve \path{classification} (\texttt{reliable | uncertain | unreliable}), \path{fakeProbability}, escore canônico \texttt{100 × P(fake)}, \path{reasons}, \path{modelVersion}, hash do artefato e versão do código de inferência. A política \path{olimpo-decision-policy-v1} define \path{reliable} para P ≤ 0,35, \path{unreliable} para P ≥ 0,65 e \path{uncertain} entre os dois valores; textos com menos de 30 palavras não são classificados, e a análise usa as primeiras 100 palavras, como no treino.
 
-\subsection{8.5 Como o MVP constrói sobre as descobertas}\label{como-o-mvp-construxf3i-sobre-as-descobertas}
+\begin{itemize}
+\item \textbf{Verificação de integridade.} Antes de carregar o \path{.joblib}, o motor confere o SHA-256 do artefato, o patch exato do Python (3.14.2) e as versões de scikit-learn, NumPy, SciPy, pandas, spaCy, \path{pt_core_news_sm} e joblib registradas no manifesto. Se algo divergir, apenas o supervisionado fica indisponível (\path{/health/supervised} devolve 503) e as observações de escrita continuam funcionando.
+\item \textbf{Artefato final.} O modelo foi reajustado em treino + teste (7.200 notícias). As métricas internas da seção 5.11 vêm de outro ajuste, treinado só no treino, e não são uma avaliação independente deste artefato.
+\item \textbf{Desempenho do motor} (execução local em Docker Linux, 20 análises aquecidas): carga e aquecimento de 8,3 s, mediana de 140,6 ms, p95 de 188,3 ms e pico de 438 MiB. Com oito requisições simultâneas, três foram atendidas e cinco recusadas, pois a fila é intencionalmente curta (uma execução e duas vagas de espera). A medição não representa um teste de carga em produção.
+\item \textbf{Cache e identidade.} A análise é guardada em PostgreSQL (migração \path{0005_supervised_analysis_identity}) com chave composta por hash do corpo, artefato, código e política; trocar a versão gera nova análise. Em teste com duas instâncias do caso de uso e quatro consultas concorrentes, houve uma inferência e um registro.
+\item \textbf{Acesso.} \texttt{POST /api/news-prediction} exige sessão, participação na sala e rodada encerrada coletivamente; votar, avançar ou concluir individualmente não libera a previsão. Votos, placar e eventos SSE fecham sem chamar o modelo, e a pontuação continua vindo do gabarito. Se o modelo falhar, a partida segue e só a previsão fica indisponível. O marcador de fechamento da rodada fica no Redis e expira em 24 horas; depois disso a previsão é bloqueada, mesmo em partidas finalizadas.
+\end{itemize}
 
-O modelo de produção (seção 5.11) foi desenhado para encaixar no contrato do backend. O que falta para ele chegar ao jogador é o serviço que o expõe ao app e a troca do mock.
+\subsubsection{Observação de escrita (FP-Growth)}
+
+O catálogo de produto vem da variante \path{sintaxe_ampliada} do run \path{fp-growth-metadados-ampliados-20261008T002311Z} (22 atributos, 523 regras direcionais elegíveis, 345 padrões distintos) e contém 20 padrões candidatos, selecionados sem classe ou autoria no ranking. Para um texto novo, o motor normaliza (NFKC), recorta os 300 primeiros caracteres, extrai as medidas com limites congelados e indica os padrões que correspondem \textbf{integralmente}, sem recalcular quantis nem receber gabarito ou autor. Cada padrão traz uma explicação em linguagem simples e a frequência da combinação em cada classe da partição de validação (720 falsas e 720 verdadeiras): \texttt{frequência = contagem / 720}. Essas frequências são \textbf{dentro de cada classe} do corpus, e não a probabilidade de a notícia ser falsa. O catálogo tem status \path{experimental_descriptive_comparison} e \textbf{não passou por aprovação editorial humana}; o catálogo científico permanece \path{research_only}. A análise devolve \path{ok}, \path{no_match}, \path{invalid_text} (HTTP 400) ou \path{unavailable} (503).
+
+\subsubsection{Validação da integração}
+
+Um teste ponta a ponta (\path{web-app/scripts/check-news-prediction.ts}) usa banco e Redis descartáveis, parser HTML real, o modelo real e duas sessões de navegador. Verifica bloqueio antes do fechamento coletivo, recusa de texto arbitrário, cinco consultas concorrentes com um registro, recarga, telas desktop e celular, próxima rodada sem resultado antigo e encerramento da partida com falha induzida do modelo; passou com P(fake) = 0,99 em uma notícia de teste e versão \path{svm-spacy-chi2k10k-svd500-v1}. A suíte do web app reportou 419 testes aprovados (cinco condicionais ignorados) e a suíte Python 20, que inclui a reprodução numérica das features e das probabilidades do código original. O teste não cobre extração de URL externa ao vivo. Evidências em \path{web-app/validation/news-prediction/} e relatório em \path{docs/machine-learning/validacao-integracao-supervisionado.md}.
+
+\textbf{Observação.} Os textos fixos que a interface exibia sem origem no modelo (a dica "78\% mais chances" e a margem "±1.8\%") não existem mais na \path{dev}. A reflexão socrática, porém, continua sendo um conjunto de perguntas gerais fixas.
+
+\subsection{8.5 Como o MVP constrói sobre as descobertas}
 
 \begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  \textbf{Contrato de saída alinhado.} \texttt{modelo\_olimpo.analisar} devolve exatamente o formato de \texttt{AIAnalysisResult} (\texttt{classification}, \texttt{confidence}, \texttt{reasons}, \texttt{modelVersion}), de modo que a implementação do \texttt{IAIAnalysisService} pode substituir o mock sem mudar o domínio.
-\item
-  \textbf{Três níveis a partir de um classificador binário.} O jogo tem \emph{reliable / uncertain / unreliable} e o modelo tem duas classes. A solução usa a probabilidade calibrada: \texttt{uncertain} entre 0,35 e 0,65, limiares que são decisão de produto.
-\item
-  \textbf{Entrada heterogênea.} O app recebe o texto extraído da página (\texttt{news/extract}), com tamanhos e formatos variados. O \texttt{PreparadorEntrada} aplica a mesma normalização e o mesmo truncamento em 100 palavras do treino. Risco conhecido: os atributos de estrutura de sentença saem da distribuição de treino quando o texto é curto.
-\item
-  \textbf{Explicação.} Os \texttt{reasons} vêm da decomposição exata do score em n-gramas e atributos de estilo, em linguagem para o jogador (por exemplo, "frases curtas", "muitas preposições"). Os padrões do FP-Growth continuam como fonte de hipóteses de estilo; a interface hoje exibe três cartões socráticos fixos, e a geração dinâmica de perguntas (por exemplo, via LLM) ainda não existe.
-\item
-  \textbf{Hospedagem.} O app é TypeScript e o modelo é scikit-learn/spaCy; a opção natural é um serviço Python separado exposto por HTTP, consumido pela implementação do \texttt{IAIAnalysisService}, mantendo o mock como \emph{fallback}. O \texttt{.joblib} exige o módulo \texttt{modelo\_olimpo} importável e as mesmas versões de bibliotecas, e o modelo de linguagem do spaCy é dependência de inferência.
-\item
-  \textbf{Registro.} Gravar o \texttt{modelVersion} em cada análise (\texttt{news\_analyses}) e medir o modelo em notícias reais coletadas pelo \texttt{news/extract}.
+\item \textbf{Contrato de saída alinhado.} O adaptador HTTP implementa \path{IAIAnalysisService} e devolve o formato do backend, sem mudar o domínio.
+\item \textbf{Três níveis a partir de um classificador binário.} O jogo tem \emph{reliable / uncertain / unreliable} e o modelo tem duas classes; a solução usa a probabilidade calibrada com limiares 0,35 e 0,65, decisão de produto.
+\item \textbf{Entrada heterogênea.} O app recebe o texto extraído da página (\path{news/extract}). O motor aplica a mesma normalização e o mesmo truncamento do treino. Risco conhecido: os atributos de estrutura de sentença saem da distribuição de treino em textos curtos, o que também explica parte da queda externa (seção 5.6).
+\item \textbf{Explicação.} Os \path{reasons} vêm da decomposição exata do score em n-gramas e atributos de estilo, em linguagem para o jogador. Os padrões do FP-Growth chegam ao jogo como observações descritivas, não como argumento de classificação.
+\item \textbf{Separação de papéis.} A previsão só é revelada após o fechamento coletivo, para não influenciar o voto; a pontuação segue o gabarito. A interface usa "previsão do modelo" e "estimativa", e o classificador não consulta fontes nem confirma acontecimentos.
+\item \textbf{Registro.} \path{modelVersion}, hash do artefato e versão do código ficam gravados em cada análise (\path{news_analyses}).
 \end{enumerate}
 
-\section{9. Conclusão}\label{conclusuxe3o-1}
+\textbf{O que ainda falta.} Medir o modelo com notícias reais coletadas pelo \path{news/extract}; submeter o catálogo de observações a revisão editorial humana e a um estudo de compreensão com jogadores; gerar dinamicamente as perguntas socráticas; persistir o fechamento da rodada de forma durável; e dimensionar a fila de inferência para carga real.
 
-O projeto percorreu o caminho de uma ideia de produto (avaliador socrático de notícias) para uma plataforma de jogo com backend funcional, apoiada por duas linhas de pesquisa complementares e por um modelo de produção desenhado para ser integrado.
 
-\textbf{O que está estabelecido.} (i) Um classificador linear sobre TF-IDF word+char resolve o Fake.br com F1 ≈ 0,93 e é difícil de superar: nem reduções de dimensionalidade, nem kernels, nem modelos de árvore, nem metadados morfossintáticos trouxeram ganho relevante de F1. (ii) O regime d ≫ N e a esparsidade favorecem modelos lineares, e C=1 é o ponto ótimo do LinearSVC. (iii) A normalização do texto e o truncamento são decisões metodológicas necessárias: eliminaram o artefato de formatação (\texttt{SPACE}), embora reste um sinal de tamanho. (iv) O FP-Growth, com controle de autoria, é o método de descoberta mais útil para formular perguntas, com a ressalva de que descreve o corpus. (v) O modelo de produção, M2 + χ² + SVD(500), mantém o F1 de 0,9295 com gap de 0,042 em vez de 0,0705.
 
-\textbf{Trade-offs assumidos.} Interpretabilidade e custo contra capacidade (linear em vez de kernel ou árvore); descoberta de padrões contra classificação (FP-Growth em vez de detector de anomalias); controle de vazamento de fonte contra desempenho aparente (normalização e truncamento reduziram o F1 interno); menor ajuste ao treino e explicação detalhada contra generalização externa (o modelo de produção tem AUC externo de 0,677, contra 0,707 do word+char completo); e escopo (jogo e backend antes da integração do modelo).
+\section{9. Conclusão}
 
-\textbf{Limites.} A generalização fora do Fake.br é fraca (F1 ≈ 0,61--0,64, AUC ≈ 0,68--0,71, em títulos), por viés de domínio que nenhuma das técnicas testadas resolveu; por isso a saída do modelo é apresentada como indício. O método socrático está implementado apenas como cartões fixos na interface, e o modelo ainda não está conectado ao \texttt{ai-feedback}.
+O projeto percorreu o caminho de uma ideia de produto (avaliador socrático de notícias) para uma plataforma de jogo com backend funcional, apoiada por duas linhas de pesquisa complementares e por um modelo de produção já integrado ao jogo.
 
-\textbf{Próximos passos.} (1) Publicar o serviço de inferência e substituir o mock; (2) medir o modelo com notícias reais; (3) coletar um conjunto externo com texto completo de fontes e épocas distintas; (4) tornar dinâmicas as perguntas socráticas, a partir dos \texttt{reasons} e dos padrões do FP-Growth.
+\textbf{O que está estabelecido.} (i) Um classificador linear sobre TF-IDF word+char resolve o Fake.br com F1 ≈ 0,93 e é difícil de superar: nem reduções de dimensionalidade, nem kernels, nem modelos de árvore, nem metadados morfossintáticos trouxeram ganho relevante de F1. (ii) O regime d ≫ N e a esparsidade favorecem modelos lineares, e C=1 é o ponto ótimo do LinearSVC. (iii) A normalização do texto e o truncamento são decisões metodológicas necessárias: eliminaram o artefato de formatação (\path{SPACE}), embora reste um sinal de tamanho. (iv) O FP-Growth, com controle de autoria, foi escolhido para gerar candidatos a perguntas; sua utilidade pedagógica ainda não foi avaliada, com a ressalva de que descreve o corpus. (v) O modelo de produção, M2 + χ² + SVD(500), mantém o F1 de 0,9295 com gap de 0,042 em vez de 0,0705.
+
+\textbf{Trade-offs assumidos.} Interpretabilidade e custo contra capacidade (linear em vez de kernel ou árvore); descoberta de padrões contra classificação (FP-Growth em vez de detector de anomalias); controle de vazamento de fonte contra desempenho aparente (normalização e truncamento reduziram o F1 interno); menor ajuste ao treino e explicação detalhada contra generalização externa (o modelo de produção tem AUC externo de 0,677, contra 0,707 do word+char completo); e escopo (a previsão só é revelada após o fechamento coletivo e não altera a pontuação).
+
+\textbf{Limites.} A generalização fora do Fake.br é fraca (F1 ≈ 0,61–0,64, AUC ≈ 0,68–0,71, em títulos), por viés de domínio que nenhuma das técnicas testadas resolveu; por isso a saída do modelo é apresentada como indício. O método socrático está implementado apenas como perguntas gerais fixas na interface, e o modelo ainda não foi medido em notícias reais de usuários.
+
+\textbf{Próximos passos.} (1) Medir o modelo com notícias reais; (2) revisar editorialmente o catálogo de observações e testar sua compreensão com jogadores; (3) coletar um conjunto externo com texto completo de fontes e épocas distintas; (4) tornar dinâmicas as perguntas socráticas, a partir dos \path{reasons} e dos padrões do FP-Growth; (5) persistir o fechamento da rodada e dimensionar a fila de inferência.
+
+
+
 
 \section{Referências}\label{referuxeancias}
 
@@ -2740,7 +2770,7 @@ Essas características não determinam diretamente se uma notícia é verdadeira
 \textbf{\emph{\texttt{adverbRatio}}} & \texttt{num\_adverbios\ /\ num\_palavras} & Frequência relativa de modificadores e intensificadores \\
 \textbf{\emph{\texttt{pronounRatio}}} & \texttt{num\_pronomes\ /\ num\_palavras} & Presença relativa de referências pessoais no discurso \\
 \textbf{\emph{\texttt{modalVerbRatio}}} & \texttt{num\_verbos\_modais\ /\ num\_verbos} & Grau de modalização, possibilidade, necessidade ou incerteza \\
-\textbf{\emph{\texttt{imperativeSubjunctiveRatio}}} & \texttt{num\_verbos\_subj\_imp\ /\ num\_verbos} & Presença relativa de construções imperativas ou subjuntivas \\
+\textbf{\emph{\path{imperativeSubjunctiveRatio}}} & \texttt{num\_verbos\_subj\_imp\ /\ num\_verbos} & Presença relativa de construções imperativas ou subjuntivas \\
 \textbf{\emph{\texttt{personalPronounRatio}}} & \texttt{(num\_pron\_1\_2\_sing\ +\ num\_pron\_1\_plural)\ /\ num\_pronomes} & Grau de aproximação com autor, leitor ou grupo social \\
 \textbf{\emph{\texttt{linkDensity}}} & \texttt{num\_links\ /\ num\_palavras} & Quantidade relativa de referências externas presentes no texto \\
 \textbf{\emph{\texttt{punctuationDensity}}} & \texttt{(num\_tokens\ -\ num\_palavras)\ /\ num\_tokens} & Aproximação da densidade de elementos de pontuação \\
@@ -2755,7 +2785,7 @@ As características já fornecidas pelo próprio corpus, como pausalidade, tam\_
 
 \subsection{Apêndice B: Capturas dos resultados do FP-Growth}\label{apuxeandice-b-capturas-dos-resultados-do-fp-growth}
 
-As figuras apresentam recortes dos resultados persistidos. O comparativo de classificação está arquivado em history/RESULTADOS.md; o FP-Growth principal é o notebook sem autoria e com controles. As capturas indicam a origem para conferir valores e protocolos.
+As figuras deste apêndice apresentam resultados históricos do FP-Growth de estilo, sem autoria e com controles. Não representam o principal atual, sintaxe ampliada, descrito na seção 6.7.
 
 \pandocbounded{\includegraphics[keepaspectratio]{entregavel-final-img/fig15.png}}
 
@@ -2763,7 +2793,7 @@ Figura 1 Comparação resumida do teste canônico. Fonte: history/RESULTADOS.md 
 
 \pandocbounded{\includegraphics[keepaspectratio]{entregavel-final-img/fig16.png}}
 
-Figura 2 Síntese do experimento principal sem autoria. Fonte: notebook principal e run de controles {[}6{]}.
+Figura 2 Síntese do experimento histórico sem autoria. Fonte: notebook histórico de estilo e run de controles {[}6{]}.
 
 \pandocbounded{\includegraphics[keepaspectratio]{entregavel-final-img/fig17.png}}
 
@@ -2791,11 +2821,11 @@ Figura 7 Conferência da cobertura congelada. Fonte: célula evaluate\_frozen() 
 
 \subsection{Apêndice D: Catálogo completo das regras extraídas}\label{apuxeandice-d-catuxe1logo-completo-das-regras-extrauxeddas}
 
-A tabela reúne as 20 regras do experimento principal sem autoria. Oito passaram conjuntamente pelos filtros de confidence, lift e Jaccard; as outras doze permanecem no CSV bruto e são apresentadas para transparência. A direção da seta altera a confidence, mesmo quando support, lift e Jaccard são iguais. Nenhuma regra estabelece falsidade factual {[}6, 11{]}.
+A tabela reúne as 20 regras do experimento histórico de estilo sem autoria. Oito passaram conjuntamente pelos filtros de confidence, lift e Jaccard; as outras doze permanecem no CSV bruto e são apresentadas para transparência. A direção da seta altera a confidence, mesmo quando support, lift e Jaccard são iguais. Nenhuma regra estabelece falsidade factual {[}6, 11{]}.
 
 Legenda: TTR = razão de tipos por tokens; DIV = diversidade lexical; PONT = densidade de pontuação; MAIÚSC = proporção de maiúsculas. ↑ e ↓ indicam alto e baixo segundo os quantis do treino. S/C/L/J = support, confidence, lift de associação e Jaccard, nessa ordem.
 
-Tabela 2 Todas as regras de associação extraídas pelo FP-Growth principal sem autoria. Fonte: {[}6, 11{]}.
+Tabela 2 Todas as regras de associação extraídas pelo FP-Growth histórico de estilo sem autoria. Fonte: {[}6, 11{]}.
 
 {\def\LTcaptype{none} % do not increment counter
 \begin{longtable}[]{@{}
@@ -2858,12 +2888,12 @@ O grupo definiu, na primeira semana, um roadmap de 7 semanas para a Residência 
 \bottomrule\noalign{}
 \endlastfoot
 1 & Metodologia e organização & Metodologias documentadas (seção 2): Crystal Clear, RACI, MoSCoW, Planning Poker, AIPGF, CRISP-DM, MLOps, testes e pesquisa. GitHub com \emph{pull requests} numerados, branches por funcionalidade, Conventional Commits e revisão automatizada \\
-2 & Arquitetura, tecnologias e dataset & Arquitetura documentada (\texttt{docs/codigo/arquitetura.tex}, OpenSpec) e tecnologias escolhidas (seção 8.2); Fake.br analisado e limpo (seção 4); variável-alvo identificada; Regressão Logística como baseline \\
+2 & Arquitetura, tecnologias e dataset & Arquitetura documentada (\path{docs/codigo/arquitetura.tex}, OpenSpec) e tecnologias escolhidas (seção 8.2); Fake.br analisado e limpo (seção 4); variável-alvo identificada; Regressão Logística como baseline \\
 3 & Estudo e experimentação de técnicas & TF-IDF e n-gramas; Regressão Logística, SVM e Random Forest comparados; várias técnicas não supervisionadas (Isolation Forest, LOF, One-Class SVM, K-means, DBSCAN, HDBSCAN, PU Learning, FP-Growth); SVD/PCA; métricas iniciais \\
 4 & Construção e avaliação do modelo; preparação para o backend & Pipeline de treino em Python; split controlado; accuracy, precisão, recall, F1 e matriz de confusão; várias visualizações; modelo principal documentado (seções 5 e 7); módulo de inferência isolado (\texttt{modelo\_olimpo.py}); contrato de entrada e saída (\texttt{AIAnalysisResult}) \\
 5 & Motor de análise, backend e fundação do frontend & Backend com autenticação, salas, votação em três níveis (equivalente ao semáforo), SSE, desafios globais e extração de notícia com proteção contra SSRF; entradas validadas com Zod; estrutura base do frontend; a tela já consome o contrato \texttt{analysis} \\
 6 & Experiência do usuário, integração e início da frente de negócio & Tela inicial, criação e entrada em sala, lobby, jogo por etapas, placares, ranking, submissão de notícia e extração por URL; semáforo de três níveis; reflexão socrática (cartões fixos) \\
-7 & Validação, negócio, refinamento e pitch & Documentação técnica (este documento, \texttt{docs/codigo/arquitetura.tex}, especificações OpenSpec); cerca de 40 arquivos de teste automatizados e CI com auditoria, verificação estática, E2E e CodeQL \\
+7 & Validação, negócio, refinamento e pitch & Documentação técnica (este documento, \path{docs/codigo/arquitetura.tex}, especificações OpenSpec); cerca de 40 arquivos de teste automatizados e CI com auditoria, verificação estática, E2E e CodeQL \\
 \end{longtable}
 }
 

@@ -8,6 +8,7 @@
 \usepackage{booktabs,array,graphicx}
 \usepackage{microtype}
 \usepackage{enumitem}
+\usepackage{xurl}
 \usepackage[dvipsnames]{xcolor}
 \usepackage[colorlinks=true,linkcolor=Maroon,urlcolor=Blue,citecolor=Blue]{hyperref}
 \setlist{itemsep=2pt,topsep=4pt}
@@ -107,9 +108,11 @@ O desempenho não se transfere. O modelo tende a rotular como falso o que é cur
 
 Os detectores de novidade atingiram acurácias altas (Isolation Forest 0,97; DBSCAN 0,97; LOF 0,95), mas a leitura foi revisada: eles aprendem desvio em relação às notícias verdadeiras, e como a autoria separa quase por completo as classes, o resultado reflete o corpus, não a falsidade. Em holdout temporal a acurácia cai (Isolation Forest 0,86; DBSCAN 0,82). O agrupamento temático teve silhouette de 0,008 (K-means) e 0,040 (HDBSCAN), sem autorizar tratar grupos como classes de veracidade.
 
-O \textbf{FP-Growth} foi adotado como método final de \emph{descoberta}, não de classificação. Sem autoria na mineração e com controles, a versão estilística encontrou 18 itemsets e 8 regras destacadas; a avaliação estratificada mostrou que a associação agregada com o rótulo vinha da autoria (um padrão com 70,3\% de falsas no agregado tem 98,9\% no estrato sem autor, onde o baseline já é 98,0\%).
+O modelo principal atual é o FP-Growth sem autoria da raiz de \path{machine-learning/unsupervised-learning/}: \texttt{fp\_growth\_principal.py} e \path{fp_growth_principal_sem_autoria.ipynb}, variante \texttt{sintaxe\_ampliada}. No run \path{fp-growth-metadados-ampliados-20261008T002311Z}, são 22 atributos ativos, 44 itens, 523 regras direcionais elegíveis e 345 padrões distintos. Na validação, 422 regras mantêm os filtros e 347 também têm redescoberta $\geq$80\% em 100 reamostragens dos grupos de treino. O teste conhecido é exploratório. O método descreve coocorrências e não classifica a veracidade de notícias.
 
-A versão mais recente enriquece a representação com classes gramaticais (POS) e relações de dependência (DEP) e corrige uma redundância da representação anterior (a medida \textit{type-token ratio} era função de outras duas). Foram 255 padrões, 802 regras brutas e 152 elegíveis; dessas, 121 mantêm os filtros na validação, 120 no teste e 95 satisfazem ambos e reaparecem em $\ge$80\% das reamostragens. Muitas regras expressam redundância gramatical (muitos advérbios $\to$ muitos modificadores adverbiais, lift 3,5) e dizem pouco sobre falsidade. Um ranking posterior, usando rótulos apenas da validação, retém 25 padrões: 20 favorecem notícias verdadeiras (por exemplo, poucos advérbios e poucos complementos oracionais) e 5 favorecem falsas (por exemplo, muitos advérbios e pontuação alta, com 91,5\% de falsas em 106 ocorrências, mas redescoberta de só 37\% no treino). Ao estratificar por autoria, o enriquecimento Fake do padrão ADV alto desaparece (lift 1,245 $\to$ 1,01).
+Os quantis e regras usam apenas o treino canônico (4.320 notícias); validação e teste têm 1.440 notícias cada e preservam grupos de pares e duplicatas. A extração usa os primeiros 300 caracteres após normalização NFKC. O suporte mínimo é 0,08 e os filtros são confidence $\geq$0,50, lift $\geq$1,05 e Jaccard $\geq$0,10. Classe e autoria são usadas apenas na descrição posterior; o ranking de 20 candidatos não usa rótulos. Os relatórios estilísticos e o ranking anterior com 25 padrões são históricos e não representam este principal.
+
+Na validação, 105 dos 345 padrões têm maior frequência dentro da classe Fake, 235 dentro de True e cinco empatam. Essas frequências não são probabilidades de falsidade. A união de todos os padrões cobre 1.439/1.440 notícias; a fila de revisão cobre 1.346, sem comprovar eficácia pedagógica. Ainda faltam avaliação externa e revisão editorial humana.
 
 \section{O que está em uso}
 
@@ -132,7 +135,7 @@ Gabarito cadastrado & Referência da pontuação dos jogadores & Veredito da rod
 
 \subsection{Modelo supervisionado}
 
-\textbf{Modelo.} \textit{LinearSVC} ($C{=}1$, classes balanceadas) com 24 atributos spaCy (peso 0,03), seleção $\chi^2$ de 10 mil n-gramas e SVD de 500 dimensões, calibrado por sigmoide (versão \texttt{svm-spacy-chi2k10k-svd500-v1}). Iguala a base em F1 de validação cruzada (0,9295), reduz o gap de 0,0705 para 0,042 e tem F1 de 0,9243 no teste interno. A escolha se deve menos ao desempenho que à \emph{explicabilidade}: o escore se decompõe exatamente em contribuições por n-grama e por atributo de estilo, que viram os motivos exibidos. O artefato final foi reajustado em treino mais teste (7.200 notícias), de modo que as métricas internas citadas vêm de outro ajuste e não avaliam esse artefato de forma independente.
+\textbf{Modelo.} \textit{LinearSVC} ($C{=}1$, classes balanceadas) com 24 atributos spaCy (peso 0,03), seleção $\chi^2$ de 10 mil n-gramas e SVD de 500 dimensões, calibrado por sigmoide (versão \path{svm-spacy-chi2k10k-svd500-v1}). Iguala a base em F1 de validação cruzada (0,9295), reduz o gap de 0,0705 para 0,042 e tem F1 de 0,9243 no teste interno sem calibração. A versão calibrada registra F1 de 0,9208 e AUC de 0,9789 antes do reajuste final. A escolha se deve menos ao desempenho que à \emph{explicabilidade}: o escore se decompõe exatamente em contribuições por n-grama e por atributo de estilo, que viram os motivos exibidos. O artefato final foi reajustado em treino mais teste (7.200 notícias), de modo que as métricas internas citadas vêm de outro ajuste e não avaliam esse artefato de forma independente.
 
 \textbf{Política de decisão.} O escore é $100\times P(\text{fake})$. A classificação é \emph{confiável} para $P\le0{,}35$, \emph{não confiável} para $P\ge0{,}65$ e \emph{incerta} entre os dois valores. Textos com menos de 30 palavras não são classificados, e a análise usa as primeiras 100 palavras do corpo extraído, como no treino. Os limiares são decisão de produto.
 
@@ -140,13 +143,13 @@ Gabarito cadastrado & Referência da pontuação dos jogadores & Veredito da rod
 
 \textbf{Integração no backend.} Um adaptador HTTP substituiu o \textit{mock} como implementação padrão do contrato de análise (\texttt{classification}, escore, \texttt{reasons}, \texttt{modelVersion}). A resposta é guardada em PostgreSQL com chave formada pelo conteúdo, pelo hash do artefato, pelo código de inferência e pela política, de modo que trocar a versão do modelo gera nova análise. Em um teste com quatro consultas concorrentes de duas instâncias do caso de uso houve uma única inferência e um único registro.
 
-\textbf{Acesso e pontuação.} A rota \texttt{POST /api/news-prediction} exige sessão, participação na sala e rodada encerrada coletivamente: votar, avançar ou concluir individualmente não libera a previsão. Votos, placar e eventos em tempo real fecham sem chamar o modelo, e a pontuação continua vindo do gabarito cadastrado. Se o modelo falhar, a partida segue normalmente e apenas a previsão fica indisponível.
+\textbf{Acesso e pontuação.} A rota \path{POST /api/news-prediction} exige sessão, participação na sala e rodada encerrada coletivamente: votar, avançar ou concluir individualmente não libera a previsão. Votos, placar e eventos em tempo real fecham sem chamar o modelo, e a pontuação continua vindo do gabarito cadastrado. Se o modelo falhar, a partida segue normalmente e apenas a previsão fica indisponível.
 
 \textbf{Validação.} Um teste ponta a ponta com parser HTML real, modelo real, banco e Redis descartáveis e duas sessões de navegador verificou o bloqueio antes do fechamento, as cinco consultas concorrentes com um registro, a recarga, as telas desktop e celular, e o encerramento da partida com falha induzida do modelo. A suíte do web app reportou 419 testes aprovados, e a suíte Python 20, incluindo reprodução numérica das \textit{features} e das probabilidades do código original.
 
 \subsection{Observação de escrita (FP-Growth)}
 
-O FP-Growth foi levado ao produto como \emph{descrição}, não como classificador. O catálogo em uso vem da variante \texttt{sintaxe\_ampliada} (22 atributos, 523 regras direcionais elegíveis e 345 padrões distintos) e contém 20 padrões candidatos, selecionados sem usar classe ou autoria no ranking. Para um texto novo, o motor normaliza e recorta os primeiros 300 caracteres, extrai as medidas com limites congelados, sem recalcular quantis nem receber gabarito ou autor, e indica quais padrões correspondem \emph{integralmente}. Cada padrão traz uma explicação em linguagem simples (por exemplo, ``afirmações ligadas a um verbo, como \emph{disse que o prazo acabou}'') e a frequência da mesma combinação em cada classe da partição de validação (720 notícias falsas e 720 verdadeiras). Essas frequências são \emph{dentro de cada classe} do corpus, e não a probabilidade de a notícia ser falsa. O catálogo está marcado como \texttt{experimental\_descriptive\_comparison} e não passou por aprovação editorial humana.
+O FP-Growth foi levado ao produto como \emph{descrição}, não como classificador. O catálogo em uso vem da variante \texttt{sintaxe\_ampliada} (22 atributos, 523 regras direcionais elegíveis e 345 padrões distintos) e contém 20 padrões candidatos, selecionados sem usar classe ou autoria no ranking. Para um texto novo, o motor normaliza e recorta os primeiros 300 caracteres, extrai as medidas com limites congelados, sem recalcular quantis nem receber gabarito ou autor, e indica quais padrões correspondem \emph{integralmente}. Cada padrão traz uma explicação em linguagem simples (por exemplo, ``afirmações ligadas a um verbo, como \emph{disse que o prazo acabou}'') e a frequência da mesma combinação em cada classe da partição de validação (720 notícias falsas e 720 verdadeiras). Essas frequências são \emph{dentro de cada classe} do corpus, e não a probabilidade de a notícia ser falsa. O catálogo está marcado como \path{experimental_descriptive_comparison} e não passou por aprovação editorial humana.
 
 \subsection{Plataforma}
 
@@ -175,7 +178,7 @@ O trabalho estabeleceu que um classificador linear sobre TF-IDF resolve o Fake.b
   \item RECOGNA NLP. \textit{FakeRecogna}. \url{https://huggingface.co/datasets/recogna-nlp/FakeRecogna}.
   \item Lundberg, S.; Lee, S.-I. A unified approach to interpreting model predictions (SHAP). \url{https://shap.readthedocs.io/}.
   \item Scikit-learn. \textit{User guide}. \url{https://scikit-learn.org/stable/}.
-  \item Equipe Olimpo. \textit{Documento técnico consolidado} (\texttt{Entregável Final - Completo}) e relatórios em \texttt{machine-learning/}, \texttt{model-engine/} e \texttt{docs/machine-learning/validacao-integracao-supervisionado.md} (branch \texttt{dev}), repositório \texttt{olimpo-fake-news-ai}, 2026.
+  \item Equipe Olimpo. \textit{Documento técnico consolidado} (\path{Entregável Final - Completo}) e relatórios em \texttt{machine-learning/}, \texttt{model-engine/} e \path{docs/machine-learning/validacao-integracao-supervisionado.md} (branch \texttt{dev}), repositório \texttt{olimpo-fake-news-ai}, 2026.
 \end{itemize}
 
 \end{document}
