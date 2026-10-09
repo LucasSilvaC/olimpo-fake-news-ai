@@ -1,3 +1,4 @@
+import { getMachineLearningPages } from "./machine-learning-pages";
 import type { DocumentationNavigationGroup, IDocumentationPage } from "../model/types";
 
 export const documentationGroups: DocumentationNavigationGroup[] = [
@@ -772,4 +773,5 @@ export const documentationPages: IDocumentationPage[] = [
       },
     ],
   },
+  ...getMachineLearningPages("pt-BR"),
 ];

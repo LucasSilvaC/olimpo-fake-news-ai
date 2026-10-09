@@ -21,6 +21,10 @@ O conteúdo usa como fontes o README principal, as especificações OpenSpec, o 
 
 ## Como manter os artigos
 
+Os guias **Modelo supervisionado · SVM Olimpo** e **Modelo não supervisionado · FP-Growth** estão na área Engenharia, com conteúdo completo em português, inglês e espanhol. Rotas: `/{pt-BR,en,es}/docs/modelo-supervisionado` e `/{pt-BR,en,es}/docs/modelo-nao-supervisionado`.
+
+`src/entities/documentation/data/machine-learning-pages.ts` reúne as três traduções; `model-evidence.json` preserva os dados numéricos conferidos nos CSVs e manifestos. Os catálogos dos três idiomas importam essas páginas. Os guias abrangem dados, atributos e denominadores, preparo, parâmetros, equações, validação, métricas, limitações, contratos HTTP, operação, reprodução e perguntas técnicas. A [conferência de tech-questions](docs/tech-questions-review.md) registra as correções do dossiê usado para formular as perguntas.
+
 - `src/entities/documentation/data/documentation-pages.ts`: páginas, grupos macro, seções, conteúdo e referências.
 - `src/entities/documentation/model/types.ts`: contrato dos artigos e dos blocos disponíveis.
 - `src/entities/documentation/model/icon-map.ts`: associação entre nomes tipados e ícones Lucide.
@@ -34,6 +38,7 @@ Cada guia deve ter uma área macro, um ícone, seções curtas e links para as f
 
 ```powershell
 pnpm typecheck
+pnpm check:models
 pnpm lint
 pnpm build
 ```

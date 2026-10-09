@@ -1,3 +1,4 @@
+import { getMachineLearningPages } from "./machine-learning-pages";
 import type { DocumentationNavigationGroup, IDocumentationPage } from "../model/types";
 
 const repository = "https://github.com/LucasSilvaC/olimpo-fake-news-ai/blob/feat/linguistic-rules";
@@ -757,4 +758,5 @@ export const documentationPagesEn: IDocumentationPage[] = [
       },
     ],
   },
+  ...getMachineLearningPages("en"),
 ];
