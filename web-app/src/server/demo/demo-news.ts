@@ -4,7 +4,7 @@ import "server-only";
 import type { AIAnalysisResult } from "@/app/api/ai-feedback/repositories/ai-analysis-service.interface";
 import type { INewsArticle } from "@/lib/news/types";
 import type { NewsInsightsAnalysis } from "@/lib/news-insights/types";
-import type { MLTargetType } from "@/server/shared/database/schemas/enums";
+import type { MLTargetType } from "@/server/shared/domain/game-vocabulary";
 
 export interface DemoNewsFixture {
   id: string;

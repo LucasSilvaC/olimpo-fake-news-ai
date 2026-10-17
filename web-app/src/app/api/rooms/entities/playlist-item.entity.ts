@@ -11,6 +11,7 @@ export interface PlaylistItemDTO {
   roomId: string;
   articleId: string;
   roundOrder: number;
+  createdAt?: Date;
 }
 
 export class PlaylistItemEntity {
@@ -38,6 +39,7 @@ export class PlaylistItemEntity {
       roomId: this.roomId,
       articleId: this.articleId,
       roundOrder: this.roundOrder,
+      createdAt: this.createdAt,
     };
   }
 }

@@ -1,12 +1,9 @@
 import { RoomDTO, RoomEntity } from "../entities";
-import { drizzleRoomRepository } from "../repositories/drizzle-room.repository";
-import { redisRoomRepository } from "../repositories/redis-room.repository";
 import { IRedisRoomRepository } from "../repositories/redis-room.repository.interface";
 import { IRoomRepository } from "../repositories/room.repository.interface";
 
 import {
   IEventPublisher,
-  redisEventPublisher as defaultRedisEventPublisher,
 } from "@/app/api/realtime-events";
 
 export interface StartGameInput {
@@ -20,9 +17,9 @@ export interface StartGameResult {
 
 export class StartGameUseCase {
   constructor(
-    private readonly roomRepository: IRoomRepository = drizzleRoomRepository,
-    private readonly redisRoomRepo: IRedisRoomRepository = redisRoomRepository,
-    private readonly eventPublisher: IEventPublisher = defaultRedisEventPublisher,
+    private readonly roomRepository: IRoomRepository,
+    private readonly redisRoomRepo: IRedisRoomRepository,
+    private readonly eventPublisher: IEventPublisher,
   ) {}
 
   async execute(input: StartGameInput): Promise<StartGameResult> {
@@ -77,5 +74,3 @@ export class StartGameUseCase {
     };
   }
 }
-
-export const startGameUseCase = new StartGameUseCase();

@@ -152,7 +152,6 @@ describe("SubmitVoteUseCase", () => {
       roomRepository,
       redisRoomRepository,
       newsArticleRepository,
-      getArticleAnalysisUseCase,
       mockEventPublisher,
     );
   });

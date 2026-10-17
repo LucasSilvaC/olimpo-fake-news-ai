@@ -1,29 +1,23 @@
-import {
-  Room,
-  NewRoom,
-  RoomMember,
-  NewRoomMember,
-  RoomPlaylistItem,
-  NewRoomPlaylistItem,
-  RoomStatus,
-} from "@/server/shared/database/schemas";
+﻿import type { PlaylistItemDTO, PlaylistItemEntityProps, RoomDTO, RoomEntityProps, RoomMemberDTO, RoomMemberEntityProps } from "../entities";
+
+import type { RoomStatus } from "@/server/shared/domain/game-vocabulary";
 
 export interface IRoomRepository {
-  findById(id: string): Promise<Room | null>;
-  findByPin(pin: string): Promise<Room | null>;
-  create(data: NewRoom): Promise<Room>;
+  findById(id: string): Promise<RoomDTO | null>;
+  findByPin(pin: string): Promise<RoomDTO | null>;
+  create(data: RoomEntityProps): Promise<RoomDTO>;
   updateStatus(
     id: string,
     status: RoomStatus,
     currentRound?: number,
     totalRounds?: number,
-  ): Promise<Room>;
-  updateRoom(id: string, data: Partial<NewRoom>): Promise<Room>;
-  addMember(data: NewRoomMember): Promise<RoomMember>;
-  findMember(roomId: string, userId: string): Promise<RoomMember | null>;
-  listMembers(roomId: string): Promise<RoomMember[]>;
+  ): Promise<RoomDTO>;
+  updateRoom(id: string, data: Partial<RoomDTO>): Promise<RoomDTO>;
+  addMember(data: RoomMemberEntityProps): Promise<RoomMemberDTO>;
+  findMember(roomId: string, userId: string): Promise<RoomMemberDTO | null>;
+  listMembers(roomId: string): Promise<RoomMemberDTO[]>;
   countMembers(roomId: string): Promise<number>;
-  updateMemberScore(roomId: string, userId: string, scoreDelta: number): Promise<RoomMember>;
-  addPlaylistItems(items: NewRoomPlaylistItem[]): Promise<RoomPlaylistItem[]>;
-  getPlaylistItems(roomId: string): Promise<RoomPlaylistItem[]>;
+  updateMemberScore(roomId: string, userId: string, scoreDelta: number): Promise<RoomMemberDTO>;
+  addPlaylistItems(items: PlaylistItemEntityProps[]): Promise<PlaylistItemDTO[]>;
+  getPlaylistItems(roomId: string): Promise<PlaylistItemDTO[]>;
 }

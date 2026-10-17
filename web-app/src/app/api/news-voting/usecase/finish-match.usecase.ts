@@ -1,17 +1,12 @@
-import { drizzleUserRepository as defaultUserRepository } from "@/app/api/auth/repositories/drizzle-user.repository";
 import { IUserRepository } from "@/app/api/auth/repositories/user.repository.interface";
-import { drizzleNewsVoteRepository as defaultNewsVoteRepository } from "@/app/api/news-voting/repositories/drizzle-news-vote.repository";
 import { INewsVoteRepository } from "@/app/api/news-voting/repositories/news-vote.repository.interface";
 import {
   IEventPublisher,
-  redisEventPublisher as defaultRedisEventPublisher,
 } from "@/app/api/realtime-events";
 import { MatchFinishedLeaderboardEntry } from "@/app/api/realtime-events/entities/event.types";
-import { drizzleRoomRepository as defaultRoomRepository } from "@/app/api/rooms/repositories/drizzle-room.repository";
-import { redisRoomRepository as defaultRedisRoomRepository } from "@/app/api/rooms/repositories/redis-room.repository";
 import { IRedisRoomRepository } from "@/app/api/rooms/repositories/redis-room.repository.interface";
 import { IRoomRepository } from "@/app/api/rooms/repositories/room.repository.interface";
-import { RoomStatus } from "@/server/shared/database/schemas/enums";
+import type { RoomStatus } from "@/server/shared/domain/game-vocabulary";
 
 export interface FinishMatchInput {
   roomId: string;
@@ -27,11 +22,11 @@ export interface FinishMatchOutput {
 
 export class FinishMatchUseCase {
   constructor(
-    private readonly roomRepository: IRoomRepository = defaultRoomRepository,
-    private readonly redisRoomRepository: IRedisRoomRepository = defaultRedisRoomRepository,
-    private readonly userRepository: IUserRepository = defaultUserRepository,
-    private readonly eventPublisher: IEventPublisher = defaultRedisEventPublisher,
-    private readonly newsVoteRepository: INewsVoteRepository = defaultNewsVoteRepository,
+    private readonly roomRepository: IRoomRepository,
+    private readonly redisRoomRepository: IRedisRoomRepository,
+    private readonly userRepository: IUserRepository,
+    private readonly eventPublisher: IEventPublisher,
+    private readonly newsVoteRepository: INewsVoteRepository,
   ) {}
 
   async execute(input: FinishMatchInput): Promise<FinishMatchOutput> {
@@ -104,5 +99,3 @@ export class FinishMatchUseCase {
     };
   }
 }
-
-export const finishMatchUseCase = new FinishMatchUseCase();

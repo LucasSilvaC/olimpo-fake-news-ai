@@ -4,7 +4,7 @@ import { Dialog } from "@base-ui/react/dialog";
 import { Loader2, MessagesSquare, X } from "lucide-react";
 import * as React from "react";
 
-import type { NewsInsightsState } from "../hooks/use-news-insights";
+import type { NewsInsightsState } from "../model/use-news-insights";
 
 import { SocraticReflection } from "./socratic-reflection";
 

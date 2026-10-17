@@ -1,5 +1,3 @@
-import { NewsArticle } from "@/server/shared/database/schemas";
-
 export interface GlobalChallengeEntityProps {
   id: string;
   title: string;
@@ -7,7 +5,6 @@ export interface GlobalChallengeEntityProps {
   xpReward?: number;
   isActive?: boolean;
   createdAt?: Date;
-  article?: NewsArticle;
 }
 
 export interface GlobalChallengeDTO {
@@ -17,7 +14,6 @@ export interface GlobalChallengeDTO {
   xpReward: number;
   isActive: boolean;
   createdAt: Date;
-  article?: NewsArticle;
 }
 
 export class GlobalChallengeEntity {
@@ -27,7 +23,6 @@ export class GlobalChallengeEntity {
   public readonly xpReward: number;
   public readonly isActive: boolean;
   public readonly createdAt: Date;
-  public readonly article?: NewsArticle;
 
   constructor(props: GlobalChallengeEntityProps) {
     if (!props.id || props.id.trim() === "") {
@@ -51,7 +46,6 @@ export class GlobalChallengeEntity {
     this.xpReward = xp;
     this.isActive = props.isActive ?? true;
     this.createdAt = props.createdAt ?? new Date();
-    this.article = props.article;
   }
 
   public toDTO(): GlobalChallengeDTO {
@@ -62,7 +56,6 @@ export class GlobalChallengeEntity {
       xpReward: this.xpReward,
       isActive: this.isActive,
       createdAt: this.createdAt,
-      article: this.article,
     };
   }
 }

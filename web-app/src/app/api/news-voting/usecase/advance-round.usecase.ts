@@ -1,19 +1,13 @@
-import { redisVoteRepository } from "../repositories/redis-vote.repository";
 import type { IRedisVoteRepository } from "../repositories/redis-vote.repository.interface";
 
-import {
-  finishMatchUseCase as defaultFinishMatchUseCase,
-  FinishMatchUseCase,
-} from "./finish-match.usecase";
+import { FinishMatchUseCase } from "./finish-match.usecase";
 
 import {
   IEventPublisher,
-  redisEventPublisher as defaultRedisEventPublisher,
 } from "@/app/api/realtime-events";
 import { MatchFinishedLeaderboardEntry } from "@/app/api/realtime-events/entities/event.types";
-import { drizzleRoomRepository as defaultRoomRepository } from "@/app/api/rooms/repositories/drizzle-room.repository";
 import { IRoomRepository } from "@/app/api/rooms/repositories/room.repository.interface";
-import { RoomStatus } from "@/server/shared/database/schemas/enums";
+import type { RoomStatus } from "@/server/shared/domain/game-vocabulary";
 
 export interface AdvanceRoundInput {
   roomId: string;
@@ -31,13 +25,13 @@ export interface AdvanceRoundOutput {
 
 export class AdvanceRoundUseCase {
   constructor(
-    private readonly roomRepository: IRoomRepository = defaultRoomRepository,
-    private readonly finishMatchUseCase: FinishMatchUseCase = defaultFinishMatchUseCase,
-    private readonly eventPublisher: IEventPublisher = defaultRedisEventPublisher,
+    private readonly roomRepository: IRoomRepository,
+    private readonly finishMatchUseCase: FinishMatchUseCase,
+    private readonly eventPublisher: IEventPublisher,
     private readonly roundRepository: Pick<
       IRedisVoteRepository,
       "isRoundCompleted"
-    > = redisVoteRepository,
+    >,
   ) {}
 
   async execute(input: AdvanceRoundInput): Promise<AdvanceRoundOutput> {
@@ -102,5 +96,3 @@ export class AdvanceRoundUseCase {
     };
   }
 }
-
-export const advanceRoundUseCase = new AdvanceRoundUseCase();

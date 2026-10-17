@@ -23,66 +23,55 @@ vi.mock("@/app/api/auth/usecase/get-session.usecase", () => ({
   },
 }));
 
-vi.mock("../usecase/answer-global-challenge.usecase", () => ({
+vi.mock("../composition-root", () => ({
   answerGlobalChallengeUseCase: {
-    execute: vi.fn(
-      async (input: {
-        challengeId: string;
-        userId: string;
-        answer: "reliable" | "uncertain" | "unreliable";
-      }) => {
-        if (input.challengeId === "invalid-chal") {
-          throw new Error('Global challenge with id "invalid-chal" not found');
-        }
-        if (input.challengeId === "already-answered") {
-          throw new Error("User has already answered this challenge");
-        }
-        return {
-          answer: {
-            id: "ans-action-1",
-            challengeId: input.challengeId,
-            userId: input.userId,
-            answer: input.answer,
-            isCorrect: true,
-            xpAwarded: 50,
-            answeredAt: new Date(),
-          },
+    execute: vi.fn(async (input: { challengeId: string; userId: string; answer: "reliable" | "uncertain" | "unreliable" }) => {
+      if (input.challengeId === "invalid-chal") {
+        throw new Error('Global challenge with id "invalid-chal" not found');
+      }
+      if (input.challengeId === "already-answered") {
+        throw new Error("User has already answered this challenge");
+      }
+      return {
+        answer: {
+          id: "ans-action-1",
+          challengeId: input.challengeId,
+          userId: input.userId,
+          answer: input.answer,
           isCorrect: true,
           xpAwarded: 50,
-          targetClassification: "reliable" as const,
-        };
-      },
-    ),
-  },
-}));
-
-vi.mock("../usecase/list-global-challenges.usecase", () => ({
-  listGlobalChallengesUseCase: {
-    execute: vi.fn(async (input?: { userId?: string }) => {
-      return [
-        {
-          id: "chal-1",
-          title: "Desafio 1",
-          articleId: "art-1",
-          xpReward: 50,
-          isActive: true,
-          createdAt: new Date(),
-          article: {
-            id: "art-1",
-            title: "News 1",
-            content: "Content 1",
-            url: "https://news.com/1",
-            source: "Source 1",
-            author: "Author 1",
-            publishedAt: new Date(),
-          },
-          isAnswered: input?.userId === "user-session-1",
-          userAnswer: input?.userId === "user-session-1" ? "reliable" : undefined,
-          userIsCorrect: input?.userId === "user-session-1" ? true : undefined,
-          userXpAwarded: input?.userId === "user-session-1" ? 50 : undefined,
+          answeredAt: new Date(),
         },
-      ];
+        isCorrect: true,
+        xpAwarded: 50,
+        targetClassification: "reliable" as const,
+      };
     }),
+  },
+  listGlobalChallengesUseCase: {
+    execute: vi.fn(async (input?: { userId?: string }) => [
+      {
+        id: "chal-1",
+        title: "Desafio 1",
+        articleId: "art-1",
+        xpReward: 50,
+        isActive: true,
+        createdAt: new Date(),
+        article: {
+          id: "art-1",
+          title: "News 1",
+          content: "Content 1",
+          url: "https://news.com/1",
+          source: "Source 1",
+          author: "Author 1",
+          publishedAt: new Date(),
+        },
+        isAnswered: input?.userId === "user-session-1",
+        userAnswer: input?.userId === "user-session-1" ? "reliable" : undefined,
+        userIsCorrect: input?.userId === "user-session-1" ? true : undefined,
+        userXpAwarded: input?.userId === "user-session-1" ? 50 : undefined,
+      },
+    ]),
   },
 }));
 

@@ -1,372 +1,48 @@
 "use client";
 
-import {
-  ArrowLeft,
-  Check,
-  Clock3,
-  Copy,
-  Crown,
-  ExternalLink,
-  Link2,
-  LoaderCircle,
-  Play,
-  Plus,
-  Radio,
-  Users,
-} from "lucide-react";
+import { ArrowLeft, Copy, Crown, Link2, LoaderCircle, Users } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import * as React from "react";
-import { toast } from "sonner";
 
+import type { IRoomLobbyViewProps } from "../model/types";
+import { useRoomLobbyViewModel } from "../model/use-room-lobby-view-model";
+
+import { LobbyMemberList } from "./lobby-member-list";
+import { LobbyPlaylistPanel } from "./lobby-playlist-panel";
 import { LobbyRocket } from "./lobby-rocket";
-import styles from "./room-lobby.module.css";
 
-import { addPlaylistNewsAction } from "@/app/api/rooms/actions/add-playlist-news.action";
-import { joinRoomAction } from "@/app/api/rooms/actions/join-room.action";
-import { loadDemoNewsAction } from "@/app/api/rooms/actions/load-demo-news.action";
-import { startGameAction } from "@/app/api/rooms/actions/start-game.action";
-import type { RoomDTO, RoomMemberDTO } from "@/app/api/rooms/entities";
-import { Avatar } from "@/components/atoms/avatar";
 import { PageShell } from "@/components/molecules/page-shell";
-import type { AvatarConfig } from "@/lib/avatar";
-import { getJoinRoomErrorMessage } from "@/lib/room-messages";
 import { Header } from "@/widgets/app-header";
 
-export interface RoomLobbyMember {
-  id: string;
-  userId: string;
-  name: string;
-  role: RoomMemberDTO["role"];
-  score: number;
-  avatar: AvatarConfig;
-}
 
-interface IRoomLobbyViewProps {
-  room: RoomDTO;
-  members: RoomLobbyMember[];
-  playlistCount: number;
-  newsPreviews?: {
-    id: string;
-    roundOrder: number;
-    title: string;
-    description: string | null;
-    publisher: string | null;
-    url: string;
-  }[];
-  currentUserId: string;
-  preparationNews?: { id: string; title: string }[];
-}
+export type { RoomLobbyMember } from "../model/types";
 
-const memberCardColors = [
-  { "--tint": "#edf4ff", "--accent": "#8bb9ff" },
-  { "--tint": "#f4efff", "--accent": "#c3abef" },
-  { "--tint": "#eaf9f4", "--accent": "#88d7be" },
-  { "--tint": "#fff7e8", "--accent": "#efca82" },
-] as const;
-
-export function RoomLobbyView({
-  room,
-  members,
-  playlistCount,
-  newsPreviews = [],
-  currentUserId,
-  preparationNews = [],
-}: IRoomLobbyViewProps): React.ReactElement {
-  const router = useRouter();
-  const [newsUrl, setNewsUrl] = React.useState("");
-  const [rounds, setRounds] = React.useState(playlistCount);
-  const [isAddingNews, setIsAddingNews] = React.useState(false);
-  const [isLoadingPrepared, setIsLoadingPrepared] = React.useState(false);
-  const preparedAttempt = React.useRef<string | null>(null);
-  const [isStarting, setIsStarting] = React.useState(false);
-  const [isLanding, setIsLanding] = React.useState(false);
-  const landingTimer = React.useRef<ReturnType<typeof setTimeout> | null>(null);
-  const beginLanding = React.useCallback((): void => {
-    if (landingTimer.current !== null) return;
-    setIsLanding(true);
-    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    landingTimer.current = setTimeout(() => router.refresh(), reducedMotion ? 0 : 2200);
-  }, [router]);
-  React.useEffect(
-    () => () => {
-      if (landingTimer.current !== null) clearTimeout(landingTimer.current);
-    },
-    [],
-  );
-  const [isJoining, setIsJoining] = React.useState(false);
-  const [joinError, setJoinError] = React.useState<string | null>(null);
-  const joinAttempted = React.useRef(false);
-  const unavailableRoomNoticeShown = React.useRef(false);
-  const [presenceSnapshot, setPresenceSnapshot] = React.useState<{
-    pin: string;
-    userIds: string[];
-  } | null>(null);
-  const visibleMembers =
-    presenceSnapshot?.pin === room.pin
-      ? members.filter(
-          (member) =>
-            member.userId === room.hostId || presenceSnapshot.userIds.includes(member.userId),
-        )
-      : members;
-
-  const isHost = room.hostId === currentUserId;
-  const isMember = members.some((member) => member.userId === currentUserId);
-  const roomIsWaiting = room.status === "waiting";
-
-  React.useEffect(() => {
-    if (isHost || isMember || roomIsWaiting || unavailableRoomNoticeShown.current) return;
-
-    unavailableRoomNoticeShown.current = true;
-    toast.warning(room.status === "finished" ? "Partida encerrada" : "Partida em andamento", {
-      description:
-        room.status === "finished"
-          ? "Esta sala não está mais aceitando jogadores. Peça um novo PIN ao anfitrião."
-          : "Esta sala não está aceitando novos jogadores neste momento.",
-    });
-  }, [isHost, isMember, room.status, roomIsWaiting]);
-
-  const joinRoom = React.useCallback(async (): Promise<void> => {
-    setIsJoining(true);
-    setJoinError(null);
-    const toastId = toast.loading("Conectando à sala...", {
-      description: "Estamos confirmando seu acesso.",
-    });
-
-    try {
-      const result = await joinRoomAction({ pin: room.pin });
-      if (!result.success) {
-        const message = getJoinRoomErrorMessage(result.error);
-        setJoinError(message);
-        toast.error("Não foi possível entrar na sala.", {
-          id: toastId,
-          description: message,
-        });
-        return;
-      }
-
-      toast.success(result.alreadyJoined ? "Você já está nesta sala." : "Você entrou na sala!", {
-        id: toastId,
-        description: "A lista de jogadores será atualizada agora.",
-      });
-      router.refresh();
-    } catch {
-      const message = "Não foi possível conectar à sala. Confira sua conexão e tente novamente.";
-      setJoinError(message);
-      toast.error("Não foi possível entrar na sala.", { id: toastId, description: message });
-    } finally {
-      setIsJoining(false);
-    }
-  }, [room.pin, router]);
-
-  React.useEffect(() => {
-    if (isMember || !roomIsWaiting || joinAttempted.current) return;
-
-    joinAttempted.current = true;
-    void joinRoom();
-  }, [isMember, joinRoom, roomIsWaiting]);
-
-  React.useEffect(() => {
-    const source = new EventSource("/api/rooms/" + encodeURIComponent(room.pin) + "/events");
-    const refreshLobby = (event: Event): void => {
-      let joinedUserId: string | undefined;
-      try {
-        const roomEvent = JSON.parse((event as MessageEvent<string>).data) as {
-          payload?: { member?: { userId?: string } };
-        };
-        joinedUserId = roomEvent.payload?.member?.userId;
-      } catch {
-        joinedUserId = undefined;
-      }
-
-      if (joinedUserId !== currentUserId) {
-        toast.info("Um jogador entrou na sala.", {
-          description: "A lista de participantes foi atualizada.",
-        });
-      }
-      router.refresh();
-    };
-    const openGame = (): void => {
-      if (!isHost) {
-        toast.info("A partida começou!", { description: "Abrindo a primeira rodada..." });
-      }
-      beginLanding();
-    };
-    const updatePresence = (event: Event): void => {
-      try {
-        const data = JSON.parse((event as MessageEvent<string>).data) as {
-          pin?: string;
-          payload?: { userIds?: unknown };
-        };
-        const userIds = data.payload?.userIds;
-        if (
-          data.pin !== room.pin ||
-          !Array.isArray(userIds) ||
-          !userIds.every((id): id is string => typeof id === "string")
-        ) {
-          return;
-        }
-        setPresenceSnapshot((previous) =>
-          previous?.pin === room.pin &&
-          previous.userIds.length === userIds.length &&
-          previous.userIds.every((id, index) => id === userIds[index])
-            ? previous
-            : { pin: room.pin, userIds },
-        );
-      } catch {
-        // Keep the last valid snapshot until the next heartbeat or reconnection.
-      }
-    };
-
-    source.addEventListener("MEMBER_JOINED", refreshLobby);
-    source.addEventListener("PRESENCE_CHANGED", updatePresence);
-    source.addEventListener("ROUND_STARTED", openGame);
-
-    return () => {
-      source.removeEventListener("MEMBER_JOINED", refreshLobby);
-      source.removeEventListener("PRESENCE_CHANGED", updatePresence);
-      source.removeEventListener("ROUND_STARTED", openGame);
-      source.close();
-    };
-  }, [beginLanding, currentUserId, isHost, room.pin, router]);
-
-  const copyText = async (value: string, successMessage: string): Promise<void> => {
-    try {
-      await navigator.clipboard.writeText(value);
-      toast.success(successMessage);
-    } catch {
-      toast.error("Não foi possível copiar. Selecione e copie o texto.");
-    }
-  };
-
-  const copyInviteLink = async (): Promise<void> => {
-    const inviteUrl = new URL(
-      "/sala/" + encodeURIComponent(room.pin),
-      window.location.origin,
-    ).toString();
-    await copyText(inviteUrl, "Link da sala copiado.");
-  };
-
-  const handleAddNews = async (event: React.FormEvent<HTMLFormElement>): Promise<void> => {
-    event.preventDefault();
-    if (isAddingNews) return;
-
-    const normalizedNewsUrl = newsUrl.trim();
-    if (!normalizedNewsUrl) {
-      toast.warning("Adicione uma notícia", {
-        description: "Cole o link de uma notícia para incluí-la no baralho.",
-      });
-      return;
-    }
-
-    try {
-      const parsedUrl = new URL(normalizedNewsUrl);
-      if (parsedUrl.protocol !== "http:" && parsedUrl.protocol !== "https:") {
-        throw new Error("Unsupported URL protocol");
-      }
-    } catch {
-      toast.warning("Link inválido", {
-        description: "Use o endereço completo de uma notícia, começando com http:// ou https://.",
-      });
-      return;
-    }
-
-    setIsAddingNews(true);
-    try {
-      const result = await addPlaylistNewsAction({
-        roomId: room.id,
-        news: [{ url: normalizedNewsUrl }],
-      });
-
-      if (!result.success) {
-        toast.error(result.error);
-        return;
-      }
-
-      setRounds(result.totalRounds);
-      setNewsUrl("");
-      toast.success("Notícia adicionada ao baralho.");
-      router.refresh();
-    } catch {
-      toast.error("Não foi possível adicionar essa notícia. Tente novamente.");
-    } finally {
-      setIsAddingNews(false);
-    }
-  };
-
-  const handleStartGame = async (): Promise<void> => {
-    if (isStarting) return;
-    if (rounds < 1) {
-      toast.warning("O baralho está vazio", {
-        description: "Adicione ao menos uma notícia antes de iniciar a partida.",
-      });
-      return;
-    }
-
-    setIsStarting(true);
-    const toastId = toast.loading("Iniciando a partida...", {
-      description: "Preparando a primeira rodada.",
-    });
-
-    try {
-      const result = await startGameAction({ roomId: room.id });
-      if (!result.success) {
-        toast.error("Não foi possível iniciar a partida.", {
-          id: toastId,
-          description: result.error,
-        });
-        return;
-      }
-
-      toast.success("Partida iniciada!", {
-        id: toastId,
-        description: "Abrindo a primeira rodada...",
-      });
-      beginLanding();
-    } catch {
-      toast.error("Não foi possível iniciar a partida.", {
-        id: toastId,
-        description: "Confira sua conexão e tente novamente.",
-      });
-    } finally {
-      setIsStarting(false);
-    }
-  };
-
-  React.useEffect(() => {
-    if (!isHost || !roomIsWaiting || !preparationNews.length || preparedAttempt.current === room.id)
-      return;
-    preparedAttempt.current = room.id;
-    setIsLoadingPrepared(true);
-    void (async () => {
-      try {
-        const result = await loadDemoNewsAction({
-          roomId: room.id,
-          fixtureIds: preparationNews.map((news) => news.id),
-        });
-        if (!result.success) {
-          toast.error(result.error, { description: "Atualize a página para tentar novamente." });
-          return;
-        }
-        setRounds(result.totalRounds);
-        router.replace("/sala/" + encodeURIComponent(room.pin), { scroll: false });
-        router.refresh();
-      } catch {
-        toast.error("Não foi possível carregar as notícias preparadas.", {
-          description: "Atualize a página para tentar novamente.",
-        });
-      } finally {
-        setIsLoadingPrepared(false);
-      }
-    })();
-  }, [isHost, roomIsWaiting, preparationNews, room.id, room.pin, router]);
-
-  const statusLabel =
-    room.status === "waiting"
-      ? "Aguardando jogadores"
-      : room.status === "in_progress"
-        ? "Partida em andamento"
-        : "Partida encerrada";
+export function RoomLobbyView(props: IRoomLobbyViewProps): React.ReactElement {
+  const {
+    room,
+    newsPreviews,
+    currentUserId,
+    newsUrl,
+    setNewsUrl,
+    rounds,
+    isAddingNews,
+    isLoadingPrepared,
+    isStarting,
+    isLanding,
+    isJoining,
+    joinError,
+    joinAttemptedRef,
+    visibleMembers,
+    isHost,
+    isMember,
+    roomIsWaiting,
+    joinRoom,
+    copyText,
+    copyInviteLink,
+    handleAddNews,
+    handleStartGame,
+    statusLabel,
+  } = useRoomLobbyViewModel(props);
 
   return (
     <PageShell>
@@ -482,7 +158,7 @@ export function RoomLobbyView({
                   <button
                     type="button"
                     onClick={() => {
-                      joinAttempted.current = true;
+                      joinAttemptedRef.current = true;
                       void joinRoom();
                     }}
                     className="cursor-pointer rounded-lg bg-blue-700 px-3 py-2 font-bold text-white transition-colors hover:bg-blue-800"
@@ -510,215 +186,28 @@ export function RoomLobbyView({
               </span>
             </div>
 
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              {visibleMembers.map((member, index) => {
-                const isYou = member.userId === currentUserId;
-                const isMemberHost = member.userId === room.hostId;
-                const palette = memberCardColors[index % memberCardColors.length];
-
-                return (
-                  <div
-                    key={member.id}
-                    className={styles.member}
-                    data-you={isYou}
-                    style={palette as React.CSSProperties}
-                  >
-                    <div className={styles.portrait}>
-                      <Avatar
-                        size="xl"
-                        part="face"
-                        className={styles.avatar}
-                        skin={member.avatar.skin}
-                        outfit={member.avatar.outfit}
-                        headwear={member.avatar.headwear}
-                        gender={member.avatar.gender}
-                        label={"Avatar de " + member.name}
-                      />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <p
-                        className="truncate text-sm font-extrabold text-slate-900"
-                        title={member.name}
-                      >
-                        {member.name}
-                        {isYou ? <span className={styles.you}>VOCÊ</span> : null}
-                      </p>
-                      <p className={`${styles.role} ${isMemberHost ? styles.hostRole : ""}`}>
-                        {isMemberHost ? (
-                          <Crown className="size-3.5" aria-hidden="true" />
-                        ) : (
-                          <Users className="size-3.5" aria-hidden="true" />
-                        )}
-                        {isMemberHost ? "Anfitrião da sala" : "Investigador"}
-                      </p>
-                    </div>
-                  </div>
-                );
-              })}
-
-              {visibleMembers.length === 0 ? (
-                <div className="col-span-full rounded-2xl border border-dashed border-slate-300 px-4 py-8 text-center text-sm font-medium text-slate-500">
-                  Os jogadores aparecerão aqui quando entrarem na sala.
-                </div>
-              ) : null}
-            </div>
+            <LobbyMemberList
+              members={visibleMembers}
+              currentUserId={currentUserId}
+              hostId={room.hostId}
+            />
           </div>
 
-          <div className="grid gap-4 border-t border-slate-100 pt-5 lg:grid-cols-[1fr_auto] lg:items-end">
-            <div className="space-y-4">
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <div>
-                  <h3 className="text-sm font-extrabold tracking-wide text-slate-900 uppercase">
-                    Baralho da partida
-                  </h3>
-                  <p className="mt-1 text-sm text-slate-500">
-                    {rounds} {rounds === 1 ? "notícia" : "notícias"} · {room.roundDurationSeconds}s
-                    por rodada
-                  </p>
-                </div>
-                <span className="inline-flex items-center gap-2 rounded-full bg-blue-50 px-3 py-1.5 text-xs font-bold text-blue-800">
-                  <Clock3 className="size-3.5" aria-hidden="true" />
-                  {room.roundDurationSeconds} segundos
-                </span>
-              </div>
-
-              {isLoadingPrepared && (
-                <p role="status" className="text-sm text-slate-500">
-                  Preparando notícias...
-                </p>
-              )}
-
-              {isHost && roomIsWaiting ? (
-                <form
-                  noValidate
-                  onSubmit={(event) => void handleAddNews(event)}
-                  className="flex flex-col gap-2 sm:flex-row"
-                >
-                  <label className="sr-only" htmlFor="room-news-url">
-                    URL de uma notícia para adicionar ao baralho
-                  </label>
-                  <div className="relative min-w-0 flex-1">
-                    <ExternalLink
-                      className="absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-slate-400"
-                      aria-hidden="true"
-                    />
-                    <input
-                      id="room-news-url"
-                      type="url"
-                      value={newsUrl}
-                      onChange={(event) => setNewsUrl(event.currentTarget.value)}
-                      placeholder="Cole a URL de uma notícia"
-                      className="h-12 w-full rounded-xl border border-slate-200 bg-white pr-4 pl-10 text-sm text-slate-900 placeholder:text-slate-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20 focus:outline-none"
-                    />
-                  </div>
-                  <button
-                    type="submit"
-                    disabled={isAddingNews}
-                    className="inline-flex h-12 cursor-pointer items-center justify-center gap-2 rounded-xl bg-blue-50 px-5 text-sm font-extrabold text-blue-800 transition-colors hover:bg-blue-100 disabled:cursor-not-allowed disabled:opacity-50"
-                  >
-                    {isAddingNews ? (
-                      <LoaderCircle className="size-4 animate-spin" aria-hidden="true" />
-                    ) : (
-                      <Plus className="size-4" aria-hidden="true" />
-                    )}
-                    Adicionar notícia
-                  </button>
-                </form>
-              ) : (
-                <p className="text-sm text-slate-500">
-                  {rounds > 0
-                    ? "O anfitrião já preparou as notícias desta partida."
-                    : "O anfitrião está preparando as notícias desta partida."}
-                </p>
-              )}
-            </div>
-
-            {isHost ? (
-              <div className="flex flex-col gap-2 lg:min-w-64">
-                <button
-                  type="button"
-                  onClick={() => void handleStartGame()}
-                  disabled={!roomIsWaiting || isStarting || isLanding || isLoadingPrepared}
-                  className="inline-flex h-14 cursor-pointer items-center justify-center gap-2 rounded-2xl bg-amber-400 px-6 text-sm font-black tracking-wide text-slate-950 shadow-lg shadow-amber-400/30 transition-all hover:-translate-y-0.5 hover:bg-amber-300 disabled:cursor-not-allowed disabled:opacity-55 disabled:hover:translate-y-0"
-                >
-                  {isStarting ? (
-                    <LoaderCircle className="size-5 animate-spin" aria-hidden="true" />
-                  ) : room.status === "in_progress" ? (
-                    <Check className="size-5" aria-hidden="true" />
-                  ) : (
-                    <Play className="size-5 fill-current" aria-hidden="true" />
-                  )}
-                  {isLanding
-                    ? "Aterrissando..."
-                    : isStarting
-                      ? "Iniciando..."
-                      : room.status === "in_progress"
-                        ? "Partida iniciada"
-                        : "Iniciar partida"}
-                </button>
-                {roomIsWaiting && rounds < 1 ? (
-                  <p className="text-center text-xs font-medium text-slate-500">
-                    Adicione ao menos uma notícia para iniciar.
-                  </p>
-                ) : null}
-              </div>
-            ) : (
-              <div className="flex items-center justify-center rounded-2xl bg-slate-50 px-5 py-4 text-sm font-semibold text-slate-600 lg:min-w-64">
-                <Radio className="mr-2 size-4 text-emerald-500" aria-hidden="true" />
-                Esperando o anfitrião iniciar
-              </div>
-            )}
-          </div>
-
-          {isHost ? (
-            <section
-              aria-label="Notícias adicionadas"
-              className="space-y-3 border-t border-slate-100 pt-4"
-            >
-              <h3 className="text-sm font-bold text-slate-900">Notícias adicionadas</h3>
-              {newsPreviews.length > 0 ? (
-                <ol className="grid gap-3 sm:grid-cols-2">
-                  {newsPreviews.map((news) => (
-                    <li
-                      key={news.id}
-                      className="flex min-w-0 gap-3 rounded-xl border border-slate-200 bg-slate-50 p-3"
-                    >
-                      <span className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-blue-100 text-xs font-extrabold text-blue-800">
-                        {news.roundOrder}
-                      </span>
-                      <div className="min-w-0 flex-1">
-                        <p className="mb-1 truncate text-xs text-slate-500">
-                          {news.publisher ?? "Fonte da notícia"}
-                        </p>
-                        <a
-                          href={news.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="group flex cursor-pointer items-start gap-2 rounded text-sm font-bold text-slate-900 hover:text-blue-700 focus-visible:outline-2 focus-visible:outline-blue-600"
-                        >
-                          <span className="line-clamp-2">{news.title}</span>
-                          <ExternalLink
-                            className="mt-0.5 size-3.5 shrink-0 text-blue-600"
-                            aria-hidden="true"
-                          />
-                          <span className="sr-only">(abre em uma nova aba)</span>
-                        </a>
-                        {news.description ? (
-                          <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-slate-500">
-                            {news.description}
-                          </p>
-                        ) : null}
-                      </div>
-                    </li>
-                  ))}
-                </ol>
-              ) : (
-                <p className="rounded-xl border border-dashed border-slate-200 p-4 text-sm text-slate-500">
-                  As notícias adicionadas ao baralho aparecerão aqui.
-                </p>
-              )}
-            </section>
-          ) : null}
+          <LobbyPlaylistPanel
+            room={room}
+            isHost={isHost}
+            roomIsWaiting={roomIsWaiting}
+            rounds={rounds}
+            newsUrl={newsUrl}
+            setNewsUrl={setNewsUrl}
+            isAddingNews={isAddingNews}
+            isLoadingPrepared={isLoadingPrepared}
+            isStarting={isStarting}
+            isLanding={isLanding}
+            newsPreviews={newsPreviews}
+            handleAddNews={handleAddNews}
+            handleStartGame={handleStartGame}
+          />
 
           <div className="flex flex-col gap-2 border-t border-slate-100 pt-4 sm:flex-row sm:items-center sm:justify-between">
             <span className="text-center text-xs font-medium text-slate-400">

@@ -156,7 +156,8 @@ describe("DrizzleRoomRepository", () => {
     });
 
     it("should find member in room", async () => {
-      const whereMock = vi.fn().mockResolvedValue([sampleMember]);
+      const limitMock = vi.fn().mockResolvedValue([sampleMember]);
+      const whereMock = vi.fn().mockReturnValue({ limit: limitMock });
       const fromMock = vi.fn().mockReturnValue({ where: whereMock });
       mockDb.select.mockReturnValue({ from: fromMock });
 

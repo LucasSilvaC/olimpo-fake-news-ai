@@ -27,30 +27,25 @@ vi.mock("@/app/api/auth/usecase/get-session.usecase", () => ({
 }));
 
 // Mock use cases
-vi.mock("../usecase/create-room.usecase", () => ({
+vi.mock("../composition-root", () => ({
   createRoomUseCase: {
-    execute: vi.fn(
-      async (input: { hostId: string; name: string; roundDurationSeconds?: number }) => {
-        if (!input.name) throw new Error("Room name cannot be empty");
-        return {
-          room: {
-            id: "room-created-1",
-            pin: "123 456",
-            name: input.name,
-            hostId: input.hostId,
-            status: "waiting",
-            roundDurationSeconds: input.roundDurationSeconds ?? 30,
-            currentRound: 0,
-            totalRounds: 0,
-          },
+    execute: vi.fn(async (input: { hostId: string; name: string; roundDurationSeconds?: number }) => {
+      if (!input.name) throw new Error("Room name cannot be empty");
+      return {
+        room: {
+          id: "room-created-1",
           pin: "123 456",
-        };
-      },
-    ),
+          name: input.name,
+          hostId: input.hostId,
+          status: "waiting",
+          roundDurationSeconds: input.roundDurationSeconds ?? 30,
+          currentRound: 0,
+          totalRounds: 0,
+        },
+        pin: "123 456",
+      };
+    }),
   },
-}));
-
-vi.mock("../usecase/join-room.usecase", () => ({
   joinRoomUseCase: {
     execute: vi.fn(async (input: { userId: string; pin: string }) => {
       if (input.pin === "000 000") throw new Error("Room not found");
@@ -76,34 +71,20 @@ vi.mock("../usecase/join-room.usecase", () => ({
       };
     }),
   },
-}));
-
-vi.mock("../usecase/add-playlist-news.usecase", () => ({
   addPlaylistNewsUseCase: {
-    execute: vi.fn(
-      async (input: {
-        roomId: string;
-        hostId: string;
-        news: Array<{ articleId?: string; url?: string }>;
-      }) => {
-        if (!input.news || input.news.length === 0) {
-          throw new Error("At least one news item must be provided");
-        }
-        return {
-          playlistItems: input.news.map((item, idx) => ({
-            id: `item-${idx + 1}`,
-            roomId: input.roomId,
-            articleId: item.articleId || "extracted-art-1",
-            roundOrder: idx + 1,
-          })),
-          totalRounds: input.news.length,
-        };
-      },
-    ),
+    execute: vi.fn(async (input: { roomId: string; hostId: string; news: Array<{ articleId?: string; url?: string }> }) => {
+      if (!input.news?.length) throw new Error("At least one news item must be provided");
+      return {
+        playlistItems: input.news.map((item, idx) => ({
+          id: `item-${idx + 1}`,
+          roomId: input.roomId,
+          articleId: item.articleId || "extracted-art-1",
+          roundOrder: idx + 1,
+        })),
+        totalRounds: input.news.length,
+      };
+    }),
   },
-}));
-
-vi.mock("../usecase/start-game.usecase", () => ({
   startGameUseCase: {
     execute: vi.fn(async (input: { roomId: string; hostId: string }) => {
       if (input.roomId === "empty-room") {

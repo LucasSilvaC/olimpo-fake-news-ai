@@ -1,6 +1,4 @@
-import { RoomEntity, RoomDTO, RoomPin } from "../entities";
-import { drizzleRoomRepository } from "../repositories/drizzle-room.repository";
-import { redisRoomRepository } from "../repositories/redis-room.repository";
+import { RoomEntity, RoomDTO, RoomMemberEntity, RoomPin } from "../entities";
 import { IRedisRoomRepository } from "../repositories/redis-room.repository.interface";
 import { IRoomRepository } from "../repositories/room.repository.interface";
 
@@ -17,8 +15,8 @@ export interface CreateRoomResult {
 
 export class CreateRoomUseCase {
   constructor(
-    private readonly roomRepository: IRoomRepository = drizzleRoomRepository,
-    private readonly redisRoomRepo: IRedisRoomRepository = redisRoomRepository,
+    private readonly roomRepository: IRoomRepository,
+    private readonly redisRoomRepo: IRedisRoomRepository,
   ) {}
 
   async execute(input: CreateRoomInput): Promise<CreateRoomResult> {
@@ -44,25 +42,16 @@ export class CreateRoomUseCase {
       totalRounds: 0,
     });
 
-    await this.roomRepository.create({
-      id: roomEntity.id,
-      pin: roomEntity.pin,
-      name: roomEntity.name,
-      hostId: roomEntity.hostId,
-      status: roomEntity.status,
-      roundDurationSeconds: roomEntity.roundDurationSeconds,
-      currentRound: roomEntity.currentRound,
-      totalRounds: roomEntity.totalRounds,
-    });
+    await this.roomRepository.create(roomEntity);
 
     // Add host as the first room member
-    await this.roomRepository.addMember({
+    await this.roomRepository.addMember(new RoomMemberEntity({
       id: crypto.randomUUID(),
       roomId: roomEntity.id,
       userId: input.hostId,
       role: "host",
       score: 0,
-    });
+    }));
 
     // Cache in Redis
     await this.redisRoomRepo.setRoomPin(roomEntity.pin, roomEntity.id, "waiting");
@@ -75,5 +64,3 @@ export class CreateRoomUseCase {
     };
   }
 }
-
-export const createRoomUseCase = new CreateRoomUseCase();

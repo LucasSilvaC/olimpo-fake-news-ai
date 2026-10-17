@@ -1,27 +1,18 @@
 import crypto from "node:crypto";
 
 import { NewsVoteDTO, NewsVoteEntity, VoteOption } from "../entities";
-import { drizzleNewsVoteRepository as defaultNewsVoteRepository } from "../repositories/drizzle-news-vote.repository";
 import { INewsVoteRepository } from "../repositories/news-vote.repository.interface";
-import { redisVoteRepository as defaultRedisVoteRepository } from "../repositories/redis-vote.repository";
 import { IRedisVoteRepository } from "../repositories/redis-vote.repository.interface";
 
 import type { AIAnalysisDTO } from "@/app/api/ai-feedback/entities/ai-analysis.entity";
-import { drizzleNewsArticleRepository as defaultNewsArticleRepository } from "@/app/api/ai-feedback/repositories/drizzle-news-article.repository";
 import { INewsArticleRepository } from "@/app/api/ai-feedback/repositories/news-article.repository.interface";
 import {
   IEventPublisher,
-  redisEventPublisher as defaultRedisEventPublisher,
 } from "@/app/api/realtime-events";
 import { RoundCompletedLeaderboardEntry } from "@/app/api/realtime-events/entities/event.types";
-import {
-  drizzleRoomRepository as defaultRoomRepository,
-  IRoomRepository,
-  redisRoomRepository as defaultRedisRoomRepository,
-  IRedisRoomRepository,
-} from "@/app/api/rooms/repositories";
-import type { MLTargetType } from "@/server/shared/database/schemas/enums";
-import { VoteOptionType } from "@/server/shared/database/schemas/enums";
+import type { IRedisRoomRepository } from "@/app/api/rooms/repositories/redis-room.repository.interface";
+import type { IRoomRepository } from "@/app/api/rooms/repositories/room.repository.interface";
+import type { MLTargetType, VoteOptionType } from "@/server/shared/domain/game-vocabulary";
 
 export interface SubmitVoteInput {
   roomId: string;
@@ -40,13 +31,12 @@ export interface SubmitVoteOutput {
 
 export class SubmitVoteUseCase {
   constructor(
-    private readonly newsVoteRepository: INewsVoteRepository = defaultNewsVoteRepository,
-    private readonly redisVoteRepository: IRedisVoteRepository = defaultRedisVoteRepository,
-    private readonly roomRepository: IRoomRepository = defaultRoomRepository,
-    private readonly redisRoomRepository: IRedisRoomRepository = defaultRedisRoomRepository,
-    private readonly newsArticleRepository: INewsArticleRepository = defaultNewsArticleRepository,
-    _legacyAnalysisDependency?: unknown,
-    private readonly eventPublisher: IEventPublisher = defaultRedisEventPublisher,
+    private readonly newsVoteRepository: INewsVoteRepository,
+    private readonly redisVoteRepository: IRedisVoteRepository,
+    private readonly roomRepository: IRoomRepository,
+    private readonly redisRoomRepository: IRedisRoomRepository,
+    private readonly newsArticleRepository: INewsArticleRepository,
+    private readonly eventPublisher: IEventPublisher,
   ) {}
 
   async execute(input: SubmitVoteInput): Promise<SubmitVoteOutput> {
@@ -112,16 +102,7 @@ export class SubmitVoteUseCase {
 
     const evaluatedVote = voteEntity.evaluate(article.targetClassification, input.isTimeout);
 
-    await this.newsVoteRepository.create({
-      id: evaluatedVote.id,
-      roomId: evaluatedVote.roomId,
-      playlistItemId: evaluatedVote.playlistItemId,
-      userId: evaluatedVote.userId,
-      vote: evaluatedVote.vote,
-      isCorrect: evaluatedVote.isCorrect,
-      pointsAwarded: evaluatedVote.pointsAwarded,
-      createdAt: evaluatedVote.createdAt,
-    });
+    await this.newsVoteRepository.create(evaluatedVote.toDTO());
 
     if (evaluatedVote.pointsAwarded > 0) {
       const updatedMember = await this.roomRepository.updateMemberScore(
@@ -198,5 +179,3 @@ export class SubmitVoteUseCase {
     };
   }
 }
-
-export const submitVoteUseCase = new SubmitVoteUseCase();
