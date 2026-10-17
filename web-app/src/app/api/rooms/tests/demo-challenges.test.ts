@@ -6,6 +6,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { prediction } from "../../ai-feedback/tests/supervised-fixture";
 import { GetNewsInsightsUseCase } from "../../news-insights/usecase/get-news-insights.usecase";
 import { GetNewsPredictionUseCase } from "../../news-prediction/usecase/get-news-prediction.usecase";
+import { DrizzleLoadDemoNewsRepository } from "../repositories/drizzle-load-demo-news.repository";
 import { LoadDemoNewsUseCase } from "../usecase/load-demo-news.usecase";
 
 import { getDemoNewsFixture } from "@/server/demo/demo-news";
@@ -144,7 +145,13 @@ describe("prepared challenge loader authorization", () => {
       insert,
     };
     const db = { transaction: vi.fn(async (work: (tx: unknown) => Promise<unknown>) => work(tx)) };
-    return { useCase: new LoadDemoNewsUseCase(db as unknown as typeof databaseClient), db, insert };
+    return {
+      useCase: new LoadDemoNewsUseCase(
+        new DrizzleLoadDemoNewsRepository(db as unknown as typeof databaseClient),
+      ),
+      db,
+      insert,
+    };
   }
   it.each([
     [undefined, /Sala não encontrada/],
@@ -175,8 +182,13 @@ describe("prepared challenge loader authorization", () => {
 
   it("loads from local records and a retry keeps the same playlist and total rounds", async () => {
     const f = setup();
-    const playlist: Array<{ id: string; roomId: string; articleId: string; roundOrder: number }> =
-      [];
+    const playlist: Array<{
+      id: string;
+      roomId: string;
+      articleId: string;
+      roundOrder: number;
+      createdAt: Date;
+    }> = [];
     const waitingRoom = { ...f.room, status: "waiting", totalRounds: 0 };
     const insertedArticleIds: string[] = [];
     const tx = {
@@ -190,13 +202,14 @@ describe("prepared challenge loader authorization", () => {
         }),
       }),
       insert: (table: unknown) => ({
-        values: (record: (typeof playlist)[number] & { id: string }) => {
+        values: (record: Omit<(typeof playlist)[number], "createdAt"> & { id: string }) => {
           if (table === newsArticles)
             return { onConflictDoNothing: async () => insertedArticleIds.push(record.id) };
           return {
             returning: async () => {
-              playlist.push(record);
-              return [record];
+              const persistedRecord = { ...record, createdAt: new Date() };
+              playlist.push(persistedRecord);
+              return [persistedRecord];
             },
           };
         },
@@ -210,7 +223,9 @@ describe("prepared challenge loader authorization", () => {
       }),
     };
     const db = { transaction: async (work: (tx: unknown) => Promise<unknown>) => work(tx) };
-    const useCase = new LoadDemoNewsUseCase(db as unknown as typeof databaseClient);
+    const useCase = new LoadDemoNewsUseCase(
+      new DrizzleLoadDemoNewsRepository(db as unknown as typeof databaseClient),
+    );
     const load = { roomId: "room", hostId: "host", fixtureIds: [f.fixture.id, f.fixture.id] };
     const initial = await useCase.execute(load);
     const retry = await useCase.execute(load);

@@ -2,8 +2,8 @@
 
 import { z } from "zod";
 
+import { joinRoomUseCase } from "../composition-root";
 import { RoomDTO, RoomMemberDTO } from "../entities";
-import { joinRoomUseCase } from "../usecase/join-room.usecase";
 
 import { getSessionUseCase } from "@/app/api/auth/usecase/get-session.usecase";
 

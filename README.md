@@ -64,40 +64,31 @@ O ecossistema Olimpo foi desenvolvido sobre uma arquitetura moderna, escalável 
 ### 📐 Resumo dos Pilares Técnicos
 
 ```mermaid
-flowchart TD
-    subgraph Frontend["Frontend (Feature-Sliced Design)"]
-        UI["src/components/ui (Primitivas)"] --> Entities["src/entities (Cartão de Notícia)"]
-        Entities --> Features["src/features (Extração, Votação)"]
-        Features --> Widgets["src/widgets (Header, Game HUD)"]
-        Widgets --> Views["src/views (Home, Sandbox, Salas)"]
-        Views --> AppRouter["src/app (Layouts, Páginas)"]
-    end
+flowchart LR
+  subgraph Frontend["Frontend: MVVM and FSD in gameplay flows"]
+    Route["src/app: routes and handlers"] --> View["src/views: page composition"]
+    View --> VM["views/*/model: ViewModels"]
+    View --> Feature["src/features: public APIs"]
+    View --> Widget["src/widgets: shared game stages"]
+    VM --> Action["Validated Server Actions"]
+  end
 
-    subgraph Transport["Camada de Transporte & Borda"]
-        AppRouter -- "Server Actions (Mutações)" --> Actions["src/app/api/{feature}/actions"]
-        Actions -- "Validação Zod" --> Zod["Zod Schemas"]
-        AppRouter -- "SSE Stream (EventSource)" --> SSERoute["GET /api/rooms/[pin]/events"]
-    end
+  subgraph Backend["Backend: partial DDD by context"]
+    Action --> Root["Context composition root"]
+    Root --> UseCase["Application use case"]
+    UseCase --> Port["Repository port"]
+    Root -. wires .-> Adapter["Drizzle / Redis adapter"]
+    Adapter -. implements .-> Port
+    Adapter --> DB[("PostgreSQL / Redis")]
+  end
 
-    subgraph Backend["Backend (Clean Architecture / Feature-First)"]
-        Zod --> UseCases["src/app/api/{feature}/usecase"]
-        UseCases --> Domain["src/app/api/{feature}/entities (Puro)"]
-        UseCases -- "Injeção de Dependência" --> RepoInterfaces["IRepository Interfaces"]
-    end
-
-    subgraph Persistence["Persistência Híbrida & Cache"]
-        RepoInterfaces -.implements.-> DrizzleRepo["Drizzle Repositories"]
-        RepoInterfaces -.implements.-> RedisRepo["Redis Repositories"]
-        DrizzleRepo --> Postgres[("PostgreSQL\n(Schemas, JSONB, ACID)")]
-        RedisRepo --> Redis[("Redis\n(Sorted Sets, PIN O(1), Pub/Sub)")]
-        Redis -- "Canal room:pin" --> SSERoute
-    end
+  EventRoute["SSE Route Handler"] --> View
 ```
 
 ### 🔑 14 Decisões Arquiteturais Centrais
 
 1. **OpenSpec (Spec-Driven Development)**: Governança técnica viva com capacidades declaradas em [`docs/openspec/specs/`](docs/openspec/specs/) (`auth`, `rooms`, `news-voting`, `realtime-events`, `ai-feedback`, `gamification`) e controle de mudanças em [`docs/openspec/changes/`](docs/openspec/changes/), assegurando alinhamento absoluto entre desenvolvedores e agentes de IA.
-2. **Clean Architecture Feature-First**: Cada funcionalidade de backend em `src/app/api/{feature}/` encapsula suas próprias camadas (`entities`, `usecase`, `repositories`, `actions`, `tests`), mantendo as regras de negócio puras e agnósticas de banco e framework.
+2. **DDD parcial por contexto**: Nos contextos de jogo alterados (`rooms`, `news-voting` e `global-challenges`), entidades não dependem de schemas Drizzle, ports usam DTOs/read models e composition roots conectam use cases a adapters. Os demais contextos não são declarados migrados.
 3. **Persistência Híbrida (PostgreSQL + Redis)**:
    - **PostgreSQL com Drizzle ORM**: Dados relacionais permanentes, integridade referencial e coluna `article` em formato **JSONB** para metadados flexíveis de notícias.
    - **Redis (`ioredis`)**: Armazenamento em memória de altíssimo desempenho para busca de PINs de sala em $O(1)$, placar ao vivo com Sorted Sets (`ZADD`/`ZREVRANGE`) e mensageria Pub/Sub.
@@ -109,13 +100,13 @@ flowchart TD
    - Hash irreversível de senhas com `bcryptjs` (custo de 10 rounds de salt).
    - Sessões stateless com **JSON Web Tokens (JWT)** assinados via biblioteca `jose` (validade de 7 dias).
    - Transporte blindado através de cookies gerenciados exclusivamente no servidor com flags **`httpOnly`**, **`Secure`** e **`SameSite=lax`**, prevenindo ataques XSS e CSRF.
-9. **Injeção de Dependência (DI)**: Casos de uso recebem interfaces de repositório via construtor com valores padrão para produção, viabilizando testes unitários ultrarrápidos com mocks em memória sem necessidade de banco de dados ativo.
-10. **Arquitetura em Camadas (Layered Architecture)**: Regra estrita de fluxo de dependência unidirecional: `Presentation (Actions)` $\to$ `Application (Use Cases)` $\to$ `Domain (Entities)` $\longleftarrow$ `Infrastructure (Drizzle / Redis)`.
+9. **Injeção de Dependência (DI)**: Nos contextos de jogo refatorados, casos de uso recebem ports obrigatórios e composition roots conectam adapters. Outros módulos ainda podem usar defaults de produção até sua própria migração.
+10. **Arquitetura em Camadas**: Nos contextos deste recorte, actions validadas chamam use cases, use cases dependem de ports e adapters implementam esses ports. Tipos de domínio permanecem sem dependência de Next.js, React ou Drizzle.
 11. **Validação Rigorosa de Dados**:
     - Schemas tipados de borda com **Zod v4** em todas as Server Actions.
     - Saneamento de rede anti-SSRF com **`ipaddr.js`** e DNS pinning via **`undici`** para validação de requisições de notícias.
 12. **Padrão e Governança de Código**: TypeScript em modo estrito, ESLint 9, Prettier com ordenação automática de classes Tailwind, Git Hooks com Husky e lint-staged, Conventional Commits (Commitlint) e logs estruturados em JSON com **Pino**.
-13. **Frontend em Feature-Sliced Design (FSD)**: Estrutura modular em camadas previsíveis: `src/components/ui/` (primitivas) $\to$ `src/entities/` $\to$ `src/features/` $\to$ `src/widgets/` $\to$ `src/views/` $\to$ `src/app/`.
+13. **Frontend em Feature-Sliced Design (FSD)**: O padrão é aplicado aos fluxos de lobby, partida e desafio: `views/` compõe páginas (equivalente FSD a `pages/` no App Router), `features/` e `widgets/` expõem APIs públicas, e `model/` abriga ViewModels. `components/` segue Atomic Design para elementos reutilizáveis.
 14. **Pirâmide de Testes Completa**: Mais de 30 suítes cobrindo testes unitários, testes de integração de infraestrutura, testes de componentes React e testes End-to-End com Playwright.
 
 ---

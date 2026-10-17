@@ -8,29 +8,35 @@ vi.mock("@/widgets/app-header", () => ({ Header: () => null }));
 vi.mock("@/app/api/news-voting/actions/conclude-round.action", () => ({
   concludeRoundAction: vi.fn(),
 }));
-vi.mock("@/views/room-game/ui/news-check-stage", () => ({
-  NewsCheckStage: ({ timeRemainingSeconds }: { timeRemainingSeconds: number | null }) => (
-    <>
-      <p>Leitura da notícia</p>
-      <p aria-label="Tempo restante">{timeRemainingSeconds}</p>
-    </>
-  ),
-}));
-vi.mock("@/views/room-game/ui/round-scoreboard-stage", () => ({
-  RoundScoreboardStage: () => <p>Placar da rodada</p>,
-}));
-vi.mock("@/views/room-game/ui/match-scoreboard-stage", () => ({
-  MatchScoreboardStage: ({
-    leaderboard,
-  }: {
-    leaderboard: Array<{ userId: string; correctCount?: number }>;
-  }) => (
-    <>
-      <p>Placar final</p>
-      <output aria-label="Acertos finais">{JSON.stringify(leaderboard)}</output>
-    </>
-  ),
-}));
+vi.mock("@/features/news-voting", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@/features/news-voting")>();
+  return {
+    ...actual,
+    NewsCheckStage: ({ timeRemainingSeconds }: { timeRemainingSeconds: number | null }) => (
+      <>
+        <p>Leitura da noticia</p>
+        <p aria-label="Tempo restante">{timeRemainingSeconds}</p>
+      </>
+    ),
+  };
+});
+vi.mock("@/widgets/game-stages", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@/widgets/game-stages")>();
+  return {
+    ...actual,
+    RoundScoreboardStage: () => <p>Placar da rodada</p>,
+    MatchScoreboardStage: ({
+      leaderboard,
+    }: {
+      leaderboard: Array<{ userId: string; correctCount?: number }>;
+    }) => (
+      <>
+        <p>Placar final</p>
+        <output aria-label="Acertos finais">{JSON.stringify(leaderboard)}</output>
+      </>
+    ),
+  };
+});
 
 class MockEventSource {
   static latest: MockEventSource;
@@ -231,7 +237,7 @@ describe("prediction disclosure in the room", () => {
     await act(async () =>
       MockEventSource.latest.emit("ROUND_COMPLETED", { round: 1, officialAnswer: "unreliable" }),
     );
-    expect(screen.getByText("Leitura da notícia")).toBeVisible();
+    expect(screen.getByText("Leitura da noticia")).toBeVisible();
     expect(screen.queryByRole("region", { name: "Análise do modelo" })).toBeNull();
     expect(mockFetch).not.toHaveBeenCalled();
   });
@@ -275,10 +281,19 @@ describe("prediction disclosure in the room", () => {
         MockEventSource.latest.emit("ROUND_COMPLETED", {
           round: 1,
           officialAnswer,
-          leaderboard: [{ userId: "host-1", score: pointsAwarded }],
+          leaderboard: [
+            {
+              userId: "host-1",
+              score: pointsAwarded,
+              roundDelta: pointsAwarded,
+              isCorrect: pointsAwarded === 100,
+            },
+          ],
         }),
       );
-      expect(screen.getByText(isTimeout ? "0 pts" : `⚡ +${pointsAwarded} pts`)).toBeVisible();
+      expect(
+        screen.getByText(isTimeout ? "0 pts" : new RegExp("[+]" + pointsAwarded + " pts")),
+      ).toBeVisible();
     },
   );
 });

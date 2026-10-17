@@ -1,6 +1,6 @@
 import { RoomPin } from "./room-pin.vo";
 
-import { RoomStatus } from "@/server/shared/database/schemas";
+import type { RoomStatus } from "@/server/shared/domain/game-vocabulary";
 
 export interface RoomEntityProps {
   id: string;
@@ -24,6 +24,8 @@ export interface RoomDTO {
   roundDurationSeconds: number;
   currentRound: number;
   totalRounds: number;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export class RoomEntity {
@@ -107,6 +109,8 @@ export class RoomEntity {
       roundDurationSeconds: this.roundDurationSeconds,
       currentRound: this.currentRound,
       totalRounds: this.totalRounds,
+      createdAt: this.createdAt,
+      updatedAt: this.updatedAt,
     };
   }
 }

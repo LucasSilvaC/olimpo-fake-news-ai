@@ -1,4 +1,4 @@
-import { RoleType } from "@/server/shared/database/schemas";
+import type { RoleType } from "@/server/shared/domain/game-vocabulary";
 
 export interface RoomMemberEntityProps {
   id: string;
@@ -15,6 +15,7 @@ export interface RoomMemberDTO {
   userId: string;
   role: RoleType;
   score: number;
+  joinedAt?: Date;
 }
 
 export class RoomMemberEntity {
@@ -56,6 +57,7 @@ export class RoomMemberEntity {
       userId: this.userId,
       role: this.role,
       score: this.score,
+      joinedAt: this.joinedAt,
     };
   }
 }

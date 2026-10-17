@@ -26,50 +26,35 @@ vi.mock("@/app/api/auth/usecase/get-session.usecase", () => ({
 }));
 
 // Mock use cases
-vi.mock("../usecase/submit-vote.usecase", () => ({
+vi.mock("../composition-root", () => ({
   submitVoteUseCase: {
-    execute: vi.fn(
-      async (input: {
-        roomId: string;
-        userId: string;
-        vote: "reliable" | "uncertain" | "unreliable";
-      }) => {
-        if (input.roomId === "invalid-room") {
-          throw new Error('Room with id "invalid-room" not found');
-        }
-        if (input.roomId === "duplicate-room") {
-          throw new Error("Participant has already voted in this round");
-        }
-        return {
-          vote: {
-            id: "vote-action-1",
-            roomId: input.roomId,
-            playlistItemId: "item-1",
-            userId: input.userId,
-            vote: input.vote,
-            isCorrect: true,
-            pointsAwarded: 100,
-          },
-          roundCompleted: input.roomId === "last-vote-room",
-          officialAnswer: input.roomId === "last-vote-room" ? "reliable" : undefined,
-          modelAnalysis: input.roomId === "last-vote-room" ? null : undefined,
-          leaderboard:
-            input.roomId === "last-vote-room" ? [{ userId: input.userId, score: 100 }] : undefined,
-        };
-      },
-    ),
+    execute: vi.fn(async (input: { roomId: string; userId: string; vote: "reliable" | "uncertain" | "unreliable" }) => {
+      if (input.roomId === "invalid-room") throw new Error('Room with id "invalid-room" not found');
+      if (input.roomId === "duplicate-room") throw new Error("Participant has already voted in this round");
+      const roundCompleted = input.roomId === "last-vote-room";
+      return {
+        vote: {
+          id: "vote-action-1",
+          roomId: input.roomId,
+          playlistItemId: "item-1",
+          userId: input.userId,
+          vote: input.vote,
+          isCorrect: roundCompleted ? true : null,
+          pointsAwarded: roundCompleted ? 100 : 0,
+        },
+        roundCompleted,
+        officialAnswer: roundCompleted ? "reliable" : undefined,
+        modelAnalysis: roundCompleted ? null : undefined,
+        leaderboard: roundCompleted
+          ? [{ userId: input.userId, score: 100, roundDelta: 100, isCorrect: true }]
+          : undefined,
+      };
+    }),
   },
-}));
-
-vi.mock("../usecase/advance-round.usecase", () => ({
   advanceRoundUseCase: {
     execute: vi.fn(async (input: { roomId: string; hostId: string }) => {
-      if (input.roomId === "not-found") {
-        throw new Error('Room with id "not-found" not found');
-      }
-      if (input.hostId === "not-host") {
-        throw new Error("Unauthorized: Only room host can advance the round");
-      }
+      if (input.roomId === "not-found") throw new Error('Room with id "not-found" not found');
+      if (input.hostId === "not-host") throw new Error("Unauthorized: Only room host can advance the round");
       if (input.roomId === "final-room") {
         return {
           roomId: input.roomId,
@@ -89,19 +74,14 @@ vi.mock("../usecase/advance-round.usecase", () => ({
       };
     }),
   },
-}));
-
-vi.mock("../usecase/conclude-round.usecase", () => ({
   concludeRoundUseCase: {
     execute: vi.fn(async (input: { roomId: string; round: number }) => {
-      if (input.roomId === "not-found") {
-        throw new Error('Room with id "not-found" not found');
-      }
+      if (input.roomId === "not-found") throw new Error('Room with id "not-found" not found');
       return {
         roundCompleted: true,
         officialAnswer: "reliable",
         modelAnalysis: null,
-        leaderboard: [{ userId: "user-1", score: 100 }],
+        leaderboard: [{ userId: "user-1", score: 100, roundDelta: 100, isCorrect: true }],
       };
     }),
   },

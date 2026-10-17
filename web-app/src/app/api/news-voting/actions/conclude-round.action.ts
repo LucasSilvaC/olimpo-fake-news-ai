@@ -2,12 +2,12 @@
 
 import { z } from "zod";
 
-import { concludeRoundUseCase } from "../usecase/conclude-round.usecase";
+import { concludeRoundUseCase } from "../composition-root";
 
 import type { AIAnalysisDTO } from "@/app/api/ai-feedback/entities/ai-analysis.entity";
 import { getSessionUseCase } from "@/app/api/auth/usecase/get-session.usecase";
 import type { RoundCompletedLeaderboardEntry } from "@/app/api/realtime-events/entities/event.types";
-import type { MLTargetType } from "@/server/shared/database/schemas/enums";
+import type { MLTargetType } from "@/server/shared/domain/game-vocabulary";
 
 const concludeRoundSchema = z.object({
   roomId: z.string().min(1, "Room ID is required"),

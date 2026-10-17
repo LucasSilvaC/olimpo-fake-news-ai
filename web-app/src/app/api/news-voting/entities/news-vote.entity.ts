@@ -1,6 +1,6 @@
 import { VoteOption } from "./vote-option.vo";
 
-import { MLTargetType, VoteOptionType } from "@/server/shared/database/schemas/enums";
+import type { MLTargetType, VoteOptionType } from "@/server/shared/domain/game-vocabulary";
 
 export interface NewsVoteEntityProps {
   id: string;
@@ -21,6 +21,7 @@ export interface NewsVoteDTO {
   vote: VoteOptionType;
   isCorrect: boolean | null;
   pointsAwarded: number;
+  createdAt?: Date;
 }
 
 export interface ScoreEvaluationResult {
@@ -120,6 +121,7 @@ export class NewsVoteEntity {
       vote: this.vote,
       isCorrect: this.isCorrect,
       pointsAwarded: this.pointsAwarded,
+      createdAt: this.createdAt,
     };
   }
 }

@@ -1,9 +1,7 @@
 "use server";
 
-import {
-  ListedGlobalChallengeDTO,
-  listGlobalChallengesUseCase,
-} from "../usecase/list-global-challenges.usecase";
+import { listGlobalChallengesUseCase } from "../composition-root";
+import type { ListedGlobalChallengeDTO } from "../usecase/list-global-challenges.usecase";
 
 import { getSessionUseCase } from "@/app/api/auth/usecase/get-session.usecase";
 

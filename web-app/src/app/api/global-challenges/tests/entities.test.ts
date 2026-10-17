@@ -2,31 +2,9 @@ import { describe, expect, it } from "vitest";
 
 import { GlobalChallengeAnswerEntity, GlobalChallengeEntity } from "../entities";
 
-import { NewsArticle } from "@/server/shared/database/schemas";
 import { VoteOptionType } from "@/server/shared/database/schemas/enums";
 
 describe("Global Challenges Entities", () => {
-  const sampleArticle: NewsArticle = {
-    id: "art-1",
-    article: {
-      url: "https://example.com/article-1",
-      canonicalUrl: "https://example.com/article-1",
-      title: "Article 1",
-      description: null,
-      authors: ["Jane Doe"],
-      publishedAt: new Date("2026-01-01").toISOString(),
-      modifiedAt: null,
-      content: "Content 1",
-      imageUrl: null,
-      publisher: "Example Source",
-      language: "en",
-      extractionMethod: "local",
-      usedFallback: false,
-    },
-    targetClassification: "reliable",
-    createdAt: new Date("2026-01-01"),
-  };
-
   describe("GlobalChallengeEntity", () => {
     it("should instantiate with valid props and default values", () => {
       const challenge = new GlobalChallengeEntity({
@@ -41,22 +19,19 @@ describe("Global Challenges Entities", () => {
       expect(challenge.xpReward).toBe(50);
       expect(challenge.isActive).toBe(true);
       expect(challenge.createdAt).toBeInstanceOf(Date);
-      expect(challenge.article).toBeUndefined();
     });
 
-    it("should instantiate with custom xpReward and article", () => {
+    it("should instantiate with custom xpReward without embedding the article record", () => {
       const challenge = new GlobalChallengeEntity({
         id: "chal-2",
         title: "Treino Especial",
         articleId: "art-1",
         xpReward: 100,
         isActive: false,
-        article: sampleArticle,
       });
 
       expect(challenge.xpReward).toBe(100);
       expect(challenge.isActive).toBe(false);
-      expect(challenge.article).toEqual(sampleArticle);
     });
 
     it("should throw on empty id, title or articleId", () => {
@@ -107,7 +82,6 @@ describe("Global Challenges Entities", () => {
         articleId: "art-1",
         xpReward: 75,
         isActive: true,
-        article: sampleArticle,
       });
 
       const dto = challenge.toDTO();
@@ -118,7 +92,6 @@ describe("Global Challenges Entities", () => {
         xpReward: 75,
         isActive: true,
         createdAt: challenge.createdAt,
-        article: sampleArticle,
       });
     });
   });

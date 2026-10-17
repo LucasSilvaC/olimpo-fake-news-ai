@@ -1,10 +1,9 @@
 import { GlobalChallengeDTO, GlobalChallengeEntity } from "../entities";
-import { drizzleGlobalChallengeAnswerRepository as defaultAnswerRepository } from "../repositories/drizzle-global-challenge-answer.repository";
-import { drizzleGlobalChallengeRepository as defaultChallengeRepository } from "../repositories/drizzle-global-challenge.repository";
 import { IGlobalChallengeAnswerRepository } from "../repositories/global-challenge-answer.repository.interface";
 import { IGlobalChallengeRepository } from "../repositories/global-challenge.repository.interface";
+import type { GlobalChallengeArticleReadModel } from "../repositories/global-challenge.repository.interface";
 
-import { VoteOptionType } from "@/server/shared/database/schemas/enums";
+import type { VoteOptionType } from "@/server/shared/domain/game-vocabulary";
 
 export interface GetGlobalChallengeInput {
   challengeId: string;
@@ -12,7 +11,7 @@ export interface GetGlobalChallengeInput {
 }
 
 export interface GetGlobalChallengeOutput {
-  challenge: GlobalChallengeDTO;
+  challenge: GlobalChallengeDTO & { article: GlobalChallengeArticleReadModel };
   isAnswered: boolean;
   userAnswer?: {
     id: string;
@@ -25,8 +24,8 @@ export interface GetGlobalChallengeOutput {
 
 export class GetGlobalChallengeUseCase {
   constructor(
-    private readonly challengeRepository: IGlobalChallengeRepository = defaultChallengeRepository,
-    private readonly answerRepository: IGlobalChallengeAnswerRepository = defaultAnswerRepository,
+    private readonly challengeRepository: IGlobalChallengeRepository,
+    private readonly answerRepository: IGlobalChallengeAnswerRepository,
   ) {}
 
   async execute(input: GetGlobalChallengeInput): Promise<GetGlobalChallengeOutput> {
@@ -42,7 +41,6 @@ export class GetGlobalChallengeUseCase {
       xpReward: found.xpReward,
       isActive: found.isActive,
       createdAt: found.createdAt,
-      article: found.article,
     });
 
     let userAnswer: GetGlobalChallengeOutput["userAnswer"];
@@ -56,7 +54,7 @@ export class GetGlobalChallengeUseCase {
         userAnswer = {
           id: recordedAnswer.id,
           answer: recordedAnswer.answer,
-          isCorrect: recordedAnswer.isCorrect,
+          isCorrect: recordedAnswer.isCorrect ?? false,
           xpAwarded: recordedAnswer.xpAwarded,
           answeredAt: recordedAnswer.answeredAt,
         };
@@ -64,11 +62,9 @@ export class GetGlobalChallengeUseCase {
     }
 
     return {
-      challenge: entity.toDTO(),
+      challenge: { ...entity.toDTO(), article: found.article },
       isAnswered: Boolean(userAnswer),
       userAnswer,
     };
   }
 }
-
-export const getGlobalChallengeUseCase = new GetGlobalChallengeUseCase();

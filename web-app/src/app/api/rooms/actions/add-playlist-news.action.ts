@@ -2,8 +2,8 @@
 
 import { z } from "zod";
 
+import { addPlaylistNewsUseCase } from "../composition-root";
 import { PlaylistItemDTO } from "../entities";
-import { addPlaylistNewsUseCase } from "../usecase/add-playlist-news.usecase";
 
 import { getSessionUseCase } from "@/app/api/auth/usecase/get-session.usecase";
 

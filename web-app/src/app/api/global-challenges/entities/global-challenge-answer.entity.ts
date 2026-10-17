@@ -1,5 +1,4 @@
-import { VoteOption } from "@/app/api/news-voting/entities";
-import { MLTargetType, VoteOptionType } from "@/server/shared/database/schemas/enums";
+import { normalizeNewsClassification, type MLTargetType, type VoteOptionType } from "@/server/shared/domain/game-vocabulary";
 
 export interface GlobalChallengeAnswerEntityProps {
   id: string;
@@ -46,7 +45,7 @@ export class GlobalChallengeAnswerEntity {
       throw new Error("userId cannot be empty");
     }
 
-    this.answer = VoteOption.normalize(props.answer);
+    this.answer = normalizeNewsClassification(props.answer, "vote option");
     this.id = props.id.trim();
     this.challengeId = props.challengeId.trim();
     this.userId = props.userId.trim();

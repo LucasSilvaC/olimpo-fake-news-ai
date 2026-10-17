@@ -1,19 +1,18 @@
 import crypto from "node:crypto";
 
 import { GlobalChallengeAnswerDTO, GlobalChallengeAnswerEntity } from "../entities";
-import { drizzleGlobalChallengeAnswerRepository as defaultAnswerRepository } from "../repositories/drizzle-global-challenge-answer.repository";
-import { drizzleGlobalChallengeRepository as defaultChallengeRepository } from "../repositories/drizzle-global-challenge.repository";
 import { IGlobalChallengeAnswerRepository } from "../repositories/global-challenge-answer.repository.interface";
 import { IGlobalChallengeRepository } from "../repositories/global-challenge.repository.interface";
 
 import { getDefaultAnalysis } from "./list-global-challenges.usecase";
 
-import { drizzleNewsAnalysisRepository as defaultAnalysisRepository } from "@/app/api/ai-feedback/repositories/drizzle-news-analysis.repository";
 import { INewsAnalysisRepository } from "@/app/api/ai-feedback/repositories/news-analysis.repository.interface";
-import { drizzleUserRepository as defaultUserRepository } from "@/app/api/auth/repositories/drizzle-user.repository";
 import { IUserRepository } from "@/app/api/auth/repositories/user.repository.interface";
-import { VoteOption } from "@/app/api/news-voting/entities";
-import { MLTargetType, VoteOptionType } from "@/server/shared/database/schemas/enums";
+import {
+  normalizeNewsClassification,
+  type MLTargetType,
+  type VoteOptionType,
+} from "@/server/shared/domain/game-vocabulary";
 
 export interface AnswerGlobalChallengeInput {
   challengeId: string;
@@ -35,14 +34,14 @@ export interface AnswerGlobalChallengeOutput {
 
 export class AnswerGlobalChallengeUseCase {
   constructor(
-    private readonly challengeRepository: IGlobalChallengeRepository = defaultChallengeRepository,
-    private readonly answerRepository: IGlobalChallengeAnswerRepository = defaultAnswerRepository,
-    private readonly userRepository: IUserRepository = defaultUserRepository,
-    private readonly analysisRepository: INewsAnalysisRepository = defaultAnalysisRepository,
+    private readonly challengeRepository: IGlobalChallengeRepository,
+    private readonly answerRepository: IGlobalChallengeAnswerRepository,
+    private readonly userRepository: IUserRepository,
+    private readonly analysisRepository: INewsAnalysisRepository,
   ) {}
 
   async execute(input: AnswerGlobalChallengeInput): Promise<AnswerGlobalChallengeOutput> {
-    const normalizedAnswer = VoteOption.normalize(input.answer);
+    const normalizedAnswer = normalizeNewsClassification(input.answer, "vote option");
 
     const challengeWithArticle = await this.challengeRepository.findByIdWithArticle(
       input.challengeId,
@@ -78,15 +77,7 @@ export class AnswerGlobalChallengeUseCase {
     const isCorrect = evaluated.isCorrect ?? false;
     const xpAwarded = evaluated.xpAwarded;
 
-    await this.answerRepository.create({
-      id: evaluated.id,
-      challengeId: evaluated.challengeId,
-      userId: evaluated.userId,
-      answer: evaluated.answer,
-      isCorrect,
-      xpAwarded,
-      answeredAt: evaluated.answeredAt,
-    });
+    await this.answerRepository.create(evaluated.toDTO());
 
     if (xpAwarded > 0) {
       await this.userRepository.updateXp(input.userId, xpAwarded);
@@ -121,5 +112,3 @@ export class AnswerGlobalChallengeUseCase {
     };
   }
 }
-
-export const answerGlobalChallengeUseCase = new AnswerGlobalChallengeUseCase();

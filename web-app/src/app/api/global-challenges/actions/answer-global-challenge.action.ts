@@ -2,11 +2,11 @@
 
 import { z } from "zod";
 
+import { answerGlobalChallengeUseCase } from "../composition-root";
 import { GlobalChallengeAnswerDTO } from "../entities";
-import { answerGlobalChallengeUseCase } from "../usecase/answer-global-challenge.usecase";
 
 import { getSessionUseCase } from "@/app/api/auth/usecase/get-session.usecase";
-import { MLTargetType, VoteOptionType } from "@/server/shared/database/schemas/enums";
+import type { MLTargetType, VoteOptionType } from "@/server/shared/domain/game-vocabulary";
 
 const answerGlobalChallengeSchema = z.object({
   challengeId: z.string().min(1, "Challenge ID is required"),
