@@ -36,8 +36,8 @@ export interface RoundStartedPayload {
 export interface RoundCompletedLeaderboardEntry {
   userId: string;
   score: number;
-  roundDelta?: number;
-  isCorrect?: boolean;
+  roundDelta: number;
+  isCorrect: boolean;
 }
 
 export interface RoundCompletedPayload {

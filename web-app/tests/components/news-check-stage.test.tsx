@@ -1,8 +1,8 @@
 import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { NewsCheckStage } from "@/features/news-voting";
 import type { NewsInsightsResponse } from "@/lib/news-insights/types";
-import { NewsCheckStage } from "@/views/room-game/ui/news-check-stage";
 
 const mocks = vi.hoisted(() => ({ submitVote: vi.fn(), fetch: vi.fn() }));
 vi.mock("@/app/api/news-voting/actions/submit-vote.action", () => ({

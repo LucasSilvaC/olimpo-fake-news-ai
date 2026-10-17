@@ -2,9 +2,9 @@ import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import type { ReactNode } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import type { ListedGlobalChallengeDTO } from "@/app/api/global-challenges/usecase/list-global-challenges.usecase";
-import { ChallengeGameView } from "@/views/challenge/ui/challenge-game-view";
-import type { IRoundScoreboardStageProps } from "@/views/room-game/ui/round-scoreboard-stage";
+import type { ListedGlobalChallengeDTO } from "@/app/api/global-challenges/contracts";
+import { ChallengeGameView } from "@/views/challenge";
+import type { IRoundScoreboardStageProps } from "@/widgets/game-stages";
 
 const mocks = vi.hoisted(() => ({ answer: vi.fn(), roomVote: vi.fn(), fetch: vi.fn() }));
 vi.mock("next/navigation", () => ({ useRouter: () => ({ push: vi.fn() }) }));
@@ -17,14 +17,15 @@ vi.mock("@/app/api/global-challenges/actions/answer-global-challenge.action", ()
 vi.mock("@/app/api/news-voting/actions/submit-vote.action", () => ({
   submitVoteAction: mocks.roomVote,
 }));
-vi.mock("@/views/room-game/ui/round-scoreboard-stage", () => ({
-  RoundScoreboardStage: ({ onAdvance, leaderboard }: IRoundScoreboardStageProps) => (
-    <button onClick={onAdvance}>Next solo round: {leaderboard[0]?.score} XP</button>
-  ),
-}));
-vi.mock("@/views/room-game/ui/match-scoreboard-stage", () => ({
-  MatchScoreboardStage: () => <p>Solo complete</p>,
-}));
+vi.mock("@/widgets/game-stages", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@/widgets/game-stages")>();
+  return {
+    ...actual,
+    RoundScoreboardStage: ({ onAdvance, leaderboard }: IRoundScoreboardStageProps) => (
+      <button onClick={onAdvance}>Next solo round: {leaderboard[0]?.score} XP</button>
+    ),
+  };
+});
 
 function challenge(id: string): ListedGlobalChallengeDTO {
   return {

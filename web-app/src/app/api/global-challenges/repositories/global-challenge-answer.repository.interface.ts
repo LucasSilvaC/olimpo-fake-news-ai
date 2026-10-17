@@ -1,10 +1,10 @@
-import { GlobalChallengeAnswer, NewGlobalChallengeAnswer } from "@/server/shared/database/schemas";
+﻿import type { GlobalChallengeAnswerDTO, GlobalChallengeAnswerEntityProps } from "../entities";
 
 export interface IGlobalChallengeAnswerRepository {
   findByChallengeAndUser(
     challengeId: string,
     userId: string,
-  ): Promise<GlobalChallengeAnswer | null>;
-  create(data: NewGlobalChallengeAnswer): Promise<GlobalChallengeAnswer>;
-  listByUser(userId: string): Promise<GlobalChallengeAnswer[]>;
+  ): Promise<GlobalChallengeAnswerDTO | null>;
+  create(data: GlobalChallengeAnswerEntityProps): Promise<GlobalChallengeAnswerDTO>;
+  listByUser(userId: string): Promise<GlobalChallengeAnswerDTO[]>;
 }

@@ -1,26 +1,20 @@
 import crypto from "node:crypto";
 
 import { NewsVoteEntity } from "../entities/news-vote.entity";
-import { drizzleNewsVoteRepository as defaultNewsVoteRepository } from "../repositories/drizzle-news-vote.repository";
 import { INewsVoteRepository } from "../repositories/news-vote.repository.interface";
-import { redisVoteRepository as defaultRedisVoteRepository } from "../repositories/redis-vote.repository";
 import { IRedisVoteRepository } from "../repositories/redis-vote.repository.interface";
 
 import type { AIAnalysisDTO } from "@/app/api/ai-feedback/entities/ai-analysis.entity";
-import { drizzleNewsArticleRepository as defaultNewsArticleRepository } from "@/app/api/ai-feedback/repositories/drizzle-news-article.repository";
 import { INewsArticleRepository } from "@/app/api/ai-feedback/repositories/news-article.repository.interface";
 import {
   IEventPublisher,
-  redisEventPublisher as defaultRedisEventPublisher,
 } from "@/app/api/realtime-events";
 import { RoundCompletedLeaderboardEntry } from "@/app/api/realtime-events/entities/event.types";
 import {
-  drizzleRoomRepository as defaultRoomRepository,
   IRoomRepository,
-  redisRoomRepository as defaultRedisRoomRepository,
   IRedisRoomRepository,
 } from "@/app/api/rooms/repositories";
-import type { MLTargetType } from "@/server/shared/database/schemas/enums";
+import type { MLTargetType } from "@/server/shared/domain/game-vocabulary";
 
 export interface ConcludeRoundInput {
   roomId: string;
@@ -37,13 +31,12 @@ export interface ConcludeRoundOutput {
 
 export class ConcludeRoundUseCase {
   constructor(
-    private readonly newsVoteRepository: INewsVoteRepository = defaultNewsVoteRepository,
-    private readonly redisVoteRepository: IRedisVoteRepository = defaultRedisVoteRepository,
-    private readonly roomRepository: IRoomRepository = defaultRoomRepository,
-    private readonly redisRoomRepository: IRedisRoomRepository = defaultRedisRoomRepository,
-    private readonly newsArticleRepository: INewsArticleRepository = defaultNewsArticleRepository,
-    _legacyAnalysisDependency?: unknown,
-    private readonly eventPublisher: IEventPublisher = defaultRedisEventPublisher,
+    private readonly newsVoteRepository: INewsVoteRepository,
+    private readonly redisVoteRepository: IRedisVoteRepository,
+    private readonly roomRepository: IRoomRepository,
+    private readonly redisRoomRepository: IRedisRoomRepository,
+    private readonly newsArticleRepository: INewsArticleRepository,
+    private readonly eventPublisher: IEventPublisher,
   ) {}
 
   async execute(input: ConcludeRoundInput): Promise<ConcludeRoundOutput> {
@@ -79,7 +72,7 @@ export class ConcludeRoundUseCase {
     if (!alreadyCompleted) {
       const count = await this.redisVoteRepository.getVoteCount(input.roomId, input.round);
       const participants = await this.roomRepository.countMembers(input.roomId);
-      const deadline = room.updatedAt.getTime() + room.roundDurationSeconds * 1000;
+      const deadline = (room.updatedAt?.getTime() ?? Date.now()) + room.roundDurationSeconds * 1000;
       if (Date.now() < deadline && (participants < 1 || count < participants)) {
         throw new Error("Cannot conclude round before its server deadline or all votes");
       }
@@ -134,16 +127,7 @@ export class ConcludeRoundUseCase {
         pointsAwarded: 0,
       });
 
-      await this.newsVoteRepository.create({
-        id: voteEntity.id,
-        roomId: voteEntity.roomId,
-        playlistItemId: voteEntity.playlistItemId,
-        userId: voteEntity.userId,
-        vote: voteEntity.vote,
-        isCorrect: voteEntity.isCorrect,
-        pointsAwarded: voteEntity.pointsAwarded,
-        createdAt: voteEntity.createdAt,
-      });
+      await this.newsVoteRepository.create(voteEntity.toDTO());
 
       await this.redisVoteRepository.recordVoteAtomic(
         input.roomId,
@@ -189,5 +173,3 @@ export class ConcludeRoundUseCase {
     };
   }
 }
-
-export const concludeRoundUseCase = new ConcludeRoundUseCase();

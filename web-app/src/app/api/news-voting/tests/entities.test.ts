@@ -154,7 +154,8 @@ describe("NewsVoteEntity", () => {
         pointsAwarded: 100,
       });
 
-      expect(vote.toDTO()).toEqual({
+      const dto = vote.toDTO();
+      expect(dto).toMatchObject({
         id: "vote-1",
         roomId: "room-123",
         playlistItemId: "item-456",
@@ -163,6 +164,7 @@ describe("NewsVoteEntity", () => {
         isCorrect: true,
         pointsAwarded: 100,
       });
+      expect(dto.createdAt).toBeInstanceOf(Date);
     });
   });
 });

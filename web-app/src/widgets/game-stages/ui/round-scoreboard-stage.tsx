@@ -4,8 +4,6 @@ import { ArrowRight, CheckCircle2, Flame, Loader2, Sparkles, Trophy, XCircle } f
 import * as React from "react";
 import { toast } from "sonner";
 
-import { advanceRoundAction } from "@/app/api/news-voting/actions/advance-round.action";
-
 export interface IScoreboardPlayer {
   userId: string;
   name: string;
@@ -18,17 +16,15 @@ export interface IScoreboardPlayer {
 }
 
 export interface IRoundScoreboardStageProps {
-  roomId?: string;
   currentRound: number;
   totalRounds: number;
   isHost: boolean;
   leaderboard: IScoreboardPlayer[];
-  onAdvance?: () => void;
+  onAdvance: () => void | Promise<void>;
   onLeave?: () => void;
 }
 
 export function RoundScoreboardStage({
-  roomId,
   currentRound,
   totalRounds,
   isHost,
@@ -36,44 +32,27 @@ export function RoundScoreboardStage({
   onAdvance,
 }: IRoundScoreboardStageProps): React.ReactElement {
   const [isAdvancing, setIsAdvancing] = React.useState(false);
-
-  // Find player with the highest active streak
   const streakLeader = React.useMemo(() => {
-    const withStreak = leaderboard.filter((p) => (p.streak ?? 0) >= 2);
+    const withStreak = leaderboard.filter((player) => (player.streak ?? 0) >= 2);
     if (withStreak.length === 0) return null;
-    return withStreak.reduce((max, cur) => ((cur.streak ?? 0) > (max.streak ?? 0) ? cur : max));
+    return withStreak.reduce((max, current) =>
+      (current.streak ?? 0) > (max.streak ?? 0) ? current : max,
+    );
   }, [leaderboard]);
 
   const handleAdvance = async (): Promise<void> => {
     if (isAdvancing) return;
-
-    if (!roomId) {
-      onAdvance?.();
-      return;
-    }
-
     setIsAdvancing(true);
-
     try {
-      const result = await advanceRoundAction({ roomId });
-      if (!result.success) {
-        toast.error("Não foi possível avançar a rodada", {
-          description: result.error,
-        });
-        setIsAdvancing(false);
-        return;
-      }
-
-      toast.success("Avançando para a próxima rodada!");
-      onAdvance?.();
-    } catch {
-      toast.error("Erro ao avançar rodada", {
-        description: "Falha de conexão. Tente novamente.",
+      await onAdvance();
+    } catch (error) {
+      toast.error("Não foi possível avançar a rodada", {
+        description: error instanceof Error ? error.message : "Tente novamente.",
       });
+    } finally {
       setIsAdvancing(false);
     }
   };
-
   return (
     <div
       className="flex w-full flex-col items-center py-2 text-slate-800"

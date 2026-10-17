@@ -1,4 +1,6 @@
-# FP-Growth: padrões frequentes de estilo
+# FP-Growth histórico: padrões frequentes de estilo
+
+Este documento descreve o baseline legado com autoria. O principal atual usa `sintaxe_ampliada` na [implementação da raiz](../../fp_growth_principal.py); veja os [resultados atuais](../../REGRAS_FP_GROWTH.md).
 
 Execute o [notebook do baseline com autoria](../../history/mineracao-de-padroes/fp-growth-legado/fp_growth_baseline_com_autoria.ipynb) em um kernel Python 3, a partir de uma pasta do repositório.
 

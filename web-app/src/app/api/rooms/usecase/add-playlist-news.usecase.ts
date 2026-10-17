@@ -1,11 +1,8 @@
 import { PlaylistItemDTO, PlaylistItemEntity } from "../entities";
-import { drizzleRoomRepository } from "../repositories/drizzle-room.repository";
 import { IRoomRepository } from "../repositories/room.repository.interface";
 
-import { drizzleNewsArticleRepository } from "@/app/api/ai-feedback/repositories/drizzle-news-article.repository";
 import { INewsArticleRepository } from "@/app/api/ai-feedback/repositories/news-article.repository.interface";
 import { extractNews } from "@/lib/news/extract-news";
-import { NewRoomPlaylistItem } from "@/server/shared/database/schemas";
 
 export interface AddPlaylistItemInput {
   articleId?: string;
@@ -25,9 +22,9 @@ export interface AddPlaylistNewsResult {
 
 export class AddPlaylistNewsUseCase {
   constructor(
-    private readonly roomRepository: IRoomRepository = drizzleRoomRepository,
-    private readonly newsArticleRepository: INewsArticleRepository = drizzleNewsArticleRepository,
-    private readonly extractNewsFn: typeof extractNews = extractNews,
+    private readonly roomRepository: IRoomRepository,
+    private readonly newsArticleRepository: INewsArticleRepository,
+    private readonly extractNewsFn: typeof extractNews,
   ) {}
 
   async execute(input: AddPlaylistNewsInput): Promise<AddPlaylistNewsResult> {
@@ -51,7 +48,7 @@ export class AddPlaylistNewsUseCase {
     const existingItems = await this.roomRepository.getPlaylistItems(input.roomId);
     let currentOrder = existingItems.length;
 
-    const itemsToInsert: NewRoomPlaylistItem[] = [];
+    const itemsToInsert: PlaylistItemEntity[] = [];
 
     for (const item of input.news) {
       let resolvedArticleId = item.articleId;
@@ -78,12 +75,12 @@ export class AddPlaylistNewsUseCase {
       }
 
       currentOrder += 1;
-      itemsToInsert.push({
+      itemsToInsert.push(new PlaylistItemEntity({
         id: crypto.randomUUID(),
         roomId: room.id,
         articleId: resolvedArticleId,
         roundOrder: currentOrder,
-      });
+      }));
     }
 
     const inserted = await this.roomRepository.addPlaylistItems(itemsToInsert);
@@ -99,5 +96,3 @@ export class AddPlaylistNewsUseCase {
     };
   }
 }
-
-export const addPlaylistNewsUseCase = new AddPlaylistNewsUseCase();

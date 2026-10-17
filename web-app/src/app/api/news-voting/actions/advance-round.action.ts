@@ -2,8 +2,8 @@
 
 import { z } from "zod";
 
-import { AdvanceRoundOutput } from "../usecase/advance-round.usecase";
-import { advanceRoundUseCase } from "../usecase/advance-round.usecase";
+import { advanceRoundUseCase } from "../composition-root";
+import type { AdvanceRoundOutput } from "../usecase/advance-round.usecase";
 
 import { getSessionUseCase } from "@/app/api/auth/usecase/get-session.usecase";
 

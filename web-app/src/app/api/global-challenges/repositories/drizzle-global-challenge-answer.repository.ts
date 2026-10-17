@@ -1,31 +1,40 @@
-import { and, eq } from "drizzle-orm";
+﻿import { and, eq } from "drizzle-orm";
 
-import { IGlobalChallengeAnswerRepository } from "./global-challenge-answer.repository.interface";
+import type { GlobalChallengeAnswerDTO, GlobalChallengeAnswerEntityProps } from "../entities";
+import { GlobalChallengeAnswerEntity } from "../entities";
+
+import type { IGlobalChallengeAnswerRepository } from "./global-challenge-answer.repository.interface";
 
 import { databaseClient } from "@/server/shared/database/client";
-import {
-  globalChallengeAnswers,
-  GlobalChallengeAnswer,
-  NewGlobalChallengeAnswer,
-} from "@/server/shared/database/schemas";
+import { globalChallengeAnswers } from "@/server/shared/database/schemas";
+import type { GlobalChallengeAnswer, NewGlobalChallengeAnswer } from "@/server/shared/database/schemas";
+
+const toAnswerDTO = (row: GlobalChallengeAnswer): GlobalChallengeAnswerDTO =>
+  new GlobalChallengeAnswerEntity(row).toDTO();
 
 export class DrizzleGlobalChallengeAnswerRepository implements IGlobalChallengeAnswerRepository {
   constructor(private readonly db = databaseClient) {}
 
-  async create(data: NewGlobalChallengeAnswer): Promise<GlobalChallengeAnswer> {
-    const [created] = await this.db.insert(globalChallengeAnswers).values(data).returning();
-
-    if (!created) {
-      throw new Error("Failed to record challenge answer");
-    }
-
-    return created;
+  async create(data: GlobalChallengeAnswerEntityProps): Promise<GlobalChallengeAnswerDTO> {
+    const entity = new GlobalChallengeAnswerEntity(data);
+    const values: NewGlobalChallengeAnswer = {
+      id: entity.id,
+      challengeId: entity.challengeId,
+      userId: entity.userId,
+      answer: entity.answer,
+      isCorrect: entity.isCorrect ?? false,
+      xpAwarded: entity.xpAwarded,
+      answeredAt: entity.answeredAt,
+    };
+    const [created] = await this.db.insert(globalChallengeAnswers).values(values).returning();
+    if (!created) throw new Error("Failed to record challenge answer");
+    return toAnswerDTO(created);
   }
 
   async findByChallengeAndUser(
     challengeId: string,
     userId: string,
-  ): Promise<GlobalChallengeAnswer | null> {
+  ): Promise<GlobalChallengeAnswerDTO | null> {
     const [found] = await this.db
       .select()
       .from(globalChallengeAnswers)
@@ -36,15 +45,15 @@ export class DrizzleGlobalChallengeAnswerRepository implements IGlobalChallengeA
         ),
       )
       .limit(1);
-
-    return found ?? null;
+    return found ? toAnswerDTO(found) : null;
   }
 
-  async listByUser(userId: string): Promise<GlobalChallengeAnswer[]> {
-    return this.db
+  async listByUser(userId: string): Promise<GlobalChallengeAnswerDTO[]> {
+    const rows = await this.db
       .select()
       .from(globalChallengeAnswers)
       .where(eq(globalChallengeAnswers.userId, userId));
+    return rows.map(toAnswerDTO);
   }
 }
 

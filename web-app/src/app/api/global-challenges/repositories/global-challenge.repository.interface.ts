@@ -1,12 +1,24 @@
-import { GlobalChallenge, NewGlobalChallenge, NewsArticle } from "@/server/shared/database/schemas";
+﻿import type { GlobalChallengeDTO, GlobalChallengeEntityProps } from "../entities";
 
-export type GlobalChallengeWithArticle = GlobalChallenge & {
-  article: NewsArticle;
-};
+import type { INewsArticle } from "@/lib/news/types";
+import type { MLTargetType } from "@/server/shared/domain/game-vocabulary";
+
+export interface GlobalChallengeArticleReadModel {
+  id: string;
+  targetClassification: MLTargetType;
+  article: INewsArticle;
+  createdAt: Date;
+}
+
+export interface GlobalChallengeReadModel extends GlobalChallengeDTO {
+  article: GlobalChallengeArticleReadModel;
+}
+
+export type GlobalChallengeWithArticle = GlobalChallengeReadModel;
 
 export interface IGlobalChallengeRepository {
-  findById(id: string): Promise<GlobalChallenge | null>;
-  findByIdWithArticle(id: string): Promise<GlobalChallengeWithArticle | null>;
-  listActive(): Promise<GlobalChallengeWithArticle[]>;
-  create(data: NewGlobalChallenge): Promise<GlobalChallenge>;
+  findById(id: string): Promise<GlobalChallengeDTO | null>;
+  findByIdWithArticle(id: string): Promise<GlobalChallengeReadModel | null>;
+  listActive(): Promise<GlobalChallengeReadModel[]>;
+  create(data: GlobalChallengeEntityProps): Promise<GlobalChallengeDTO>;
 }

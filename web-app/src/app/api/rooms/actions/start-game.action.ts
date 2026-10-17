@@ -2,8 +2,8 @@
 
 import { z } from "zod";
 
+import { startGameUseCase } from "../composition-root";
 import { RoomDTO } from "../entities";
-import { startGameUseCase } from "../usecase/start-game.usecase";
 
 import { getSessionUseCase } from "@/app/api/auth/usecase/get-session.usecase";
 

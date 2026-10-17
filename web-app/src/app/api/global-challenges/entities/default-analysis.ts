@@ -1,4 +1,4 @@
-import { MLTargetType } from "@/server/shared/database/schemas/enums";
+import type { MLTargetType } from "@/server/shared/domain/game-vocabulary";
 
 export interface ChallengeAnalysisDTO {
   classification: MLTargetType;

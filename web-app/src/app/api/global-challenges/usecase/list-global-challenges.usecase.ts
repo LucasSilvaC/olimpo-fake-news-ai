@@ -1,49 +1,23 @@
+import type { ListedGlobalChallengeDTO } from "../contracts";
 import { ChallengeAnalysisDTO, getDefaultAnalysis } from "../entities";
-import { drizzleGlobalChallengeAnswerRepository as defaultAnswerRepository } from "../repositories/drizzle-global-challenge-answer.repository";
-import { drizzleGlobalChallengeRepository as defaultChallengeRepository } from "../repositories/drizzle-global-challenge.repository";
 import { IGlobalChallengeAnswerRepository } from "../repositories/global-challenge-answer.repository.interface";
 import { IGlobalChallengeRepository } from "../repositories/global-challenge.repository.interface";
 
-import { drizzleNewsAnalysisRepository as defaultAnalysisRepository } from "@/app/api/ai-feedback/repositories/drizzle-news-analysis.repository";
 import { INewsAnalysisRepository } from "@/app/api/ai-feedback/repositories/news-analysis.repository.interface";
-import { INewsArticle } from "@/lib/news/types";
-import { MLTargetType, VoteOptionType } from "@/server/shared/database/schemas/enums";
+import type { VoteOptionType } from "@/server/shared/domain/game-vocabulary";
 
 export { getDefaultAnalysis, type ChallengeAnalysisDTO };
+export type { ListedGlobalChallengeDTO } from "../contracts";
 
 export interface ListGlobalChallengesInput {
   userId?: string;
 }
 
-export interface ListedGlobalChallengeDTO {
-  id: string;
-  title: string;
-  articleId: string;
-  xpReward: number;
-  isActive: boolean;
-  createdAt: Date;
-  article: {
-    id: string;
-    targetClassification: MLTargetType;
-    article: INewsArticle;
-    createdAt: Date;
-  };
-  analysis: {
-    classification: MLTargetType;
-    reasons: string[];
-    confidence: number;
-  };
-  isAnswered: boolean;
-  userAnswer?: VoteOptionType;
-  userIsCorrect?: boolean;
-  userXpAwarded?: number;
-}
-
 export class ListGlobalChallengesUseCase {
   constructor(
-    private readonly challengeRepository: IGlobalChallengeRepository = defaultChallengeRepository,
-    private readonly answerRepository: IGlobalChallengeAnswerRepository = defaultAnswerRepository,
-    private readonly analysisRepository: INewsAnalysisRepository = defaultAnalysisRepository,
+    private readonly challengeRepository: IGlobalChallengeRepository,
+    private readonly answerRepository: IGlobalChallengeAnswerRepository,
+    private readonly analysisRepository: INewsAnalysisRepository,
   ) {}
 
   async execute(input?: ListGlobalChallengesInput): Promise<ListedGlobalChallengeDTO[]> {
@@ -61,7 +35,7 @@ export class ListGlobalChallengesUseCase {
           ans.challengeId,
           {
             answer: ans.answer,
-            isCorrect: ans.isCorrect,
+            isCorrect: ans.isCorrect ?? false,
             xpAwarded: ans.xpAwarded,
           },
         ]),
@@ -117,5 +91,3 @@ export class ListGlobalChallengesUseCase {
     });
   }
 }
-
-export const listGlobalChallengesUseCase = new ListGlobalChallengesUseCase();

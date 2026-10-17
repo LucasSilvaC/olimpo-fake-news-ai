@@ -8,9 +8,12 @@ import { documentationIcons } from "@/entities/documentation";
 import type { DocumentationBlock, DocumentationCatalog, IDocumentationPage } from "@/entities/documentation";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
+import { JourneyFlow } from "./journey-flow";
 
 function BlockContent({ block }: { block: DocumentationBlock }): React.ReactElement {
   switch (block.type) {
+    case "journey":
+      return <JourneyFlow journey={block.journey} />;
     case "paragraph":
       return <p className="text-sm leading-7 text-slate-600 sm:text-[15px]">{block.text}</p>;
     case "callout": {

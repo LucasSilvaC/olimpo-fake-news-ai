@@ -1,6 +1,6 @@
 # DBSCAN
 
-**Status: executado.** Notebook: [dbscan.ipynb](../../history/agrupamento/dbscan.ipynb). Implementação reproduzível: [dbscan_experiment.py](../../dbscan_experiment.py). Run: [`dbscan-20260924T141332Z`](../../../outputs/model-comparison/dbscan-20260924T141332Z/run_manifest.json).
+**Status: executado.** Notebook: [dbscan.ipynb](../../history/agrupamento/dbscan.ipynb). Implementação reproduzível: `dbscan_experiment.py` (implementação citada pelo run, ausente nesta revisão; consultar o notebook e o manifesto). Run: [`dbscan-20260924T141332Z`](../../../outputs/model-comparison/dbscan-20260924T141332Z/run_manifest.json).
 
 O experimento mantém duas trilhas separadas: novidade por estilo, com score e limiar q95 para registros novos; e descoberta temática transdutiva, sem classificação Fake/True.
 
@@ -46,7 +46,7 @@ No teste canônico, 51,81% dos registros passaram o corte q95 e 53,13% ficaram s
 
 K-means novidade, Isolation Forest, LOF e One-Class SVM foram ajustados novamente nos mesmos IDs, com parâmetros do protocolo atual e limiar q95. Os resultados aparecem juntos em [`metrics.csv`](../../../outputs/model-comparison/dbscan-20260924T141332Z/metrics.csv). Isolation Forest e LOF tiveram ROC-AUC/AP maiores que DBSCAN (`0,9786/0,9750` e `0,9766/0,9659`); o DBSCAN teve macro-F1/balanced accuracy maiores que LOF, mas também FPR maior (`0,0514` contra `0,0389`) e cobertura abaixo da metade. O resultado não indica superioridade geral.
 
-Também foram reexecutados Logistic Regression (`word+char`), LinearSVC (`word+char+meta`), Random Forest (`word+char`) e PU Learning nos mesmos IDs canônicos. Logistic Regression, LinearSVC e Random Forest usaram as configurações dos notebooks atuais; PU usou Fake-train como positivos conhecidos, True-train como U, seleção spy com fração 0,15, 200 estimadores temporários, 300 finais e corte 0,5. PU selecionou 631 negativos confiáveis. Esses métodos têm hipóteses/regras de decisão distintas e são apresentados em quadro próprio em [`RESULTADOS.md`](../../RESULTADOS.md). LinearSVC emitiu `ConvergenceWarning` com `max_iter=2000`; seu score/métricas são aproximados, conforme registrado no manifesto e na coluna `fit_warnings`.
+Também foram reexecutados Logistic Regression (`word+char`), LinearSVC (`word+char+meta`), Random Forest (`word+char`) e PU Learning nos mesmos IDs canônicos. Logistic Regression, LinearSVC e Random Forest usaram as configurações dos notebooks atuais; PU usou Fake-train como positivos conhecidos, True-train como U, seleção spy com fração 0,15, 200 estimadores temporários, 300 finais e corte 0,5. PU selecionou 631 negativos confiáveis. Esses métodos têm hipóteses/regras de decisão distintas e são apresentados em quadro próprio em [`RESULTADOS.md`](../../history/RESULTADOS.md). LinearSVC emitiu `ConvergenceWarning` com `max_iter=2000`; seu score/métricas são aproximados, conforme registrado no manifesto e na coluna `fit_warnings`.
 
 ## Trilha 2 — descoberta temática exploratória
 

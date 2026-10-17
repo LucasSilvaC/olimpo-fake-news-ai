@@ -12,7 +12,8 @@
     "build": "next build",
     "start": "next start --hostname 127.0.0.1",
     "lint": "eslint .",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "check:models": "node scripts/verify-model-documentation.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.8.0",

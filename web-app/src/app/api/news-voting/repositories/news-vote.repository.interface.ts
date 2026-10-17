@@ -1,14 +1,14 @@
-import { NewNewsVote, NewsVote } from "@/server/shared/database/schemas";
+﻿import type { NewsVoteDTO, NewsVoteEntityProps } from "../entities";
 
 export interface INewsVoteRepository {
-  create(data: NewNewsVote): Promise<NewsVote>;
-  findById(id: string): Promise<NewsVote | null>;
+  create(data: NewsVoteEntityProps): Promise<NewsVoteDTO>;
+  findById(id: string): Promise<NewsVoteDTO | null>;
   findByParticipantAndPlaylistItem(
     playlistItemId: string,
     userId: string,
-  ): Promise<NewsVote | null>;
-  listByPlaylistItem(playlistItemId: string): Promise<NewsVote[]>;
-  listByRoomId(roomId: string): Promise<NewsVote[]>;
+  ): Promise<NewsVoteDTO | null>;
+  listByPlaylistItem(playlistItemId: string): Promise<NewsVoteDTO[]>;
+  listByRoomId(roomId: string): Promise<NewsVoteDTO[]>;
   countByPlaylistItem(playlistItemId: string): Promise<number>;
-  updateEvaluation(id: string, isCorrect: boolean, pointsAwarded: number): Promise<NewsVote>;
+  updateEvaluation(id: string, isCorrect: boolean, pointsAwarded: number): Promise<NewsVoteDTO>;
 }

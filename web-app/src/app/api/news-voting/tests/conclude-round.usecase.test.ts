@@ -162,7 +162,6 @@ describe("ConcludeRoundUseCase", () => {
       roomRepository,
       redisRoomRepository,
       newsArticleRepository,
-      getArticleAnalysisUseCase,
       mockEventPublisher,
     );
   });

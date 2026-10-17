@@ -59,4 +59,4 @@ Por padrão, o artefato final é treinado nas 7.200 notícias do split oficial. 
 - [Notebook 10 — metadados spaCy](../../history/modelo-final/10_svm_metadados_spacy.ipynb)
 - [Notebook 11 — redução de dimensão](../../history/modelo-final/11_reducao_dim_svm_spacy.ipynb)
 - [Notebook 12 — seleção final χ² + SVD](../../support/notebooks/12_selectk_svd_svm_spacy.ipynb)
-- [Relatório técnico, seção 5.11](../../../../docs/entregaveis/entregavel-final-reestruturado.md)
+- [Relatório técnico, seção 5.11](../../../../docs/entregaveis/entregavel-final-completo.md)

@@ -179,7 +179,8 @@ describe("Rooms Domain Entities & Value Objects", () => {
         status: "in_progress",
       });
 
-      expect(room.toDTO()).toEqual({
+      const dto = room.toDTO();
+      expect(dto).toMatchObject({
         id: "room-1",
         pin: "123 456",
         name: "Olympus Lobby",
@@ -189,6 +190,8 @@ describe("Rooms Domain Entities & Value Objects", () => {
         totalRounds: 3,
         status: "in_progress",
       });
+      expect(dto.createdAt).toBeInstanceOf(Date);
+      expect(dto.updatedAt).toBeInstanceOf(Date);
     });
   });
 
@@ -243,13 +246,15 @@ describe("Rooms Domain Entities & Value Objects", () => {
         score: 50,
       });
 
-      expect(member.toDTO()).toEqual({
+      const dto = member.toDTO();
+      expect(dto).toMatchObject({
         id: "mem-1",
         roomId: "room-1",
         userId: "user-1",
         role: "participant",
         score: 50,
       });
+      expect(dto.joinedAt).toBeInstanceOf(Date);
     });
   });
 
@@ -288,12 +293,14 @@ describe("Rooms Domain Entities & Value Objects", () => {
         roundOrder: 2,
       });
 
-      expect(item.toDTO()).toEqual({
+      const dto = item.toDTO();
+      expect(dto).toMatchObject({
         id: "item-1",
         roomId: "room-1",
         articleId: "art-1",
         roundOrder: 2,
       });
+      expect(dto.createdAt).toBeInstanceOf(Date);
     });
   });
 });

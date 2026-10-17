@@ -2,8 +2,8 @@
 
 import { z } from "zod";
 
+import { createRoomUseCase } from "../composition-root";
 import { RoomDTO } from "../entities";
-import { createRoomUseCase } from "../usecase/create-room.usecase";
 
 import { getSessionUseCase } from "@/app/api/auth/usecase/get-session.usecase";
 

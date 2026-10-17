@@ -1,12 +1,9 @@
 import { RoomDTO, RoomEntity, RoomMemberDTO, RoomMemberEntity, RoomPin } from "../entities";
-import { drizzleRoomRepository } from "../repositories/drizzle-room.repository";
-import { redisRoomRepository } from "../repositories/redis-room.repository";
 import { IRedisRoomRepository } from "../repositories/redis-room.repository.interface";
 import { IRoomRepository } from "../repositories/room.repository.interface";
 
 import {
   IEventPublisher,
-  redisEventPublisher as defaultRedisEventPublisher,
 } from "@/app/api/realtime-events";
 
 export interface JoinRoomInput {
@@ -22,9 +19,9 @@ export interface JoinRoomResult {
 
 export class JoinRoomUseCase {
   constructor(
-    private readonly roomRepository: IRoomRepository = drizzleRoomRepository,
-    private readonly redisRoomRepo: IRedisRoomRepository = redisRoomRepository,
-    private readonly eventPublisher: IEventPublisher = defaultRedisEventPublisher,
+    private readonly roomRepository: IRoomRepository,
+    private readonly redisRoomRepo: IRedisRoomRepository,
+    private readonly eventPublisher: IEventPublisher,
   ) {}
 
   async execute(input: JoinRoomInput): Promise<JoinRoomResult> {
@@ -58,15 +55,13 @@ export class JoinRoomUseCase {
     }
 
     // Add new participant
-    const newMemberRecord = await this.roomRepository.addMember({
+    const memberEntity = await this.roomRepository.addMember(new RoomMemberEntity({
       id: crypto.randomUUID(),
       roomId: roomEntity.id,
       userId: input.userId,
       role: "participant",
       score: 0,
-    });
-
-    const memberEntity = new RoomMemberEntity(newMemberRecord);
+    }));
 
     // Update Redis
     await this.redisRoomRepo.incrementParticipantCount(roomEntity.id);
@@ -78,17 +73,15 @@ export class JoinRoomUseCase {
       roomId: roomEntity.id,
       pin: roomEntity.pin,
       payload: {
-        member: memberEntity.toDTO(),
+        member: memberEntity,
       },
       timestamp: new Date().toISOString(),
     });
 
     return {
       room: roomEntity.toDTO(),
-      member: memberEntity.toDTO(),
+      member: memberEntity,
       alreadyJoined: false,
     };
   }
 }
-
-export const joinRoomUseCase = new JoinRoomUseCase();

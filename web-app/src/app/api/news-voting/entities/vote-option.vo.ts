@@ -1,23 +1,18 @@
-import { VoteOptionType } from "@/server/shared/database/schemas/enums";
+import {
+  NEWS_CLASSIFICATIONS,
+  isNewsClassification,
+  normalizeNewsClassification,
+  type VoteOptionType,
+} from "@/server/shared/domain/game-vocabulary";
 
-export const VALID_VOTE_OPTIONS: readonly VoteOptionType[] = [
-  "reliable",
-  "uncertain",
-  "unreliable",
-] as const;
+export const VALID_VOTE_OPTIONS: readonly VoteOptionType[] = NEWS_CLASSIFICATIONS;
 
 export class VoteOption {
   public static isValid(value: unknown): value is VoteOptionType {
-    if (typeof value !== "string") return false;
-    return VALID_VOTE_OPTIONS.includes(value.toLowerCase().trim() as VoteOptionType);
+    return isNewsClassification(value);
   }
 
   public static normalize(value: unknown): VoteOptionType {
-    if (!VoteOption.isValid(value)) {
-      throw new Error(
-        `Invalid vote option: ${String(value)}. Must be one of: ${VALID_VOTE_OPTIONS.join(", ")}`,
-      );
-    }
-    return (value as string).toLowerCase().trim() as VoteOptionType;
+    return normalizeNewsClassification(value, "vote option");
   }
 }
